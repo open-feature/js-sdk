@@ -1,0 +1,36 @@
+# Publishes a pre-release, incrementing the final integer (ie: 0.0.1-alpha.1 => 0.0.1-alpha.2). Pushes package.json changes back to main.
+
+name: publish-dev
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish-dev:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Version
+        run: npm version prerelease
+
+      - name: Publish
+        run: npm publish
+        env:
+            NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Push Version Update
+        run: |
+          git config --global user.name 'openfeature-ci'
+          git config --global user.email 'openfeature-ci@users.noreply.github.com'
+          git push

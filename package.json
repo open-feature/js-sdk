@@ -8,7 +8,7 @@
     "test": "jest",
     "lint": "eslint ./",
     "postbuild": "cp ./package.esm.json ./dist/esm/package.json",
-    "build": "rm -R ./dist && tsc --project tsconfig.json && tsc --project tsconfig.cjs.json"
+    "build": "rm -f -R ./dist && tsc --project tsconfig.json && tsc --project tsconfig.cjs.json"
   },
   "repository": {
     "type": "git",
