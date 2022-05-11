@@ -1,0 +1,55 @@
+{
+  "name": "@openfeature/nodejs-sdk",
+  "version": "0.0.1-alpha.1",
+  "description": "OpenFeature SDK for NodeJS",
+  "main": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint ./",
+    "postbuild": "cp ./package.esm.json ./dist/esm/package.json",
+    "build": "rm -f -R ./dist && tsc --project tsconfig.json && tsc --project tsconfig.cjs.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/open-feature/node-sdk.git"
+  },
+  "keywords": [
+    "openfeature"
+  ],
+  "author": "",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/open-feature/node-sdk/issues"
+  },
+  "homepage": "https://github.com/open-feature/node-sdk#readme",
+  "engines": {
+    "node": ">=14"
+  },
+  "files": [
+    "dist/"
+  ],
+  "exports": {
+    "node": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "default": "./dist/esm/index.js"
+    }
+  },
+  "devDependencies": {
+    "@types/jest": "^27.5.0",
+    "@types/node": "^17.0.31",
+    "@typescript-eslint/eslint-plugin": "^5.23.0",
+    "@typescript-eslint/parser": "^5.23.0",
+    "eslint": "^8.14.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-jest": "^26.1.5",
+    "jest": "^28.1.0",
+    "jest-junit": "^13.2.0",
+    "prettier": "^2.6.2",
+    "ts-jest": "^28.0.2",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.4"
+  },
+  "dependencies": {}
+}
