@@ -25,6 +25,11 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Configure git
+        run: |
+          git config --global user.name 'openfeature-ci'
+          git config --global user.email 'openfeature-ci@users.noreply.github.com'
+
       - name: Version
         run: npm version prerelease
 
@@ -34,7 +39,4 @@ jobs:
             NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Push Version Update
-        run: |
-          git config --global user.name 'openfeature-ci'
-          git config --global user.email 'openfeature-ci@users.noreply.github.com'
-          git push
+        run: git push
