@@ -14,7 +14,8 @@
 		 "sourceType":"module"
 	},
 	"plugins":[
-		 "@typescript-eslint"
+		 "@typescript-eslint",
+		 "check-file"
 	],
 	"rules":{
 		 "linebreak-style":[
@@ -28,6 +29,14 @@
 		 "semi":[
 				"error",
 				"always"
-		 ]
+		 ],
+		 "check-file/filename-naming-convention":[
+			"error",
+			{
+				"*.spec.{js,ts}":"*",
+				"**/jest.config.ts":"*",
+				 "*.{js,ts}":"KEBAB_CASE"
+			}
+	 ]
 	}
 }
