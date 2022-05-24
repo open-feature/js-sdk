@@ -1,6 +1,7 @@
 # OpenFeature SDK for NodeJS
 
-[![experimental](http://badges.github.io/stability-badges/dist/experimental.svg)](http://github.com/badges/stability-badges)
+> :warning: This repository is a placeholder for a future SDK implementation.
+> It is not ready for evaluation
 
 ## Development
 
