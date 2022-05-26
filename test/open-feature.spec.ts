@@ -3,39 +3,43 @@ import { OpenFeature } from '../src/open-feature.js';
 import { Provider } from '../src/types.js';
 
 describe(OpenFeature.name, () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('Requirement 1.1', () => {
     it('should be global singleton', () => {
-      expect(OpenFeature.instance.provider === OpenFeature.instance.provider).toBeTruthy();
+      expect(OpenFeature.provider === OpenFeature.provider).toBeTruthy();
     });
   });
 
   describe('Requirement 1.2', () => {
-    it('should be set provider', () => {
+    it('should equal previously set provider', () => {
       const fakeProvider = {} as Provider;
-      OpenFeature.instance.provider = fakeProvider;
-      expect(OpenFeature.instance.provider === fakeProvider).toBeTruthy();
+      OpenFeature.provider = fakeProvider;
+      expect(OpenFeature.provider === fakeProvider).toBeTruthy();
     });
   });
 
   describe('Requirement 1.3', () => {
     it('should allow addition of hooks', () => {
-      // TODO: implement with hooks
+      expect(OpenFeature.addHooks).toBeDefined();
     });
   });
 
   describe('Requirement 1.4', () => {
-    it('should implement a hook accessor', () => {
-      expect(OpenFeature.instance.provider).toBeDefined();
+    it('should implement a provider accessor and mutator', () => {
+      expect(OpenFeature.provider).toBeDefined();
     });
   });
 
   describe('Requirement 1.5', () => {
     it('should implement a client factory', () => {
-      expect(OpenFeature.instance.getClient).toBeDefined();
-      expect(OpenFeature.instance.getClient()).toBeInstanceOf(OpenFeatureClient);
+      expect(OpenFeature.getClient).toBeDefined();
+      expect(OpenFeature.getClient()).toBeInstanceOf(OpenFeatureClient);
 
       const name = 'my-client';
-      const namedClient = OpenFeature.instance.getClient(name);
+      const namedClient = OpenFeature.getClient(name);
 
       // check that using a named configuration also works as expected.
       expect(namedClient).toBeInstanceOf(OpenFeatureClient);

@@ -6,7 +6,9 @@ import {
   EvaluationDetails,
   FlagEvaluationOptions,
   FlagValue,
+  FlagType,
   Hook,
+  HookContext,
   ResolutionDetails,
   TransformingProvider,
 } from './types.js';
@@ -20,6 +22,7 @@ export class OpenFeatureClient implements Client {
   name?: string | undefined;
   version?: string | undefined;
   readonly context: EvaluationContext;
+  private _hooks: Hook[] = [];
 
   constructor(private readonly api: OpenFeature, options: OpenFeatureClientOptions, context: EvaluationContext = {}) {
     this.name = options.name;
@@ -27,13 +30,16 @@ export class OpenFeatureClient implements Client {
     this.context = context;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   addHooks(...hooks: Hook<FlagValue>[]): void {
-    throw new Error('Method not implemented.');
+    this._hooks = [...this._hooks, ...hooks];
   }
 
   get hooks(): Hook<FlagValue>[] {
-    throw new Error('Method not implemented.');
+    return this._hooks;
+  }
+
+  clearHooks(): void {
+    this._hooks = [];
   }
 
   async getBooleanValue(
@@ -51,7 +57,14 @@ export class OpenFeatureClient implements Client {
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): Promise<EvaluationDetails<boolean>> {
-    return this.evaluate<boolean>(flagKey, this.provider.resolveBooleanEvaluation, defaultValue, context, options);
+    return this.evaluate<boolean>(
+      flagKey,
+      this.provider.resolveBooleanEvaluation,
+      defaultValue,
+      'boolean',
+      context,
+      options
+    );
   }
 
   async getStringValue(
@@ -69,7 +82,14 @@ export class OpenFeatureClient implements Client {
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): Promise<EvaluationDetails<string>> {
-    return this.evaluate<string>(flagKey, this.provider.resolveStringEvaluation, defaultValue, context, options);
+    return this.evaluate<string>(
+      flagKey,
+      this.provider.resolveStringEvaluation,
+      defaultValue,
+      'string',
+      context,
+      options
+    );
   }
 
   async getNumberValue(
@@ -87,7 +107,14 @@ export class OpenFeatureClient implements Client {
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): Promise<EvaluationDetails<number>> {
-    return this.evaluate<number>(flagKey, this.provider.resolveNumberEvaluation, defaultValue, context, options);
+    return this.evaluate<number>(
+      flagKey,
+      this.provider.resolveNumberEvaluation,
+      defaultValue,
+      'number',
+      context,
+      options
+    );
   }
 
   async getObjectValue<T extends object>(
@@ -105,7 +132,7 @@ export class OpenFeatureClient implements Client {
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): Promise<EvaluationDetails<T>> {
-    return this.evaluate<T>(flagKey, this.provider.resolveObjectEvaluation, defaultValue, context, options);
+    return this.evaluate<T>(flagKey, this.provider.resolveObjectEvaluation, defaultValue, 'object', context, options);
   }
 
   private async evaluate<T extends FlagValue>(
@@ -117,18 +144,42 @@ export class OpenFeatureClient implements Client {
       options: FlagEvaluationOptions | undefined
     ) => Promise<ResolutionDetails<T>>,
     defaultValue: T,
-    context: EvaluationContext = {},
+    flagType: FlagType,
+    invocationContext: EvaluationContext = {},
     options: FlagEvaluationOptions = {}
   ): Promise<EvaluationDetails<T>> {
     // merge global, client, and evaluation context
-    const mergedContext = {
-      ...this.api.context,
+
+    const allHooks = [...OpenFeature.hooks, ...this.hooks, ...(options.hooks || [])];
+    const allHooksReversed = [...allHooks].reverse();
+
+    // merge global and client contexts
+    const globalAndClientContext = {
+      ...OpenFeature.context,
       ...this.context,
-      ...context,
+    };
+
+    // this reference cannot change during the course of evaluation
+    // it may be used as a key in WeakMaps
+    const hookContext: Readonly<HookContext> = {
+      flagKey,
+      defaultValue,
+      flagType,
+      client: this,
+      provider: OpenFeature.provider,
+      context: globalAndClientContext,
     };
 
     try {
-      // if a transformer is defined, run it to prepare the context.
+      const mergedHookContext = await this.beforeHooks(allHooks, hookContext, options);
+
+      // merge context in order: global, client, hook, invocation
+      const mergedContext = {
+        ...mergedHookContext,
+        ...invocationContext,
+      };
+
+      // if a transformer is defined, run it to prepare the context
       const transformedContext =
         typeof this.provider.contextTransformer === 'function'
           ? await this.provider.contextTransformer(mergedContext)
@@ -136,22 +187,74 @@ export class OpenFeatureClient implements Client {
 
       // run the referenced resolver, binding the provider.
       const resolution = await resolver.call(this.provider, flagKey, defaultValue, transformedContext, options);
-      return {
+
+      const evaluationDetails = {
         ...resolution,
         flagKey,
       };
+
+      await this.afterHooks(allHooksReversed, hookContext, evaluationDetails, options);
+
+      return evaluationDetails;
     } catch (err: unknown) {
       const errorCode = (!!err && (err as { code: string }).code) || GENERAL_ERROR;
+
+      await this.errorHooks(allHooksReversed, hookContext, err, options);
+
       return {
         errorCode,
         value: defaultValue,
         reason: ERROR_REASON,
         flagKey,
       };
+    } finally {
+      await this.finallyHooks(allHooksReversed, hookContext, options);
+    }
+  }
+
+  private async beforeHooks(hooks: Hook[], hookContext: HookContext, options: FlagEvaluationOptions) {
+    for (const hook of hooks) {
+      // freeze the hookContext
+      Object.freeze(hookContext);
+
+      // use Object.assign to avoid modification of frozen hookContext
+      Object.assign(hookContext.context, {
+        ...hookContext.context,
+        ...(await hook?.before?.(hookContext, Object.freeze(options.hookHints))),
+      });
+    }
+
+    // after before hooks, freeze the EvaluationContext.
+    return Object.freeze(hookContext.context);
+  }
+
+  private async afterHooks(
+    hooks: Hook[],
+    hookContext: HookContext,
+    evaluationDetails: EvaluationDetails<FlagValue>,
+    options: FlagEvaluationOptions
+  ) {
+    // run "after" hooks sequentially
+    for (const hook of hooks) {
+      await hook?.after?.(hookContext, evaluationDetails, options.hookHints);
+    }
+  }
+
+  private async errorHooks(hooks: Hook[], hookContext: HookContext, err: unknown, options: FlagEvaluationOptions) {
+    // run "error" hooks sequentially
+    for (const hook of hooks) {
+      await hook?.error?.(hookContext, err, options.hookHints);
+    }
+  }
+
+  private async finallyHooks(hooks: Hook[], hookContext: HookContext, options: FlagEvaluationOptions) {
+    // run "finally" hooks sequentially
+    for (const hook of hooks) {
+      await hook?.finally?.(hookContext, options.hookHints);
     }
   }
 
   private get provider() {
-    return OpenFeature.instance.provider as TransformingProvider<unknown>;
+    return OpenFeature.provider as TransformingProvider<unknown>;
   }
 }
