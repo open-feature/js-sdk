@@ -1,4 +1,4 @@
-import { Provider, ResolutionDetails } from './types';
+import { Provider, ResolutionDetails } from './types.js';
 
 const REASON_NO_OP = 'No-op';
 

@@ -1,6 +1,6 @@
-import { OpenFeatureClient } from './client';
-import { NOOP_PROVIDER } from './no-op-provider';
-import { Client, EvaluationContext, EvaluationLifeCycle, FlagValue, Hook, Provider } from './types';
+import { OpenFeatureClient } from './client.js';
+import { NOOP_PROVIDER } from './no-op-provider.js';
+import { Client, EvaluationContext, EvaluationLifeCycle, FlagValue, Hook, Provider } from './types.js';
 
 // use a symbol as a key for the global singleton
 const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/js.api');

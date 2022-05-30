@@ -1,6 +1,6 @@
-import { OpenFeatureClient } from '../src/client';
-import { OpenFeature } from '../src/open-feature';
-import { Provider } from '../src/types';
+import { OpenFeatureClient } from '../src/client.js';
+import { OpenFeature } from '../src/open-feature.js';
+import { Provider } from '../src/types.js';
 
 describe(OpenFeature.name, () => {
   describe('Requirement 1.1', () => {

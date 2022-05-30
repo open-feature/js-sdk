@@ -1,6 +1,6 @@
-import { OpenFeatureClient } from '../src/client';
-import { ERROR_REASON, GENERAL_ERROR } from '../src/constants';
-import { OpenFeature } from '../src/open-feature';
+import { OpenFeatureClient } from '../src/client.js';
+import { ERROR_REASON, GENERAL_ERROR } from '../src/constants.js';
+import { OpenFeature } from '../src/open-feature.js';
 import {
   Client,
   EvaluationContext,
@@ -9,7 +9,7 @@ import {
   Provider,
   ResolutionDetails,
   TransformingProvider,
-} from '../src/types';
+} from '../src/types.js';
 
 const BOOLEAN_VALUE = true;
 const STRING_VALUE = 'val';
