@@ -25,6 +25,11 @@ export default {
   // The directory where Jest should output its coverage files
   coverageDirectory: 'coverage',
 
+  // we need this so jest doesn't break with our .js naming rule.
+  moduleNameMapper: {
+    '(.*).js': '$1',
+  },
+
   // An array of regexp pattern strings used to skip coverage collection
   // coveragePathIgnorePatterns: [
   //   "/node_modules/"

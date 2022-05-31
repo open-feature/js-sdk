@@ -1,3 +1,3 @@
-export * from './open-feature';
-export * from './client';
-export * from './types';
+export * from './open-feature.js';
+export * from './client.js';
+export * from './types.js';
