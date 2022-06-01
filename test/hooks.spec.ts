@@ -69,7 +69,6 @@ describe('Hooks', () => {
               } catch (err) {
                 done(err);
               }
-              return Promise.resolve();
             },
           },
         ],
@@ -93,7 +92,6 @@ describe('Hooks', () => {
               } catch (err) {
                 done();
               }
-              return Promise.resolve();
             },
           },
         ],
@@ -116,7 +114,6 @@ describe('Hooks', () => {
                 } catch (err) {
                   done(err);
                 }
-                return Promise.resolve();
               },
             },
           ],
@@ -139,7 +136,6 @@ describe('Hooks', () => {
                 } catch (err) {
                   done();
                 }
-                return Promise.resolve();
               },
             },
           ],
@@ -156,7 +152,7 @@ describe('Hooks', () => {
             {
               before: () => {
                 // add a prop to the context.
-                return Promise.resolve({ beforeRan: true });
+                return { beforeRan: true };
               },
             },
           ],
@@ -181,7 +177,7 @@ describe('Hooks', () => {
             {
               before: () => {
                 // add a prop to the context.
-                return Promise.resolve({ beforeRan: true });
+                return { beforeRan: true };
               },
             },
             {
@@ -193,7 +189,7 @@ describe('Hooks', () => {
                 } catch (err) {
                   done(err);
                 }
-                return Promise.resolve({ beforeRan: true });
+                return { beforeRan: true };
               },
             },
           ],
@@ -212,7 +208,7 @@ describe('Hooks', () => {
               {
                 before: () => {
                   // add a prop to the context, and some duplicates to overwrite
-                  return Promise.resolve({ hookProp: 'def', invocationProp: 'xxx', propToOverwrite: 'xxx' });
+                  return { hookProp: 'def', invocationProp: 'xxx', propToOverwrite: 'xxx' };
                 },
               },
             ],
@@ -245,7 +241,6 @@ describe('Hooks', () => {
                 } catch (err) {
                   done(err);
                 }
-                return Promise.resolve();
               },
             },
           ],
@@ -271,7 +266,6 @@ describe('Hooks', () => {
                   } catch (err) {
                     done(err);
                   }
-                  return Promise.resolve();
                 },
               },
             ],
@@ -288,7 +282,7 @@ describe('Hooks', () => {
           const afterAndFinallyHook: Hook = {
             // mock "after"
             after: jest.fn(() => {
-              return Promise.resolve();
+              return;
             }),
             finally: () => {
               try {
@@ -298,7 +292,6 @@ describe('Hooks', () => {
               } catch (err) {
                 done(err);
               }
-              return Promise.resolve();
             },
           };
 
@@ -312,7 +305,7 @@ describe('Hooks', () => {
 
           const errorAndFinallyHook: Hook = {
             error: jest.fn(() => {
-              return Promise.resolve();
+              return;
             }),
             finally: () => {
               try {
@@ -322,7 +315,6 @@ describe('Hooks', () => {
               } catch (err) {
                 done(err);
               }
-              return Promise.resolve();
             },
           };
 
@@ -348,7 +340,6 @@ describe('Hooks', () => {
             } catch (err) {
               done(err);
             }
-            return Promise.resolve();
           }),
         };
 
@@ -361,7 +352,6 @@ describe('Hooks', () => {
             } catch (err) {
               done(err);
             }
-            return Promise.resolve();
           }),
         };
 
@@ -375,7 +365,6 @@ describe('Hooks', () => {
             } catch (err) {
               done(err);
             }
-            return Promise.resolve();
           }),
         };
 
@@ -401,7 +390,6 @@ describe('Hooks', () => {
             } catch (err) {
               done(err);
             }
-            return Promise.resolve();
           }),
         };
 
@@ -414,7 +402,6 @@ describe('Hooks', () => {
             } catch (err) {
               done(err);
             }
-            return Promise.resolve();
           }),
         };
 
@@ -428,7 +415,6 @@ describe('Hooks', () => {
             } catch (err) {
               done(err);
             }
-            return Promise.resolve();
           }),
         };
 
@@ -454,7 +440,6 @@ describe('Hooks', () => {
             } catch (err) {
               done(err);
             }
-            return Promise.resolve();
           }),
         };
 
@@ -467,7 +452,6 @@ describe('Hooks', () => {
             } catch (err) {
               done(err);
             }
-            return Promise.resolve();
           }),
         };
 
@@ -481,7 +465,6 @@ describe('Hooks', () => {
             } catch (err) {
               done(err);
             }
-            return Promise.resolve();
           }),
         };
 
@@ -507,7 +490,6 @@ describe('Hooks', () => {
             } catch (err) {
               done(err);
             }
-            return Promise.resolve();
           }),
         };
 
@@ -520,7 +502,6 @@ describe('Hooks', () => {
             } catch (err) {
               done(err);
             }
-            return Promise.resolve();
           }),
         };
 
@@ -534,7 +515,6 @@ describe('Hooks', () => {
             } catch (err) {
               done(err);
             }
-            return Promise.resolve();
           }),
         };
 
@@ -556,10 +536,9 @@ describe('Hooks', () => {
         const errorAndFinallyHook: Hook = {
           after: jest.fn(() => {
             done(new Error('Should not have been called.'));
-            return Promise.resolve();
           }),
           finally: () => {
-            return Promise.reject('expected');
+            throw new Error('expected');
           },
         };
 
@@ -586,7 +565,7 @@ describe('Hooks', () => {
 
         const beforeAndErrorHook: Hook = {
           before: jest.fn(() => {
-            return Promise.reject('Fake error');
+            throw new Error('Fake error');
           }),
           error: jest.fn(() => {
             try {
@@ -595,7 +574,6 @@ describe('Hooks', () => {
             } catch (err) {
               done(err);
             }
-            return Promise.resolve();
           }),
         };
 
@@ -611,7 +589,7 @@ describe('Hooks', () => {
 
         const afterAndErrorHook: Hook = {
           after: jest.fn(() => {
-            return Promise.reject('Fake error');
+            throw new Error('Fake error');
           }),
           error: jest.fn(() => {
             try {
@@ -620,7 +598,6 @@ describe('Hooks', () => {
             } catch (err) {
               done(err);
             }
-            return Promise.resolve();
           }),
         };
 
@@ -638,7 +615,7 @@ describe('Hooks', () => {
 
         const clientBeforeHook: Hook = {
           before: jest.fn(() => {
-            return Promise.reject('Fake error!');
+            throw new Error('Fake error!');
           }),
         };
 
@@ -651,11 +628,9 @@ describe('Hooks', () => {
             } catch (err) {
               done(err);
             }
-            return Promise.resolve();
           }),
           before: jest.fn(() => {
             done(new Error('Should not have run!'));
-            return Promise.resolve();
           }),
         };
 
@@ -680,7 +655,6 @@ describe('Hooks', () => {
                 } catch (err) {
                   done(err);
                 }
-                return Promise.resolve();
               },
               after: (_hookContext, _evaluationDetils, hookHints) => {
                 try {
@@ -688,7 +662,6 @@ describe('Hooks', () => {
                 } catch (err) {
                   done(err);
                 }
-                return Promise.resolve();
               },
               finally: (_, hookHints) => {
                 try {
@@ -697,7 +670,6 @@ describe('Hooks', () => {
                 } catch (err) {
                   done(err);
                 }
-                return Promise.resolve();
               },
             },
           ],
@@ -732,13 +704,87 @@ describe('Hooks', () => {
                   // expect an error since we are modifying a frozen object.
                   done();
                 }
-                return Promise.resolve();
               },
             },
           ],
           hookHints: {
             hint: true,
           },
+        });
+      });
+    });
+  });
+
+  describe('async hooks', () => {
+    describe('before, after, finally', () => {
+      it('should be awaited, run in order', (done) => {
+        OpenFeature.provider = MOCK_PROVIDER;
+
+        const asyncBeforeAfterFinally: Hook = {
+          before: jest.fn(() => {
+            return new Promise<EvaluationContext>((resolve) =>
+              setTimeout(() => {
+                resolve({ beforeRan: true });
+              }, 100)
+            );
+          }),
+          after: jest.fn((hookContext) => {
+            try {
+              expect(asyncBeforeAfterFinally.before).toHaveBeenCalled();
+              expect(hookContext.context.beforeRan).toBeTruthy();
+              return Promise.resolve();
+            } catch (err) {
+              done(err);
+            }
+          }),
+          finally: () => {
+            try {
+              expect(asyncBeforeAfterFinally.after).toHaveBeenCalled();
+              done();
+            } catch (err) {
+              done(err);
+            }
+          },
+        };
+
+        client.getBooleanValue(FLAG_KEY, false, undefined, {
+          hooks: [asyncBeforeAfterFinally],
+        });
+      });
+    });
+
+    describe('before, error, finally', () => {
+      it('should be awaited, run in order', (done) => {
+        OpenFeature.provider = MOCK_PROVIDER;
+
+        const asyncBeforeErroFinally = {
+          before: jest.fn(() => {
+            return new Promise<EvaluationContext>((resolve, reject) =>
+              setTimeout(() => {
+                reject();
+              }, 100)
+            );
+          }),
+          error: jest.fn(() => {
+            try {
+              expect(asyncBeforeErroFinally.before).toHaveBeenCalled();
+            } catch (err) {
+              done(err);
+            }
+            return Promise.resolve();
+          }),
+          finally: () => {
+            try {
+              expect(asyncBeforeErroFinally.error).toHaveBeenCalled();
+              done();
+            } catch (err) {
+              done(err);
+            }
+          },
+        };
+
+        client.getBooleanValue(FLAG_KEY, false, undefined, {
+          hooks: [asyncBeforeErroFinally],
         });
       });
     });

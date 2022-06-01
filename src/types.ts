@@ -214,7 +214,10 @@ export interface Hook<T extends FlagValue = FlagValue> {
    * @param hookContext
    * @param hookHints
    */
-  before?(hookContext: BeforeHookContext, hookHints?: HookHints): Promise<EvaluationContext | void>;
+  before?(
+    hookContext: BeforeHookContext,
+    hookHints?: HookHints
+  ): Promise<EvaluationContext | void> | EvaluationContext | void;
 
   /**
    * Runs after flag values are successfully resolved from the provider.
@@ -227,7 +230,7 @@ export interface Hook<T extends FlagValue = FlagValue> {
     hookContext: Readonly<HookContext<T>>,
     evaluationDetails: EvaluationDetails<T>,
     hookHints?: HookHints
-  ): Promise<void>;
+  ): Promise<void> | void;
 
   /**
    * Runs in the event of an unhandled error or promise rejection during flag resolution, or any attached hooks.
@@ -236,7 +239,7 @@ export interface Hook<T extends FlagValue = FlagValue> {
    * @param error
    * @param hookHints
    */
-  error?(hookContext: Readonly<HookContext<T>>, error: unknown, hookHints?: HookHints): Promise<void>;
+  error?(hookContext: Readonly<HookContext<T>>, error: unknown, hookHints?: HookHints): Promise<void> | void;
 
   /**
    * Runs after all other hook stages, regardless of success or error.
@@ -245,5 +248,5 @@ export interface Hook<T extends FlagValue = FlagValue> {
    * @param hookContext
    * @param hookHints
    */
-  finally?(hookContext: Readonly<HookContext<T>>, hookHints?: HookHints): Promise<void>;
+  finally?(hookContext: Readonly<HookContext<T>>, hookHints?: HookHints): Promise<void> | void;
 }
