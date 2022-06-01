@@ -1,7 +1,13 @@
 # OpenFeature SDK for NodeJS
 
-> :warning: This repository is a placeholder for a future SDK implementation.
-> It is not ready for evaluation
+![Experimental](https://img.shields.io/badge/experimental-breaking%20changes%20allowed-yellow)
+![Alpha](https://img.shields.io/badge/alpha-release-red)
+
+## Installation
+
+```
+$ npm install @openfeature/nodejs-sdk   // installs the latest version
+```
 
 ## Development
 
