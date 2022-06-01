@@ -3,6 +3,12 @@
 ![Experimental](https://img.shields.io/badge/experimental-breaking%20changes%20allowed-yellow)
 ![Alpha](https://img.shields.io/badge/alpha-release-red)
 
+## Installation
+
+```
+$ npm install @openfeature/nodejs-sdk   // installs the latest version
+```
+
 ## Development
 
 ### Installation and Dependencies
