@@ -17,7 +17,7 @@ export class OpenFeature {
   private _hooks: Hook[] = [];
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  private constructor() {}
+  protected constructor() {}
 
   private static get instance(): OpenFeature {
     const globalApi = _global[GLOBAL_OPENFEATURE_API_KEY];
