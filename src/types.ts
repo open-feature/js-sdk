@@ -8,7 +8,7 @@ export type EvaluationContext = {
 
 export type FlagValue = boolean | string | number | object;
 
-export type FlagType = 'boolean' | 'string' | 'number' | 'object';
+export type FlagValueType = 'boolean' | 'string' | 'number' | 'object';
 
 export interface FlagEvaluationOptions {
   hooks?: Hook[];
@@ -196,7 +196,7 @@ export type HookHints = Readonly<Record<string, unknown>>;
 export interface HookContext<T extends FlagValue = FlagValue> {
   readonly flagKey: string;
   readonly defaultValue: T;
-  readonly flagType: FlagType;
+  readonly flagValueType: FlagValueType;
   readonly context: Readonly<EvaluationContext>;
   readonly client: Client;
   readonly provider: Provider;
