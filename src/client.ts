@@ -6,7 +6,7 @@ import {
   EvaluationDetails,
   FlagEvaluationOptions,
   FlagValue,
-  FlagType,
+  FlagValueType,
   Hook,
   HookContext,
   ResolutionDetails,
@@ -144,7 +144,7 @@ export class OpenFeatureClient implements Client {
       options: FlagEvaluationOptions | undefined
     ) => Promise<ResolutionDetails<T>>,
     defaultValue: T,
-    flagType: FlagType,
+    flagType: FlagValueType,
     invocationContext: EvaluationContext = {},
     options: FlagEvaluationOptions = {}
   ): Promise<EvaluationDetails<T>> {
@@ -164,7 +164,7 @@ export class OpenFeatureClient implements Client {
     const hookContext: Readonly<HookContext> = {
       flagKey,
       defaultValue,
-      flagType,
+      flagValueType: flagType,
       client: this,
       provider: OpenFeature.provider,
       context: globalAndClientContext,

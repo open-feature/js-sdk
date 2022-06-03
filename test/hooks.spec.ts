@@ -1,5 +1,5 @@
 import { OpenFeature } from '../src/open-feature.js';
-import { Client, EvaluationContext, FlagType, Hook, Provider, ResolutionDetails } from '../src/types.js';
+import { Client, EvaluationContext, FlagValueType, Hook, Provider, ResolutionDetails } from '../src/types.js';
 
 const BOOLEAN_VALUE = true;
 
@@ -60,7 +60,7 @@ describe('Hooks', () => {
             before: (hookContext) => {
               try {
                 expect(hookContext.flagKey).toEqual(FLAG_KEY);
-                expect(hookContext.flagType).toBeDefined();
+                expect(hookContext.flagValueType).toBeDefined();
                 expect(hookContext.context).toBeDefined();
                 expect(hookContext.defaultValue).toBeDefined();
                 expect(hookContext.provider).toBeDefined();
@@ -84,9 +84,13 @@ describe('Hooks', () => {
             before: (hookContext) => {
               try {
                 // cast this to allow us to attempt to overwrite, to verify runtime immutability.
-                const hookContextCasted = hookContext as { flagKey: string; flagType: FlagType; defaultValue: boolean };
+                const hookContextCasted = hookContext as {
+                  flagKey: string;
+                  flagValueType: FlagValueType;
+                  defaultValue: boolean;
+                };
                 hookContextCasted.flagKey = 'not allowed';
-                hookContextCasted.flagType = 'object';
+                hookContextCasted.flagValueType = 'object';
                 hookContextCasted.defaultValue = true;
                 done(new Error('Expected error, hookContext should be immutable'));
               } catch (err) {
