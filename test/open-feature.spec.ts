@@ -7,17 +7,11 @@ describe(OpenFeature.name, () => {
     jest.clearAllMocks();
   });
 
-  describe('Requirement 1.1', () => {
-    it('should be global singleton', () => {
-      expect(OpenFeature.provider === OpenFeature.provider).toBeTruthy();
-    });
-  });
-
   describe('Requirement 1.2', () => {
     it('should equal previously set provider', () => {
-      const fakeProvider = {} as Provider;
-      OpenFeature.provider = fakeProvider;
-      expect(OpenFeature.provider === fakeProvider).toBeTruthy();
+      const fakeProvider = { metadata: 'test' } as unknown as Provider;
+      OpenFeature.setProvider(fakeProvider);
+      expect(OpenFeature.providerMetadata === fakeProvider.metadata).toBeTruthy();
     });
   });
 
@@ -29,7 +23,7 @@ describe(OpenFeature.name, () => {
 
   describe('Requirement 1.4', () => {
     it('should implement a provider accessor and mutator', () => {
-      expect(OpenFeature.provider).toBeDefined();
+      expect(OpenFeature.providerMetadata).toBeDefined();
     });
   });
 
@@ -43,7 +37,7 @@ describe(OpenFeature.name, () => {
 
       // check that using a named configuration also works as expected.
       expect(namedClient).toBeInstanceOf(OpenFeatureClient);
-      expect(namedClient.name).toEqual(name);
+      expect(namedClient.metadata.name).toEqual(name);
     });
   });
 });

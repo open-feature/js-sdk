@@ -2,6 +2,7 @@ import { ERROR_REASON, GENERAL_ERROR } from './constants.js';
 import { OpenFeature } from './open-feature.js';
 import {
   Client,
+  ClientMetadata,
   EvaluationContext,
   EvaluationDetails,
   FlagEvaluationOptions,
@@ -19,14 +20,21 @@ type OpenFeatureClientOptions = {
 };
 
 export class OpenFeatureClient implements Client {
-  name?: string | undefined;
-  version?: string | undefined;
+  readonly metadata: ClientMetadata;
   readonly context: EvaluationContext;
   private _hooks: Hook[] = [];
 
-  constructor(private readonly api: OpenFeature, options: OpenFeatureClientOptions, context: EvaluationContext = {}) {
-    this.name = options.name;
-    this.version = options.version;
+  constructor(
+    // we always want the client to use the current provider,
+    // so pass a function to always access the currently registered one.
+    private readonly providerAccessor: () => TransformingProvider<unknown>,
+    options: OpenFeatureClientOptions,
+    context: EvaluationContext = {}
+  ) {
+    this.metadata = {
+      name: options.name,
+      version: options.version,
+    } as const;
     this.context = context;
   }
 
@@ -165,8 +173,8 @@ export class OpenFeatureClient implements Client {
       flagKey,
       defaultValue,
       flagValueType: flagType,
-      client: this,
-      provider: OpenFeature.provider,
+      clientMetadata: this.metadata,
+      providerMetadata: OpenFeature.providerMetadata,
       context: globalAndClientContext,
     };
 
@@ -255,6 +263,6 @@ export class OpenFeatureClient implements Client {
   }
 
   private get provider() {
-    return OpenFeature.provider as TransformingProvider<unknown>;
+    return this.providerAccessor();
   }
 }

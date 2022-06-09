@@ -25,8 +25,9 @@ const REASON = 'mocked-value';
 
 // a mock provider with some jest spies
 const MOCK_PROVIDER: Provider = {
-  name: 'mock',
-
+  metadata: {
+    name: 'mock',
+  },
   resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
     return Promise.resolve({
       value: BOOLEAN_VALUE,
@@ -60,7 +61,7 @@ const MOCK_PROVIDER: Provider = {
 
 describe(OpenFeatureClient.name, () => {
   beforeAll(() => {
-    OpenFeature.provider = MOCK_PROVIDER;
+    OpenFeature.setProvider(MOCK_PROVIDER);
   });
 
   afterEach(() => {
@@ -249,7 +250,7 @@ describe(OpenFeatureClient.name, () => {
       const defaultValue = 123;
 
       beforeAll(async () => {
-        OpenFeature.provider = errorProvider;
+        OpenFeature.setProvider(errorProvider);
         client = OpenFeature.getClient();
         details = await client.getNumberDetails('some-flag', defaultValue);
       });
@@ -296,7 +297,7 @@ describe(OpenFeatureClient.name, () => {
         const flagKey = 'some-flag';
         const defaultValue = false;
         const context = {};
-        OpenFeature.provider = transformingProvider;
+        OpenFeature.setProvider(transformingProvider);
         const client = OpenFeature.getClient();
         await client.getBooleanValue(flagKey, defaultValue, context);
 
@@ -325,7 +326,7 @@ describe(OpenFeatureClient.name, () => {
         const flagKey = 'some-other-flag';
         const defaultValue = false;
         const context = { transformed: false };
-        OpenFeature.provider = nonTransformingProvider;
+        OpenFeature.setProvider(nonTransformingProvider);
         const client = OpenFeature.getClient();
         await client.getBooleanValue(flagKey, defaultValue, context);
 

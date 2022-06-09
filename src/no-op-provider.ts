@@ -6,7 +6,9 @@ const REASON_NO_OP = 'No-op';
  * The No-op provider is set by default, and simply always returns the default value.
  */
 class NoopFeatureProvider implements Provider {
-  readonly name = 'No-op Provider';
+  readonly metadata = {
+    name: 'No-op Provider',
+  } as const;
 
   resolveBooleanEvaluation(_: string, defaultValue: boolean): Promise<ResolutionDetails<boolean>> {
     return this.noOp(defaultValue);
