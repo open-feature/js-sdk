@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-interface */
 export type EvaluationContext = {
   /**
    * A string uniquely identifying the subject (end-user, or client service) of a flag evaluation.
@@ -103,7 +104,7 @@ export interface Features {
 export type ContextTransformer<T = unknown> = (context: EvaluationContext) => T;
 
 interface GenericProvider<T> {
-  name: string;
+  readonly metadata: ProviderMetadata;
 
   /**
    * Resolve a boolean flag and it's evaluation details.
@@ -187,19 +188,29 @@ export type EvaluationDetails<T extends FlagValue> = {
 } & ResolutionDetails<T>;
 
 export interface Client extends EvaluationLifeCycle, Features {
-  readonly name?: string;
-  readonly version?: string;
+  readonly metadata: ClientMetadata;
 }
 
 export type HookHints = Readonly<Record<string, unknown>>;
+
+interface Metadata {}
+
+export interface ClientMetadata extends Metadata {
+  readonly version?: string;
+  readonly name?: string;
+}
+
+export interface ProviderMetadata extends Metadata {
+  readonly name: string;
+}
 
 export interface HookContext<T extends FlagValue = FlagValue> {
   readonly flagKey: string;
   readonly defaultValue: T;
   readonly flagValueType: FlagValueType;
   readonly context: Readonly<EvaluationContext>;
-  readonly client: Client;
-  readonly provider: Provider;
+  readonly clientMetadata: ClientMetadata;
+  readonly providerMetadata: ProviderMetadata;
 }
 
 export interface BeforeHookContext extends HookContext {
