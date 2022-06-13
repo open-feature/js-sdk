@@ -340,4 +340,38 @@ describe(OpenFeatureClient.name, () => {
       });
     });
   });
+
+  describe('Requirement 3.1', () => {
+    const transformingProvider = {
+      name: 'evaluation-context',
+      contextTransformer: jest.fn((context: EvaluationContext) => {
+        return { ...context };
+      }),
+      resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
+        return Promise.resolve({
+          value: true,
+        });
+      }),
+    } as unknown as TransformingProvider<EvaluationContext>;
+    it('context should support boolean | string | number | datetime | structure', async () => {
+      const flagKey = 'some-other-flag';
+      const defaultValue = false;
+      const context = {
+        booleanField: BOOLEAN_VALUE,
+        stringField: STRING_VALUE,
+        numberField: NUMBER_VALUE,
+        datetimeField: DATETIME_VALUE,
+        structureField: OBJECT_VALUE,
+      };
+
+      OpenFeature.setProvider(transformingProvider);
+      const client = OpenFeature.getClient();
+      await client.getBooleanValue(flagKey, defaultValue, context);
+      expect(transformingProvider.contextTransformer).toHaveBeenCalledWith(
+        expect.objectContaining({
+          ...context,
+        })
+      );
+    });
+  });
 });
