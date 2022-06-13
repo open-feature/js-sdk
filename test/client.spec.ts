@@ -17,6 +17,8 @@ const NUMBER_VALUE = 2034;
 const OBJECT_VALUE = {
   key: 'value',
 };
+const DATETIME_VALUE = new Date(2022, 5, 13, 18, 20, 0);
+
 const BOOLEAN_VARIANT = `${BOOLEAN_VALUE}`;
 const STRING_VARIANT = `${STRING_VALUE}-variant`;
 const NUMBER_VARIANT = NUMBER_VALUE.toString();
