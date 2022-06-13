@@ -1,11 +1,17 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
+/**
+ * Represents a JSON value of a JSON object
+ */
+export type JSONValue = null | string | number | boolean | Date | { [x: string]: JSONValue } | Array<JSONValue>;
+
+
 export type EvaluationContext = {
   /**
    * A string uniquely identifying the subject (end-user, or client service) of a flag evaluation.
    * Providers may require this field for fractional flag evaluation, rules, or overrides targeting specific users. Such providers may behave unpredictably if a targeting key is not specified at flag resolution.
    */
   targetingKey?: string;
-} & Record<string, string | number | boolean | Date>;
+} & Record<string, JSONValue>;
 
 export type FlagValue = boolean | string | number | object;
 

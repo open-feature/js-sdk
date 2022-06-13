@@ -17,6 +17,8 @@ const NUMBER_VALUE = 2034;
 const OBJECT_VALUE = {
   key: 'value',
 };
+const DATETIME_VALUE = new Date(2022, 5, 13, 18, 20, 0);
+
 const BOOLEAN_VARIANT = `${BOOLEAN_VALUE}`;
 const STRING_VARIANT = `${STRING_VALUE}-variant`;
 const NUMBER_VARIANT = NUMBER_VALUE.toString();
@@ -338,6 +340,40 @@ describe(OpenFeatureClient.name, () => {
           expect.anything()
         );
       });
+    });
+  });
+
+  describe('Requirement 3.1', () => {
+    const transformingProvider = {
+      name: 'evaluation-context',
+      contextTransformer: jest.fn((context: EvaluationContext) => {
+        return { ...context };
+      }),
+      resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
+        return Promise.resolve({
+          value: true,
+        });
+      }),
+    } as unknown as TransformingProvider<EvaluationContext>;
+    it('context should support boolean | string | number | datetime | structure', async () => {
+      const flagKey = 'some-other-flag';
+      const defaultValue = false;
+      const context = {
+        booleanField: BOOLEAN_VALUE,
+        stringField: STRING_VALUE,
+        numberField: NUMBER_VALUE,
+        datetimeField: DATETIME_VALUE,
+        structureField: OBJECT_VALUE,
+      };
+
+      OpenFeature.setProvider(transformingProvider);
+      const client = OpenFeature.getClient();
+      await client.getBooleanValue(flagKey, defaultValue, context);
+      expect(transformingProvider.contextTransformer).toHaveBeenCalledWith(
+        expect.objectContaining({
+          ...context,
+        })
+      );
     });
   });
 });
