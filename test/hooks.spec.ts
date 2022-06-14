@@ -54,8 +54,8 @@ describe('Hooks', () => {
     client = OpenFeature.getClient();
   });
 
-  describe('Requirement 1.1, 1.2', () => {
-    it('must provide flagKey, flagType, evaluationContext, defaultValue, client and provider', (done) => {
+  describe('Requirement 4.1.1, 4.1.2', () => {
+    it('must provide flagKey, flagType, evaluationContext, defaultValue, client metadata and provider metadata', (done) => {
       client.getBooleanValue(FLAG_KEY, false, undefined, {
         hooks: [
           {
@@ -78,7 +78,7 @@ describe('Hooks', () => {
     });
   });
 
-  describe('Requirement 1.3', () => {
+  describe('Requirement 4.1.3', () => {
     it('flagKey, flagType, defaultValue must be immutable', (done) => {
       client.getBooleanValue(FLAG_KEY, false, undefined, {
         hooks: [
@@ -105,7 +105,7 @@ describe('Hooks', () => {
     });
   });
 
-  describe('Requirement 1.3', () => {
+  describe('Requirement 4.1.4', () => {
     describe('before', () => {
       it('evaluationContext must be mutable', (done) => {
         client.getBooleanValue(FLAG_KEY, false, undefined, {
@@ -151,7 +151,7 @@ describe('Hooks', () => {
   });
 
   describe('before', () => {
-    describe('3.2', () => {
+    describe('4.3.2', () => {
       it('"before" must run before flag resolution', async () => {
         await client.getBooleanValue(FLAG_KEY, false, undefined, {
           hooks: [
@@ -176,7 +176,7 @@ describe('Hooks', () => {
       });
     });
 
-    describe('Requirement 3.3', () => {
+    describe('Requirement 4.3.3', () => {
       it('EvaluationContext must be passed to next "before" hook', (done) => {
         client.getBooleanValue(FLAG_KEY, false, undefined, {
           hooks: [
@@ -203,7 +203,7 @@ describe('Hooks', () => {
       });
     });
 
-    describe('Requirement 3.4', () => {
+    describe('Requirement 4.3.4', () => {
       it('"before" evaluationContext must be merged with invocation evaluationContext, which invocation taking precedence', async () => {
         await client.getBooleanValue(
           FLAG_KEY,
@@ -234,7 +234,7 @@ describe('Hooks', () => {
       });
     });
 
-    describe('Requirement 3.5', () => {
+    describe('Requirement 4.3.5', () => {
       it('"after" must run after flag evaluation', (done) => {
         client.getBooleanValue(FLAG_KEY, false, undefined, {
           hooks: [
@@ -259,7 +259,7 @@ describe('Hooks', () => {
         OpenFeature.setProvider(MOCK_ERROR_PROVIDER);
       });
 
-      describe('Requirement 3.6', () => {
+      describe('Requirement 4.3.6', () => {
         it('"error" must run if any errors occur', (done) => {
           client.getBooleanValue(FLAG_KEY, false, undefined, {
             hooks: [
@@ -281,7 +281,7 @@ describe('Hooks', () => {
     });
 
     describe('"finally" stage', () => {
-      describe('Requirement 3.7', () => {
+      describe('Requirement 4.3.7', () => {
         it('"finally" must run after "after" stage', (done) => {
           OpenFeature.setProvider(MOCK_PROVIDER);
 
@@ -331,7 +331,7 @@ describe('Hooks', () => {
       });
     });
 
-    describe('Requirement 4.2', () => {
+    describe('Requirement 4.4.2', () => {
       it('"before" must run hook in order global, client, invocation', (done) => {
         OpenFeature.setProvider(MOCK_PROVIDER);
         OpenFeature.clearHooks();
@@ -533,37 +533,65 @@ describe('Hooks', () => {
       });
     });
 
-    describe('Requirement 4.3', () => {
-      it('"finally" must not trigger error', (done) => {
+    describe('Requirement 4.4.3', () => {
+      it('all "finally" hooks must execute, despite errors', (done) => {
+        OpenFeature.setProvider(MOCK_PROVIDER);
+        OpenFeature.clearHooks();
+        client.clearHooks();
+
+        const firstFinallyHook: Hook = {
+          finally: jest.fn(() => {
+            throw new Error('expected');
+          }),
+        };
+
+        const secondFinallyHook: Hook = {
+          finally: () => {
+            try {
+              expect(firstFinallyHook.finally).toHaveBeenCalled();
+              done();
+            } catch (err) {
+              done(err);
+            }
+          },
+        };
+
+        client.getBooleanValue(FLAG_KEY, false, undefined, {
+          hooks: [secondFinallyHook, firstFinallyHook], // remember error hooks run in reverse order
+        });
+      });
+    });
+
+    describe('Requirement 4.4.4', () => {
+      it('all "error" hooks must execute, despite errors', (done) => {
         OpenFeature.setProvider(MOCK_ERROR_PROVIDER);
         OpenFeature.clearHooks();
         client.clearHooks();
 
-        const errorAndFinallyHook: Hook = {
-          after: jest.fn(() => {
-            done(new Error('Should not have been called.'));
-          }),
-          finally: () => {
+        const firstErrorHook: Hook = {
+          error: jest.fn(() => {
             throw new Error('expected');
+          }),
+        };
+
+        const secondErrorHook: Hook = {
+          error: () => {
+            try {
+              expect(firstErrorHook.error).toHaveBeenCalled();
+              done();
+            } catch (err) {
+              done(err);
+            }
           },
         };
 
-        client
-          .getBooleanValue(FLAG_KEY, false, undefined, {
-            hooks: [errorAndFinallyHook],
-          })
-          .then(() => {
-            // this should not run.
-            done(new Error('Expected error in finally to bubble-up.'));
-          })
-          .catch(() => {
-            // for now, we expect errors in finally to bubble up, so catch and call done().
-            done();
-          });
+        client.getBooleanValue(FLAG_KEY, false, undefined, {
+          hooks: [secondErrorHook, firstErrorHook], // remember error hooks run in reverse order
+        });
       });
     });
 
-    describe('Requirement 4.4', () => {
+    describe('Requirement 4.4.5', () => {
       it('"before" must trigger error hook', (done) => {
         OpenFeature.setProvider(MOCK_PROVIDER);
         OpenFeature.clearHooks();
@@ -613,8 +641,8 @@ describe('Hooks', () => {
       });
     });
 
-    describe('Requirement 4.5', () => {
-      it('remaining hooks must not run after error', (done) => {
+    describe('Requirement 4.4.6', () => {
+      it('remaining before/after hooks must not run after error', (done) => {
         OpenFeature.setProvider(MOCK_PROVIDER);
         OpenFeature.clearHooks();
         client.clearHooks();
@@ -646,7 +674,7 @@ describe('Hooks', () => {
       });
     });
 
-    describe('Requirement 5.2, 5.3', () => {
+    describe('Requirement 4.5.1, 4.5.2, 4.5.3', () => {
       it('HookHints should be passed to each hook', (done) => {
         OpenFeature.setProvider(MOCK_PROVIDER);
         OpenFeature.clearHooks();

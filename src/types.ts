@@ -4,7 +4,6 @@
  */
 export type JSONValue = null | string | number | boolean | Date | { [x: string]: JSONValue } | Array<JSONValue>;
 
-
 export type EvaluationContext = {
   /**
    * A string uniquely identifying the subject (end-user, or client service) of a flag evaluation.
@@ -113,7 +112,7 @@ interface GenericProvider<T> {
   readonly metadata: ProviderMetadata;
 
   /**
-   * Resolve a boolean flag and it's evaluation details.
+   * Resolve a boolean flag and its evaluation details.
    */
   resolveBooleanEvaluation(
     flagKey: string,
@@ -123,7 +122,7 @@ interface GenericProvider<T> {
   ): Promise<ResolutionDetails<boolean>>;
 
   /**
-   * Resolve a string flag and it's evaluation details.
+   * Resolve a string flag and its evaluation details.
    */
   resolveStringEvaluation(
     flagKey: string,
@@ -133,7 +132,7 @@ interface GenericProvider<T> {
   ): Promise<ResolutionDetails<string>>;
 
   /**
-   * Resolve a numeric flag and it's evaluation details.
+   * Resolve a numeric flag and its evaluation details.
    */
   resolveNumberEvaluation(
     flagKey: string,
@@ -143,7 +142,7 @@ interface GenericProvider<T> {
   ): Promise<ResolutionDetails<number>>;
 
   /**
-   * Resolve and parse an object flag and it's evaluation details.
+   * Resolve and parse an object flag and its evaluation details.
    */
   resolveObjectEvaluation<U extends object>(
     flagKey: string,
