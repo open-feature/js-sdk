@@ -1,7 +1,7 @@
 import { ErrorCode } from '../src/errors/codes.js';
 import { FlagNotFoundError } from '../src/errors/flag-not-found-error.js';
 import { ParseError } from '../src/errors/parse-error.js';
-import { TypeMismatchError } from '../src/errors/type-mismatch-error';
+import { TypeMismatchError } from '../src/errors/type-mismatch-error.js';
 
 describe('Errors', () => {
   it('FlagNotFoundError', () => {

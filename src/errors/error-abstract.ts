@@ -1,4 +1,4 @@
-import type { ErrorCode } from './codes';
+import type { ErrorCode } from './codes.js';
 
 export abstract class OpenFeatureError extends Error {
   abstract code: ErrorCode;
