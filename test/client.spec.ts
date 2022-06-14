@@ -70,13 +70,21 @@ describe(OpenFeatureClient.name, () => {
     jest.clearAllMocks();
   });
 
-  describe('Requirement 1.6', () => {
+  describe('Requirement 1.2.1', () => {
     it('should allow addition of hooks', () => {
       expect(OpenFeatureClient.prototype.addHooks).toBeDefined();
     });
   });
 
-  describe('Requirement 1.7, 1.8', () => {
+  describe('Requirement 1.2.1', () => {
+    const NAME = 'my-client';
+    const client = OpenFeature.getClient(NAME);
+    it('should have metadata accessor with name', () => {
+      expect(client.metadata.name).toEqual(NAME);
+    });
+  });
+
+  describe('Requirement 1.3.1, 1.3.2.1', () => {
     let client: Client;
 
     beforeEach(() => {
@@ -130,7 +138,7 @@ describe(OpenFeatureClient.name, () => {
     });
   });
 
-  describe('Requirement 1.9, 1.10', () => {
+  describe('Requirement 1.4.1', () => {
     let client: Client;
 
     beforeEach(() => {
@@ -188,9 +196,9 @@ describe(OpenFeatureClient.name, () => {
     });
   });
 
-  describe('Requirement 1.11', () => {
+  describe('Requirement 1.4.3.1', () => {
     describe('generic support', () => {
-      it('should support generic', async () => {
+      it('should support generics', async () => {
         // No generic information exists at runtime, but this test has some value in ensuring the generic args still exist in the typings.
         type MyType = { key: string };
         const client = OpenFeature.getClient();
@@ -214,25 +222,25 @@ describe(OpenFeatureClient.name, () => {
         expect(details).toBeDefined();
       });
 
-      describe('Requirement 1.10, 1.11', () => {
+      describe('Requirement 1.4.2, 1.4.3', () => {
         it('should contain flag value', () => {
           expect(details.value).toEqual(NUMBER_VALUE);
         });
       });
 
-      describe('Requirement 1.12', () => {
+      describe('Requirement 1.4.4', () => {
         it('should contain flag key', () => {
           expect(details.flagKey).toEqual(flagKey);
         });
       });
 
-      describe('Requirement 1.13', () => {
+      describe('Requirement 1.4.5', () => {
         it('should contain flag variant', () => {
           expect(details.variant).toEqual(NUMBER_VARIANT);
         });
       });
 
-      describe('Requirement 1.14', () => {
+      describe('Requirement 1.4.6', () => {
         it('should contain reason', () => {
           expect(details.reason).toEqual(REASON);
         });
@@ -257,7 +265,20 @@ describe(OpenFeatureClient.name, () => {
         details = await client.getNumberDetails('some-flag', defaultValue);
       });
 
-      describe('Requirement 1.18', () => {
+      describe('Requirement 1.4.7', () => {
+        it('error code hould contain error', () => {
+          expect(details.errorCode).toBeTruthy();
+          expect(details.errorCode).toEqual(GENERAL_ERROR);
+        });
+      });
+
+      describe('Requirement 1.4.8', () => {
+        it('should contain "error" reason', () => {
+          expect(details.reason).toEqual(ERROR_REASON);
+        });
+      });
+
+      describe('Requirement 1.4.9', () => {
         it('must not throw, must return default', async () => {
           details = await client.getNumberDetails('some-flag', defaultValue);
 
@@ -265,23 +286,10 @@ describe(OpenFeatureClient.name, () => {
           expect(details.value).toEqual(defaultValue);
         });
       });
-
-      describe('Requirement 1.15', () => {
-        it('should contain error', () => {
-          expect(details.errorCode).toBeTruthy();
-          expect(details.errorCode).toEqual(GENERAL_ERROR);
-        });
-      });
-
-      describe('Requirement 1.15', () => {
-        it('should contain "error" reason', () => {
-          expect(details.reason).toEqual(ERROR_REASON);
-        });
-      });
     });
   });
 
-  describe('Requirement 1.21', () => {
+  describe('Requirement 1.6.1', () => {
     describe('Transforming provider', () => {
       const transformingProvider = {
         name: 'transforming',
@@ -343,7 +351,7 @@ describe(OpenFeatureClient.name, () => {
     });
   });
 
-  describe('Requirement 3.1', () => {
+  describe('Requirement 3.2', () => {
     const transformingProvider = {
       name: 'evaluation-context',
       contextTransformer: jest.fn((context: EvaluationContext) => {
@@ -355,25 +363,48 @@ describe(OpenFeatureClient.name, () => {
         });
       }),
     } as unknown as TransformingProvider<EvaluationContext>;
-    it('context should support boolean | string | number | datetime | structure', async () => {
-      const flagKey = 'some-other-flag';
-      const defaultValue = false;
-      const context = {
-        booleanField: BOOLEAN_VALUE,
-        stringField: STRING_VALUE,
-        numberField: NUMBER_VALUE,
-        datetimeField: DATETIME_VALUE,
-        structureField: OBJECT_VALUE,
-      };
 
-      OpenFeature.setProvider(transformingProvider);
-      const client = OpenFeature.getClient();
-      await client.getBooleanValue(flagKey, defaultValue, context);
-      expect(transformingProvider.contextTransformer).toHaveBeenCalledWith(
-        expect.objectContaining({
-          ...context,
-        })
-      );
+    describe('3.1', () => {
+      const TARGETING_KEY = 'abc123';
+      it('context define targeting key', async () => {
+        const flagKey = 'some-other-flag';
+        const defaultValue = false;
+        const context: EvaluationContext = {
+          targetingKey: TARGETING_KEY,
+        };
+
+        OpenFeature.setProvider(transformingProvider);
+        const client = OpenFeature.getClient();
+        await client.getBooleanValue(flagKey, defaultValue, context);
+        expect(transformingProvider.contextTransformer).toHaveBeenCalledWith(
+          expect.objectContaining({
+            targetingKey: TARGETING_KEY,
+          })
+        );
+      });
+    });
+
+    describe('3.2', () => {
+      it('should support boolean | string | number | datetime | structure', async () => {
+        const flagKey = 'some-other-flag';
+        const defaultValue = false;
+        const context: EvaluationContext = {
+          booleanField: BOOLEAN_VALUE,
+          stringField: STRING_VALUE,
+          numberField: NUMBER_VALUE,
+          datetimeField: DATETIME_VALUE,
+          structureField: OBJECT_VALUE,
+        };
+
+        OpenFeature.setProvider(transformingProvider);
+        const client = OpenFeature.getClient();
+        await client.getBooleanValue(flagKey, defaultValue, context);
+        expect(transformingProvider.contextTransformer).toHaveBeenCalledWith(
+          expect.objectContaining({
+            ...context,
+          })
+        );
+      });
     });
   });
 });

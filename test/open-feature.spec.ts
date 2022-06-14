@@ -7,7 +7,7 @@ describe(OpenFeature.name, () => {
     jest.clearAllMocks();
   });
 
-  describe('Requirement 1.2', () => {
+  describe('Requirement 1.1.2', () => {
     it('should equal previously set provider', () => {
       const fakeProvider = { metadata: 'test' } as unknown as Provider;
       OpenFeature.setProvider(fakeProvider);
@@ -15,19 +15,19 @@ describe(OpenFeature.name, () => {
     });
   });
 
-  describe('Requirement 1.3', () => {
+  describe('Requirement 1.1.3', () => {
     it('should allow addition of hooks', () => {
       expect(OpenFeature.addHooks).toBeDefined();
     });
   });
 
-  describe('Requirement 1.4', () => {
-    it('should implement a provider accessor and mutator', () => {
+  describe('Requirement 1.1.4', () => {
+    it('should implement a provider metadata accessor and mutator', () => {
       expect(OpenFeature.providerMetadata).toBeDefined();
     });
   });
 
-  describe('Requirement 1.5', () => {
+  describe('Requirement 1.1.5', () => {
     it('should implement a client factory', () => {
       expect(OpenFeature.getClient).toBeDefined();
       expect(OpenFeature.getClient()).toBeInstanceOf(OpenFeatureClient);

@@ -251,14 +251,26 @@ export class OpenFeatureClient implements Client {
   private async errorHooks(hooks: Hook[], hookContext: HookContext, err: unknown, options: FlagEvaluationOptions) {
     // run "error" hooks sequentially
     for (const hook of hooks) {
-      await hook?.error?.(hookContext, err, options.hookHints);
+      try {
+        await hook?.error?.(hookContext, err, options.hookHints);
+      } catch (err) {
+        // TODO: replace with injected logger
+        console.error(`Unhandled error during 'error' hook: ${err}`);
+        console.error((err as Error).stack);
+      }
     }
   }
 
   private async finallyHooks(hooks: Hook[], hookContext: HookContext, options: FlagEvaluationOptions) {
     // run "finally" hooks sequentially
     for (const hook of hooks) {
-      await hook?.finally?.(hookContext, options.hookHints);
+      try {
+        await hook?.finally?.(hookContext, options.hookHints);
+      } catch (err) {
+        // TODO: replace with injected logger
+        console.error(`Unhandled error during 'finally' hook: ${err}`);
+        console.error((err as Error).stack);
+      }
     }
   }
 
