@@ -6,6 +6,7 @@ export class FlagNotFoundError extends OpenFeatureError {
   constructor(message?: string) {
     super(message);
     Object.setPrototypeOf(this, FlagNotFoundError.prototype);
+    this.name = 'FlagNotFoundError';
     this.code = ErrorCode.FLAG_NOT_FOUND;
   }
 }

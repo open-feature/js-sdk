@@ -6,6 +6,7 @@ export class ParseError extends OpenFeatureError {
   constructor(message?: string) {
     super(message);
     Object.setPrototypeOf(this, ParseError.prototype);
+    this.name = 'ParseError';
     this.code = ErrorCode.PARSE_ERROR;
   }
 }

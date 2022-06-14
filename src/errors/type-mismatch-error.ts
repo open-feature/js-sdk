@@ -6,6 +6,7 @@ export class TypeMismatchError extends OpenFeatureError {
   constructor(message?: string) {
     super(message);
     Object.setPrototypeOf(this, TypeMismatchError.prototype);
+    this.name = 'TypeMismatchError';
     this.code = ErrorCode.TYPE_MISMATCH;
   }
 }
