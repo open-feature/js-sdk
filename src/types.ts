@@ -212,7 +212,7 @@ export enum StandardResolutionReasons {
    */
   ERROR = 'ERROR',
 }
-export type ResolutionReason = StandardResolutionReasons | string;
+export type ResolutionReason = keyof typeof StandardResolutionReasons | (string & Record<never, never>);
 
 export type ResolutionDetails<U> = {
   value: U;
