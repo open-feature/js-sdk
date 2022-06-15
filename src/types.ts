@@ -206,7 +206,7 @@ export enum StandardResolutionReasons {
   /**
    * Indicates an unknown issue occurred during evaluation
    */
-  UNKNOWN = 'UNKNON',
+  UNKNOWN = 'UNKNOWN',
   /**
    * Indicates that an error occurred during evaluation
    */
