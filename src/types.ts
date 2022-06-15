@@ -181,10 +181,53 @@ export interface ProviderOptions<T = unknown> {
   contextTransformer?: ContextTransformer<T>;
 }
 
+export enum StandardResolutionReasons {
+  /**
+   * Indicates that the feature flag is targeting
+   * 100% of the targeting audience,
+   * e.g. 100% rollout percentage
+   */
+  TARGETING_MATCH = 'TARGETING_MATCH',
+  /**
+   * Indicates that the feature flag is targeting
+   * a subset of the targeting audience,
+   * e.g. less than 100% rollout percentage
+   */
+  SPLIT = 'SPLIT',
+  /**
+   * Indicates that the feature flag is disabled
+   */
+  DISABLED = 'DISABLED',
+  /**
+   * Indicates that the feature flag evaluated to the
+   * default value as passed in getBooleanValue/getBooleanValueDetails and
+   * similar functions in the Client   */
+  DEFAULT = 'DEFAULT',
+  /**
+   * Indicates that the feature flag evaluated to a 
+   * static value, for example, the default value for the flag
+   * 
+   * Note: Typically means that no dynamic evaluation has been
+   * executed for the feature flag
+   */
+   STATIC = 'STATIC',
+  /**
+   * Indicates an unknown issue occurred during evaluation
+   */
+  UNKNOWN = 'UNKNOWN',
+  /**
+   * Indicates that an error occurred during evaluation
+   * 
+   * Note: The `errorCode`-field contains the details of this error
+   */
+  ERROR = 'ERROR',
+}
+export type ResolutionReason = keyof typeof StandardResolutionReasons | (string & Record<never, never>);
+
 export type ResolutionDetails<U> = {
   value: U;
   variant?: string;
-  reason?: string;
+  reason?: ResolutionReason;
   errorCode?: string;
 };
 
