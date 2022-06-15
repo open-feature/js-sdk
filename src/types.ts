@@ -204,12 +204,21 @@ export enum StandardResolutionReasons {
    * similar functions in the Client   */
   DEFAULT = 'DEFAULT',
   /**
+   * Indicates that the feature flag evaluated to a 
+   * static value, for example, the default value for the flag
+   * 
+   * Note: Typically means  that no dynamic evaluation has been
+   * executed for the feature flag
+   */
+   STATIC = 'STATIC',
+  /**
    * Indicates an unknown issue occurred during evaluation
    */
   UNKNOWN = 'UNKNOWN',
   /**
    * Indicates that an error occurred during evaluation
-   *  Note: The `errorCode`-field contains the details of this error
+   * 
+   * Note: The `errorCode`-field contains the details of this error
    */
   ERROR = 'ERROR',
 }
