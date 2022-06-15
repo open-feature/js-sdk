@@ -199,9 +199,9 @@ export enum StandardResolutionReasons {
    */
   DISABLED = 'DISABLED',
   /**
-   * Indicates that the default value for
-   * the feature flag is returned
-   */
+   * Indicates that the feature flag evaluated to the
+   * default value as passed in getBooleanValue/getBooleanValueDetails and
+   * similar functions in the Client   */
   DEFAULT = 'DEFAULT',
   /**
    * Indicates an unknown issue occurred during evaluation
@@ -209,6 +209,7 @@ export enum StandardResolutionReasons {
   UNKNOWN = 'UNKNOWN',
   /**
    * Indicates that an error occurred during evaluation
+   *  Note: The `errorCode`-field contains the details of this error
    */
   ERROR = 'ERROR',
 }
