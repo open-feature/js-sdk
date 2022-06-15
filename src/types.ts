@@ -4,7 +4,6 @@
  */
 export type JSONValue = null | string | number | boolean | Date | { [x: string]: JSONValue } | Array<JSONValue>;
 
-
 export type EvaluationContext = {
   /**
    * A string uniquely identifying the subject (end-user, or client service) of a flag evaluation.
@@ -182,10 +181,43 @@ export interface ProviderOptions<T = unknown> {
   contextTransformer?: ContextTransformer<T>;
 }
 
+export enum StandardResolutionReasons {
+  /**
+   * Indicates that the feature flag is targeting
+   * 100% of the targeting audience,
+   * e.g. 100% rollout percentage
+   */
+  TARGETING_MATCH = 'TARGETING_MATCH',
+  /**
+   * Indicates that the feature flag is targeting
+   * a subset of the targeting audience,
+   * e.g. less than 100% rollout percentage
+   */
+  SPLIT = 'SPLIT',
+  /**
+   * Indicates that the feature flag is disabled
+   */
+  DISABLED = 'DISABLED',
+  /**
+   * Indicates that the default value for
+   * the feature flag is returned
+   */
+  DEFAULT = 'DEFAULT',
+  /**
+   * Indicates an unknown issue occurred during evaluation
+   */
+  UNKNOWN = 'UNKNON',
+  /**
+   * Indicates that an error occurred during evaluation
+   */
+  ERROR = 'ERROR',
+}
+export type ResolutionReason = StandardResolutionReasons | string;
+
 export type ResolutionDetails<U> = {
   value: U;
   variant?: string;
-  reason?: string;
+  reason?: ResolutionReason;
   errorCode?: string;
 };
 
