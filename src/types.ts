@@ -207,7 +207,7 @@ export enum StandardResolutionReasons {
    * Indicates that the feature flag evaluated to a 
    * static value, for example, the default value for the flag
    * 
-   * Note: Typically means  that no dynamic evaluation has been
+   * Note: Typically means that no dynamic evaluation has been
    * executed for the feature flag
    */
    STATIC = 'STATIC',
