@@ -2,7 +2,7 @@
   "name": "@openfeature/nodejs-sdk",
   "version": "0.0.1-alpha.14",
   "description": "OpenFeature SDK for NodeJS",
-  "main": "./dist/esm/index.js",
+  "main": "./dist/cjs/index.js",
   "types": "./dist/types/index.d.ts",
   "scripts": {
     "test": "jest --verbose",
