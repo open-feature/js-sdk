@@ -3,6 +3,14 @@
 ![Experimental](https://img.shields.io/badge/experimental-breaking%20changes%20allowed-yellow)
 ![Alpha](https://img.shields.io/badge/alpha-release-red)
 
+## Alpha Checklist
+
+- [x] spec compliant
+- [x] contains test suite which verifies behavior consistent with spec
+- [x] contains test suite with reasonable coverage
+- [x] automated publishing
+- [ ] comprehensive readme
+
 ## Installation
 
 ```
