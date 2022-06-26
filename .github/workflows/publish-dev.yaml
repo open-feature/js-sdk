@@ -14,10 +14,14 @@ on:
 
 jobs:
   publish-dev:
+    # if the last author is CI, we don't need to publish again.
+    if: ${{ github.event.head_commit.author.email != 'openfeature-ci@users.noreply.github.com' }}
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GIT_PUSH }} # use a custom PAT of a user with allows branch-protection bypass
       - uses: actions/setup-node@v3
         with:
           registry-url: 'https://registry.npmjs.org'
@@ -39,7 +43,7 @@ jobs:
       - name: Publish
         run: npm publish --access public
         env:
-            NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Push Version Update
         run: git push
