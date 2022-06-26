@@ -21,6 +21,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           registry-url: 'https://registry.npmjs.org'
+          token: ${{ secrets.GIT_PUSH }}
 
       - name: Install
         run: npm ci
@@ -39,7 +40,7 @@ jobs:
       - name: Publish
         run: npm publish --access public
         env:
-            NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Push Version Update
         run: git push
