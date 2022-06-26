@@ -43,4 +43,4 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Push Version Update
-        run: git push https://${{ secrets.GIT_PUSH }}@github.com/open-feature/node-sdk.git HEAD:master
+        run: git push https://${{ secrets.GIT_PUSH }}@github.com/open-feature/node-sdk.git HEAD:main
