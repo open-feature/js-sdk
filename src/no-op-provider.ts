@@ -3,7 +3,7 @@ import { Provider, ResolutionDetails } from './types.js';
 const REASON_NO_OP = 'No-op';
 
 /**
- * The No-op provider is set by default, and simply always returns the default value
+ * The No-op provider is set by default, and simply always returns the default value.
  */
 class NoopFeatureProvider implements Provider {
   readonly metadata = {
