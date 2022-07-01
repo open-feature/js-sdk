@@ -1,6 +1,6 @@
 import { OpenFeatureClient } from './client.js';
 import { NOOP_PROVIDER } from './no-op-provider.js';
-import { Client, EvaluationContext, FlagValue, Hook, Provider, TransformingProvider } from './types.js';
+import { Client, EvaluationContext, EvaluationLifeCycle, FlagValue, Hook, Provider, TransformingProvider } from './types.js';
 
 // use a symbol as a key for the global singleton
 const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/js.api');
@@ -11,7 +11,7 @@ type OpenFeatureGlobal = {
 const _global = global as OpenFeatureGlobal;
 
 // TODO: make implement EvaluationLifeCycle, but statically...
-export class OpenFeature {
+export class OpenFeature implements EvaluationLifeCycle {
   private _provider: Provider = NOOP_PROVIDER;
   private _context: EvaluationContext = {};
   private _hooks: Hook[] = [];
@@ -19,7 +19,7 @@ export class OpenFeature {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected constructor() {}
 
-  private static get instance(): OpenFeature {
+  static getInstance(): OpenFeature {
     const globalApi = _global[GLOBAL_OPENFEATURE_API_KEY];
     if (globalApi) {
       return globalApi;
@@ -30,39 +30,39 @@ export class OpenFeature {
     return instance;
   }
 
-  static getClient(name?: string, version?: string, context?: EvaluationContext): Client {
+  getClient(name?: string, version?: string, context?: EvaluationContext): Client {
     return new OpenFeatureClient(
-      () => this.instance._provider as TransformingProvider<unknown>,
+      () => this._provider as TransformingProvider<unknown>,
       { name, version },
       context
     );
   }
 
-  static get providerMetadata() {
-    return this.instance._provider.metadata;
+  get providerMetadata() {
+    return this._provider.metadata;
   }
 
-  static addHooks(...hooks: Hook<FlagValue>[]): void {
-    this.instance._hooks = [...this.instance._hooks, ...hooks];
+  addHooks(...hooks: Hook<FlagValue>[]): void {
+    this._hooks = [...this._hooks, ...hooks];
   }
 
-  static get hooks(): Hook<FlagValue>[] {
-    return this.instance._hooks;
+  get hooks(): Hook<FlagValue>[] {
+    return this._hooks;
   }
 
-  static setProvider(provider: Provider) {
-    this.instance._provider = provider;
+  setProvider(provider: Provider) {
+    this._provider = provider;
   }
 
-  static set context(context: EvaluationContext) {
-    this.instance._context = context;
+  set context(context: EvaluationContext) {
+    this._context = context;
   }
 
-  static get context(): EvaluationContext {
-    return this.instance._context;
+  get context(): EvaluationContext {
+    return this._context;
   }
 
-  static clearHooks(): void {
-    this.instance._hooks = [];
+  clearHooks(): void {
+    this._hooks = [];
   }
 }

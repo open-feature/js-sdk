@@ -23,7 +23,7 @@ export class OpenFeatureClient implements Client {
   readonly metadata: ClientMetadata;
   readonly context: EvaluationContext;
   private _hooks: Hook[] = [];
-
+  private openFeature: OpenFeature;
   constructor(
     // we always want the client to use the current provider,
     // so pass a function to always access the currently registered one.
@@ -36,6 +36,7 @@ export class OpenFeatureClient implements Client {
       version: options.version,
     } as const;
     this.context = context;
+    this.openFeature = OpenFeature.getInstance();
   }
 
   addHooks(...hooks: Hook<FlagValue>[]): void {
@@ -158,12 +159,12 @@ export class OpenFeatureClient implements Client {
   ): Promise<EvaluationDetails<T>> {
     // merge global, client, and evaluation context
 
-    const allHooks = [...OpenFeature.hooks, ...this.hooks, ...(options.hooks || [])];
+    const allHooks = [...this.openFeature.hooks, ...this.hooks, ...(options.hooks || [])];
     const allHooksReversed = [...allHooks].reverse();
 
     // merge global and client contexts
     const globalAndClientContext = {
-      ...OpenFeature.context,
+      ...this.openFeature.context,
       ...this.context,
     };
 
@@ -174,7 +175,7 @@ export class OpenFeatureClient implements Client {
       defaultValue,
       flagValueType: flagType,
       clientMetadata: this.metadata,
-      providerMetadata: OpenFeature.providerMetadata,
+      providerMetadata: this.openFeature.providerMetadata,
       context: globalAndClientContext,
     };
 

@@ -40,6 +40,7 @@ describe('Hooks', () => {
   jest.setTimeout(1000);
 
   let client: Client;
+  const openFeature: OpenFeature = OpenFeature.getInstance();
   const FLAG_KEY = 'my-flag';
 
   afterEach(() => {
@@ -47,11 +48,11 @@ describe('Hooks', () => {
   });
 
   beforeAll(() => {
-    OpenFeature.setProvider(MOCK_PROVIDER);
+    openFeature.setProvider(MOCK_PROVIDER);
   });
 
   beforeEach(() => {
-    client = OpenFeature.getClient();
+    client = openFeature.getClient();
   });
 
   describe('Requirement 4.1.1, 4.1.2', () => {
@@ -256,7 +257,7 @@ describe('Hooks', () => {
 
     describe('"error" stage', () => {
       beforeAll(() => {
-        OpenFeature.setProvider(MOCK_ERROR_PROVIDER);
+        openFeature.setProvider(MOCK_ERROR_PROVIDER);
       });
 
       describe('Requirement 4.3.6', () => {
@@ -283,7 +284,7 @@ describe('Hooks', () => {
     describe('"finally" stage', () => {
       describe('Requirement 4.3.7', () => {
         it('"finally" must run after "after" stage', (done) => {
-          OpenFeature.setProvider(MOCK_PROVIDER);
+          openFeature.setProvider(MOCK_PROVIDER);
 
           const afterAndFinallyHook: Hook = {
             // mock "after"
@@ -307,7 +308,7 @@ describe('Hooks', () => {
         });
 
         it('"finally" must run after "error" stage', (done) => {
-          OpenFeature.setProvider(MOCK_ERROR_PROVIDER);
+          openFeature.setProvider(MOCK_ERROR_PROVIDER);
 
           const errorAndFinallyHook: Hook = {
             error: jest.fn(() => {
@@ -333,8 +334,8 @@ describe('Hooks', () => {
 
     describe('Requirement 4.4.2', () => {
       it('"before" must run hook in order global, client, invocation', (done) => {
-        OpenFeature.setProvider(MOCK_PROVIDER);
-        OpenFeature.clearHooks();
+        openFeature.setProvider(MOCK_PROVIDER);
+        openFeature.clearHooks();
         client.clearHooks();
 
         const globalBeforeHook: Hook = {
@@ -374,7 +375,7 @@ describe('Hooks', () => {
           }),
         };
 
-        OpenFeature.addHooks(globalBeforeHook);
+        openFeature.addHooks(globalBeforeHook);
         client.addHooks(clientBeforeHook);
 
         client.getBooleanValue(FLAG_KEY, false, undefined, {
@@ -383,8 +384,8 @@ describe('Hooks', () => {
       });
 
       it('"after" must run hook in order invocation, client, global', (done) => {
-        OpenFeature.setProvider(MOCK_PROVIDER);
-        OpenFeature.clearHooks();
+        openFeature.setProvider(MOCK_PROVIDER);
+        openFeature.clearHooks();
         client.clearHooks();
 
         const invocationAfterHook: Hook = {
@@ -424,7 +425,7 @@ describe('Hooks', () => {
           }),
         };
 
-        OpenFeature.addHooks(globalAfterHook);
+        openFeature.addHooks(globalAfterHook);
         client.addHooks(clientAfterHook);
 
         client.getBooleanValue(FLAG_KEY, false, undefined, {
@@ -433,8 +434,8 @@ describe('Hooks', () => {
       });
 
       it('"error" must run hook in order invocation, client, global', (done) => {
-        OpenFeature.setProvider(MOCK_ERROR_PROVIDER);
-        OpenFeature.clearHooks();
+        openFeature.setProvider(MOCK_ERROR_PROVIDER);
+        openFeature.clearHooks();
         client.clearHooks();
 
         const invocationErrorHook: Hook = {
@@ -474,7 +475,7 @@ describe('Hooks', () => {
           }),
         };
 
-        OpenFeature.addHooks(globalErrorHook);
+        openFeature.addHooks(globalErrorHook);
         client.addHooks(clientErrorHook);
 
         client.getBooleanValue(FLAG_KEY, false, undefined, {
@@ -483,8 +484,8 @@ describe('Hooks', () => {
       });
 
       it('"finally" must run hook in order invocation, client, global', (done) => {
-        OpenFeature.setProvider(MOCK_ERROR_PROVIDER);
-        OpenFeature.clearHooks();
+        openFeature.setProvider(MOCK_ERROR_PROVIDER);
+        openFeature.clearHooks();
         client.clearHooks();
 
         const invocationFinallyHook: Hook = {
@@ -524,7 +525,7 @@ describe('Hooks', () => {
           }),
         };
 
-        OpenFeature.addHooks(globalFinallyHook);
+        openFeature.addHooks(globalFinallyHook);
         client.addHooks(clientFinallyHook);
 
         client.getBooleanValue(FLAG_KEY, false, undefined, {
@@ -535,8 +536,8 @@ describe('Hooks', () => {
 
     describe('Requirement 4.4.3', () => {
       it('all "finally" hooks must execute, despite errors', (done) => {
-        OpenFeature.setProvider(MOCK_PROVIDER);
-        OpenFeature.clearHooks();
+        openFeature.setProvider(MOCK_PROVIDER);
+        openFeature.clearHooks();
         client.clearHooks();
 
         const firstFinallyHook: Hook = {
@@ -564,8 +565,8 @@ describe('Hooks', () => {
 
     describe('Requirement 4.4.4', () => {
       it('all "error" hooks must execute, despite errors', (done) => {
-        OpenFeature.setProvider(MOCK_ERROR_PROVIDER);
-        OpenFeature.clearHooks();
+        openFeature.setProvider(MOCK_ERROR_PROVIDER);
+        openFeature.clearHooks();
         client.clearHooks();
 
         const firstErrorHook: Hook = {
@@ -593,8 +594,8 @@ describe('Hooks', () => {
 
     describe('Requirement 4.4.5', () => {
       it('"before" must trigger error hook', (done) => {
-        OpenFeature.setProvider(MOCK_PROVIDER);
-        OpenFeature.clearHooks();
+        openFeature.setProvider(MOCK_PROVIDER);
+        openFeature.clearHooks();
         client.clearHooks();
 
         const beforeAndErrorHook: Hook = {
@@ -617,8 +618,8 @@ describe('Hooks', () => {
       });
 
       it('"after" must trigger error hook', (done) => {
-        OpenFeature.setProvider(MOCK_PROVIDER);
-        OpenFeature.clearHooks();
+        openFeature.setProvider(MOCK_PROVIDER);
+        openFeature.clearHooks();
         client.clearHooks();
 
         const afterAndErrorHook: Hook = {
@@ -643,8 +644,8 @@ describe('Hooks', () => {
 
     describe('Requirement 4.4.6', () => {
       it('remaining before/after hooks must not run after error', (done) => {
-        OpenFeature.setProvider(MOCK_PROVIDER);
-        OpenFeature.clearHooks();
+        openFeature.setProvider(MOCK_PROVIDER);
+        openFeature.clearHooks();
         client.clearHooks();
 
         const clientBeforeHook: Hook = {
@@ -676,8 +677,8 @@ describe('Hooks', () => {
 
     describe('Requirement 4.5.1, 4.5.2, 4.5.3', () => {
       it('HookHints should be passed to each hook', (done) => {
-        OpenFeature.setProvider(MOCK_PROVIDER);
-        OpenFeature.clearHooks();
+        openFeature.setProvider(MOCK_PROVIDER);
+        openFeature.clearHooks();
         client.clearHooks();
 
         client.getBooleanValue(FLAG_KEY, false, undefined, {
@@ -716,8 +717,8 @@ describe('Hooks', () => {
 
     describe('Requirement 5.4', () => {
       it('HookHints should be immutable', (done) => {
-        OpenFeature.setProvider(MOCK_PROVIDER);
-        OpenFeature.clearHooks();
+        openFeature.setProvider(MOCK_PROVIDER);
+        openFeature.clearHooks();
         client.clearHooks();
 
         client.getBooleanValue(FLAG_KEY, false, undefined, {
@@ -752,7 +753,7 @@ describe('Hooks', () => {
   describe('async hooks', () => {
     describe('before, after, finally', () => {
       it('should be awaited, run in order', (done) => {
-        OpenFeature.setProvider(MOCK_PROVIDER);
+        openFeature.setProvider(MOCK_PROVIDER);
 
         const asyncBeforeAfterFinally: Hook = {
           before: jest.fn(() => {
@@ -789,7 +790,7 @@ describe('Hooks', () => {
 
     describe('before, error, finally', () => {
       it('should be awaited, run in order', (done) => {
-        OpenFeature.setProvider(MOCK_PROVIDER);
+        openFeature.setProvider(MOCK_PROVIDER);
 
         const asyncBeforeErroFinally = {
           before: jest.fn(() => {
