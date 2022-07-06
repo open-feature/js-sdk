@@ -6,12 +6,11 @@ import { Client, EvaluationContext, EvaluationLifeCycle, FlagValue, Hook, Provid
 const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/js.api');
 
 type OpenFeatureGlobal = {
-  [GLOBAL_OPENFEATURE_API_KEY]?: OpenFeature;
+  [GLOBAL_OPENFEATURE_API_KEY]?: OpenFeatureAPI;
 };
 const _global = global as OpenFeatureGlobal;
 
-// TODO: make implement EvaluationLifeCycle, but statically...
-export class OpenFeature implements EvaluationLifeCycle {
+class OpenFeatureAPI implements EvaluationLifeCycle {
   private _provider: Provider = NOOP_PROVIDER;
   private _context: EvaluationContext = {};
   private _hooks: Hook[] = [];
@@ -19,13 +18,13 @@ export class OpenFeature implements EvaluationLifeCycle {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected constructor() {}
 
-  static getInstance(): OpenFeature {
+  static getInstance(): OpenFeatureAPI {
     const globalApi = _global[GLOBAL_OPENFEATURE_API_KEY];
     if (globalApi) {
       return globalApi;
     }
 
-    const instance = new OpenFeature();
+    const instance = new OpenFeatureAPI();
     _global[GLOBAL_OPENFEATURE_API_KEY] = instance;
     return instance;
   }
@@ -66,3 +65,5 @@ export class OpenFeature implements EvaluationLifeCycle {
     this._hooks = [];
   }
 }
+
+export const OpenFeature = OpenFeatureAPI.getInstance();

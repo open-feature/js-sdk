@@ -62,9 +62,9 @@ const MOCK_PROVIDER: Provider = {
 };
 
 describe(OpenFeatureClient.name, () => {
-  const openFeature: OpenFeature = OpenFeature.getInstance();
+  
   beforeAll(() => {
-    openFeature.setProvider(MOCK_PROVIDER);
+    OpenFeature.setProvider(MOCK_PROVIDER);
   });
 
   afterEach(() => {
@@ -79,7 +79,7 @@ describe(OpenFeatureClient.name, () => {
 
   describe('Requirement 1.2.1', () => {
     const NAME = 'my-client';
-    const client = openFeature.getClient(NAME);
+    const client = OpenFeature.getClient(NAME);
     it('should have metadata accessor with name', () => {
       expect(client.metadata.name).toEqual(NAME);
     });
@@ -89,7 +89,7 @@ describe(OpenFeatureClient.name, () => {
     let client: Client;
 
     beforeEach(() => {
-      client = openFeature.getClient();
+      client = OpenFeature.getClient();
     });
 
     describe('flag evaluation', () => {
@@ -143,7 +143,7 @@ describe(OpenFeatureClient.name, () => {
     let client: Client;
 
     beforeEach(() => {
-      client = openFeature.getClient();
+      client = OpenFeature.getClient();
     });
 
     describe('detailed flag evaluation', () => {
@@ -202,7 +202,7 @@ describe(OpenFeatureClient.name, () => {
       it('should support generics', async () => {
         // No generic information exists at runtime, but this test has some value in ensuring the generic args still exist in the typings.
         type MyType = { key: string };
-        const client = openFeature.getClient();
+        const client = OpenFeature.getClient();
         const details: ResolutionDetails<MyType> = await client.getObjectDetails<MyType>('flag', { key: 'value' });
 
         expect(details).toBeDefined();
@@ -217,7 +217,7 @@ describe(OpenFeatureClient.name, () => {
 
     describe('Normal execution', () => {
       beforeAll(async () => {
-        const client = openFeature.getClient();
+        const client = OpenFeature.getClient();
         details = await client.getNumberDetails(flagKey, defaultValue);
 
         expect(details).toBeDefined();
@@ -261,8 +261,8 @@ describe(OpenFeatureClient.name, () => {
       const defaultValue = 123;
 
       beforeAll(async () => {
-        openFeature.setProvider(errorProvider);
-        client = openFeature.getClient();
+        OpenFeature.setProvider(errorProvider);
+        client = OpenFeature.getClient();
         details = await client.getNumberDetails('some-flag', defaultValue);
       });
 
@@ -308,8 +308,8 @@ describe(OpenFeatureClient.name, () => {
         const flagKey = 'some-flag';
         const defaultValue = false;
         const context = {};
-        openFeature.setProvider(transformingProvider);
-        const client = openFeature.getClient();
+        OpenFeature.setProvider(transformingProvider);
+        const client = OpenFeature.getClient();
         await client.getBooleanValue(flagKey, defaultValue, context);
 
         // expect transformer was called with context
@@ -337,8 +337,8 @@ describe(OpenFeatureClient.name, () => {
         const flagKey = 'some-other-flag';
         const defaultValue = false;
         const context = { transformed: false };
-        openFeature.setProvider(nonTransformingProvider);
-        const client = openFeature.getClient();
+        OpenFeature.setProvider(nonTransformingProvider);
+        const client = OpenFeature.getClient();
         await client.getBooleanValue(flagKey, defaultValue, context);
 
         // expect context was passed to resolver.
@@ -374,8 +374,8 @@ describe(OpenFeatureClient.name, () => {
           targetingKey: TARGETING_KEY,
         };
 
-        openFeature.setProvider(transformingProvider);
-        const client = openFeature.getClient();
+        OpenFeature.setProvider(transformingProvider);
+        const client = OpenFeature.getClient();
         await client.getBooleanValue(flagKey, defaultValue, context);
         expect(transformingProvider.contextTransformer).toHaveBeenCalledWith(
           expect.objectContaining({
@@ -397,8 +397,8 @@ describe(OpenFeatureClient.name, () => {
           structureField: OBJECT_VALUE,
         };
 
-        openFeature.setProvider(transformingProvider);
-        const client = openFeature.getClient();
+        OpenFeature.setProvider(transformingProvider);
+        const client = OpenFeature.getClient();
         await client.getBooleanValue(flagKey, defaultValue, context);
         expect(transformingProvider.contextTransformer).toHaveBeenCalledWith(
           expect.objectContaining({
