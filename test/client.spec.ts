@@ -62,6 +62,7 @@ const MOCK_PROVIDER: Provider = {
 };
 
 describe(OpenFeatureClient.name, () => {
+  
   beforeAll(() => {
     OpenFeature.setProvider(MOCK_PROVIDER);
   });

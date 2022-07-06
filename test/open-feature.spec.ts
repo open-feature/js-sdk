@@ -2,11 +2,12 @@ import { OpenFeatureClient } from '../src/client.js';
 import { OpenFeature } from '../src/open-feature.js';
 import { Provider } from '../src/types.js';
 
-describe(OpenFeature.name, () => {
+describe(OpenFeature.constructor.name, () => {
+  
   afterEach(() => {
     jest.clearAllMocks();
   });
-
+  
   describe('Requirement 1.1.2', () => {
     it('should equal previously set provider', () => {
       const fakeProvider = { metadata: 'test' } as unknown as Provider;
