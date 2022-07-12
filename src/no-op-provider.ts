@@ -5,6 +5,8 @@ const REASON_NO_OP = 'No-op';
 /**
  * The No-op provider is set by default, and simply always returns the default value.
  */
+
+// DO NOT MERGE
 class NoopFeatureProvider implements Provider {
   readonly metadata = {
     name: 'No-op Provider',
