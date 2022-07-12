@@ -7,6 +7,7 @@
   "types": "./dist/types/index.d.ts",
   "scripts": {
     "test": "jest --verbose",
+    "integration": "npx jest --config integration/step-definitions/jest.config.ts",
     "lint": "eslint ./",
     "postbuild": "cp ./package.esm.json ./dist/esm/package.json",
     "build": "rm -f -R ./dist && tsc --project tsconfig.json && tsc --project tsconfig.cjs.json"
@@ -38,6 +39,9 @@
     }
   },
   "devDependencies": {
+    "@openfeature/flagd-rest-provider": "^1.0.0-alpha.1",
+    "@openfeature/nodejs-sdk": "0.0.1-alpha.43",
+    "@openfeature/provider-rest-client": "0.0.1",
     "@types/jest": "^28.1.4",
     "@types/node": "^18.0.3",
     "@typescript-eslint/eslint-plugin": "^5.23.0",
@@ -45,14 +49,15 @@
     "eslint": "^8.14.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-check-file": "^1.2.1",
+    "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jest": "^26.1.5",
     "jest": "^28.1.0",
+    "jest-cucumber": "^3.0.1",
     "jest-junit": "^14.0.0",
     "prettier": "^2.6.2",
     "ts-jest": "^28.0.2",
-    "ts-node": "^10.7.0",
-    "typescript": "^4.6.4"
-  },
-  "dependencies": {}
+    "ts-node": "^10.8.2",
+    "typescript": "^4.7.4"
+  }
 }

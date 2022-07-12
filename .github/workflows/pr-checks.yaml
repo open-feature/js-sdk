@@ -10,6 +10,12 @@ jobs:
   build-test-lint:
     runs-on: ubuntu-latest
 
+    services:
+      flagd:
+        image: ghcr.io/open-feature/flagd-testbed:latest
+        ports:
+          - 8080:8080
+
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -17,11 +23,14 @@ jobs:
       - name: Install
         run: npm ci
 
+      - name: Build
+        run: npm run build
+
       - name: Lint
         run: npm run lint
 
-      - name: Build
-        run: npm run build
+      - name: Integration
+        run: npm run integration
 
       - name: Test
         run: npm run test
