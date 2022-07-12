@@ -32,6 +32,12 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Test
+        run: npm run test
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+
       - name: Configure git
         run: |
           git config --global user.name 'openfeature-ci'

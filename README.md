@@ -2,6 +2,7 @@
 
 ![Experimental](https://img.shields.io/badge/experimental-breaking%20changes%20allowed-yellow)
 ![Alpha](https://img.shields.io/badge/alpha-release-red)
+[![codecov](https://codecov.io/gh/open-feature/node-sdk/branch/main/graph/badge.svg?token=3DC5XOEHMY)](https://codecov.io/gh/open-feature/node-sdk)
 
 ## Alpha Checklist
 
