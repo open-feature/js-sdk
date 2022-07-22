@@ -2,7 +2,10 @@ name: pr-checks
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types:
+      - opened
+      - synchronize
+      - reopened
     branches:
       - main
 
