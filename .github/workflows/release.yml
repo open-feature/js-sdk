@@ -2,7 +2,7 @@ name: release
 
 on:
   release:
-    types: [published]
+    types: [created]
 
 jobs:
   build:
@@ -39,4 +39,4 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Push Version Update
-        run: git push
+        run: git push origin HEAD:main
