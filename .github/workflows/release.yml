@@ -43,4 +43,4 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Push Version Update
-        run: git push origin HEAD:main
+        run: git push --tags origin HEAD:main
