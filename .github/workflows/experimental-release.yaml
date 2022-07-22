@@ -1,0 +1,56 @@
+# Publishes a pre-release, incrementing the final integer (ie: 0.0.1-alpha.1 => 0.0.1-alpha.2), if any ts files or the package.json have changed. Pushes package.json changes back to main.
+
+name: experimental-release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**.ts'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/**'
+
+jobs:
+  experimental-release:
+    # if the last author is CI, we don't need to publish again.
+    if: ${{ github.event.head_commit.author.email != 'openfeature-ci@users.noreply.github.com' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GIT_PUSH }} # use a custom PAT of a user with allows branch-protection bypass
+      - uses: actions/setup-node@v3
+        with:
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      # this is for test coverage
+      - name: Test
+        run: npm run test
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+
+      - name: Configure git
+        run: |
+          git config --global user.name 'openfeature-ci'
+          git config --global user.email 'openfeature-ci@users.noreply.github.com'
+
+      - name: Version
+        run: npm version prerelease --preid experimental
+
+      - name: Publish
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Push Version Update
+        run: git push
