@@ -48,6 +48,6 @@ jobs:
         run: npm version prerelease --preid experimental-$GITHUB_SHA
 
       - name: Publish
-        run: npm publish --access public
+        run: npm publish --tag experimental --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
