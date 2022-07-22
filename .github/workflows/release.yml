@@ -33,7 +33,7 @@ jobs:
           git config --global user.email 'openfeature-ci@users.noreply.github.com'
 
       - name: Version
-        run: npm version ${{ env.GITHUB_REF_NAME }}
+        run: npm version $GITHUB_REF_NAME
 
       - name: Publish
         run: npm publish --access public
