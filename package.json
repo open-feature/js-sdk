@@ -1,6 +1,6 @@
 {
   "name": "@openfeature/nodejs-sdk",
-  "version": "0.0.1-experimental.6",
+  "version": "0.1.6",
   "description": "OpenFeature SDK for NodeJS",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
