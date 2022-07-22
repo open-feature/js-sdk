@@ -1,8 +1,10 @@
 name: release
 
 on:
-  release:
-    types: [published]
+  push:
+    # run only against tags prefixed with v
+    tags:
+      - 'v*'
 
 jobs:
   build:
@@ -30,10 +32,6 @@ jobs:
           git config --global user.name 'openfeature-ci'
           git config --global user.email 'openfeature-ci@users.noreply.github.com'
 
-      # delete the tag that github created, let npm version do it
-      - name: Delete tag
-        run: git tag -d $GITHUB_REF_NAME && git push origin --delete $GITHUB_REF_NAME
-
       - name: Version
         run: npm version $GITHUB_REF_NAME
 
@@ -43,4 +41,4 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Push Version Update
-        run: git push --tags origin HEAD:main
+        run: git push
