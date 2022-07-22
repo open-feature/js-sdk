@@ -45,12 +45,9 @@ jobs:
           git config --global user.email 'openfeature-ci@users.noreply.github.com'
 
       - name: Version
-        run: npm version prerelease --preid experimental
+        run: npm version prerelease --preid experimental-$GITHUB_SHA
 
       - name: Publish
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Push Version Update
-        run: git push
