@@ -2,7 +2,7 @@ name: release
 
 on:
   release:
-    types: [created]
+    types: [published]
 
 jobs:
   build:
@@ -30,8 +30,12 @@ jobs:
           git config --global user.name 'openfeature-ci'
           git config --global user.email 'openfeature-ci@users.noreply.github.com'
 
+      # delete the tag that github created, let npm version do it
+      - name: Delete tag
+        run: git tag -d $GITHUB_REF_NAME && git push origin --delete $GITHUB_REF_NAME
+
       - name: Version
-        run: npm version $GITHUB_REF_NAME --git-tag-version false
+        run: npm version $GITHUB_REF_NAME
 
       - name: Publish
         run: npm publish --access public
