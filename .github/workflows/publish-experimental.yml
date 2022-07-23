@@ -23,7 +23,7 @@ jobs:
 
       # create an experimental version at this SHA (vX.X.X-4742ef14cc0ea07e3569eee56899937452a55a9c)
       - name: Version
-        run: npm version $(npm run current-version -s)-$GITHUB_SHA
+        run: npm version "$(npm run current-version -s)-$GITHUB_SHA"
 
       - name: Publish
         run: npm publish --tag experimental --access public
