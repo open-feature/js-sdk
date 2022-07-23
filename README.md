@@ -34,3 +34,5 @@ Run tests with `npm test`.
 ### Packaging
 
 Both ES modules and CommonJS modules are supported, so consumers can use both `require` and `import` functions to utilize this module. This is accomplished by building 2 variations of the output, under `dist/esm` and `dist/cjs`, respectively. To force resolution of the `dist/esm/**.js*` files as modules, a package json with only the context `{"type": "module"}` is included at a in a `postbuild` step. Type declarations are included at `/dist/types/`
+
+For testing purposes, you can add a comment containing "/publish" in any PR. This will publish an experimental SDK version with the git SHA appended to the version number.

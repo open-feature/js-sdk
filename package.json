@@ -9,7 +9,8 @@
     "test": "jest --verbose",
     "lint": "eslint ./",
     "postbuild": "cp ./package.esm.json ./dist/esm/package.json",
-    "build": "rm -f -R ./dist && tsc --project tsconfig.json && tsc --project tsconfig.cjs.json"
+    "build": "rm -f -R ./dist && tsc --project tsconfig.json && tsc --project tsconfig.cjs.json",
+    "current-version": "echo $npm_package_version"
   },
   "repository": {
     "type": "git",
