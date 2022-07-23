@@ -34,4 +34,6 @@ class NoopFeatureProvider implements Provider {
   }
 }
 
+console.log('DO NOT MERGE');
+
 export const NOOP_PROVIDER = new NoopFeatureProvider();
