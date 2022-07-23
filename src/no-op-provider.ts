@@ -34,4 +34,5 @@ class NoopFeatureProvider implements Provider {
   }
 }
 
+console.log('test');
 export const NOOP_PROVIDER = new NoopFeatureProvider();
