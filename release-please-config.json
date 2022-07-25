@@ -1,0 +1,13 @@
+{
+  "bootstrap-sha": "9ec6555fb0a9144a70020e52d8c718c8424db225",
+  "packages": {
+    ".": {
+      "releaseType": "node",
+      "prerelease": false,
+      "bumpMinorPreMajor": false,
+      "bumpPatchForMinorPreMajor": false,
+      "changelogPath": "CHANGELOG.md",
+      "versioning": "default"
+    }
+  }
+}
