@@ -23,7 +23,7 @@ yarn add @openfeature/nodejs-sdk
 ```typescript
 import { OpenFeature } from '@openfeature/nodejs-sdk';
 
-OpenFeature.setProvider();
+OpenFeature.setProvider(new MyProvider());
 
 const client = OpenFeature.getClient();
 
