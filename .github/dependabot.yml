@@ -11,4 +11,4 @@ updates:
       interval: "daily"
     commit-message:
       prefix: "chore"
-      include_scope: true
+      include: "scope"
