@@ -1,7 +1,6 @@
 # OpenFeature SDK for NodeJS
 
 [![a](https://img.shields.io/badge/slack-%40cncf%2Fopenfeature-brightgreen?style=flat&logo=slack)](https://cloud-native.slack.com/archives/C0344AANLA1)
-[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)]()
 [![codecov](https://codecov.io/gh/open-feature/node-sdk/branch/main/graph/badge.svg?token=3DC5XOEHMY)](https://codecov.io/gh/open-feature/node-sdk)
 [![npm version](https://badge.fury.io/js/@openfeature%2Fnodejs-sdk.svg)](https://badge.fury.io/js/@openfeature%2Fnodejs-sdk)
 [![Known Vulnerabilities](https://snyk.io/test/github/open-feature/node-sdk/badge.svg)](https://snyk.io/test/github/open-feature/node-sdk)
@@ -27,9 +26,7 @@ OpenFeature.setProvider(new MyProvider());
 
 const client = OpenFeature.getClient();
 
-(async () => {
-  const value = await client.getBooleanValue('enabled-new-feature', false);
-})();
+const value = await client.getBooleanValue('enabled-new-feature', false);
 ```
 
 ## Development
