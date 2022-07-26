@@ -43,10 +43,11 @@
 		 "check-file/filename-naming-convention":[
 			"error",
 			{
-				"*.spec.{js,ts}":"*",
-				"**/jest.config.ts":"*",
-				 "*.{js,ts}":"KEBAB_CASE"
-			}
+				"**/*.{js,ts}":"KEBAB_CASE"
+			},
+      {
+      	"ignoreMiddleExtensions": true
+      }
 	 ]
 	}
 }

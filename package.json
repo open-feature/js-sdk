@@ -1,6 +1,6 @@
 {
   "name": "@openfeature/nodejs-sdk",
-  "version": "0.0.1-alpha.49",
+  "version": "0.1.9",
   "description": "OpenFeature SDK for NodeJS",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
@@ -9,7 +9,8 @@
     "test": "jest --verbose",
     "lint": "eslint ./",
     "postbuild": "cp ./package.esm.json ./dist/esm/package.json",
-    "build": "rm -f -R ./dist && tsc --project tsconfig.json && tsc --project tsconfig.cjs.json"
+    "build": "rm -f -R ./dist && tsc --project tsconfig.json && tsc --project tsconfig.cjs.json",
+    "current-version": "echo $npm_package_version"
   },
   "repository": {
     "type": "git",
@@ -44,7 +45,7 @@
     "@typescript-eslint/parser": "^5.23.0",
     "eslint": "^8.14.0",
     "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-check-file": "^1.1.0",
+    "eslint-plugin-check-file": "^1.2.1",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jest": "^26.1.5",
     "jest": "^28.1.0",
