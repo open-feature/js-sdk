@@ -8,6 +8,7 @@ import {
   FlagEvaluationOptions,
   FlagValue,
   FlagValueType,
+  Handler,
   Hook,
   HookContext,
   ResolutionDetails,
@@ -40,6 +41,10 @@ export class OpenFeatureClient implements Client {
 
   addHooks(...hooks: Hook<FlagValue>[]): void {
     this._hooks = [...this._hooks, ...hooks];
+  }
+
+  addHandler(flagKey: string, handler: Handler): void {
+    this.provider.addHandler?.(flagKey, handler);
   }
 
   get hooks(): Hook<FlagValue>[] {

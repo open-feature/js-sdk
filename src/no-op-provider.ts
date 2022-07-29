@@ -1,4 +1,4 @@
-import { Provider, ResolutionDetails } from './types.js';
+import { Handler, Provider, ResolutionDetails } from './types.js';
 
 const REASON_NO_OP = 'No-op';
 
@@ -24,6 +24,10 @@ class NoopFeatureProvider implements Provider {
 
   resolveObjectEvaluation<T extends object>(_: string, defaultValue: T): Promise<ResolutionDetails<T>> {
     return this.noOp<T>(defaultValue);
+  }
+
+  addHandler(flagKey: string, handler: Handler): void {
+    // do nothing
   }
 
   private noOp<T>(defaultValue: T) {

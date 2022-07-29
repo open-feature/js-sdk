@@ -150,6 +150,8 @@ interface GenericProvider<T> {
     transformedContext: T,
     options: FlagEvaluationOptions | undefined
   ): Promise<ResolutionDetails<U>>;
+
+  addHandler?(flagKey: string, handler: Handler): void;
 }
 
 export type NonTransformingProvider = GenericProvider<EvaluationContext>;
@@ -181,6 +183,8 @@ export interface ProviderOptions<T = unknown> {
   contextTransformer?: ContextTransformer<T>;
 }
 
+export type Handler = (flagKey: string) => void;
+
 export enum StandardResolutionReasons {
   /**
    * Indicates that the feature flag is targeting
@@ -204,20 +208,20 @@ export enum StandardResolutionReasons {
    * similar functions in the Client   */
   DEFAULT = 'DEFAULT',
   /**
-   * Indicates that the feature flag evaluated to a 
+   * Indicates that the feature flag evaluated to a
    * static value, for example, the default value for the flag
-   * 
+   *
    * Note: Typically means that no dynamic evaluation has been
    * executed for the feature flag
    */
-   STATIC = 'STATIC',
+  STATIC = 'STATIC',
   /**
    * Indicates an unknown issue occurred during evaluation
    */
   UNKNOWN = 'UNKNOWN',
   /**
    * Indicates that an error occurred during evaluation
-   * 
+   *
    * Note: The `errorCode`-field contains the details of this error
    */
   ERROR = 'ERROR',
@@ -237,6 +241,7 @@ export type EvaluationDetails<T extends FlagValue> = {
 
 export interface Client extends EvaluationLifeCycle, Features {
   readonly metadata: ClientMetadata;
+  addHandler(flagKey: string, handler: Handler): void;
 }
 
 export type HookHints = Readonly<Record<string, unknown>>;
