@@ -15,8 +15,7 @@
 	},
 	"plugins":[
 		 "@typescript-eslint",
-		 "check-file",
-		 "import"
+		 "check-file"
 	],
 	"rules":{
 		 "linebreak-style":[
