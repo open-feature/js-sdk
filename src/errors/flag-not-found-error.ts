@@ -1,5 +1,5 @@
-import { OpenFeatureError } from './error-abstract.js';
-import { ErrorCode } from './codes.js';
+import { OpenFeatureError } from './error-abstract';
+import { ErrorCode } from './codes';
 
 export class FlagNotFoundError extends OpenFeatureError {
   code: ErrorCode;
