@@ -1,0 +1,14 @@
+name: 💡 Feature
+description: Add new functionality to the project.
+title: "[FEATURE] "
+labels: [enhancement, Needs Triage]
+body:
+- type: textarea
+  attributes:
+    label: Requirements
+    description: |
+      Ask us what you want! Please provide as many details as possible and describe how it should work.
+
+      Note: Spec and architecture changes require an [OFEP](https://github.com/open-feature/research).
+  validations:
+    required: false

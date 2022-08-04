@@ -5,6 +5,12 @@
 [![npm version](https://badge.fury.io/js/@openfeature%2Fnodejs-sdk.svg)](https://badge.fury.io/js/@openfeature%2Fnodejs-sdk)
 [![Known Vulnerabilities](https://snyk.io/test/github/open-feature/node-sdk/badge.svg)](https://snyk.io/test/github/open-feature/node-sdk)
 
+This is the NodeJS implementation of [OpenFeature](https://openfeature.dev), a vendor-agnostic abstraction library for evaluating feature flags.
+
+We support multiple data types for flags (numbers, strings, booleans, objects) as well as  hooks, which can alter the lifecycle of a flag evaluation.
+
+This library is intended to be used in server-side contexts and has not been evaluated for use in mobile devices.
+
 ## Installation
 
 ```shell

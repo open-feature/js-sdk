@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.10](https://github.com/open-feature/node-sdk/compare/nodejs-sdk-v0.1.9...nodejs-sdk-v0.1.10) (2022-07-28)
+
+
+### Bug Fixes
+
+* Fixing error with setProvider type ([#121](https://github.com/open-feature/node-sdk/issues/121)) ([df5d214](https://github.com/open-feature/node-sdk/commit/df5d2149ef15a1e9b58b9a3280c01bd77a2b3dd8))
+
 ## [0.1.9](https://github.com/open-feature/node-sdk/compare/nodejs-sdk-v0.1.8...nodejs-sdk-v0.1.9) (2022-07-22)
 
 

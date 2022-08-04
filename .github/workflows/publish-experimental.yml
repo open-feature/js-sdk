@@ -18,6 +18,12 @@ jobs:
         with:
           registry-url: 'https://registry.npmjs.org'
 
+      # the issue_comment event doesn't contain the ref of the PR in question. The build-in "hub" command can get it based on issue number
+      - name: Checkout Pull Request
+        run: hub pr checkout ${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Install
         run: npm ci
 
