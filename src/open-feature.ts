@@ -6,6 +6,7 @@ import {
   EvaluationLifeCycle,
   FlagValue,
   Hook,
+  NonTransformingProvider,
   Provider,
   TransformingProvider,
 } from './types.js';
@@ -50,7 +51,7 @@ class OpenFeatureAPI implements EvaluationLifeCycle {
     return this._hooks;
   }
 
-  setProvider(provider: Provider) {
+  setProvider(provider: TransformingProvider<unknown> | NonTransformingProvider) {
     this._provider = provider;
   }
 

@@ -9,3 +9,10 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "automerge"
+      - "javascript"
