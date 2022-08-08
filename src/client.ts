@@ -1,5 +1,5 @@
-import { ERROR_REASON, GENERAL_ERROR } from './constants.js';
-import { OpenFeature } from './open-feature.js';
+import { ERROR_REASON, GENERAL_ERROR } from './constants';
+import { OpenFeature } from './open-feature';
 import {
   Client,
   ClientMetadata,
@@ -12,7 +12,7 @@ import {
   HookContext,
   ResolutionDetails,
   TransformingProvider,
-} from './types.js';
+} from './types';
 
 type OpenFeatureClientOptions = {
   name?: string;

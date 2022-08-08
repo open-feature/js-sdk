@@ -15,19 +15,9 @@
 	},
 	"plugins":[
 		 "@typescript-eslint",
-		 "check-file",
-		 "import"
+		 "check-file"
 	],
 	"rules":{
-			// ESM imports need extensions, but TS doesn't re-write them.
-			// this forces us to add `.js` to all imports, which makes sure our ESM modules work.
-			"import/extensions": [
-				"error",
-				"ignorePackages",
-				{
-					"js": "always"
-				}
-			],
 		 "linebreak-style":[
 				"error",
 				"unix"

@@ -8,8 +8,12 @@
   "scripts": {
     "test": "jest --verbose",
     "lint": "eslint ./",
+    "clean": "rm -fr ./dist",
+    "type": "tsc --project tsconfig.json --declaration --emitDeclarationOnly",
+    "build:esm": "esbuild ./src/index.ts --bundle --sourcemap --target=es2016 --platform=node --format=esm --outfile=./dist/esm/index.js --analyze",
+    "build:cjs": "esbuild ./src/index.ts --bundle --sourcemap --target=es2016 --platform=node --format=cjs --outfile=./dist/cjs/index.js --analyze",
+    "build": "npm run clean && npm run type && npm run build:esm && npm run build:cjs",
     "postbuild": "cp ./package.esm.json ./dist/esm/package.json",
-    "build": "rm -f -R ./dist && tsc --project tsconfig.json && tsc --project tsconfig.cjs.json",
     "current-version": "echo $npm_package_version"
   },
   "repository": {
@@ -43,10 +47,10 @@
     "@types/node": "^18.0.3",
     "@typescript-eslint/eslint-plugin": "^5.23.0",
     "@typescript-eslint/parser": "^5.23.0",
+    "esbuild": "^0.14.51",
     "eslint": "^8.14.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-check-file": "^1.2.1",
-    "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jest": "^26.1.5",
     "jest": "^28.1.0",
     "jest-junit": "^14.0.0",
@@ -54,6 +58,5 @@
     "ts-jest": "^28.0.2",
     "ts-node": "^10.7.0",
     "typescript": "^4.6.4"
-  },
-  "dependencies": {}
+  }
 }
