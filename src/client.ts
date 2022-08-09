@@ -10,8 +10,8 @@ import {
   FlagValueType,
   Hook,
   HookContext,
+  Provider,
   ResolutionDetails,
-  TransformingProvider,
 } from './types';
 
 type OpenFeatureClientOptions = {
@@ -27,7 +27,7 @@ export class OpenFeatureClient implements Client {
   constructor(
     // we always want the client to use the current provider,
     // so pass a function to always access the currently registered one.
-    private readonly providerAccessor: () => TransformingProvider<unknown>,
+    private readonly providerAccessor: () => Provider,
     options: OpenFeatureClientOptions,
     context: EvaluationContext = {}
   ) {
@@ -148,7 +148,7 @@ export class OpenFeatureClient implements Client {
     resolver: (
       flagKey: string,
       defaultValue: T,
-      transformedContext: unknown,
+      context: EvaluationContext,
       options: FlagEvaluationOptions | undefined
     ) => Promise<ResolutionDetails<T>>,
     defaultValue: T,
@@ -158,13 +158,14 @@ export class OpenFeatureClient implements Client {
   ): Promise<EvaluationDetails<T>> {
     // merge global, client, and evaluation context
 
-    const allHooks = [...OpenFeature.hooks, ...this.hooks, ...(options.hooks || [])];
+    const allHooks = [...OpenFeature.hooks, ...this.hooks, ...(options.hooks || []), ...(this.provider.hooks || [])];
     const allHooksReversed = [...allHooks].reverse();
 
     // merge global and client contexts
-    const globalAndClientContext = {
+    const mergedContext = {
       ...OpenFeature.context,
       ...this.context,
+      ...invocationContext,
     };
 
     // this reference cannot change during the course of evaluation
@@ -175,26 +176,14 @@ export class OpenFeatureClient implements Client {
       flagValueType: flagType,
       clientMetadata: this.metadata,
       providerMetadata: OpenFeature.providerMetadata,
-      context: globalAndClientContext,
+      context: mergedContext,
     };
 
     try {
-      const mergedHookContext = await this.beforeHooks(allHooks, hookContext, options);
-
-      // merge context in order: global, client, hook, invocation
-      const mergedContext = {
-        ...mergedHookContext,
-        ...invocationContext,
-      };
-
-      // if a transformer is defined, run it to prepare the context
-      const transformedContext =
-        typeof this.provider.contextTransformer === 'function'
-          ? await this.provider.contextTransformer(mergedContext)
-          : mergedContext;
+      const frozenContext = await this.beforeHooks(allHooks, hookContext, options);
 
       // run the referenced resolver, binding the provider.
-      const resolution = await resolver.call(this.provider, flagKey, defaultValue, transformedContext, options);
+      const resolution = await resolver.call(this.provider, flagKey, defaultValue, frozenContext, options);
 
       const evaluationDetails = {
         ...resolution,

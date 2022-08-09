@@ -1,15 +1,7 @@
 import { OpenFeatureClient } from '../src/client.js';
 import { ERROR_REASON, GENERAL_ERROR } from '../src/constants.js';
 import { OpenFeature } from '../src/open-feature.js';
-import {
-  Client,
-  EvaluationContext,
-  EvaluationDetails,
-  NonTransformingProvider,
-  Provider,
-  ResolutionDetails,
-  TransformingProvider,
-} from '../src/types.js';
+import { Client, EvaluationContext, EvaluationDetails, Provider, ResolutionDetails } from '../src/types.js';
 
 const BOOLEAN_VALUE = true;
 const STRING_VALUE = 'val';
@@ -62,7 +54,6 @@ const MOCK_PROVIDER: Provider = {
 };
 
 describe(OpenFeatureClient.name, () => {
-  
   beforeAll(() => {
     OpenFeature.setProvider(MOCK_PROVIDER);
   });
@@ -291,40 +282,7 @@ describe(OpenFeatureClient.name, () => {
   });
 
   describe('Requirement 1.6.1', () => {
-    describe('Transforming provider', () => {
-      const transformingProvider = {
-        name: 'transforming',
-        // a simple context transformer that just adds a property (transformed: true)
-        contextTransformer: jest.fn((context: EvaluationContext) => {
-          return { ...context, transformed: true };
-        }),
-        resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
-          return Promise.resolve({
-            value: true,
-          });
-        }),
-      } as unknown as TransformingProvider<EvaluationContext>;
-      it('should run context transformer, and pass transformed context to resolver', async () => {
-        const flagKey = 'some-flag';
-        const defaultValue = false;
-        const context = {};
-        OpenFeature.setProvider(transformingProvider);
-        const client = OpenFeature.getClient();
-        await client.getBooleanValue(flagKey, defaultValue, context);
-
-        // expect transformer was called with context
-        expect(transformingProvider.contextTransformer).toHaveBeenCalledWith(context);
-        // expect transformed context was passed to resolver.
-        expect(transformingProvider.resolveBooleanEvaluation).toHaveBeenCalledWith(
-          flagKey,
-          defaultValue,
-          expect.objectContaining({ transformed: true }),
-          expect.anything()
-        );
-      });
-    });
-
-    describe('Non-transforming provider', () => {
+    describe('Provider', () => {
       const nonTransformingProvider = {
         name: 'non-transforming',
         resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
@@ -332,7 +290,7 @@ describe(OpenFeatureClient.name, () => {
             value: true,
           });
         }),
-      } as unknown as NonTransformingProvider;
+      } as unknown as Provider;
       it('should pass context to resolver', async () => {
         const flagKey = 'some-other-flag';
         const defaultValue = false;
@@ -352,20 +310,17 @@ describe(OpenFeatureClient.name, () => {
     });
   });
 
-  describe('Requirement 3.2', () => {
-    const transformingProvider = {
+  describe('Evaluation Context', () => {
+    const provider = {
       name: 'evaluation-context',
-      contextTransformer: jest.fn((context: EvaluationContext) => {
-        return { ...context };
-      }),
       resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
         return Promise.resolve({
           value: true,
         });
       }),
-    } as unknown as TransformingProvider<EvaluationContext>;
+    } as unknown as Provider;
 
-    describe('3.1', () => {
+    describe('3.1.1', () => {
       const TARGETING_KEY = 'abc123';
       it('context define targeting key', async () => {
         const flagKey = 'some-other-flag';
@@ -374,18 +329,21 @@ describe(OpenFeatureClient.name, () => {
           targetingKey: TARGETING_KEY,
         };
 
-        OpenFeature.setProvider(transformingProvider);
+        OpenFeature.setProvider(provider);
         const client = OpenFeature.getClient();
         await client.getBooleanValue(flagKey, defaultValue, context);
-        expect(transformingProvider.contextTransformer).toHaveBeenCalledWith(
+        expect(provider.resolveBooleanEvaluation).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.anything(),
           expect.objectContaining({
             targetingKey: TARGETING_KEY,
-          })
+          }),
+          expect.anything()
         );
       });
     });
 
-    describe('3.2', () => {
+    describe('3.1.2', () => {
       it('should support boolean | string | number | datetime | structure', async () => {
         const flagKey = 'some-other-flag';
         const defaultValue = false;
@@ -397,13 +355,52 @@ describe(OpenFeatureClient.name, () => {
           structureField: OBJECT_VALUE,
         };
 
-        OpenFeature.setProvider(transformingProvider);
+        OpenFeature.setProvider(provider);
         const client = OpenFeature.getClient();
         await client.getBooleanValue(flagKey, defaultValue, context);
-        expect(transformingProvider.contextTransformer).toHaveBeenCalledWith(
+        expect(provider.resolveBooleanEvaluation).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.anything(),
           expect.objectContaining({
             ...context,
-          })
+          }),
+          expect.anything()
+        );
+      });
+    });
+
+    describe('3.2.1, 3.2.2', () => {
+      it('Evaluation context MUST be merged in the order: API (global) -> client -> invocation, with duplicate values being overwritten.', async () => {
+        const flagKey = 'some-other-flag';
+        const defaultValue = false;
+        const globalContext: EvaluationContext = {
+          globalContextValue: 'abc',
+          globalContextValueToOverwrite: 'xxx', // should be overwritten
+        };
+        const clientContext: EvaluationContext = {
+          clientContextValue: 'def',
+          clientContextValueToOverwrite: 'xxx', // should be overwritten
+          globalContextValueToOverwrite: '123',
+        };
+        const invocationContext: EvaluationContext = {
+          invocationContextValue: 'ghi',
+          clientContextValueToOverwrite: '456',
+        };
+
+        OpenFeature.setProvider(provider);
+        OpenFeature.context = globalContext;
+        const client = OpenFeature.getClient('contextual', 'test', clientContext);
+        await client.getBooleanValue(flagKey, defaultValue, invocationContext);
+        expect(provider.resolveBooleanEvaluation).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.anything(),
+          // expect merged in the correct order...
+          expect.objectContaining({
+            ...globalContext,
+            ...clientContext,
+            ...invocationContext,
+          }),
+          expect.anything()
         );
       });
     });
