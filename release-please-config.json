@@ -4,8 +4,8 @@
     ".": {
       "releaseType": "node",
       "prerelease": false,
-      "bumpMinorPreMajor": false,
-      "bumpPatchForMinorPreMajor": false,
+      "bumpMinorPreMajor": true,
+      "bumpPatchForMinorPreMajor": true,
       "changelogPath": "CHANGELOG.md",
       "versioning": "default"
     }
