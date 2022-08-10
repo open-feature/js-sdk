@@ -2,12 +2,10 @@
   "bootstrap-sha": "9ec6555fb0a9144a70020e52d8c718c8424db225",
   "packages": {
     ".": {
-      "releaseType": "node",
+      "release-type": "node",
       "prerelease": false,
-      "bumpMinorPreMajor": true,
-      "bumpPatchForMinorPreMajor": true,
-      "changelogPath": "CHANGELOG.md",
-      "versioning": "default"
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": true
     }
   }
 }
