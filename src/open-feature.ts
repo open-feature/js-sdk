@@ -1,15 +1,6 @@
 import { OpenFeatureClient } from './client';
 import { NOOP_PROVIDER } from './no-op-provider';
-import {
-  Client,
-  EvaluationContext,
-  EvaluationLifeCycle,
-  FlagValue,
-  Hook,
-  NonTransformingProvider,
-  Provider,
-  TransformingProvider,
-} from './types';
+import { Client, EvaluationContext, EvaluationLifeCycle, FlagValue, Hook, Provider } from './types';
 
 // use a symbol as a key for the global singleton
 const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/js.api');
@@ -36,7 +27,7 @@ class OpenFeatureAPI implements EvaluationLifeCycle {
   }
 
   getClient(name?: string, version?: string, context?: EvaluationContext): Client {
-    return new OpenFeatureClient(() => this._provider as TransformingProvider<unknown>, { name, version }, context);
+    return new OpenFeatureClient(() => this._provider, { name, version }, context);
   }
 
   get providerMetadata() {
@@ -51,7 +42,7 @@ class OpenFeatureAPI implements EvaluationLifeCycle {
     return this._hooks;
   }
 
-  setProvider(provider: TransformingProvider<unknown> | NonTransformingProvider) {
+  setProvider(provider: Provider) {
     this._provider = provider;
   }
 

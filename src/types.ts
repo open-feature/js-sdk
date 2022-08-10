@@ -104,11 +104,12 @@ export interface Features {
 }
 
 /**
- * Function which transforms the EvaluationContext to a type useful for the provider.
+ * Interface that providers must implement to resolve flag values for their particular
+ * backend or vendor.
+ *
+ * Implementation for resolving all the required flag types must be defined.
  */
-export type ContextTransformer<T = unknown> = (context: EvaluationContext) => T;
-
-interface GenericProvider<T> {
+export interface Provider extends Pick<Partial<EvaluationLifeCycle>, 'hooks'> {
   readonly metadata: ProviderMetadata;
 
   /**
@@ -117,7 +118,7 @@ interface GenericProvider<T> {
   resolveBooleanEvaluation(
     flagKey: string,
     defaultValue: boolean,
-    transformedContext: T,
+    context: EvaluationContext,
     options: FlagEvaluationOptions | undefined
   ): Promise<ResolutionDetails<boolean>>;
 
@@ -127,7 +128,7 @@ interface GenericProvider<T> {
   resolveStringEvaluation(
     flagKey: string,
     defaultValue: string,
-    transformedContext: T,
+    context: EvaluationContext,
     options: FlagEvaluationOptions | undefined
   ): Promise<ResolutionDetails<string>>;
 
@@ -137,7 +138,7 @@ interface GenericProvider<T> {
   resolveNumberEvaluation(
     flagKey: string,
     defaultValue: number,
-    transformedContext: T,
+    context: EvaluationContext,
     options: FlagEvaluationOptions | undefined
   ): Promise<ResolutionDetails<number>>;
 
@@ -147,38 +148,15 @@ interface GenericProvider<T> {
   resolveObjectEvaluation<U extends object>(
     flagKey: string,
     defaultValue: U,
-    transformedContext: T,
+    context: EvaluationContext,
     options: FlagEvaluationOptions | undefined
   ): Promise<ResolutionDetails<U>>;
 }
-
-export type NonTransformingProvider = GenericProvider<EvaluationContext>;
-
-export interface TransformingProvider<T> extends GenericProvider<T> {
-  contextTransformer: ContextTransformer<Promise<T> | T> | undefined;
-}
-
-/**
- * Interface that providers must implement to resolve flag values for their particular
- * backend or vendor.
- *
- * Implementation for resolving all the required flag types must be defined.
- *
- * Additionally, a ContextTransformer function that transforms the OpenFeature context to the requisite user/context/attribute representation (typeof T)
- * may also be implemented. This function will run immediately before the flag value resolver functions, appropriately transforming the context.
- */
-export type Provider<T extends EvaluationContext | unknown = EvaluationContext> = T extends EvaluationContext
-  ? NonTransformingProvider
-  : TransformingProvider<T>;
 
 export interface EvaluationLifeCycle {
   addHooks(...hooks: Hook[]): void;
   get hooks(): Hook[];
   clearHooks(): void;
-}
-
-export interface ProviderOptions<T = unknown> {
-  contextTransformer?: ContextTransformer<T>;
 }
 
 export enum StandardResolutionReasons {
@@ -204,20 +182,20 @@ export enum StandardResolutionReasons {
    * similar functions in the Client   */
   DEFAULT = 'DEFAULT',
   /**
-   * Indicates that the feature flag evaluated to a 
+   * Indicates that the feature flag evaluated to a
    * static value, for example, the default value for the flag
-   * 
+   *
    * Note: Typically means that no dynamic evaluation has been
    * executed for the feature flag
    */
-   STATIC = 'STATIC',
+  STATIC = 'STATIC',
   /**
    * Indicates an unknown issue occurred during evaluation
    */
   UNKNOWN = 'UNKNOWN',
   /**
    * Indicates that an error occurred during evaluation
-   * 
+   *
    * Note: The `errorCode`-field contains the details of this error
    */
   ERROR = 'ERROR',

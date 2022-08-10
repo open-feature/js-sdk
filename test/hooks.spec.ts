@@ -150,99 +150,123 @@ describe('Hooks', () => {
     });
   });
 
-  describe('before', () => {
-    describe('4.3.2', () => {
-      it('"before" must run before flag resolution', async () => {
-        await client.getBooleanValue(FLAG_KEY, false, undefined, {
-          hooks: [
-            {
-              before: () => {
-                // add a prop to the context.
-                return { beforeRan: true };
-              },
-            },
-          ],
-        });
-
-        expect(MOCK_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalledWith(
-          expect.anything(),
-          expect.anything(),
-          // ensure property was added by the time the flag resolution occurred.
-          expect.objectContaining({
-            beforeRan: true,
-          }),
-          expect.anything()
-        );
-      });
-    });
-
-    describe('Requirement 4.3.3', () => {
-      it('EvaluationContext must be passed to next "before" hook', (done) => {
-        client.getBooleanValue(FLAG_KEY, false, undefined, {
-          hooks: [
-            {
-              before: () => {
-                // add a prop to the context.
-                return { beforeRan: true };
-              },
-            },
-            {
-              before: (hookContext) => {
-                // ensure added prop exists in next hook
-                try {
-                  expect(hookContext.context.beforeRan).toBeTruthy();
-                  done();
-                } catch (err) {
-                  done(err);
-                }
-                return { beforeRan: true };
-              },
-            },
-          ],
-        });
-      });
-    });
-
-    describe('Requirement 4.3.4', () => {
-      it('"before" evaluationContext must be merged with invocation evaluationContext, which invocation taking precedence', async () => {
-        await client.getBooleanValue(
-          FLAG_KEY,
-          false,
-          { invocationProp: 'abc', propToOverwrite: 'ghi' },
+  describe('4.3.2', () => {
+    it('"before" must run before flag resolution', async () => {
+      await client.getBooleanValue(FLAG_KEY, false, undefined, {
+        hooks: [
           {
-            hooks: [
-              {
-                before: () => {
-                  // add a prop to the context, and some duplicates to overwrite
-                  return { hookProp: 'def', invocationProp: 'xxx', propToOverwrite: 'xxx' };
-                },
-              },
-            ],
-          }
-        );
-        expect(MOCK_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalledWith(
-          expect.anything(),
-          expect.anything(),
-          // ensure correct properties were maintained/overwritten
-          expect.objectContaining({
-            invocationProp: 'abc',
-            hookProp: 'def',
-            propToOverwrite: 'ghi',
-          }),
-          expect.anything()
-        );
+            before: () => {
+              // add a prop to the context.
+              return { beforeRan: true };
+            },
+          },
+        ],
+      });
+
+      expect(MOCK_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.anything(),
+        // ensure property was added by the time the flag resolution occurred.
+        expect.objectContaining({
+          beforeRan: true,
+        }),
+        expect.anything()
+      );
+    });
+  });
+
+  describe('Requirement 4.3.3', () => {
+    it('EvaluationContext must be passed to next "before" hook', (done) => {
+      client.getBooleanValue(FLAG_KEY, false, undefined, {
+        hooks: [
+          {
+            before: () => {
+              // add a prop to the context.
+              return { beforeRan: true };
+            },
+          },
+          {
+            before: (hookContext) => {
+              // ensure added prop exists in next hook
+              try {
+                expect(hookContext.context.beforeRan).toBeTruthy();
+                done();
+              } catch (err) {
+                done(err);
+              }
+              return { beforeRan: true };
+            },
+          },
+        ],
       });
     });
+  });
 
-    describe('Requirement 4.3.5', () => {
-      it('"after" must run after flag evaluation', (done) => {
+  describe('Requirement 4.3.4', () => {
+    it('"before" evaluationContext must be merged with invocation evaluationContext, which before taking precedence', async () => {
+      await client.getBooleanValue(
+        FLAG_KEY,
+        false,
+        // add a prop to the context, and some duplicates to overwrite
+        { invocationProp: 'abc', propToOverwrite: 'xxx' },
+        {
+          hooks: [
+            {
+              before: () => {
+                return { hookProp: 'def', propToOverwrite: 'ghi' };
+              },
+            },
+          ],
+        }
+      );
+      expect(MOCK_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.anything(),
+        // ensure correct properties were maintained/overwritten
+        expect.objectContaining({
+          invocationProp: 'abc', // some come from invocation
+          hookProp: 'def', // should come from before hook
+          propToOverwrite: 'ghi', // should be overwritten by before hook
+        }),
+        expect.anything()
+      );
+    });
+  });
+
+  describe('Requirement 4.3.5', () => {
+    it('"after" must run after flag evaluation', (done) => {
+      client.getBooleanValue(FLAG_KEY, false, undefined, {
+        hooks: [
+          {
+            after: () => {
+              try {
+                // expect provider was called by the time "after" hook runs.
+                expect(MOCK_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalled();
+                done();
+              } catch (err) {
+                done(err);
+              }
+            },
+          },
+        ],
+      });
+    });
+  });
+
+  describe('"error" stage', () => {
+    beforeAll(() => {
+      OpenFeature.setProvider(MOCK_ERROR_PROVIDER);
+    });
+
+    describe('Requirement 4.3.6', () => {
+      it('"error" must run if any errors occur', (done) => {
         client.getBooleanValue(FLAG_KEY, false, undefined, {
           hooks: [
             {
-              after: () => {
+              error: () => {
                 try {
-                  // expect provider was called by the time "after" hook runs.
-                  expect(MOCK_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalled();
+                  // expect provider was by called the time "error" hook runs.
+                  expect(MOCK_ERROR_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalled();
                   done();
                 } catch (err) {
                   done(err);
@@ -253,302 +277,22 @@ describe('Hooks', () => {
         });
       });
     });
+  });
 
-    describe('"error" stage', () => {
-      beforeAll(() => {
-        OpenFeature.setProvider(MOCK_ERROR_PROVIDER);
-      });
-
-      describe('Requirement 4.3.6', () => {
-        it('"error" must run if any errors occur', (done) => {
-          client.getBooleanValue(FLAG_KEY, false, undefined, {
-            hooks: [
-              {
-                error: () => {
-                  try {
-                    // expect provider was by called the time "error" hook runs.
-                    expect(MOCK_ERROR_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalled();
-                    done();
-                  } catch (err) {
-                    done(err);
-                  }
-                },
-              },
-            ],
-          });
-        });
-      });
-    });
-
-    describe('"finally" stage', () => {
-      describe('Requirement 4.3.7', () => {
-        it('"finally" must run after "after" stage', (done) => {
-          OpenFeature.setProvider(MOCK_PROVIDER);
-
-          const afterAndFinallyHook: Hook = {
-            // mock "after"
-            after: jest.fn(() => {
-              return;
-            }),
-            finally: () => {
-              try {
-                // assert mock was called
-                expect(afterAndFinallyHook.after).toHaveBeenCalled();
-                done();
-              } catch (err) {
-                done(err);
-              }
-            },
-          };
-
-          client.getBooleanValue(FLAG_KEY, false, undefined, {
-            hooks: [afterAndFinallyHook],
-          });
-        });
-
-        it('"finally" must run after "error" stage', (done) => {
-          OpenFeature.setProvider(MOCK_ERROR_PROVIDER);
-
-          const errorAndFinallyHook: Hook = {
-            error: jest.fn(() => {
-              return;
-            }),
-            finally: () => {
-              try {
-                // assert mock is called
-                expect(errorAndFinallyHook.error).toHaveBeenCalled();
-                done();
-              } catch (err) {
-                done(err);
-              }
-            },
-          };
-
-          client.getBooleanValue(FLAG_KEY, false, undefined, {
-            hooks: [errorAndFinallyHook],
-          });
-        });
-      });
-    });
-
-    describe('Requirement 4.4.2', () => {
-      it('"before" must run hook in order global, client, invocation', (done) => {
+  describe('"finally" stage', () => {
+    describe('Requirement 4.3.7', () => {
+      it('"finally" must run after "after" stage', (done) => {
         OpenFeature.setProvider(MOCK_PROVIDER);
-        OpenFeature.clearHooks();
-        client.clearHooks();
 
-        const globalBeforeHook: Hook = {
-          before: jest.fn(() => {
-            try {
-              // neither client, nor invocation should have run at this point.
-              expect(clientBeforeHook.before).not.toHaveBeenCalled();
-              expect(invocationBeforeHook.before).not.toHaveBeenCalled();
-            } catch (err) {
-              done(err);
-            }
-          }),
-        };
-
-        const clientBeforeHook: Hook = {
-          before: jest.fn(() => {
-            try {
-              // global should have run, but not invocation
-              expect(globalBeforeHook.before).toHaveBeenCalled();
-              expect(invocationBeforeHook.before).not.toHaveBeenCalled();
-            } catch (err) {
-              done(err);
-            }
-          }),
-        };
-
-        const invocationBeforeHook: Hook = {
-          before: jest.fn(() => {
-            try {
-              // all hooks should have been called by now
-              expect(globalBeforeHook.before).toHaveBeenCalled();
-              expect(clientBeforeHook.before).toHaveBeenCalled();
-              done();
-            } catch (err) {
-              done(err);
-            }
-          }),
-        };
-
-        OpenFeature.addHooks(globalBeforeHook);
-        client.addHooks(clientBeforeHook);
-
-        client.getBooleanValue(FLAG_KEY, false, undefined, {
-          hooks: [invocationBeforeHook],
-        });
-      });
-
-      it('"after" must run hook in order invocation, client, global', (done) => {
-        OpenFeature.setProvider(MOCK_PROVIDER);
-        OpenFeature.clearHooks();
-        client.clearHooks();
-
-        const invocationAfterHook: Hook = {
+        const afterAndFinallyHook: Hook = {
+          // mock "after"
           after: jest.fn(() => {
-            try {
-              // neither client, nor global should have run at this point.
-              expect(clientAfterHook.after).not.toHaveBeenCalled();
-              expect(globalAfterHook.after).not.toHaveBeenCalled();
-            } catch (err) {
-              done(err);
-            }
+            return;
           }),
-        };
-
-        const clientAfterHook: Hook = {
-          after: jest.fn(() => {
-            try {
-              // invocation should have run, but not global
-              expect(invocationAfterHook.after).toHaveBeenCalled();
-              expect(globalAfterHook.after).not.toHaveBeenCalled();
-            } catch (err) {
-              done(err);
-            }
-          }),
-        };
-
-        const globalAfterHook: Hook = {
-          after: jest.fn(() => {
-            try {
-              // all hooks should have been called by now
-              expect(invocationAfterHook.after).toHaveBeenCalled();
-              expect(clientAfterHook.after).toHaveBeenCalled();
-              done();
-            } catch (err) {
-              done(err);
-            }
-          }),
-        };
-
-        OpenFeature.addHooks(globalAfterHook);
-        client.addHooks(clientAfterHook);
-
-        client.getBooleanValue(FLAG_KEY, false, undefined, {
-          hooks: [invocationAfterHook],
-        });
-      });
-
-      it('"error" must run hook in order invocation, client, global', (done) => {
-        OpenFeature.setProvider(MOCK_ERROR_PROVIDER);
-        OpenFeature.clearHooks();
-        client.clearHooks();
-
-        const invocationErrorHook: Hook = {
-          error: jest.fn(() => {
-            try {
-              // neither client, nor global should have run at this point.
-              expect(clientErrorHook.error).not.toHaveBeenCalled();
-              expect(globalErrorHook.error).not.toHaveBeenCalled();
-            } catch (err) {
-              done(err);
-            }
-          }),
-        };
-
-        const clientErrorHook: Hook = {
-          error: jest.fn(() => {
-            try {
-              // invocation should have run, but not global
-              expect(invocationErrorHook.error).toHaveBeenCalled();
-              expect(globalErrorHook.error).not.toHaveBeenCalled();
-            } catch (err) {
-              done(err);
-            }
-          }),
-        };
-
-        const globalErrorHook: Hook = {
-          error: jest.fn(() => {
-            try {
-              // all hooks should have been called by now
-              expect(invocationErrorHook.error).toHaveBeenCalled();
-              expect(clientErrorHook.error).toHaveBeenCalled();
-              done();
-            } catch (err) {
-              done(err);
-            }
-          }),
-        };
-
-        OpenFeature.addHooks(globalErrorHook);
-        client.addHooks(clientErrorHook);
-
-        client.getBooleanValue(FLAG_KEY, false, undefined, {
-          hooks: [invocationErrorHook],
-        });
-      });
-
-      it('"finally" must run hook in order invocation, client, global', (done) => {
-        OpenFeature.setProvider(MOCK_ERROR_PROVIDER);
-        OpenFeature.clearHooks();
-        client.clearHooks();
-
-        const invocationFinallyHook: Hook = {
-          error: jest.fn(() => {
-            try {
-              // neither client, nor global should have run at this point.
-              expect(clientFinallyHook.error).not.toHaveBeenCalled();
-              expect(globalFinallyHook.error).not.toHaveBeenCalled();
-            } catch (err) {
-              done(err);
-            }
-          }),
-        };
-
-        const clientFinallyHook: Hook = {
-          error: jest.fn(() => {
-            try {
-              // invocation should have run, but not global
-              expect(invocationFinallyHook.error).toHaveBeenCalled();
-              expect(globalFinallyHook.error).not.toHaveBeenCalled();
-            } catch (err) {
-              done(err);
-            }
-          }),
-        };
-
-        const globalFinallyHook: Hook = {
-          error: jest.fn(() => {
-            try {
-              // all hooks should have been called by now
-              expect(invocationFinallyHook.error).toHaveBeenCalled();
-              expect(clientFinallyHook.error).toHaveBeenCalled();
-              done();
-            } catch (err) {
-              done(err);
-            }
-          }),
-        };
-
-        OpenFeature.addHooks(globalFinallyHook);
-        client.addHooks(clientFinallyHook);
-
-        client.getBooleanValue(FLAG_KEY, false, undefined, {
-          hooks: [invocationFinallyHook],
-        });
-      });
-    });
-
-    describe('Requirement 4.4.3', () => {
-      it('all "finally" hooks must execute, despite errors', (done) => {
-        OpenFeature.setProvider(MOCK_PROVIDER);
-        OpenFeature.clearHooks();
-        client.clearHooks();
-
-        const firstFinallyHook: Hook = {
-          finally: jest.fn(() => {
-            throw new Error('expected');
-          }),
-        };
-
-        const secondFinallyHook: Hook = {
           finally: () => {
             try {
-              expect(firstFinallyHook.finally).toHaveBeenCalled();
+              // assert mock was called
+              expect(afterAndFinallyHook.after).toHaveBeenCalled();
               done();
             } catch (err) {
               done(err);
@@ -557,27 +301,21 @@ describe('Hooks', () => {
         };
 
         client.getBooleanValue(FLAG_KEY, false, undefined, {
-          hooks: [secondFinallyHook, firstFinallyHook], // remember error hooks run in reverse order
+          hooks: [afterAndFinallyHook],
         });
       });
-    });
 
-    describe('Requirement 4.4.4', () => {
-      it('all "error" hooks must execute, despite errors', (done) => {
+      it('"finally" must run after "error" stage', (done) => {
         OpenFeature.setProvider(MOCK_ERROR_PROVIDER);
-        OpenFeature.clearHooks();
-        client.clearHooks();
 
-        const firstErrorHook: Hook = {
+        const errorAndFinallyHook: Hook = {
           error: jest.fn(() => {
-            throw new Error('expected');
+            return;
           }),
-        };
-
-        const secondErrorHook: Hook = {
-          error: () => {
+          finally: () => {
             try {
-              expect(firstErrorHook.error).toHaveBeenCalled();
+              // assert mock is called
+              expect(errorAndFinallyHook.error).toHaveBeenCalled();
               done();
             } catch (err) {
               done(err);
@@ -586,165 +324,548 @@ describe('Hooks', () => {
         };
 
         client.getBooleanValue(FLAG_KEY, false, undefined, {
-          hooks: [secondErrorHook, firstErrorHook], // remember error hooks run in reverse order
+          hooks: [errorAndFinallyHook],
         });
       });
     });
+  });
 
-    describe('Requirement 4.4.5', () => {
-      it('"before" must trigger error hook', (done) => {
-        OpenFeature.setProvider(MOCK_PROVIDER);
-        OpenFeature.clearHooks();
-        client.clearHooks();
+  describe('Requirement 4.4.2', () => {
+    it('"before" must run hook in order global, client, invocation, provider', (done) => {
+      const globalBeforeHook: Hook = {
+        before: jest.fn(() => {
+          try {
+            // provider, nor client, nor invocation should have run at this point.
+            expect(provider.hooks?.[0].before).not.toHaveBeenCalled();
+            expect(clientBeforeHook.before).not.toHaveBeenCalled();
+            expect(invocationBeforeHook.before).not.toHaveBeenCalled();
+          } catch (err) {
+            done(err);
+          }
+        }),
+      };
 
-        const beforeAndErrorHook: Hook = {
-          before: jest.fn(() => {
-            throw new Error('Fake error');
-          }),
-          error: jest.fn(() => {
-            try {
-              expect(beforeAndErrorHook.before).toHaveBeenCalled();
-              done();
-            } catch (err) {
-              done(err);
-            }
-          }),
-        };
+      const clientBeforeHook: Hook = {
+        before: jest.fn(() => {
+          try {
+            // global should have run and, but not invocation or provider
+            expect(globalBeforeHook.before).toHaveBeenCalled();
+            expect(invocationBeforeHook.before).not.toHaveBeenCalled();
+            expect(provider.hooks?.[0].before).not.toHaveBeenCalled();
+          } catch (err) {
+            done(err);
+          }
+        }),
+      };
 
-        client.getBooleanValue(FLAG_KEY, false, undefined, {
-          hooks: [beforeAndErrorHook],
-        });
-      });
+      const invocationBeforeHook: Hook = {
+        before: jest.fn(() => {
+          try {
+            // global and client should have been called, but not provider
+            expect(globalBeforeHook.before).toHaveBeenCalled();
+            expect(clientBeforeHook.before).toHaveBeenCalled();
+            expect(provider.hooks?.[0].before).not.toHaveBeenCalled();
+          } catch (err) {
+            done(err);
+          }
+        }),
+      };
 
-      it('"after" must trigger error hook', (done) => {
-        OpenFeature.setProvider(MOCK_PROVIDER);
-        OpenFeature.clearHooks();
-        client.clearHooks();
+      const provider: Provider = {
+        metadata: {
+          name: 'mock-hooks-before-with-hooks',
+        },
+        hooks: [
+          {
+            before: jest.fn(() => {
+              try {
+                // invocation, nor client, nor global should have run at this point.
+                expect(globalBeforeHook.before).toHaveBeenCalled();
+                expect(clientBeforeHook.before).toHaveBeenCalled();
+                expect(invocationBeforeHook.before).toHaveBeenCalled();
+                done();
+              } catch (err) {
+                done(err);
+              }
+            }),
+          },
+        ],
+        resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
+          return Promise.resolve({
+            value: BOOLEAN_VALUE,
+            variant: BOOLEAN_VARIANT,
+            reason: REASON,
+          });
+        }),
+      } as unknown as Provider;
 
-        const afterAndErrorHook: Hook = {
-          after: jest.fn(() => {
-            throw new Error('Fake error');
-          }),
-          error: jest.fn(() => {
-            try {
-              expect(afterAndErrorHook.after).toHaveBeenCalled();
-              done();
-            } catch (err) {
-              done(err);
-            }
-          }),
-        };
+      OpenFeature.setProvider(provider);
+      OpenFeature.clearHooks();
+      client.clearHooks();
 
-        client.getBooleanValue(FLAG_KEY, false, undefined, {
-          hooks: [afterAndErrorHook],
-        });
+      OpenFeature.addHooks(globalBeforeHook);
+      client.addHooks(clientBeforeHook);
+
+      client.getBooleanValue(FLAG_KEY, false, undefined, {
+        hooks: [invocationBeforeHook],
       });
     });
 
-    describe('Requirement 4.4.6', () => {
-      it('remaining before/after hooks must not run after error', (done) => {
-        OpenFeature.setProvider(MOCK_PROVIDER);
-        OpenFeature.clearHooks();
-        client.clearHooks();
+    it('"after" must run hook in order provider, invocation, client, global', (done) => {
+      const invocationAfterHook: Hook = {
+        after: jest.fn(() => {
+          try {
+            // provider should have run.
+            expect(provider.hooks?.[0].after).toHaveBeenCalled();
+            // neither client, nor global should have run at this point.
+            expect(clientAfterHook.after).not.toHaveBeenCalled();
+            expect(globalAfterHook.after).not.toHaveBeenCalled();
+          } catch (err) {
+            done(err);
+          }
+        }),
+      };
 
-        const clientBeforeHook: Hook = {
-          before: jest.fn(() => {
-            throw new Error('Fake error!');
-          }),
-        };
+      const clientAfterHook: Hook = {
+        after: jest.fn(() => {
+          try {
+            // provider and invocation should have run, but not global
+            expect(provider.hooks?.[0].after).toHaveBeenCalled();
+            expect(invocationAfterHook.after).toHaveBeenCalled();
+            expect(globalAfterHook.after).not.toHaveBeenCalled();
+          } catch (err) {
+            done(err);
+          }
+        }),
+      };
 
-        const beforeAndErrorHook: Hook = {
-          error: jest.fn(() => {
-            try {
-              // our subsequent "before" hook should not have run.
-              expect(beforeAndErrorHook.before).not.toHaveBeenCalled();
-              done();
-            } catch (err) {
-              done(err);
-            }
-          }),
-          before: jest.fn(() => {
-            done(new Error('Should not have run!'));
-          }),
-        };
+      const globalAfterHook: Hook = {
+        after: jest.fn(() => {
+          try {
+            // all hooks should have been called by now
+            expect(provider.hooks?.[0].after).toHaveBeenCalled();
+            expect(invocationAfterHook.after).toHaveBeenCalled();
+            expect(clientAfterHook.after).toHaveBeenCalled();
+            done();
+          } catch (err) {
+            done(err);
+          }
+        }),
+      };
 
-        client.getBooleanValue(FLAG_KEY, false, undefined, {
-          hooks: [clientBeforeHook, beforeAndErrorHook],
-        });
+      const provider: Provider = {
+        metadata: {
+          name: 'mock-hooks-after-with-hooks',
+        },
+        hooks: [
+          {
+            after: jest.fn(() => {
+              try {
+                // not invocation, nor client, nor global should have run at this point.
+                expect(globalAfterHook.after).not.toHaveBeenCalled();
+                expect(clientAfterHook.after).not.toHaveBeenCalled();
+                expect(invocationAfterHook.after).not.toHaveBeenCalled();
+              } catch (err) {
+                done(err);
+              }
+            }),
+          },
+        ],
+        resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
+          return Promise.resolve({
+            value: BOOLEAN_VALUE,
+            variant: BOOLEAN_VARIANT,
+            reason: REASON,
+          });
+        }),
+      } as unknown as Provider;
+
+      OpenFeature.setProvider(provider);
+      OpenFeature.clearHooks();
+      client.clearHooks();
+
+      OpenFeature.addHooks(globalAfterHook);
+      client.addHooks(clientAfterHook);
+
+      client.getBooleanValue(FLAG_KEY, false, undefined, {
+        hooks: [invocationAfterHook],
       });
     });
 
-    describe('Requirement 4.5.1, 4.5.2, 4.5.3', () => {
-      it('HookHints should be passed to each hook', (done) => {
-        OpenFeature.setProvider(MOCK_PROVIDER);
-        OpenFeature.clearHooks();
-        client.clearHooks();
+    it('"error" must run hook in order provider, invocation, client, global', (done) => {
+      const invocationErrorHook: Hook = {
+        error: jest.fn(() => {
+          try {
+            // provider should have run.
+            expect(errorProviderWithHooks.hooks?.[0].error).toHaveBeenCalled();
 
-        client.getBooleanValue(FLAG_KEY, false, undefined, {
-          hooks: [
-            {
-              before: (_, hookHints) => {
-                try {
-                  expect(hookHints?.hint).toBeTruthy();
-                } catch (err) {
-                  done(err);
-                }
-              },
-              after: (_hookContext, _evaluationDetils, hookHints) => {
-                try {
-                  expect(hookHints?.hint).toBeTruthy();
-                } catch (err) {
-                  done(err);
-                }
-              },
-              finally: (_, hookHints) => {
-                try {
-                  expect(hookHints?.hint).toBeTruthy();
-                  done();
-                } catch (err) {
-                  done(err);
-                }
-              },
+            // neither client, nor global should have run at this point.
+            expect(clientErrorHook.error).not.toHaveBeenCalled();
+            expect(globalErrorHook.error).not.toHaveBeenCalled();
+          } catch (err) {
+            done(err);
+          }
+        }),
+      };
+
+      const clientErrorHook: Hook = {
+        error: jest.fn(() => {
+          try {
+            // provider and invocation should have run, but not global
+            expect(errorProviderWithHooks.hooks?.[0].error).toHaveBeenCalled();
+            expect(invocationErrorHook.error).toHaveBeenCalled();
+            expect(globalErrorHook.error).not.toHaveBeenCalled();
+          } catch (err) {
+            done(err);
+          }
+        }),
+      };
+
+      const globalErrorHook: Hook = {
+        error: jest.fn(() => {
+          try {
+            // all hooks should have been called by now
+            expect(errorProviderWithHooks.hooks?.[0].error).toHaveBeenCalled();
+            expect(invocationErrorHook.error).toHaveBeenCalled();
+            expect(clientErrorHook.error).toHaveBeenCalled();
+            done();
+          } catch (err) {
+            done(err);
+          }
+        }),
+      };
+
+      const errorProviderWithHooks = {
+        metadata: {
+          name: 'mock-hooks-error-with-hooks',
+        },
+        hooks: [
+          {
+            error: jest.fn(() => {
+              try {
+                // not invocation, nor client, nor global should have run at this point.
+                expect(invocationErrorHook.error).not.toHaveBeenCalled();
+                expect(clientErrorHook.error).not.toHaveBeenCalled();
+                expect(globalErrorHook.error).not.toHaveBeenCalled();
+                done();
+              } catch (err) {
+                done(err);
+              }
+            }),
+          },
+        ],
+        resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
+          return Promise.reject({
+            reason: ERROR_REASON,
+            errorCode: ERROR_CODE,
+          });
+        }),
+      } as unknown as Provider;
+
+      OpenFeature.setProvider(errorProviderWithHooks);
+      OpenFeature.clearHooks();
+      client.clearHooks();
+
+      OpenFeature.addHooks(globalErrorHook);
+      client.addHooks(clientErrorHook);
+
+      client.getBooleanValue(FLAG_KEY, false, undefined, {
+        hooks: [invocationErrorHook],
+      });
+    });
+
+    it('"finally" must run hook in order provider, invocation, client, global', (done) => {
+      const clientFinallyHook: Hook = {
+        finally: jest.fn(() => {
+          try {
+            // provider and invocation should have run, but not global
+            expect(errorProviderWithHooks.hooks?.[0].finally).toHaveBeenCalled();
+            expect(invocationFinallyHook.finally).toHaveBeenCalled();
+            expect(globalFinallyHook.finally).not.toHaveBeenCalled();
+          } catch (err) {
+            done(err);
+          }
+        }),
+      };
+
+      const globalFinallyHook: Hook = {
+        finally: jest.fn(() => {
+          try {
+            // all hooks should have been called by now
+            expect(errorProviderWithHooks.hooks?.[0].finally).toHaveBeenCalled();
+            expect(invocationFinallyHook.finally).toHaveBeenCalled();
+            expect(clientFinallyHook.finally).toHaveBeenCalled();
+            done();
+          } catch (err) {
+            done(err);
+          }
+        }),
+      };
+
+      const invocationFinallyHook: Hook = {
+        finally: jest.fn(() => {
+          try {
+            // provider hooks should have run.
+            expect(errorProviderWithHooks.hooks?.[0].finally).toHaveBeenCalled();
+
+            // neither client, nor global should have run at this point.
+            expect(clientFinallyHook.finally).not.toHaveBeenCalled();
+            expect(globalFinallyHook.finally).not.toHaveBeenCalled();
+          } catch (err) {
+            done(err);
+          }
+        }),
+      };
+
+      const errorProviderWithHooks = {
+        metadata: {
+          name: 'mock-hooks-finally-with-hooks',
+        },
+        hooks: [
+          {
+            finally: jest.fn(() => {
+              try {
+                // not invocation, nor client, nor global should have run at this point.
+                expect(invocationFinallyHook.finally).not.toHaveBeenCalled();
+                expect(clientFinallyHook.finally).not.toHaveBeenCalled();
+                expect(globalFinallyHook.finally).not.toHaveBeenCalled();
+              } catch (err) {
+                done(err);
+              }
+            }),
+          },
+        ],
+        resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
+          return Promise.reject({
+            reason: ERROR_REASON,
+            errorCode: ERROR_CODE,
+          });
+        }),
+      } as unknown as Provider;
+      OpenFeature.setProvider(errorProviderWithHooks);
+      OpenFeature.clearHooks();
+      client.clearHooks();
+
+      OpenFeature.addHooks(globalFinallyHook);
+      client.addHooks(clientFinallyHook);
+
+      client.getBooleanValue(FLAG_KEY, false, undefined, {
+        hooks: [invocationFinallyHook],
+      });
+    });
+  });
+
+  describe('Requirement 4.4.3', () => {
+    it('all "finally" hooks must execute, despite errors', (done) => {
+      OpenFeature.setProvider(MOCK_PROVIDER);
+      OpenFeature.clearHooks();
+      client.clearHooks();
+
+      const firstFinallyHook: Hook = {
+        finally: jest.fn(() => {
+          throw new Error('expected');
+        }),
+      };
+
+      const secondFinallyHook: Hook = {
+        finally: () => {
+          try {
+            expect(firstFinallyHook.finally).toHaveBeenCalled();
+            done();
+          } catch (err) {
+            done(err);
+          }
+        },
+      };
+
+      client.getBooleanValue(FLAG_KEY, false, undefined, {
+        hooks: [secondFinallyHook, firstFinallyHook], // remember error hooks run in reverse order
+      });
+    });
+  });
+
+  describe('Requirement 4.4.4', () => {
+    it('all "error" hooks must execute, despite errors', (done) => {
+      OpenFeature.setProvider(MOCK_ERROR_PROVIDER);
+      OpenFeature.clearHooks();
+      client.clearHooks();
+
+      const firstErrorHook: Hook = {
+        error: jest.fn(() => {
+          throw new Error('expected');
+        }),
+      };
+
+      const secondErrorHook: Hook = {
+        error: () => {
+          try {
+            expect(firstErrorHook.error).toHaveBeenCalled();
+            done();
+          } catch (err) {
+            done(err);
+          }
+        },
+      };
+
+      client.getBooleanValue(FLAG_KEY, false, undefined, {
+        hooks: [secondErrorHook, firstErrorHook], // remember error hooks run in reverse order
+      });
+    });
+  });
+
+  describe('Requirement 4.4.5', () => {
+    it('"before" must trigger error hook', (done) => {
+      OpenFeature.setProvider(MOCK_PROVIDER);
+      OpenFeature.clearHooks();
+      client.clearHooks();
+
+      const beforeAndErrorHook: Hook = {
+        before: jest.fn(() => {
+          throw new Error('Fake error');
+        }),
+        error: jest.fn(() => {
+          try {
+            expect(beforeAndErrorHook.before).toHaveBeenCalled();
+            done();
+          } catch (err) {
+            done(err);
+          }
+        }),
+      };
+
+      client.getBooleanValue(FLAG_KEY, false, undefined, {
+        hooks: [beforeAndErrorHook],
+      });
+    });
+
+    it('"after" must trigger error hook', (done) => {
+      OpenFeature.setProvider(MOCK_PROVIDER);
+      OpenFeature.clearHooks();
+      client.clearHooks();
+
+      const afterAndErrorHook: Hook = {
+        after: jest.fn(() => {
+          throw new Error('Fake error');
+        }),
+        error: jest.fn(() => {
+          try {
+            expect(afterAndErrorHook.after).toHaveBeenCalled();
+            done();
+          } catch (err) {
+            done(err);
+          }
+        }),
+      };
+
+      client.getBooleanValue(FLAG_KEY, false, undefined, {
+        hooks: [afterAndErrorHook],
+      });
+    });
+  });
+
+  describe('Requirement 4.4.6', () => {
+    it('remaining before/after hooks must not run after error', (done) => {
+      OpenFeature.setProvider(MOCK_PROVIDER);
+      OpenFeature.clearHooks();
+      client.clearHooks();
+
+      const clientBeforeHook: Hook = {
+        before: jest.fn(() => {
+          throw new Error('Fake error!');
+        }),
+      };
+
+      const beforeAndErrorHook: Hook = {
+        error: jest.fn(() => {
+          try {
+            // our subsequent "before" hook should not have run.
+            expect(beforeAndErrorHook.before).not.toHaveBeenCalled();
+            done();
+          } catch (err) {
+            done(err);
+          }
+        }),
+        before: jest.fn(() => {
+          done(new Error('Should not have run!'));
+        }),
+      };
+
+      client.getBooleanValue(FLAG_KEY, false, undefined, {
+        hooks: [clientBeforeHook, beforeAndErrorHook],
+      });
+    });
+  });
+
+  describe('Requirement 4.5.1, 4.5.2, 4.5.3', () => {
+    it('HookHints should be passed to each hook', (done) => {
+      OpenFeature.setProvider(MOCK_PROVIDER);
+      OpenFeature.clearHooks();
+      client.clearHooks();
+
+      client.getBooleanValue(FLAG_KEY, false, undefined, {
+        hooks: [
+          {
+            before: (_, hookHints) => {
+              try {
+                expect(hookHints?.hint).toBeTruthy();
+              } catch (err) {
+                done(err);
+              }
             },
-          ],
-          hookHints: {
-            hint: true,
+            after: (_hookContext, _evaluationDetils, hookHints) => {
+              try {
+                expect(hookHints?.hint).toBeTruthy();
+              } catch (err) {
+                done(err);
+              }
+            },
+            finally: (_, hookHints) => {
+              try {
+                expect(hookHints?.hint).toBeTruthy();
+                done();
+              } catch (err) {
+                done(err);
+              }
+            },
           },
-        });
+        ],
+        hookHints: {
+          hint: true,
+        },
       });
     });
+  });
 
-    describe('Requirement 5.4', () => {
-      it('HookHints should be immutable', (done) => {
-        OpenFeature.setProvider(MOCK_PROVIDER);
-        OpenFeature.clearHooks();
-        client.clearHooks();
+  describe('Requirement 5.4', () => {
+    it('HookHints should be immutable', (done) => {
+      OpenFeature.setProvider(MOCK_PROVIDER);
+      OpenFeature.clearHooks();
+      client.clearHooks();
 
-        client.getBooleanValue(FLAG_KEY, false, undefined, {
-          hooks: [
-            {
-              before: (_, hookHints) => {
-                try {
-                  expect(hookHints?.hint).toBeTruthy();
-                } catch (err) {
-                  done(err);
-                }
+      client.getBooleanValue(FLAG_KEY, false, undefined, {
+        hooks: [
+          {
+            before: (_, hookHints) => {
+              try {
+                expect(hookHints?.hint).toBeTruthy();
+              } catch (err) {
+                done(err);
+              }
 
-                try {
-                  // cast this so we can attempt to modify it.
-                  (hookHints as { hint: boolean }).hint = false;
-                  done(new Error('Expected error, "hookHints" to be immutable.'));
-                } catch (err) {
-                  // expect an error since we are modifying a frozen object.
-                  done();
-                }
-              },
+              try {
+                // cast this so we can attempt to modify it.
+                (hookHints as { hint: boolean }).hint = false;
+                done(new Error('Expected error, "hookHints" to be immutable.'));
+              } catch (err) {
+                // expect an error since we are modifying a frozen object.
+                done();
+              }
             },
-          ],
-          hookHints: {
-            hint: true,
           },
-        });
+        ],
+        hookHints: {
+          hint: true,
+        },
       });
     });
   });
