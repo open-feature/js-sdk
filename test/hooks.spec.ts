@@ -203,30 +203,57 @@ describe('Hooks', () => {
   });
 
   describe('Requirement 4.3.4', () => {
-    it('"before" evaluationContext must be merged with invocation evaluationContext, which before taking precedence', async () => {
-      await client.getBooleanValue(
-        FLAG_KEY,
-        false,
-        // add a prop to the context, and some duplicates to overwrite
-        { invocationProp: 'abc', propToOverwrite: 'xxx' },
-        {
-          hooks: [
-            {
-              before: () => {
-                return { hookProp: 'def', propToOverwrite: 'ghi' };
-              },
+    it('When before hooks have finished executing, any resulting evaluation context MUST be merged with the existing evaluation context in the following order: before-hook (highest precedence), invocation, client, api (lowest precedence).', async () => {
+      const globalProp434 = 'globalProp';
+      const globalPropToOverwrite434 = 'globalPropToOverwrite';
+      const clientProp434 = 'clientProp';
+      const clientPropToOverwrite434 = 'clientPropToOverwrite';
+      const invocationProp434 = 'invocationProp';
+      const invocationPropToOverwrite434 = 'invocationPropToOverwrite';
+      const hookProp434 = 'hookProp';
+
+      OpenFeature.context = {
+        [globalProp434]: true,
+        [globalPropToOverwrite434]: false,
+      };
+      const clientContext = {
+        [clientProp434]: true,
+        [clientPropToOverwrite434]: false,
+        [globalPropToOverwrite434]: true,
+      };
+      const invocationContext = {
+        [invocationProp434]: true,
+        [invocationPropToOverwrite434]: false,
+        [clientPropToOverwrite434]: true,
+      };
+      const hookContext = {
+        [invocationPropToOverwrite434]: true,
+        [hookProp434]: true,
+      };
+
+      const localClient = OpenFeature.getClient('merge-test', 'test', clientContext);
+
+      await localClient.getBooleanValue(FLAG_KEY, false, invocationContext, {
+        hooks: [
+          {
+            before: () => {
+              return hookContext;
             },
-          ],
-        }
-      );
+          },
+        ],
+      });
       expect(MOCK_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalledWith(
         expect.anything(),
         expect.anything(),
         // ensure correct properties were maintained/overwritten
         expect.objectContaining({
-          invocationProp: 'abc', // some come from invocation
-          hookProp: 'def', // should come from before hook
-          propToOverwrite: 'ghi', // should be overwritten by before hook
+          [globalProp434]: true,
+          [globalPropToOverwrite434]: true,
+          [clientProp434]: true,
+          [clientPropToOverwrite434]: true,
+          [invocationProp434]: true,
+          [invocationPropToOverwrite434]: true,
+          [hookProp434]: true,
         }),
         expect.anything()
       );
