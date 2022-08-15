@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.0](https://github.com/open-feature/node-sdk/compare/nodejs-sdk-v0.1.10...nodejs-sdk-v0.2.0) (2022-08-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* context transformer and related interfaces removed.
+
+### Features
+
+* remove ctx transformer, add provider hooks ([#148](https://github.com/open-feature/node-sdk/issues/148)) ([260432c](https://github.com/open-feature/node-sdk/commit/260432c4f92f16f83635dfafff30ad9bc1697a47))
+
 ## [0.1.10](https://github.com/open-feature/node-sdk/compare/nodejs-sdk-v0.1.9...nodejs-sdk-v0.1.10) (2022-07-28)
 
 
