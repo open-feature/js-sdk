@@ -370,7 +370,7 @@ describe(OpenFeatureClient.name, () => {
     });
 
     describe('3.2.1, 3.2.2', () => {
-      it('Evaluation context MUST be merged in the order: API (global) -> client -> invocation, with duplicate values being overwritten.', async () => {
+      it('Evaluation context MUST be merged in the order: API (global; lowest precedence) -> client -> invocation -> before hooks (highest precedence), with duplicate values being overwritten.', async () => {
         const flagKey = 'some-other-flag';
         const defaultValue = false;
         const globalContext: EvaluationContext = {
@@ -384,12 +384,18 @@ describe(OpenFeatureClient.name, () => {
         };
         const invocationContext: EvaluationContext = {
           invocationContextValue: 'ghi',
+          invocationContextValueToOverwrite: 'xxx', // should be overwritten
           clientContextValueToOverwrite: '456',
+        };
+        const beforeHookContext: EvaluationContext = {
+          invocationContextValueToOverwrite: '789',
+          beforeHookContextValue: 'jkl',
         };
 
         OpenFeature.setProvider(provider);
         OpenFeature.context = globalContext;
         const client = OpenFeature.getClient('contextual', 'test', clientContext);
+        client.addHooks({ before: () => beforeHookContext });
         await client.getBooleanValue(flagKey, defaultValue, invocationContext);
         expect(provider.resolveBooleanEvaluation).toHaveBeenCalledWith(
           expect.anything(),
@@ -399,6 +405,7 @@ describe(OpenFeatureClient.name, () => {
             ...globalContext,
             ...clientContext,
             ...invocationContext,
+            ...beforeHookContext,
           }),
           expect.anything()
         );
