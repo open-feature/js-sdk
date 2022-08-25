@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.3.0](https://github.com/open-feature/node-sdk/compare/nodejs-sdk-v0.2.0...nodejs-sdk-v0.3.0) (2022-08-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove flag evaluation options from the provider interface (#185)
+
+### Features
+
+* remove flag evaluation options from the provider interface ([#185](https://github.com/open-feature/node-sdk/issues/185)) ([e9852e4](https://github.com/open-feature/node-sdk/commit/e9852e4f52fd598cebb9d74f3c22abdb832ebac9)), closes [#183](https://github.com/open-feature/node-sdk/issues/183)
+
 ## [0.2.0](https://github.com/open-feature/node-sdk/compare/nodejs-sdk-v0.1.10...nodejs-sdk-v0.2.0) (2022-08-15)
 
 
