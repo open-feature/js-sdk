@@ -169,8 +169,7 @@ describe('Hooks', () => {
         // ensure property was added by the time the flag resolution occurred.
         expect.objectContaining({
           beforeRan: true,
-        }),
-        expect.anything()
+        })
       );
     });
   });
@@ -254,8 +253,7 @@ describe('Hooks', () => {
           [invocationProp434]: true,
           [invocationPropToOverwrite434]: true,
           [hookProp434]: true,
-        }),
-        expect.anything()
+        })
       );
     });
   });
@@ -939,7 +937,7 @@ describe('Hooks', () => {
       it('should be awaited, run in order', (done) => {
         OpenFeature.setProvider(MOCK_PROVIDER);
 
-        const asyncBeforeErroFinally = {
+        const asyncBeforeErrorFinally = {
           before: jest.fn(() => {
             return new Promise<EvaluationContext>((resolve, reject) =>
               setTimeout(() => {
@@ -949,7 +947,7 @@ describe('Hooks', () => {
           }),
           error: jest.fn(() => {
             try {
-              expect(asyncBeforeErroFinally.before).toHaveBeenCalled();
+              expect(asyncBeforeErrorFinally.before).toHaveBeenCalled();
             } catch (err) {
               done(err);
             }
@@ -957,7 +955,7 @@ describe('Hooks', () => {
           }),
           finally: () => {
             try {
-              expect(asyncBeforeErroFinally.error).toHaveBeenCalled();
+              expect(asyncBeforeErrorFinally.error).toHaveBeenCalled();
               done();
             } catch (err) {
               done(err);
@@ -966,7 +964,7 @@ describe('Hooks', () => {
         };
 
         client.getBooleanValue(FLAG_KEY, false, undefined, {
-          hooks: [asyncBeforeErroFinally],
+          hooks: [asyncBeforeErrorFinally],
         });
       });
     });
