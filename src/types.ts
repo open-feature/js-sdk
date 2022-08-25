@@ -118,8 +118,7 @@ export interface Provider extends Pick<Partial<EvaluationLifeCycle>, 'hooks'> {
   resolveBooleanEvaluation(
     flagKey: string,
     defaultValue: boolean,
-    context: EvaluationContext,
-    options: FlagEvaluationOptions | undefined
+    context: EvaluationContext
   ): Promise<ResolutionDetails<boolean>>;
 
   /**
@@ -128,8 +127,7 @@ export interface Provider extends Pick<Partial<EvaluationLifeCycle>, 'hooks'> {
   resolveStringEvaluation(
     flagKey: string,
     defaultValue: string,
-    context: EvaluationContext,
-    options: FlagEvaluationOptions | undefined
+    context: EvaluationContext
   ): Promise<ResolutionDetails<string>>;
 
   /**
@@ -138,8 +136,7 @@ export interface Provider extends Pick<Partial<EvaluationLifeCycle>, 'hooks'> {
   resolveNumberEvaluation(
     flagKey: string,
     defaultValue: number,
-    context: EvaluationContext,
-    options: FlagEvaluationOptions | undefined
+    context: EvaluationContext
   ): Promise<ResolutionDetails<number>>;
 
   /**
@@ -148,8 +145,7 @@ export interface Provider extends Pick<Partial<EvaluationLifeCycle>, 'hooks'> {
   resolveObjectEvaluation<U extends object>(
     flagKey: string,
     defaultValue: U,
-    context: EvaluationContext,
-    options: FlagEvaluationOptions | undefined
+    context: EvaluationContext
   ): Promise<ResolutionDetails<U>>;
 }
 
