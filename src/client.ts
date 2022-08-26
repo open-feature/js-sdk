@@ -145,12 +145,7 @@ export class OpenFeatureClient implements Client {
 
   private async evaluate<T extends FlagValue>(
     flagKey: string,
-    resolver: (
-      flagKey: string,
-      defaultValue: T,
-      context: EvaluationContext,
-      options: FlagEvaluationOptions | undefined
-    ) => Promise<ResolutionDetails<T>>,
+    resolver: (flagKey: string, defaultValue: T, context: EvaluationContext) => Promise<ResolutionDetails<T>>,
     defaultValue: T,
     flagType: FlagValueType,
     invocationContext: EvaluationContext = {},
@@ -183,7 +178,7 @@ export class OpenFeatureClient implements Client {
       const frozenContext = await this.beforeHooks(allHooks, hookContext, options);
 
       // run the referenced resolver, binding the provider.
-      const resolution = await resolver.call(this.provider, flagKey, defaultValue, frozenContext, options);
+      const resolution = await resolver.call(this.provider, flagKey, defaultValue, frozenContext);
 
       const evaluationDetails = {
         ...resolution,
