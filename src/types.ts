@@ -211,6 +211,7 @@ export type EvaluationDetails<T extends FlagValue> = {
 
 export interface Client extends EvaluationLifeCycle, Features {
   readonly metadata: ClientMetadata;
+  context: EvaluationContext;
 }
 
 export type HookHints = Readonly<Record<string, unknown>>;
