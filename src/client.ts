@@ -21,7 +21,7 @@ type OpenFeatureClientOptions = {
 
 export class OpenFeatureClient implements Client {
   readonly metadata: ClientMetadata;
-  readonly context: EvaluationContext;
+  private _context: EvaluationContext;
   private _hooks: Hook[] = [];
 
   constructor(
@@ -35,7 +35,15 @@ export class OpenFeatureClient implements Client {
       name: options.name,
       version: options.version,
     } as const;
-    this.context = context;
+    this._context = context;
+  }
+
+  set context (context: EvaluationContext) {
+    this._context = context;
+  }
+
+  get context (): EvaluationContext {
+    return this._context;
   }
 
   addHooks(...hooks: Hook<FlagValue>[]): void {
@@ -159,7 +167,7 @@ export class OpenFeatureClient implements Client {
     // merge global and client contexts
     const mergedContext = {
       ...OpenFeature.context,
-      ...this.context,
+      ...this._context,
       ...invocationContext,
     };
 

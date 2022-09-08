@@ -407,5 +407,15 @@ describe(OpenFeatureClient.name, () => {
         );
       });
     });
+
+    describe('client evaluation context', () => {
+      it('can be mutated', async () => {
+        const KEY = 'key';
+        const VAL = 'val';
+        const client = OpenFeature.getClient();
+        client.context = { [KEY]: VAL };
+        expect(client.context[KEY]).toEqual(VAL);
+      });
+    });
   });
 });
