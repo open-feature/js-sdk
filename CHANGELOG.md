@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/open-feature/node-sdk/compare/nodejs-sdk-v0.3.1...nodejs-sdk-v0.3.2) (2022-09-08)
+
+
+### Features
+
+* add client context mutation ([9d004be](https://github.com/open-feature/node-sdk/commit/9d004bebf62040ec432f733005e4b63fcfd82c30))
+
 ## [0.3.1](https://github.com/open-feature/node-sdk/compare/nodejs-sdk-v0.3.0...nodejs-sdk-v0.3.1) (2022-08-26)
 
 
