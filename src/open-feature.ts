@@ -1,7 +1,19 @@
 import { OpenFeatureClient } from './client';
 import { DefaultLogger, SafeLogger } from './logger';
 import { NOOP_PROVIDER } from './no-op-provider';
-import { Client, EvaluationContext, FlagValue, GlobalApi, Hook, Logger, Provider, ProviderMetadata } from './types';
+import { NOOP_TRANSACTION_CONTEXT_PROPAGATOR } from './no-op-transaction-context-propagator';
+import {
+  Client,
+  EvaluationContext,
+  FlagValue,
+  GlobalApi,
+  Hook,
+  Logger,
+  Provider,
+  ProviderMetadata,
+  TransactionContext,
+  TransactionContextPropagator,
+} from './types';
 
 // use a symbol as a key for the global singleton
 const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/js.api');
@@ -13,6 +25,7 @@ const _globalThis = globalThis as OpenFeatureGlobal;
 
 class OpenFeatureAPI implements GlobalApi {
   private _provider: Provider = NOOP_PROVIDER;
+  private _transactionContextPropagator: TransactionContextPropagator = NOOP_TRANSACTION_CONTEXT_PROPAGATOR;
   private _context: EvaluationContext = {};
   private _hooks: Hook[] = [];
   private _logger: Logger = new DefaultLogger();
@@ -68,6 +81,19 @@ class OpenFeatureAPI implements GlobalApi {
   setProvider(provider: Provider): OpenFeatureAPI {
     this._provider = provider;
     return this;
+  }
+
+  setTransactionContextPropagator(transactionContextPropagator: TransactionContextPropagator) {
+    this._transactionContextPropagator = transactionContextPropagator;
+    return this;
+  }
+
+  setTransactionContext(transactionContext: TransactionContext, callback: () => void) {
+    this._transactionContextPropagator.setTransactionContext(transactionContext, callback);
+  }
+
+  getTransactionContext(): TransactionContext {
+    return this._transactionContextPropagator.getTransactionContext();
   }
 
   setContext(context: EvaluationContext): OpenFeatureAPI {

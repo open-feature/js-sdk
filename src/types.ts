@@ -520,3 +520,22 @@ export interface Hook<T extends FlagValue = FlagValue> {
    */
   finally?(hookContext: Readonly<HookContext<T>>, hookHints?: HookHints): Promise<void> | void;
 }
+
+/**
+ * Transaction context is a mechanism for adding transaction specific context that
+ * is merged with evaluation context prior to flag evaluation. Examples of potential
+ * transaction specific context include: a user id, user agent, or IP address.
+ */
+export type TransactionContext = EvaluationContext;
+
+export interface TransactionContextPropagator {
+  /**
+   * Returns the currently defined transaction context.
+   */
+  getTransactionContext(): TransactionContext;
+
+  /**
+   * Sets the transaction context on the registered transaction context propagator.
+   */
+  setTransactionContext(transactionContext: TransactionContext, callback: () => void): void;
+}
