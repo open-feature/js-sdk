@@ -91,7 +91,7 @@ describe(OpenFeatureClient.name, () => {
           const value = await client.getBooleanValue(booleanFlag, defaultBooleanValue);
 
           expect(value).toEqual(BOOLEAN_VALUE);
-          expect(MOCK_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalledWith(booleanFlag, defaultBooleanValue, {});
+          expect(MOCK_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalledWith(booleanFlag, defaultBooleanValue, {}, {});
         });
       });
 
@@ -102,7 +102,7 @@ describe(OpenFeatureClient.name, () => {
           const value = await client.getStringValue(stringFlag, defaultStringValue);
 
           expect(value).toEqual(STRING_VALUE);
-          expect(MOCK_PROVIDER.resolveStringEvaluation).toHaveBeenCalledWith(stringFlag, defaultStringValue, {});
+          expect(MOCK_PROVIDER.resolveStringEvaluation).toHaveBeenCalledWith(stringFlag, defaultStringValue, {}, {});
         });
       });
 
@@ -113,7 +113,7 @@ describe(OpenFeatureClient.name, () => {
           const value = await client.getNumberValue(numberFlag, defaultNumberValue);
 
           expect(value).toEqual(NUMBER_VALUE);
-          expect(MOCK_PROVIDER.resolveNumberEvaluation).toHaveBeenCalledWith(numberFlag, defaultNumberValue, {});
+          expect(MOCK_PROVIDER.resolveNumberEvaluation).toHaveBeenCalledWith(numberFlag, defaultNumberValue, {}, {});
         });
       });
 
@@ -124,7 +124,7 @@ describe(OpenFeatureClient.name, () => {
           const value = await client.getObjectValue(objectFlag, {});
 
           expect(value).toEqual(OBJECT_VALUE);
-          expect(MOCK_PROVIDER.resolveObjectEvaluation).toHaveBeenCalledWith(objectFlag, defaultObjectFlag, {});
+          expect(MOCK_PROVIDER.resolveObjectEvaluation).toHaveBeenCalledWith(objectFlag, defaultObjectFlag, {}, {});
         });
       });
     });
@@ -146,7 +146,7 @@ describe(OpenFeatureClient.name, () => {
 
           expect(booleanDetails.value).toEqual(BOOLEAN_VALUE);
           expect(booleanDetails.variant).toEqual(BOOLEAN_VARIANT);
-          expect(MOCK_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalledWith(booleanFlag, defaultBooleanValue, {});
+          expect(MOCK_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalledWith(booleanFlag, defaultBooleanValue, {}, {});
         });
       });
 
@@ -158,7 +158,7 @@ describe(OpenFeatureClient.name, () => {
 
           expect(stringDetails.value).toEqual(STRING_VALUE);
           expect(stringDetails.variant).toEqual(STRING_VARIANT);
-          expect(MOCK_PROVIDER.resolveStringEvaluation).toHaveBeenCalledWith(stringFlag, defaultStringValue, {});
+          expect(MOCK_PROVIDER.resolveStringEvaluation).toHaveBeenCalledWith(stringFlag, defaultStringValue, {}, {});
         });
       });
 
@@ -170,7 +170,7 @@ describe(OpenFeatureClient.name, () => {
 
           expect(numberDetails.value).toEqual(NUMBER_VALUE);
           expect(numberDetails.variant).toEqual(NUMBER_VARIANT);
-          expect(MOCK_PROVIDER.resolveNumberEvaluation).toHaveBeenCalledWith(numberFlag, defaultNumberValue, {});
+          expect(MOCK_PROVIDER.resolveNumberEvaluation).toHaveBeenCalledWith(numberFlag, defaultNumberValue, {}, {});
         });
       });
 
@@ -182,7 +182,7 @@ describe(OpenFeatureClient.name, () => {
 
           expect(objectDetails.value).toEqual(OBJECT_VALUE);
           expect(objectDetails.variant).toEqual(OBJECT_VARIANT);
-          expect(MOCK_PROVIDER.resolveObjectEvaluation).toHaveBeenCalledWith(objectFlag, defaultObjectFlag, {});
+          expect(MOCK_PROVIDER.resolveObjectEvaluation).toHaveBeenCalledWith(objectFlag, defaultObjectFlag, {}, {});
         });
       });
     });
@@ -303,7 +303,8 @@ describe(OpenFeatureClient.name, () => {
         expect(nonTransformingProvider.resolveBooleanEvaluation).toHaveBeenCalledWith(
           flagKey,
           defaultValue,
-          expect.objectContaining({ transformed: false })
+          expect.objectContaining({ transformed: false }),
+          {}
         );
       });
     });
@@ -336,7 +337,8 @@ describe(OpenFeatureClient.name, () => {
           expect.anything(),
           expect.objectContaining({
             targetingKey: TARGETING_KEY,
-          })
+          }),
+          expect.anything()
         );
       });
     });
@@ -361,7 +363,8 @@ describe(OpenFeatureClient.name, () => {
           expect.anything(),
           expect.objectContaining({
             ...context,
-          })
+          }),
+          expect.anything()
         );
       });
     });
@@ -403,7 +406,8 @@ describe(OpenFeatureClient.name, () => {
             ...clientContext,
             ...invocationContext,
             ...beforeHookContext,
-          })
+          }),
+          expect.anything()
         );
       });
     });

@@ -169,7 +169,8 @@ describe('Hooks', () => {
         // ensure property was added by the time the flag resolution occurred.
         expect.objectContaining({
           beforeRan: true,
-        })
+        }),
+        expect.anything()
       );
     });
   });
@@ -253,7 +254,8 @@ describe('Hooks', () => {
           [invocationProp434]: true,
           [invocationPropToOverwrite434]: true,
           [hookProp434]: true,
-        })
+        }),
+        expect.anything()
       );
     });
   });
