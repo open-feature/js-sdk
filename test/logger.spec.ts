@@ -9,7 +9,6 @@ class MockedLogger implements Logger {
   debug = jest.fn();
 }
 
-<<<<<<< HEAD
 const BEFORE_HOOK_LOG_MESSAGE = 'in before hook';
 const AFTER_HOOK_LOG_MESSAGE = 'in after hook';
 const ERROR_HOOK_LOG_MESSAGE = 'in error hook';
@@ -43,31 +42,6 @@ const MOCK_PROVIDER: Provider = {
   }),
   resolveObjectEvaluation: jest.fn((key, value, ctx, log) => {
     log.info(RESOLVE_OBJECT_MESSAGE);
-=======
-const MOCK_HOOK: Hook = {
-  before: jest.fn((hookContext) => hookContext.logger.info('in before hook')),
-  after: jest.fn((hookContext) => hookContext.logger.info('in after hook')),
-  error: jest.fn((hookContext) => hookContext.logger.info('in error hook')),
-  finally: jest.fn((hookContext) => hookContext.logger.info('in finally hook')),
-};
-
-const MOCK_PROVIDER: Provider = {
-  metadata: { name: 'Mock Provider' },
-  resolveBooleanEvaluation: jest.fn((key, value, ctx, log) => {
-    log.info('resolving boolean value');
-    return Promise.resolve({ value });
-  }),
-  resolveStringEvaluation: jest.fn((key, value, ctx, log) => {
-    log.info('resolving string value');
-    return Promise.resolve({ value });
-  }),
-  resolveNumberEvaluation: jest.fn((key, value, ctx, log) => {
-    log.info('resolving number value');
-    return Promise.resolve({ value });
-  }),
-  resolveObjectEvaluation: jest.fn((key, value, ctx, log) => {
-    log.info('resolving object value');
->>>>>>> add logger
     return Promise.resolve({ value });
   }),
 };
@@ -117,11 +91,7 @@ describe('Logger', () => {
     describe('Safe Logger', () => {
       it('should use the default logger because the custom logger is missing a function', () => {
         const errorSpy = jest.spyOn(global.console, 'error').mockImplementation();
-<<<<<<< HEAD
         const safeLogger = new SafeLogger({} as Logger);
-=======
-        const safeLogger = new SafeLogger({} as any);
->>>>>>> add logger
 
         expect(errorSpy).toBeCalledWith(
           expect.objectContaining({ message: 'The provided logger is missing the error method.' })
@@ -161,11 +131,7 @@ describe('Logger', () => {
       });
 
       it('should create a safe logger', () => {
-<<<<<<< HEAD
         OpenFeature.logger = {} as Logger;
-=======
-        OpenFeature.logger = {} as any;
->>>>>>> add logger
         expect(OpenFeature.logger).toBeInstanceOf(SafeLogger);
       });
     });
@@ -181,11 +147,7 @@ describe('Logger', () => {
       const mockedLogger = new MockedLogger();
       client.logger = mockedLogger;
       await client.getBooleanValue('test', false);
-<<<<<<< HEAD
       expect(mockedLogger.info).toHaveBeenCalledWith(RESOLVE_BOOL_MESSAGE);
-=======
-      expect(mockedLogger.info).toHaveBeenCalledWith('resolving boolean value');
->>>>>>> add logger
     });
 
     it('should provide a logger to the before, after, and finally hook', async () => {
@@ -196,7 +158,6 @@ describe('Logger', () => {
       await client.getBooleanValue('test', false);
 
       expect(mockedLogger.info.mock.calls).toEqual([
-<<<<<<< HEAD
         [BEFORE_HOOK_LOG_MESSAGE],
         [RESOLVE_BOOL_MESSAGE],
         [AFTER_HOOK_LOG_MESSAGE],
@@ -205,31 +166,17 @@ describe('Logger', () => {
     });
 
     it('should provide a logger to the error hook', async () => {
-=======
-        ['in before hook'],
-        ['resolving boolean value'],
-        ['in after hook'],
-        ['in finally hook'],
-      ]);
-    });
-
-    it('should use the default logger in the error hook', async () => {
->>>>>>> add logger
       const client = OpenFeature.getClient();
       const mockedLogger = new MockedLogger();
       client.logger = mockedLogger;
       client.addHooks(MOCK_HOOK);
       (MOCK_PROVIDER.resolveBooleanEvaluation as jest.Mock).mockRejectedValueOnce('Run error hook');
       await client.getBooleanValue('test', false);
-<<<<<<< HEAD
       expect(mockedLogger.info.mock.calls).toEqual([
         [BEFORE_HOOK_LOG_MESSAGE],
         [ERROR_HOOK_LOG_MESSAGE],
         [FINALLY_HOOK_LOG_MESSAGE],
       ]);
-=======
-      expect(mockedLogger.info.mock.calls).toEqual([['in before hook'], ['in error hook'], ['in finally hook']]);
->>>>>>> add logger
     });
   });
 });
