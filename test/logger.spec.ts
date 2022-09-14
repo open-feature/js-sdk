@@ -9,29 +9,39 @@ class MockedLogger implements Logger {
   debug = jest.fn();
 }
 
+const BEFORE_HOOK_LOG_MESSAGE = 'in before hook';
+const AFTER_HOOK_LOG_MESSAGE = 'in after hook';
+const ERROR_HOOK_LOG_MESSAGE = 'in error hook';
+const FINALLY_HOOK_LOG_MESSAGE = 'in finally hook';
+
 const MOCK_HOOK: Hook = {
-  before: jest.fn((hookContext) => hookContext.logger.info('in before hook')),
-  after: jest.fn((hookContext) => hookContext.logger.info('in after hook')),
-  error: jest.fn((hookContext) => hookContext.logger.info('in error hook')),
-  finally: jest.fn((hookContext) => hookContext.logger.info('in finally hook')),
+  before: jest.fn((hookContext) => hookContext.logger.info(BEFORE_HOOK_LOG_MESSAGE)),
+  after: jest.fn((hookContext) => hookContext.logger.info(AFTER_HOOK_LOG_MESSAGE)),
+  error: jest.fn((hookContext) => hookContext.logger.info(ERROR_HOOK_LOG_MESSAGE)),
+  finally: jest.fn((hookContext) => hookContext.logger.info(FINALLY_HOOK_LOG_MESSAGE)),
 };
+
+const RESOLVE_BOOL_MESSAGE = 'resolving boolean value';
+const RESOLVE_STRING_MESSAGE = 'resolving string value';
+const RESOLVE_NUM_MESSAGE = 'resolving number value';
+const RESOLVE_OBJECT_MESSAGE = 'resolving object value';
 
 const MOCK_PROVIDER: Provider = {
   metadata: { name: 'Mock Provider' },
   resolveBooleanEvaluation: jest.fn((key, value, ctx, log) => {
-    log.info('resolving boolean value');
+    log.info(RESOLVE_BOOL_MESSAGE);
     return Promise.resolve({ value });
   }),
   resolveStringEvaluation: jest.fn((key, value, ctx, log) => {
-    log.info('resolving string value');
+    log.info(RESOLVE_STRING_MESSAGE);
     return Promise.resolve({ value });
   }),
   resolveNumberEvaluation: jest.fn((key, value, ctx, log) => {
-    log.info('resolving number value');
+    log.info(RESOLVE_NUM_MESSAGE);
     return Promise.resolve({ value });
   }),
   resolveObjectEvaluation: jest.fn((key, value, ctx, log) => {
-    log.info('resolving object value');
+    log.info(RESOLVE_OBJECT_MESSAGE);
     return Promise.resolve({ value });
   }),
 };
@@ -137,7 +147,7 @@ describe('Logger', () => {
       const mockedLogger = new MockedLogger();
       client.logger = mockedLogger;
       await client.getBooleanValue('test', false);
-      expect(mockedLogger.info).toHaveBeenCalledWith('resolving boolean value');
+      expect(mockedLogger.info).toHaveBeenCalledWith(RESOLVE_BOOL_MESSAGE);
     });
 
     it('should provide a logger to the before, after, and finally hook', async () => {
@@ -148,10 +158,10 @@ describe('Logger', () => {
       await client.getBooleanValue('test', false);
 
       expect(mockedLogger.info.mock.calls).toEqual([
-        ['in before hook'],
-        ['resolving boolean value'],
-        ['in after hook'],
-        ['in finally hook'],
+        [BEFORE_HOOK_LOG_MESSAGE],
+        [RESOLVE_BOOL_MESSAGE],
+        [AFTER_HOOK_LOG_MESSAGE],
+        [FINALLY_HOOK_LOG_MESSAGE],
       ]);
     });
 
@@ -162,7 +172,11 @@ describe('Logger', () => {
       client.addHooks(MOCK_HOOK);
       (MOCK_PROVIDER.resolveBooleanEvaluation as jest.Mock).mockRejectedValueOnce('Run error hook');
       await client.getBooleanValue('test', false);
-      expect(mockedLogger.info.mock.calls).toEqual([['in before hook'], ['in error hook'], ['in finally hook']]);
+      expect(mockedLogger.info.mock.calls).toEqual([
+        [BEFORE_HOOK_LOG_MESSAGE],
+        [ERROR_HOOK_LOG_MESSAGE],
+        [FINALLY_HOOK_LOG_MESSAGE],
+      ]);
     });
   });
 });
