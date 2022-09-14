@@ -155,7 +155,7 @@ describe('Logger', () => {
       ]);
     });
 
-    it('should use the default logger in the error hook', async () => {
+    it('should provide a logger to the error hook', async () => {
       const client = OpenFeature.getClient();
       const mockedLogger = new MockedLogger();
       client.logger = mockedLogger;
