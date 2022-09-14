@@ -53,7 +53,7 @@ const MOCK_PROVIDER: Provider = {
   }) as <U extends object>() => Promise<ResolutionDetails<U>>,
 };
 
-describe(OpenFeatureClient.name, () => {
+describe('OpenFeatureClient', () => {
   beforeAll(() => {
     OpenFeature.setProvider(MOCK_PROVIDER);
   });
@@ -84,7 +84,7 @@ describe(OpenFeatureClient.name, () => {
     });
 
     describe('flag evaluation', () => {
-      describe(` ${OpenFeatureClient.prototype.getBooleanValue.name}`, () => {
+      describe('getBooleanValue', () => {
         it('should return boolean, and call boolean resolver', async () => {
           const booleanFlag = 'my-boolean-flag';
           const defaultBooleanValue = false;
@@ -95,7 +95,7 @@ describe(OpenFeatureClient.name, () => {
         });
       });
 
-      describe(OpenFeatureClient.prototype.getStringValue.name, () => {
+      describe('getStringValue', () => {
         it('should return string, and call string resolver', async () => {
           const stringFlag = 'my-string-flag';
           const defaultStringValue = 'default-value';
@@ -106,7 +106,7 @@ describe(OpenFeatureClient.name, () => {
         });
       });
 
-      describe(OpenFeatureClient.prototype.getNumberValue.name, () => {
+      describe('getNumberValue', () => {
         it('should return number, and call number resolver', async () => {
           const numberFlag = 'my-number-flag';
           const defaultNumberValue = 1970;
@@ -117,7 +117,7 @@ describe(OpenFeatureClient.name, () => {
         });
       });
 
-      describe(OpenFeatureClient.prototype.getObjectValue.name, () => {
+      describe('getObjectValue', () => {
         it('should return object, and call object resolver', async () => {
           const objectFlag = 'my-object-flag';
           const defaultObjectFlag = {};
@@ -138,7 +138,7 @@ describe(OpenFeatureClient.name, () => {
     });
 
     describe('detailed flag evaluation', () => {
-      describe(` ${OpenFeatureClient.prototype.getBooleanDetails.name}`, () => {
+      describe('getBooleanDetails', () => {
         it('should return boolean details, and call boolean resolver', async () => {
           const booleanFlag = 'my-boolean-flag';
           const defaultBooleanValue = false;
@@ -150,7 +150,7 @@ describe(OpenFeatureClient.name, () => {
         });
       });
 
-      describe(OpenFeatureClient.prototype.getStringDetails.name, () => {
+      describe('getStringDetails', () => {
         it('should return string details, and call string resolver', async () => {
           const stringFlag = 'my-string-flag';
           const defaultStringValue = 'default-value';
@@ -162,7 +162,7 @@ describe(OpenFeatureClient.name, () => {
         });
       });
 
-      describe(OpenFeatureClient.prototype.getNumberDetails.name, () => {
+      describe('getNumberDetails', () => {
         it('should return number details, and call number resolver', async () => {
           const numberFlag = 'my-number-flag';
           const defaultNumberValue = 1970;
@@ -174,7 +174,7 @@ describe(OpenFeatureClient.name, () => {
         });
       });
 
-      describe(OpenFeatureClient.prototype.getObjectDetails.name, () => {
+      describe('getObjectDetails', () => {
         it('should return object details, and call object resolver', async () => {
           const objectFlag = 'my-object-flag';
           const defaultObjectFlag = {};

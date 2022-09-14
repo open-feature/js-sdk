@@ -1,5 +1,4 @@
-import { OpenFeatureClient } from '../src/client.js';
-import { OpenFeature } from '../src/open-feature.js';
+import { OpenFeature } from '../src/open-feature';
 
 const BOOLEAN_VALUE = true;
 const STRING_VALUE = 'val';
@@ -10,7 +9,7 @@ const OBJECT_VALUE = {
 
 const NO_OP_FLAG = 'no-op-flag';
 
-describe(OpenFeatureClient.name, () => {
+describe('OpenFeatureClient', () => {
   describe('No-op behavior', () => {
     // create a no-op client.
     const client = OpenFeature.getClient();
