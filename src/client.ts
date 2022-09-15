@@ -265,7 +265,9 @@ export class OpenFeatureClient implements Client {
         await hook?.error?.(hookContext, err, options.hookHints);
       } catch (err) {
         this.logger.error(`Unhandled error during 'error' hook: ${err}`);
-        this.logger.error((err as Error)?.stack);
+        if (err instanceof Error) {
+          this.logger.error(err.stack);
+        }
       }
     }
   }
@@ -277,7 +279,9 @@ export class OpenFeatureClient implements Client {
         await hook?.finally?.(hookContext, options.hookHints);
       } catch (err) {
         this.logger.error(`Unhandled error during 'finally' hook: ${err}`);
-        this.logger.error((err as Error)?.stack);
+        if (err instanceof Error) {
+          this.logger.error(err.stack);
+        }
       }
     }
   }
