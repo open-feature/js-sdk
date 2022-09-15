@@ -91,7 +91,7 @@ describe('Logger', () => {
     describe('Safe Logger', () => {
       it('should use the default logger because the custom logger is missing a function', () => {
         const errorSpy = jest.spyOn(global.console, 'error').mockImplementation();
-        const safeLogger = new SafeLogger({} as any);
+        const safeLogger = new SafeLogger({} as Logger);
 
         expect(errorSpy).toBeCalledWith(
           expect.objectContaining({ message: 'The provided logger is missing the error method.' })
@@ -131,7 +131,7 @@ describe('Logger', () => {
       });
 
       it('should create a safe logger', () => {
-        OpenFeature.logger = {} as any;
+        OpenFeature.logger = {} as Logger;
         expect(OpenFeature.logger).toBeInstanceOf(SafeLogger);
       });
     });
