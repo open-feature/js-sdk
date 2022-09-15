@@ -1,4 +1,5 @@
 import { OpenFeatureClient } from '../src/client.js';
+import { NOOP_PROVIDER } from '../src/no-op-provider.js';
 import { OpenFeature } from '../src/open-feature.js';
 import { Provider } from '../src/types.js';
 
@@ -39,5 +40,16 @@ describe('OpenFeature', () => {
       expect(namedClient).toBeInstanceOf(OpenFeatureClient);
       expect(namedClient.metadata.name).toEqual(name);
     });
+  });
+
+  it('should be chainable', () => {
+    const client = OpenFeature.addHooks()
+      .clearHooks()
+      .setContext({})
+      .setLogger(console)
+      .setProvider(NOOP_PROVIDER)
+      .getClient();
+
+    expect(client).toBeDefined();
   });
 });

@@ -42,34 +42,80 @@ export class OpenFeatureClient implements Client {
     this._context = context;
   }
 
-  set logger(logger: Logger) {
+  /**
+   * Sets a logger on the client. This logger supersedes to the global logger
+   * and is passed to various components in the SDK.
+   *
+   * @param {Logger} logger The logger to to be used
+   * @returns {OpenFeatureClient} OpenFeature Client
+   */
+  setLogger(logger: Logger): OpenFeatureClient {
     this._clientLogger = new SafeLogger(logger);
+    return this;
   }
 
-  get logger(): Logger {
-    return this._clientLogger || this.globalLogger();
-  }
-
-  set context(context: EvaluationContext) {
+  /**
+   * Sets client evaluation context that will be used during flag evaluations
+   * on this client.
+   *
+   * @param {EvaluationContext} context Client evaluation context
+   * @returns {OpenFeatureClient} OpenFeature Client
+   */
+  setContext(context: EvaluationContext): OpenFeatureClient {
     this._context = context;
+    return this;
   }
 
-  get context(): EvaluationContext {
+  /**
+   * Access the client evaluation context.
+   *
+   * @returns {EvaluationContext} Client evaluation context
+   */
+  getContext(): EvaluationContext {
     return this._context;
   }
 
-  addHooks(...hooks: Hook<FlagValue>[]): void {
+  /**
+   * Adds client hooks that will run during flag evaluations on this client. Client
+   * hooks are executed in the order they were registered. Adding additional hooks
+   * will not remove existing hooks.
+   *
+   * @param {Hook<FlagValue>[]} hooks A list of hooks that should always run
+   * @returns {OpenFeatureClient} OpenFeature Client
+   */
+  addHooks(...hooks: Hook<FlagValue>[]): OpenFeatureClient {
     this._hooks = [...this._hooks, ...hooks];
+    return this;
   }
 
-  get hooks(): Hook<FlagValue>[] {
+  /**
+   * Access all the hooks that are registered on this client.
+   *
+   * @returns {Hook<FlagValue>[]} A list of the client hooks
+   */
+  getHooks(): Hook<FlagValue>[] {
     return this._hooks;
   }
 
-  clearHooks(): void {
+  /**
+   * Clears all the hooks that are registered on this client.
+   *
+   * @returns {OpenFeatureClient} OpenFeature Client
+   */
+  clearHooks(): OpenFeatureClient {
     this._hooks = [];
+    return this;
   }
 
+  /**
+   * Performs a flag evaluation that returns a boolean.
+   *
+   * @param {string} flagKey The flag key uniquely identifies a particular flag
+   * @param {boolean} defaultValue The value returned if an error occurs
+   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
+   * @param {FlagEvaluationOptions} options Additional flag evaluation options
+   * @returns {Promise<boolean>} Flag evaluation response
+   */
   async getBooleanValue(
     flagKey: string,
     defaultValue: boolean,
@@ -79,6 +125,15 @@ export class OpenFeatureClient implements Client {
     return (await this.getBooleanDetails(flagKey, defaultValue, context, options)).value;
   }
 
+  /**
+   * Performs a flag evaluation that a returns an evaluation details object.
+   *
+   * @param {string} flagKey The flag key uniquely identifies a particular flag
+   * @param {boolean} defaultValue The value returned if an error occurs
+   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
+   * @param {FlagEvaluationOptions} options Additional flag evaluation options
+   * @returns {Promise<EvaluationDetails<boolean>>} Flag evaluation details response
+   */
   getBooleanDetails(
     flagKey: string,
     defaultValue: boolean,
@@ -87,7 +142,7 @@ export class OpenFeatureClient implements Client {
   ): Promise<EvaluationDetails<boolean>> {
     return this.evaluate<boolean>(
       flagKey,
-      this.provider.resolveBooleanEvaluation,
+      this._provider.resolveBooleanEvaluation,
       defaultValue,
       'boolean',
       context,
@@ -95,6 +150,15 @@ export class OpenFeatureClient implements Client {
     );
   }
 
+  /**
+   * Performs a flag evaluation that returns a string.
+   *
+   * @param {string} flagKey The flag key uniquely identifies a particular flag
+   * @param {string} defaultValue The value returned if an error occurs
+   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
+   * @param {FlagEvaluationOptions} options Additional flag evaluation options
+   * @returns {Promise<string>} Flag evaluation response
+   */
   async getStringValue(
     flagKey: string,
     defaultValue: string,
@@ -104,6 +168,15 @@ export class OpenFeatureClient implements Client {
     return (await this.getStringDetails(flagKey, defaultValue, context, options)).value;
   }
 
+  /**
+   * Performs a flag evaluation that a returns an evaluation details object.
+   *
+   * @param {string} flagKey The flag key uniquely identifies a particular flag
+   * @param {boolean} defaultValue The value returned if an error occurs
+   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
+   * @param {FlagEvaluationOptions} options Additional flag evaluation options
+   * @returns {Promise<EvaluationDetails<string>>} Flag evaluation details response
+   */
   getStringDetails(
     flagKey: string,
     defaultValue: string,
@@ -112,7 +185,7 @@ export class OpenFeatureClient implements Client {
   ): Promise<EvaluationDetails<string>> {
     return this.evaluate<string>(
       flagKey,
-      this.provider.resolveStringEvaluation,
+      this._provider.resolveStringEvaluation,
       defaultValue,
       'string',
       context,
@@ -120,6 +193,15 @@ export class OpenFeatureClient implements Client {
     );
   }
 
+  /**
+   * Performs a flag evaluation that returns a number.
+   *
+   * @param {string} flagKey The flag key uniquely identifies a particular flag
+   * @param {number} defaultValue The value returned if an error occurs
+   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
+   * @param {FlagEvaluationOptions} options Additional flag evaluation options
+   * @returns {Promise<number>} Flag evaluation response
+   */
   async getNumberValue(
     flagKey: string,
     defaultValue: number,
@@ -129,6 +211,15 @@ export class OpenFeatureClient implements Client {
     return (await this.getNumberDetails(flagKey, defaultValue, context, options)).value;
   }
 
+  /**
+   * Performs a flag evaluation that a returns an evaluation details object.
+   *
+   * @param {string} flagKey The flag key uniquely identifies a particular flag
+   * @param {number} defaultValue The value returned if an error occurs
+   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
+   * @param {FlagEvaluationOptions} options Additional flag evaluation options
+   * @returns {Promise<EvaluationDetails<number>>} Flag evaluation details response
+   */
   getNumberDetails(
     flagKey: string,
     defaultValue: number,
@@ -137,7 +228,7 @@ export class OpenFeatureClient implements Client {
   ): Promise<EvaluationDetails<number>> {
     return this.evaluate<number>(
       flagKey,
-      this.provider.resolveNumberEvaluation,
+      this._provider.resolveNumberEvaluation,
       defaultValue,
       'number',
       context,
@@ -145,6 +236,15 @@ export class OpenFeatureClient implements Client {
     );
   }
 
+  /**
+   * Performs a flag evaluation that returns an object.
+   *
+   * @param {string} flagKey The flag key uniquely identifies a particular flag
+   * @param {object} defaultValue The value returned if an error occurs
+   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
+   * @param {FlagEvaluationOptions} options Additional flag evaluation options
+   * @returns {Promise<object>} Flag evaluation response
+   */
   async getObjectValue<T extends object>(
     flagKey: string,
     defaultValue: T,
@@ -154,13 +254,22 @@ export class OpenFeatureClient implements Client {
     return (await this.getObjectDetails(flagKey, defaultValue, context, options)).value;
   }
 
+  /**
+   * Performs a flag evaluation that a returns an evaluation details object.
+   *
+   * @param {string} flagKey The flag key uniquely identifies a particular flag
+   * @param {object} defaultValue The value returned if an error occurs
+   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
+   * @param {FlagEvaluationOptions} options Additional flag evaluation options
+   * @returns {Promise<EvaluationDetails<object>>} Flag evaluation details response
+   */
   getObjectDetails<T extends object>(
     flagKey: string,
     defaultValue: T,
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): Promise<EvaluationDetails<T>> {
-    return this.evaluate<T>(flagKey, this.provider.resolveObjectEvaluation, defaultValue, 'object', context, options);
+    return this.evaluate<T>(flagKey, this._provider.resolveObjectEvaluation, defaultValue, 'object', context, options);
   }
 
   private async evaluate<T extends FlagValue>(
@@ -178,12 +287,17 @@ export class OpenFeatureClient implements Client {
   ): Promise<EvaluationDetails<T>> {
     // merge global, client, and evaluation context
 
-    const allHooks = [...OpenFeature.hooks, ...this.hooks, ...(options.hooks || []), ...(this.provider.hooks || [])];
+    const allHooks = [
+      ...OpenFeature.getHooks(),
+      ...this.getHooks(),
+      ...(options.hooks || []),
+      ...(this._provider.hooks || []),
+    ];
     const allHooksReversed = [...allHooks].reverse();
 
     // merge global and client contexts
     const mergedContext = {
-      ...OpenFeature.context,
+      ...OpenFeature.getContext(),
       ...this._context,
       ...invocationContext,
     };
@@ -197,14 +311,14 @@ export class OpenFeatureClient implements Client {
       clientMetadata: this.metadata,
       providerMetadata: OpenFeature.providerMetadata,
       context: mergedContext,
-      logger: this.logger,
+      logger: this._logger,
     };
 
     try {
       const frozenContext = await this.beforeHooks(allHooks, hookContext, options);
 
       // run the referenced resolver, binding the provider.
-      const resolution = await resolver.call(this.provider, flagKey, defaultValue, frozenContext, this.logger);
+      const resolution = await resolver.call(this._provider, flagKey, defaultValue, frozenContext, this._logger);
 
       const evaluationDetails = {
         ...resolution,
@@ -264,14 +378,11 @@ export class OpenFeatureClient implements Client {
       try {
         await hook?.error?.(hookContext, err, options.hookHints);
       } catch (err) {
-        this.logger.error(`Unhandled error during 'error' hook: ${err}`);
-<<<<<<< HEAD
+        this._logger.error(`Unhandled error during 'error' hook: ${err}`);
         if (err instanceof Error) {
-          this.logger.error(err.stack);
+          this._logger.error(err.stack);
         }
-=======
-        this.logger.error((err as Error)?.stack);
->>>>>>> add logger
+        this._logger.error((err as Error)?.stack);
       }
     }
   }
@@ -282,19 +393,20 @@ export class OpenFeatureClient implements Client {
       try {
         await hook?.finally?.(hookContext, options.hookHints);
       } catch (err) {
-        this.logger.error(`Unhandled error during 'finally' hook: ${err}`);
-<<<<<<< HEAD
+        this._logger.error(`Unhandled error during 'finally' hook: ${err}`);
         if (err instanceof Error) {
-          this.logger.error(err.stack);
+          this._logger.error(err.stack);
         }
-=======
-        this.logger.error((err as Error)?.stack);
->>>>>>> add logger
+        this._logger.error((err as Error)?.stack);
       }
     }
   }
 
-  private get provider() {
+  private get _provider() {
     return this.providerAccessor();
+  }
+
+  private get _logger() {
+    return this._clientLogger || this.globalLogger();
   }
 }
