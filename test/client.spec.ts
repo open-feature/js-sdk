@@ -53,7 +53,7 @@ const MOCK_PROVIDER: Provider = {
   }) as <U extends object>() => Promise<ResolutionDetails<U>>,
 };
 
-describe(OpenFeatureClient.name, () => {
+describe('OpenFeatureClient', () => {
   beforeAll(() => {
     OpenFeature.setProvider(MOCK_PROVIDER);
   });
@@ -84,47 +84,47 @@ describe(OpenFeatureClient.name, () => {
     });
 
     describe('flag evaluation', () => {
-      describe(` ${OpenFeatureClient.prototype.getBooleanValue.name}`, () => {
+      describe('getBooleanValue', () => {
         it('should return boolean, and call boolean resolver', async () => {
           const booleanFlag = 'my-boolean-flag';
           const defaultBooleanValue = false;
           const value = await client.getBooleanValue(booleanFlag, defaultBooleanValue);
 
           expect(value).toEqual(BOOLEAN_VALUE);
-          expect(MOCK_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalledWith(booleanFlag, defaultBooleanValue, {});
+          expect(MOCK_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalledWith(booleanFlag, defaultBooleanValue, {}, {});
         });
       });
 
-      describe(OpenFeatureClient.prototype.getStringValue.name, () => {
+      describe('getStringValue', () => {
         it('should return string, and call string resolver', async () => {
           const stringFlag = 'my-string-flag';
           const defaultStringValue = 'default-value';
           const value = await client.getStringValue(stringFlag, defaultStringValue);
 
           expect(value).toEqual(STRING_VALUE);
-          expect(MOCK_PROVIDER.resolveStringEvaluation).toHaveBeenCalledWith(stringFlag, defaultStringValue, {});
+          expect(MOCK_PROVIDER.resolveStringEvaluation).toHaveBeenCalledWith(stringFlag, defaultStringValue, {}, {});
         });
       });
 
-      describe(OpenFeatureClient.prototype.getNumberValue.name, () => {
+      describe('getNumberValue', () => {
         it('should return number, and call number resolver', async () => {
           const numberFlag = 'my-number-flag';
           const defaultNumberValue = 1970;
           const value = await client.getNumberValue(numberFlag, defaultNumberValue);
 
           expect(value).toEqual(NUMBER_VALUE);
-          expect(MOCK_PROVIDER.resolveNumberEvaluation).toHaveBeenCalledWith(numberFlag, defaultNumberValue, {});
+          expect(MOCK_PROVIDER.resolveNumberEvaluation).toHaveBeenCalledWith(numberFlag, defaultNumberValue, {}, {});
         });
       });
 
-      describe(OpenFeatureClient.prototype.getObjectValue.name, () => {
+      describe('getObjectValue', () => {
         it('should return object, and call object resolver', async () => {
           const objectFlag = 'my-object-flag';
           const defaultObjectFlag = {};
           const value = await client.getObjectValue(objectFlag, {});
 
           expect(value).toEqual(OBJECT_VALUE);
-          expect(MOCK_PROVIDER.resolveObjectEvaluation).toHaveBeenCalledWith(objectFlag, defaultObjectFlag, {});
+          expect(MOCK_PROVIDER.resolveObjectEvaluation).toHaveBeenCalledWith(objectFlag, defaultObjectFlag, {}, {});
         });
       });
     });
@@ -138,7 +138,7 @@ describe(OpenFeatureClient.name, () => {
     });
 
     describe('detailed flag evaluation', () => {
-      describe(` ${OpenFeatureClient.prototype.getBooleanDetails.name}`, () => {
+      describe('getBooleanDetails', () => {
         it('should return boolean details, and call boolean resolver', async () => {
           const booleanFlag = 'my-boolean-flag';
           const defaultBooleanValue = false;
@@ -146,11 +146,11 @@ describe(OpenFeatureClient.name, () => {
 
           expect(booleanDetails.value).toEqual(BOOLEAN_VALUE);
           expect(booleanDetails.variant).toEqual(BOOLEAN_VARIANT);
-          expect(MOCK_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalledWith(booleanFlag, defaultBooleanValue, {});
+          expect(MOCK_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalledWith(booleanFlag, defaultBooleanValue, {}, {});
         });
       });
 
-      describe(OpenFeatureClient.prototype.getStringDetails.name, () => {
+      describe('getStringDetails', () => {
         it('should return string details, and call string resolver', async () => {
           const stringFlag = 'my-string-flag';
           const defaultStringValue = 'default-value';
@@ -158,11 +158,11 @@ describe(OpenFeatureClient.name, () => {
 
           expect(stringDetails.value).toEqual(STRING_VALUE);
           expect(stringDetails.variant).toEqual(STRING_VARIANT);
-          expect(MOCK_PROVIDER.resolveStringEvaluation).toHaveBeenCalledWith(stringFlag, defaultStringValue, {});
+          expect(MOCK_PROVIDER.resolveStringEvaluation).toHaveBeenCalledWith(stringFlag, defaultStringValue, {}, {});
         });
       });
 
-      describe(OpenFeatureClient.prototype.getNumberDetails.name, () => {
+      describe('getNumberDetails', () => {
         it('should return number details, and call number resolver', async () => {
           const numberFlag = 'my-number-flag';
           const defaultNumberValue = 1970;
@@ -170,11 +170,11 @@ describe(OpenFeatureClient.name, () => {
 
           expect(numberDetails.value).toEqual(NUMBER_VALUE);
           expect(numberDetails.variant).toEqual(NUMBER_VARIANT);
-          expect(MOCK_PROVIDER.resolveNumberEvaluation).toHaveBeenCalledWith(numberFlag, defaultNumberValue, {});
+          expect(MOCK_PROVIDER.resolveNumberEvaluation).toHaveBeenCalledWith(numberFlag, defaultNumberValue, {}, {});
         });
       });
 
-      describe(OpenFeatureClient.prototype.getObjectDetails.name, () => {
+      describe('getObjectDetails', () => {
         it('should return object details, and call object resolver', async () => {
           const objectFlag = 'my-object-flag';
           const defaultObjectFlag = {};
@@ -182,7 +182,7 @@ describe(OpenFeatureClient.name, () => {
 
           expect(objectDetails.value).toEqual(OBJECT_VALUE);
           expect(objectDetails.variant).toEqual(OBJECT_VARIANT);
-          expect(MOCK_PROVIDER.resolveObjectEvaluation).toHaveBeenCalledWith(objectFlag, defaultObjectFlag, {});
+          expect(MOCK_PROVIDER.resolveObjectEvaluation).toHaveBeenCalledWith(objectFlag, defaultObjectFlag, {}, {});
         });
       });
     });
@@ -303,7 +303,8 @@ describe(OpenFeatureClient.name, () => {
         expect(nonTransformingProvider.resolveBooleanEvaluation).toHaveBeenCalledWith(
           flagKey,
           defaultValue,
-          expect.objectContaining({ transformed: false })
+          expect.objectContaining({ transformed: false }),
+          {}
         );
       });
     });
@@ -336,7 +337,8 @@ describe(OpenFeatureClient.name, () => {
           expect.anything(),
           expect.objectContaining({
             targetingKey: TARGETING_KEY,
-          })
+          }),
+          expect.anything()
         );
       });
     });
@@ -361,7 +363,8 @@ describe(OpenFeatureClient.name, () => {
           expect.anything(),
           expect.objectContaining({
             ...context,
-          })
+          }),
+          expect.anything()
         );
       });
     });
@@ -403,7 +406,8 @@ describe(OpenFeatureClient.name, () => {
             ...clientContext,
             ...invocationContext,
             ...beforeHookContext,
-          })
+          }),
+          expect.anything()
         );
       });
     });

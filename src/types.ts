@@ -21,6 +21,13 @@ export interface FlagEvaluationOptions {
   hookHints?: HookHints;
 }
 
+export interface Logger {
+  error(...args: unknown[]): void;
+  warn(...args: unknown[]): void;
+  info(...args: unknown[]): void;
+  debug(...args: unknown[]): void;
+}
+
 export interface Features {
   /**
    * Get a boolean flag value.
@@ -118,7 +125,8 @@ export interface Provider extends Pick<Partial<EvaluationLifeCycle>, 'hooks'> {
   resolveBooleanEvaluation(
     flagKey: string,
     defaultValue: boolean,
-    context: EvaluationContext
+    context: EvaluationContext,
+    logger: Logger
   ): Promise<ResolutionDetails<boolean>>;
 
   /**
@@ -127,7 +135,8 @@ export interface Provider extends Pick<Partial<EvaluationLifeCycle>, 'hooks'> {
   resolveStringEvaluation(
     flagKey: string,
     defaultValue: string,
-    context: EvaluationContext
+    context: EvaluationContext,
+    logger: Logger
   ): Promise<ResolutionDetails<string>>;
 
   /**
@@ -136,7 +145,8 @@ export interface Provider extends Pick<Partial<EvaluationLifeCycle>, 'hooks'> {
   resolveNumberEvaluation(
     flagKey: string,
     defaultValue: number,
-    context: EvaluationContext
+    context: EvaluationContext,
+    logger: Logger
   ): Promise<ResolutionDetails<number>>;
 
   /**
@@ -145,7 +155,8 @@ export interface Provider extends Pick<Partial<EvaluationLifeCycle>, 'hooks'> {
   resolveObjectEvaluation<U extends object>(
     flagKey: string,
     defaultValue: U,
-    context: EvaluationContext
+    context: EvaluationContext,
+    logger: Logger
   ): Promise<ResolutionDetails<U>>;
 }
 
@@ -212,6 +223,7 @@ export type EvaluationDetails<T extends FlagValue> = {
 export interface Client extends EvaluationLifeCycle, Features {
   readonly metadata: ClientMetadata;
   context: EvaluationContext;
+  logger: Logger;
 }
 
 export type HookHints = Readonly<Record<string, unknown>>;
@@ -234,6 +246,7 @@ export interface HookContext<T extends FlagValue = FlagValue> {
   readonly context: Readonly<EvaluationContext>;
   readonly clientMetadata: ClientMetadata;
   readonly providerMetadata: ProviderMetadata;
+  readonly logger: Logger;
 }
 
 export interface BeforeHookContext extends HookContext {

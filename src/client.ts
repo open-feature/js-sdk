@@ -1,5 +1,6 @@
 import { ERROR_REASON, GENERAL_ERROR } from './constants';
 import { OpenFeature } from './open-feature';
+import { SafeLogger } from './logger';
 import {
   Client,
   ClientMetadata,
@@ -10,6 +11,7 @@ import {
   FlagValueType,
   Hook,
   HookContext,
+  Logger,
   Provider,
   ResolutionDetails,
 } from './types';
@@ -23,11 +25,13 @@ export class OpenFeatureClient implements Client {
   readonly metadata: ClientMetadata;
   private _context: EvaluationContext;
   private _hooks: Hook[] = [];
+  private _clientLogger?: Logger;
 
   constructor(
     // we always want the client to use the current provider,
     // so pass a function to always access the currently registered one.
     private readonly providerAccessor: () => Provider,
+    private readonly globalLogger: () => Logger,
     options: OpenFeatureClientOptions,
     context: EvaluationContext = {}
   ) {
@@ -38,11 +42,19 @@ export class OpenFeatureClient implements Client {
     this._context = context;
   }
 
-  set context (context: EvaluationContext) {
+  set logger(logger: Logger) {
+    this._clientLogger = new SafeLogger(logger);
+  }
+
+  get logger(): Logger {
+    return this._clientLogger || this.globalLogger();
+  }
+
+  set context(context: EvaluationContext) {
     this._context = context;
   }
 
-  get context (): EvaluationContext {
+  get context(): EvaluationContext {
     return this._context;
   }
 
@@ -153,7 +165,12 @@ export class OpenFeatureClient implements Client {
 
   private async evaluate<T extends FlagValue>(
     flagKey: string,
-    resolver: (flagKey: string, defaultValue: T, context: EvaluationContext) => Promise<ResolutionDetails<T>>,
+    resolver: (
+      flagKey: string,
+      defaultValue: T,
+      context: EvaluationContext,
+      logger: Logger
+    ) => Promise<ResolutionDetails<T>>,
     defaultValue: T,
     flagType: FlagValueType,
     invocationContext: EvaluationContext = {},
@@ -180,13 +197,14 @@ export class OpenFeatureClient implements Client {
       clientMetadata: this.metadata,
       providerMetadata: OpenFeature.providerMetadata,
       context: mergedContext,
+      logger: this.logger,
     };
 
     try {
       const frozenContext = await this.beforeHooks(allHooks, hookContext, options);
 
       // run the referenced resolver, binding the provider.
-      const resolution = await resolver.call(this.provider, flagKey, defaultValue, frozenContext);
+      const resolution = await resolver.call(this.provider, flagKey, defaultValue, frozenContext, this.logger);
 
       const evaluationDetails = {
         ...resolution,
@@ -246,9 +264,10 @@ export class OpenFeatureClient implements Client {
       try {
         await hook?.error?.(hookContext, err, options.hookHints);
       } catch (err) {
-        // TODO: replace with injected logger
-        console.error(`Unhandled error during 'error' hook: ${err}`);
-        console.error((err as Error).stack);
+        this.logger.error(`Unhandled error during 'error' hook: ${err}`);
+        if (err instanceof Error) {
+          this.logger.error(err.stack);
+        }
       }
     }
   }
@@ -259,9 +278,10 @@ export class OpenFeatureClient implements Client {
       try {
         await hook?.finally?.(hookContext, options.hookHints);
       } catch (err) {
-        // TODO: replace with injected logger
-        console.error(`Unhandled error during 'finally' hook: ${err}`);
-        console.error((err as Error).stack);
+        this.logger.error(`Unhandled error during 'finally' hook: ${err}`);
+        if (err instanceof Error) {
+          this.logger.error(err.stack);
+        }
       }
     }
   }

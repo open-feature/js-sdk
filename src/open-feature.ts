@@ -1,6 +1,7 @@
 import { OpenFeatureClient } from './client';
+import { DefaultLogger, SafeLogger } from './logger';
 import { NOOP_PROVIDER } from './no-op-provider';
-import { Client, EvaluationContext, EvaluationLifeCycle, FlagValue, Hook, Provider } from './types';
+import { Client, EvaluationContext, EvaluationLifeCycle, FlagValue, Hook, Logger, Provider } from './types';
 
 // use a symbol as a key for the global singleton
 const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/js.api');
@@ -14,6 +15,7 @@ class OpenFeatureAPI implements EvaluationLifeCycle {
   private _provider: Provider = NOOP_PROVIDER;
   private _context: EvaluationContext = {};
   private _hooks: Hook[] = [];
+  private _logger: Logger = new DefaultLogger();
 
   static getInstance(): OpenFeatureAPI {
     const globalApi = _global[GLOBAL_OPENFEATURE_API_KEY];
@@ -26,8 +28,21 @@ class OpenFeatureAPI implements EvaluationLifeCycle {
     return instance;
   }
 
+  set logger(logger: Logger) {
+    this._logger = new SafeLogger(logger);
+  }
+
+  get logger() {
+    return this._logger;
+  }
+
   getClient(name?: string, version?: string, context?: EvaluationContext): Client {
-    return new OpenFeatureClient(() => this._provider, { name, version }, context);
+    return new OpenFeatureClient(
+      () => this._provider,
+      () => this._logger,
+      { name, version },
+      context
+    );
   }
 
   get providerMetadata() {
