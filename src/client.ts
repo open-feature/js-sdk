@@ -14,6 +14,10 @@ import {
   Logger,
   Provider,
   ResolutionDetails,
+  Handler,
+  HandlerWrapper,
+  ErrorHandler,
+  EventContext
 } from './types';
 
 type OpenFeatureClientOptions = {
@@ -26,6 +30,8 @@ export class OpenFeatureClient implements Client {
   private _context: EvaluationContext;
   private _hooks: Hook[] = [];
   private _clientLogger?: Logger;
+  private _handlers: HandlerWrapper[] = [];
+  private _errorHandlers: ErrorHandler[] = [];
 
   constructor(
     // we always want the client to use the current provider,
@@ -40,6 +46,29 @@ export class OpenFeatureClient implements Client {
       version: options.version,
     } as const;
     this._context = context;
+    providerAccessor().addErrorListener((err: Error) => {
+      for (const func of this._errorHandlers) {
+        func(err);
+      }
+    });
+    providerAccessor().addMessageListener((eventContext: EventContext) => {
+      for (const wrapper of this._handlers) {
+        if (wrapper.notificationType === eventContext.notificationType) {
+          wrapper.handler(eventContext);
+        }
+      }
+    });
+  }
+
+  addHandler(notificationType: string, handler: Handler): void {
+    this._handlers.push({
+      notificationType,
+      handler
+    });
+  }
+
+  addErrorHandler(handler: ErrorHandler): void {
+    this._errorHandlers.push(handler);
   }
 
   set logger(logger: Logger) {

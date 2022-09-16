@@ -1,4 +1,21 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
+
+
+export type EventContext = {
+  notificationType: string;
+  [key: string]: any;
+}
+export type Handler = (eventContext: EventContext) => void
+export type ErrorHandler = (err: Error) => void
+export type HandlerWrapper = {
+  notificationType: string;
+  handler: Handler;
+}
+
+export type EventCallbackMessage = (eventContext: EventContext) => void
+export type EventCallbackError = (err: Error) => void
+
+
 /**
  * Represents a JSON value of a JSON object
  */
@@ -119,6 +136,13 @@ export interface Features {
 export interface Provider extends Pick<Partial<EvaluationLifeCycle>, 'hooks'> {
   readonly metadata: ProviderMetadata;
 
+  addMessageListener(
+    func: EventCallbackMessage
+  ): void;
+  addErrorListener(
+    func: EventCallbackError
+  ): void;
+
   /**
    * Resolve a boolean flag and its evaluation details.
    */
@@ -220,10 +244,15 @@ export type EvaluationDetails<T extends FlagValue> = {
   flagKey: string;
 } & ResolutionDetails<T>;
 
-export interface Client extends EvaluationLifeCycle, Features {
+export interface Client extends EvaluationLifeCycle, Features, Eventing {
   readonly metadata: ClientMetadata;
   context: EvaluationContext;
   logger: Logger;
+}
+
+export interface Eventing {
+  addHandler(notificationType: string, handler: Handler): void
+  addErrorHandler(handler: ErrorHandler): void
 }
 
 export type HookHints = Readonly<Record<string, unknown>>;

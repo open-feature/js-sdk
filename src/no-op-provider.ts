@@ -1,4 +1,9 @@
-import { Provider, ResolutionDetails } from './types';
+import {
+  Provider,
+  ResolutionDetails,
+  EventCallbackError,
+  EventCallbackMessage
+} from './types';
 
 const REASON_NO_OP = 'No-op';
 
@@ -9,6 +14,17 @@ class NoopFeatureProvider implements Provider {
   readonly metadata = {
     name: 'No-op Provider',
   } as const;
+
+  addMessageListener(
+    func: EventCallbackMessage
+  ) {
+    return;
+  }
+  addErrorListener(
+    func: EventCallbackError
+  ) {
+    return;
+  }
 
   resolveBooleanEvaluation(_: string, defaultValue: boolean): Promise<ResolutionDetails<boolean>> {
     return this.noOp(defaultValue);
