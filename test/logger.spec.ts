@@ -131,8 +131,8 @@ describe('Logger', () => {
       });
 
       it('should create a safe logger', () => {
-        OpenFeature.logger = {} as Logger;
-        expect(OpenFeature.logger).toBeInstanceOf(SafeLogger);
+        OpenFeature.setLogger({} as Logger);
+        expect(OpenFeature['_logger']).toBeInstanceOf(SafeLogger);
       });
     });
 
