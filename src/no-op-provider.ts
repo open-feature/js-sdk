@@ -1,4 +1,4 @@
-import { Provider, ResolutionDetails } from './types';
+import { JsonValue, Provider, ResolutionDetails } from './types';
 
 const REASON_NO_OP = 'No-op';
 
@@ -22,7 +22,7 @@ class NoopFeatureProvider implements Provider {
     return this.noOp(defaultValue);
   }
 
-  resolveObjectEvaluation<T extends object>(_: string, defaultValue: T): Promise<ResolutionDetails<T>> {
+  resolveObjectEvaluation<T extends JsonValue>(_: string, defaultValue: T): Promise<ResolutionDetails<T>> {
     return this.noOp<T>(defaultValue);
   }
 

@@ -1,20 +1,36 @@
+import { json } from 'stream/consumers';
 import { OpenFeatureClient } from '../src/client.js';
 import { ERROR_REASON, GENERAL_ERROR } from '../src/constants.js';
 import { OpenFeature } from '../src/open-feature.js';
-import { Client, EvaluationContext, EvaluationDetails, Provider, ResolutionDetails } from '../src/types.js';
+import { Client, EvaluationContext, EvaluationDetails, JsonArray, JsonObject, JsonValue, Provider, ResolutionDetails } from '../src/types.js';
 
 const BOOLEAN_VALUE = true;
 const STRING_VALUE = 'val';
-const NUMBER_VALUE = 2034;
-const OBJECT_VALUE = {
-  key: 'value',
+const NUMBER_VALUE = 2048;
+const ARRAY_VALUE: JsonValue[] = [];
+
+const INNER_KEY = 'inner';
+const INNER_NULL_KEY = 'nullKey';
+const INNER_BOOLEAN_KEY = 'booleanKey';
+const INNER_STRING_KEY = 'stringKey';
+const INNER_NUMBER_KEY = 'numberKey';
+const INNER_ARRAY_KEY = 'arrayKey'; 
+const OBJECT_VALUE: JsonValue = {
+  [INNER_KEY]: {
+    [INNER_NULL_KEY]: null,
+    [INNER_BOOLEAN_KEY]: BOOLEAN_VALUE,
+    [INNER_STRING_KEY]: STRING_VALUE,
+    [INNER_NUMBER_KEY]: NUMBER_VALUE,
+    [INNER_ARRAY_KEY]: ARRAY_VALUE
+  }
 };
+
 const DATETIME_VALUE = new Date(2022, 5, 13, 18, 20, 0);
 
 const BOOLEAN_VARIANT = `${BOOLEAN_VALUE}`;
 const STRING_VARIANT = `${STRING_VALUE}-variant`;
 const NUMBER_VARIANT = NUMBER_VALUE.toString();
-const OBJECT_VARIANT = OBJECT_VALUE.key;
+const OBJECT_VARIANT = 'json';
 const REASON = 'mocked-value';
 
 // a mock provider with some jest spies
@@ -29,13 +45,13 @@ const MOCK_PROVIDER: Provider = {
       reason: REASON,
     });
   }),
-  resolveStringEvaluation: jest.fn((): Promise<ResolutionDetails<string>> => {
+  resolveStringEvaluation: jest.fn(<U extends string>(): Promise<ResolutionDetails<U>> => {
     return Promise.resolve({
       value: STRING_VALUE,
       variant: STRING_VARIANT,
       reason: REASON,
-    });
-  }),
+    }) as Promise<ResolutionDetails<U>>;
+  }) as <U>() => Promise<ResolutionDetails<U>>,
   resolveNumberEvaluation: jest.fn((): Promise<ResolutionDetails<number>> => {
     return Promise.resolve({
       value: NUMBER_VALUE,
@@ -43,14 +59,14 @@ const MOCK_PROVIDER: Provider = {
       reason: REASON,
     });
   }),
-  resolveObjectEvaluation: jest.fn(<U extends object>(): Promise<ResolutionDetails<U>> => {
+  resolveObjectEvaluation: jest.fn(<U extends JsonValue>(): Promise<ResolutionDetails<U>> => {
     const details = Promise.resolve<ResolutionDetails<U>>({
-      value: OBJECT_VALUE as unknown as U,
+      value: OBJECT_VALUE as U,
       variant: OBJECT_VARIANT,
       reason: REASON,
     });
     return details as Promise<ResolutionDetails<U>>;
-  }) as <U extends object>() => Promise<ResolutionDetails<U>>,
+  }) as <U>() => Promise<ResolutionDetails<U>>,
 };
 
 describe('OpenFeatureClient', () => {
@@ -96,35 +112,102 @@ describe('OpenFeatureClient', () => {
       });
 
       describe('getStringValue', () => {
-        it('should return string, and call string resolver', async () => {
-          const stringFlag = 'my-string-flag';
-          const defaultStringValue = 'default-value';
-          const value = await client.getStringValue(stringFlag, defaultStringValue);
+        describe('with no generic arg (as string)', () => {
+          it('should return string, and call string resolver', async () => {
+            const stringFlag = 'my-string-flag';
+            const defaultStringValue = 'default-value';
+            const value = await client.getStringValue(stringFlag, defaultStringValue);
+  
+            expect(value).toEqual(STRING_VALUE);
+            expect(MOCK_PROVIDER.resolveStringEvaluation).toHaveBeenCalledWith(stringFlag, defaultStringValue, {}, {});
+          });
+        });
 
-          expect(value).toEqual(STRING_VALUE);
-          expect(MOCK_PROVIDER.resolveStringEvaluation).toHaveBeenCalledWith(stringFlag, defaultStringValue, {}, {});
+        describe('with generic arg', () => {
+          it('should return T, and call string resolver', async () => {
+            const stringFlag = 'my-string-flag';
+            type MyRestrictedString = 'val' | 'other';
+            const defaultStringValue = 'other';
+            const value = await client.getStringValue<MyRestrictedString>(stringFlag, defaultStringValue);
+  
+            expect(value).toEqual(STRING_VALUE);
+            expect(MOCK_PROVIDER.resolveStringEvaluation).toHaveBeenCalledWith(stringFlag, defaultStringValue, {}, {});
+          });
         });
       });
 
       describe('getNumberValue', () => {
-        it('should return number, and call number resolver', async () => {
-          const numberFlag = 'my-number-flag';
-          const defaultNumberValue = 1970;
-          const value = await client.getNumberValue(numberFlag, defaultNumberValue);
-
-          expect(value).toEqual(NUMBER_VALUE);
-          expect(MOCK_PROVIDER.resolveNumberEvaluation).toHaveBeenCalledWith(numberFlag, defaultNumberValue, {}, {});
+        describe('with no generic arg (as number)', () => {
+          it('should return number, and call number resolver', async () => {
+            const numberFlag = 'my-number-flag';
+            const defaultNumberValue = 1970;
+            const value = await client.getNumberValue(numberFlag, defaultNumberValue);
+  
+            expect(value).toEqual(NUMBER_VALUE);
+            expect(MOCK_PROVIDER.resolveNumberEvaluation).toHaveBeenCalledWith(numberFlag, defaultNumberValue, {}, {});
+          });
         });
+
+        describe('with generic arg', () => {
+          it('should return T, and call number resolver', async () => {
+            const numberFlag = 'my-number-flag';
+            type MyRestrictedNumber = 4096 | 2048;
+            const defaultNumberValue = 4096;
+            const value = await client.getNumberValue<MyRestrictedNumber>(numberFlag, defaultNumberValue);
+  
+            expect(value).toEqual(NUMBER_VALUE);
+            expect(MOCK_PROVIDER.resolveNumberEvaluation).toHaveBeenCalledWith(numberFlag, defaultNumberValue, {}, {});
+          });
+        });
+
       });
 
       describe('getObjectValue', () => {
-        it('should return object, and call object resolver', async () => {
-          const objectFlag = 'my-object-flag';
-          const defaultObjectFlag = {};
-          const value = await client.getObjectValue(objectFlag, {});
+        describe('with no generic arg (as JsonValue)', () => {
+          it('should return JsonValue, and call object resolver', async () => {
+            const objectFlag = 'my-object-flag';
+            const defaultObjectFlag = {};
+            const value = await client.getObjectValue(objectFlag, defaultObjectFlag);
+  
+            // compare the object
+            expect(value).toEqual(OBJECT_VALUE);
+  
+            // explore the object - type assertions required for safety.
+            const jsonObject: JsonObject = (value as JsonObject)[INNER_KEY] as JsonObject;
+            const nullValue = jsonObject?.[INNER_NULL_KEY] as null;
+            const booleanValue = jsonObject?.[INNER_BOOLEAN_KEY] as boolean;
+            const stringValue = jsonObject?.[INNER_STRING_KEY] as string;
+            const numberValue = jsonObject?.[INNER_NUMBER_KEY] as number;
+            const arrayValue = jsonObject?.[INNER_ARRAY_KEY] as JsonArray;
+  
+            expect(nullValue).toEqual(null);
+            expect(booleanValue).toEqual(BOOLEAN_VALUE);
+            expect(stringValue).toEqual(STRING_VALUE);
+            expect(numberValue).toEqual(NUMBER_VALUE);
+            expect(arrayValue).toEqual(ARRAY_VALUE);
+          });
+        });
 
-          expect(value).toEqual(OBJECT_VALUE);
-          expect(MOCK_PROVIDER.resolveObjectEvaluation).toHaveBeenCalledWith(objectFlag, defaultObjectFlag, {}, {});
+        describe('with generic arg', () => {
+          it('should return T, and call object resolver', async () => {
+            const objectFlag = 'my-object-flag';
+
+            type MyType = {
+              inner: {
+                booleanKey: boolean
+              } 
+            }
+
+            const defaultMyTYpeFlag: MyType = {
+              inner: {
+                booleanKey: false
+              }
+            };
+            const value = await client.getObjectValue<MyType>(objectFlag, defaultMyTYpeFlag);
+  
+            const innerBooleanValue: boolean = value.inner.booleanKey;
+            expect(innerBooleanValue).toBeTruthy();
+          });
         });
       });
     });
@@ -192,9 +275,8 @@ describe('OpenFeatureClient', () => {
     describe('generic support', () => {
       it('should support generics', async () => {
         // No generic information exists at runtime, but this test has some value in ensuring the generic args still exist in the typings.
-        type MyType = { key: string };
         const client = OpenFeature.getClient();
-        const details: ResolutionDetails<MyType> = await client.getObjectDetails<MyType>('flag', { key: 'value' });
+        const details: ResolutionDetails<JsonValue> = await client.getObjectDetails('flag', { key: 'value' });
 
         expect(details).toBeDefined();
       });

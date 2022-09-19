@@ -1,17 +1,32 @@
-/**
- * Represents a JSON value of a JSON object
- */
-export type JSONValue = null | string | number | boolean | Date | { [x: string]: JSONValue } | Array<JSONValue>;
+type PrimitiveValue = null | boolean | string | number ;
 
+export type JsonObject = { [key: string]: JsonValue };
+
+export type JsonArray = JsonValue[];
+
+/**
+ * Represents a JSON node value.
+ */
+export type JsonValue = PrimitiveValue | JsonObject | JsonArray;
+
+/**
+ * Represents a JSON node value, or Date.
+ */
+export type EvaluationContextValue = PrimitiveValue | Date | { [key: string]: EvaluationContextValue } | EvaluationContextValue[];
+
+/**
+ * A container for arbitrary contextual data that can be used as a basis for dynamic evaluation
+ */
 export type EvaluationContext = {
   /**
    * A string uniquely identifying the subject (end-user, or client service) of a flag evaluation.
-   * Providers may require this field for fractional flag evaluation, rules, or overrides targeting specific users. Such providers may behave unpredictably if a targeting key is not specified at flag resolution.
+   * Providers may require this field for fractional flag evaluation, rules, or overrides targeting specific users.
+   * Such providers may behave unpredictably if a targeting key is not specified at flag resolution.
    */
   targetingKey?: string;
-} & Record<string, JSONValue>;
+} & Record<string, EvaluationContextValue>;
 
-export type FlagValue = boolean | string | number | object;
+export type FlagValue = boolean | string | number | JsonValue;
 
 export type FlagValueType = 'boolean' | 'string' | 'number' | 'object';
 
@@ -51,47 +66,47 @@ export interface Features {
   /**
    * Get a string flag value.
    */
-  getStringValue(
+  getStringValue<T extends string = string>(
     flagKey: string,
-    defaultValue: string,
+    defaultValue: T,
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
-  ): Promise<string>;
+  ): Promise<T>;
 
   /**
    * Get a string flag with additional details.
    */
-  getStringDetails(
+  getStringDetails<T extends string = string>(
     flagKey: string,
-    defaultValue: string,
+    defaultValue: T,
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
-  ): Promise<EvaluationDetails<string>>;
+  ): Promise<EvaluationDetails<T>>;
 
   /**
    * Get a number flag value.
    */
-  getNumberValue(
+  getNumberValue<T extends number = number>(
     flagKey: string,
-    defaultValue: number,
+    defaultValue: T,
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
-  ): Promise<number>;
+  ): Promise<T>;
 
   /**
    * Get a number flag with additional details.
    */
-  getNumberDetails(
+  getNumberDetails<T extends number = number>(
     flagKey: string,
-    defaultValue: number,
+    defaultValue: T,
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
-  ): Promise<EvaluationDetails<number>>;
+  ): Promise<EvaluationDetails<T>>;
 
   /**
    * Get an object (JSON) flag value.
    */
-  getObjectValue<T extends object>(
+  getObjectValue<T extends JsonValue = JsonValue>(
     flagKey: string,
     defaultValue: T,
     context?: EvaluationContext,
@@ -101,12 +116,12 @@ export interface Features {
   /**
    * Get an object (JSON) flag with additional details.
    */
-  getObjectDetails<T extends object>(
+  getObjectDetails(
     flagKey: string,
-    defaultValue: T,
+    defaultValue: JsonValue,
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
-  ): Promise<EvaluationDetails<T>>;
+  ): Promise<EvaluationDetails<JsonValue>>;
 }
 
 /**
@@ -158,12 +173,12 @@ export interface Provider {
   /**
    * Resolve and parse an object flag and its evaluation details.
    */
-  resolveObjectEvaluation<U extends object>(
+  resolveObjectEvaluation<T extends JsonValue>(
     flagKey: string,
-    defaultValue: U,
+    defaultValue: T,
     context: EvaluationContext,
     logger: Logger
-  ): Promise<ResolutionDetails<U>>;
+  ): Promise<ResolutionDetails<T>>;
 }
 
 export enum StandardResolutionReasons {
