@@ -212,10 +212,10 @@ describe('Hooks', () => {
       const invocationPropToOverwrite434 = 'invocationPropToOverwrite';
       const hookProp434 = 'hookProp';
 
-      OpenFeature.context = {
+      OpenFeature.setContext({
         [globalProp434]: true,
         [globalPropToOverwrite434]: false,
-      };
+      });
       const clientContext = {
         [clientProp434]: true,
         [clientPropToOverwrite434]: false,

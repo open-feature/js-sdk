@@ -392,8 +392,7 @@ describe('OpenFeatureClient', () => {
           beforeHookContextValue: 'jkl',
         };
 
-        OpenFeature.setProvider(provider);
-        OpenFeature.context = globalContext;
+        OpenFeature.setProvider(provider).setContext(globalContext);
         const client = OpenFeature.getClient('contextual', 'test', clientContext);
         client.addHooks({ before: () => beforeHookContext });
         await client.getBooleanValue(flagKey, defaultValue, invocationContext);
@@ -417,9 +416,17 @@ describe('OpenFeatureClient', () => {
         const KEY = 'key';
         const VAL = 'val';
         const client = OpenFeature.getClient();
-        client.context = { [KEY]: VAL };
-        expect(client.context[KEY]).toEqual(VAL);
+        client.setContext({ [KEY]: VAL });
+        expect(client.getContext()[KEY]).toEqual(VAL);
       });
     });
+  });
+
+  it('should be chainable', async () => {
+    const client = OpenFeature.getClient();
+
+    expect(await client.addHooks().clearHooks().setContext({}).setLogger(console).getBooleanValue('test', true)).toBe(
+      true
+    );
   });
 });

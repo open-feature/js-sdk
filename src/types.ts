@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-interface */
 /**
  * Represents a JSON value of a JSON object
  */
@@ -116,8 +115,15 @@ export interface Features {
  *
  * Implementation for resolving all the required flag types must be defined.
  */
-export interface Provider extends Pick<Partial<EvaluationLifeCycle>, 'hooks'> {
+export interface Provider {
   readonly metadata: ProviderMetadata;
+  /**
+   * A provider hook exposes a mechanism for provider authors to register hooks
+   * to tap into various stages of the flag evaluation lifecycle. These hooks can
+   * be used to perform side effects and mutate the context for purposes of the
+   * provider. Provider hooks are not configured or controlled by the application author.
+   */
+  readonly hooks?: Hook[];
 
   /**
    * Resolve a boolean flag and its evaluation details.
@@ -160,12 +166,6 @@ export interface Provider extends Pick<Partial<EvaluationLifeCycle>, 'hooks'> {
   ): Promise<ResolutionDetails<U>>;
 }
 
-export interface EvaluationLifeCycle {
-  addHooks(...hooks: Hook[]): void;
-  get hooks(): Hook[];
-  clearHooks(): void;
-}
-
 export enum StandardResolutionReasons {
   /**
    * Indicates that the feature flag is targeting
@@ -186,7 +186,8 @@ export enum StandardResolutionReasons {
   /**
    * Indicates that the feature flag evaluated to the
    * default value as passed in getBooleanValue/getBooleanValueDetails and
-   * similar functions in the Client   */
+   * similar functions in the Client
+   */
   DEFAULT = 'DEFAULT',
   /**
    * Indicates that the feature flag evaluated to a
@@ -220,14 +221,32 @@ export type EvaluationDetails<T extends FlagValue> = {
   flagKey: string;
 } & ResolutionDetails<T>;
 
-export interface Client extends EvaluationLifeCycle, Features {
+export interface Client extends EvaluationLifeCycle<Client>, Features, ManageContext<Client>, ManageLogger<Client> {
   readonly metadata: ClientMetadata;
-  context: EvaluationContext;
-  logger: Logger;
+}
+
+export interface GlobalApi extends EvaluationLifeCycle<GlobalApi>, ManageContext<GlobalApi>, ManageLogger<GlobalApi> {
+  readonly providerMetadata: ProviderMetadata;
+}
+
+interface EvaluationLifeCycle<T> {
+  addHooks(...hooks: Hook[]): T;
+  getHooks(): Hook[];
+  clearHooks(): T;
+}
+
+interface ManageContext<T> {
+  getContext(): EvaluationContext;
+  setContext(context: EvaluationContext): T;
+}
+
+interface ManageLogger<T> {
+  setLogger(logger: Logger): T;
 }
 
 export type HookHints = Readonly<Record<string, unknown>>;
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface Metadata {}
 
 export interface ClientMetadata extends Metadata {

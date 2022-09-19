@@ -131,21 +131,15 @@ describe('Logger', () => {
       });
 
       it('should create a safe logger', () => {
-        OpenFeature.logger = {} as Logger;
-        expect(OpenFeature.logger).toBeInstanceOf(SafeLogger);
+        OpenFeature.setLogger({} as Logger);
+        expect(OpenFeature['_logger']).toBeInstanceOf(SafeLogger);
       });
-    });
-
-    it('should be an instance of the default logger', () => {
-      const client = OpenFeature.getClient();
-
-      expect(client.logger).toBeInstanceOf(DefaultLogger);
     });
 
     it('should provide a logger to the provider', async () => {
       const client = OpenFeature.getClient();
       const mockedLogger = new MockedLogger();
-      client.logger = mockedLogger;
+      client.setLogger(mockedLogger);
       await client.getBooleanValue('test', false);
       expect(mockedLogger.info).toHaveBeenCalledWith(RESOLVE_BOOL_MESSAGE);
     });
@@ -153,7 +147,7 @@ describe('Logger', () => {
     it('should provide a logger to the before, after, and finally hook', async () => {
       const client = OpenFeature.getClient();
       const mockedLogger = new MockedLogger();
-      client.logger = mockedLogger;
+      client.setLogger(mockedLogger);
       client.addHooks(MOCK_HOOK);
       await client.getBooleanValue('test', false);
 
@@ -168,7 +162,7 @@ describe('Logger', () => {
     it('should provide a logger to the error hook', async () => {
       const client = OpenFeature.getClient();
       const mockedLogger = new MockedLogger();
-      client.logger = mockedLogger;
+      client.setLogger(mockedLogger);
       client.addHooks(MOCK_HOOK);
       (MOCK_PROVIDER.resolveBooleanEvaluation as jest.Mock).mockRejectedValueOnce('Run error hook');
       await client.getBooleanValue('test', false);
