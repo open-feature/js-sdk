@@ -1,4 +1,3 @@
-import { json } from 'stream/consumers';
 import { OpenFeatureClient } from '../src/client.js';
 import { ERROR_REASON, GENERAL_ERROR } from '../src/constants.js';
 import { OpenFeature } from '../src/open-feature.js';
