@@ -27,11 +27,7 @@ export class SafeLogger implements Logger {
       this.logger = logger;
     } catch (err) {
       console.error(err);
-<<<<<<< HEAD
       console.error('Falling back to the default logger.');
-=======
-      console.warn('Falling back to the default logger.');
->>>>>>> add logger
       this.logger = this.fallbackLogger;
     }
   }
