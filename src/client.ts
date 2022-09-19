@@ -55,7 +55,7 @@ export class OpenFeatureClient implements Client {
   }
 
   /**
-   * Sets client evaluation context that will be used during flag evaluations
+   * Sets evaluation context that will be used during flag evaluations
    * on this client.
    *
    * @param {EvaluationContext} context Client evaluation context
@@ -67,7 +67,7 @@ export class OpenFeatureClient implements Client {
   }
 
   /**
-   * Access the client evaluation context.
+   * Access the evaluation context set on the client.
    *
    * @returns {EvaluationContext} Client evaluation context
    */
@@ -76,7 +76,7 @@ export class OpenFeatureClient implements Client {
   }
 
   /**
-   * Adds client hooks that will run during flag evaluations on this client. Client
+   * Adds hooks that will run during flag evaluations on this client. Client
    * hooks are executed in the order they were registered. Adding additional hooks
    * will not remove existing hooks.
    *
