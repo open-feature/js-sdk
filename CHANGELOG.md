@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.0](https://github.com/open-feature/node-sdk/compare/nodejs-sdk-v0.3.2...nodejs-sdk-v0.4.0) (2022-09-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* improve generic type accuracy (#224)
+* convert to chainable methods (#221)
+
+### Features
+
+* add logger ([#219](https://github.com/open-feature/node-sdk/issues/219)) ([763f167](https://github.com/open-feature/node-sdk/commit/763f16717a4dd199a84bf90302551d3b24c862af))
+* convert to chainable methods ([#221](https://github.com/open-feature/node-sdk/issues/221)) ([5253ad9](https://github.com/open-feature/node-sdk/commit/5253ad9b47299c375bbf1151c672454fb11b9f40))
+* improve generic type accuracy ([#224](https://github.com/open-feature/node-sdk/issues/224)) ([12230a5](https://github.com/open-feature/node-sdk/commit/12230a5cd7c4a5a1ae55f117fed5d6778118f4ee))
+
 ## [0.3.2](https://github.com/open-feature/node-sdk/compare/nodejs-sdk-v0.3.1...nodejs-sdk-v0.3.2) (2022-09-09)
 
 
