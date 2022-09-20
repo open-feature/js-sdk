@@ -43,8 +43,15 @@ export interface Logger {
 }
 
 export interface Features {
+  
   /**
-   * Get a boolean flag value.
+   * Performs a flag evaluation that returns a boolean.
+   *
+   * @param {string} flagKey The flag key uniquely identifies a particular flag
+   * @param {boolean} defaultValue The value returned if an error occurs
+   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
+   * @param {FlagEvaluationOptions} options Additional flag evaluation options
+   * @returns {Promise<boolean>} Flag evaluation response
    */
   getBooleanValue(
     flagKey: string,
@@ -54,7 +61,13 @@ export interface Features {
   ): Promise<boolean>;
 
   /**
-   * Get a boolean flag with additional details.
+   * Performs a flag evaluation that a returns an evaluation details object.
+   *
+   * @param {string} flagKey The flag key uniquely identifies a particular flag
+   * @param {boolean} defaultValue The value returned if an error occurs
+   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
+   * @param {FlagEvaluationOptions} options Additional flag evaluation options
+   * @returns {Promise<EvaluationDetails<boolean>>} Flag evaluation details response
    */
   getBooleanDetails(
     flagKey: string,
@@ -64,7 +77,14 @@ export interface Features {
   ): Promise<EvaluationDetails<boolean>>;
 
   /**
-   * Get a string flag value.
+   * Performs a flag evaluation that returns a string.
+   *
+   * @param {string} flagKey The flag key uniquely identifies a particular flag
+   * @template {string} T A optional generic argument constraining the string
+   * @param {T} defaultValue The value returned if an error occurs
+   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
+   * @param {FlagEvaluationOptions} options Additional flag evaluation options
+   * @returns {Promise<T>} Flag evaluation response
    */
    getStringValue(
     flagKey: string,
@@ -80,7 +100,14 @@ export interface Features {
   ): Promise<T>;
 
   /**
-   * Get a string flag with additional details.
+   * Performs a flag evaluation that a returns an evaluation details object.
+   *
+   * @param {string} flagKey The flag key uniquely identifies a particular flag
+   * @template {string} T A optional generic argument constraining the string
+   * @param {T} defaultValue The value returned if an error occurs
+   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
+   * @param {FlagEvaluationOptions} options Additional flag evaluation options
+   * @returns {Promise<EvaluationDetails<T>>} Flag evaluation details response
    */
   getStringDetails(
     flagKey: string,
@@ -96,7 +123,14 @@ export interface Features {
   ): Promise<EvaluationDetails<T>>;
 
   /**
-   * Get a number flag value.
+   * Performs a flag evaluation that returns a number.
+   *
+   * @param {string} flagKey The flag key uniquely identifies a particular flag
+   * @template {number} T A optional generic argument constraining the number
+   * @param {T} defaultValue The value returned if an error occurs
+   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
+   * @param {FlagEvaluationOptions} options Additional flag evaluation options
+   * @returns {Promise<T>} Flag evaluation response
    */
   getNumberValue(
     flagKey: string,
@@ -112,7 +146,14 @@ export interface Features {
   ): Promise<T>;
 
   /**
-   * Get a number flag with additional details.
+   * Performs a flag evaluation that a returns an evaluation details object.
+   *
+   * @param {string} flagKey The flag key uniquely identifies a particular flag
+   * @template {number} T A optional generic argument constraining the number
+   * @param {T} defaultValue The value returned if an error occurs
+   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
+   * @param {FlagEvaluationOptions} options Additional flag evaluation options
+   * @returns {Promise<EvaluationDetails<T>>} Flag evaluation details response
    */
    getNumberDetails(
     flagKey: string,
@@ -128,7 +169,14 @@ export interface Features {
   ): Promise<EvaluationDetails<T>>;
 
   /**
-   * Get an object (JSON) flag value.
+   * Performs a flag evaluation that returns an object.
+   *
+   * @param {string} flagKey The flag key uniquely identifies a particular flag
+   * @template {JsonValue} T A optional generic argument describing the structure
+   * @param {T} defaultValue The value returned if an error occurs
+   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
+   * @param {FlagEvaluationOptions} options Additional flag evaluation options
+   * @returns {Promise<T>} Flag evaluation response
    */
   getObjectValue(
     flagKey: string,
@@ -144,7 +192,14 @@ export interface Features {
   ): Promise<T>;
 
   /**
-   * Get an object (JSON) flag with additional details.
+   * Performs a flag evaluation that a returns an evaluation details object.
+   *
+   * @param {string} flagKey The flag key uniquely identifies a particular flag
+   * @template {JsonValue} T A optional generic argument describing the structure
+   * @param {T} defaultValue The value returned if an error occurs
+   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
+   * @param {FlagEvaluationOptions} options Additional flag evaluation options
+   * @returns {Promise<EvaluationDetails<T>>} Flag evaluation details response
    */
   getObjectDetails(
     flagKey: string,
@@ -278,20 +333,84 @@ export interface Client extends EvaluationLifeCycle<Client>, Features, ManageCon
 
 export interface GlobalApi extends EvaluationLifeCycle<GlobalApi>, ManageContext<GlobalApi>, ManageLogger<GlobalApi> {
   readonly providerMetadata: ProviderMetadata;
+  /**
+   * A factory function for creating new OpenFeature clients. Clients can contain
+   * their own state (e.g. logger, hook, context). Multiple clients can be used
+   * to segment feature flag configuration.
+   *
+   * @param {string} name The name of the client
+   * @param {string} version The version of the client
+   * @param {EvaluationContext} context Evaluation context that should be set on the client to used during flag evaluations
+   * @returns {Client} OpenFeature Client
+   */
+  getClient(name?: string, version?: string, context?: EvaluationContext): Client;
+  
+  /**
+   * Sets the provider that OpenFeature will use for flag evaluations. Setting
+   * a provider supersedes the current provider used in new and existing clients.
+   *
+   * @param {Provider} provider The provider responsible for flag evaluations.
+   * @returns {OpenFeatureAPI} OpenFeature API
+   */
+   setProvider(provider: Provider): GlobalApi
 }
 
 interface EvaluationLifeCycle<T> {
+  /**
+   * Adds hooks that will run during flag evaluations on this receiver.
+   * Hooks are executed in the order they were registered. Adding additional hooks
+   * will not remove existing hooks.
+   * Hooks registered on the global API object run with all evaluations.
+   * Hooks registered on the client run with all evaluations on that client.
+   *
+   * @param {Hook<FlagValue>[]} hooks A list of hooks that should always run
+   * @returns {T} The receiver (this object)
+   */
   addHooks(...hooks: Hook[]): T;
+
+  /**
+   * Access all the hooks that are registered on this receiver.
+   *
+   * @returns {Hook<FlagValue>[]} A list of the client hooks
+   */
   getHooks(): Hook[];
+
+  /**
+   * Clears all the hooks that are registered on this receiver.
+   *
+   * @returns {T} The receiver (this object)
+   */
   clearHooks(): T;
 }
 
 interface ManageContext<T> {
+  /**
+   * Access the evaluation context set on the receiver.
+   *
+   * @returns {EvaluationContext} Evaluation context
+   */
   getContext(): EvaluationContext;
+
+  /**
+   * Sets evaluation context that will be used during flag evaluations
+   * on this receiver.
+   *
+   * @param {EvaluationContext} context Evaluation context
+   * @returns {T} The receiver (this object)
+   */
   setContext(context: EvaluationContext): T;
 }
 
 interface ManageLogger<T> {
+  /**
+   * Sets a logger on this receiver. This logger supersedes to the global logger
+   * and is passed to various components in the SDK.
+   * The logger configured on the global API object will be used for all evaluations,
+   * unless overridden in a particular client.
+   *
+   * @param {Logger} logger The logger to to be used
+   * @returns {T} The receiver (this object)
+   */
   setLogger(logger: Logger): T;
 }
 

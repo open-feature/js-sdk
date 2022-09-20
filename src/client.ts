@@ -43,80 +43,34 @@ export class OpenFeatureClient implements Client {
     this._context = context;
   }
 
-  /**
-   * Sets a logger on the client. This logger supersedes to the global logger
-   * and is passed to various components in the SDK.
-   *
-   * @param {Logger} logger The logger to to be used
-   * @returns {OpenFeatureClient} OpenFeature Client
-   */
   setLogger(logger: Logger): OpenFeatureClient {
     this._clientLogger = new SafeLogger(logger);
     return this;
   }
-
-  /**
-   * Sets evaluation context that will be used during flag evaluations
-   * on this client.
-   *
-   * @param {EvaluationContext} context Client evaluation context
-   * @returns {OpenFeatureClient} OpenFeature Client
-   */
+  
   setContext(context: EvaluationContext): OpenFeatureClient {
     this._context = context;
     return this;
   }
 
-  /**
-   * Access the evaluation context set on the client.
-   *
-   * @returns {EvaluationContext} Client evaluation context
-   */
   getContext(): EvaluationContext {
     return this._context;
   }
 
-  /**
-   * Adds hooks that will run during flag evaluations on this client. Client
-   * hooks are executed in the order they were registered. Adding additional hooks
-   * will not remove existing hooks.
-   *
-   * @param {Hook<FlagValue>[]} hooks A list of hooks that should always run
-   * @returns {OpenFeatureClient} OpenFeature Client
-   */
   addHooks(...hooks: Hook<FlagValue>[]): OpenFeatureClient {
     this._hooks = [...this._hooks, ...hooks];
     return this;
   }
 
-  /**
-   * Access all the hooks that are registered on this client.
-   *
-   * @returns {Hook<FlagValue>[]} A list of the client hooks
-   */
   getHooks(): Hook<FlagValue>[] {
     return this._hooks;
   }
 
-  /**
-   * Clears all the hooks that are registered on this client.
-   *
-   * @returns {OpenFeatureClient} OpenFeature Client
-   */
   clearHooks(): OpenFeatureClient {
     this._hooks = [];
     return this;
   }
 
-  /**
-   * Performs a flag evaluation that returns a boolean.
-   *
-   * @param {string} flagKey The flag key uniquely identifies a particular flag
-   * @param {boolean} defaultValue The value returned if an error occurs
-   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
-   * @param {FlagEvaluationOptions} options Additional flag evaluation options
-   * @returns {Promise<boolean>} Flag evaluation response
-   */
   async getBooleanValue(
     flagKey: string,
     defaultValue: boolean,
@@ -126,15 +80,6 @@ export class OpenFeatureClient implements Client {
     return (await this.getBooleanDetails(flagKey, defaultValue, context, options)).value;
   }
 
-  /**
-   * Performs a flag evaluation that a returns an evaluation details object.
-   *
-   * @param {string} flagKey The flag key uniquely identifies a particular flag
-   * @param {boolean} defaultValue The value returned if an error occurs
-   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
-   * @param {FlagEvaluationOptions} options Additional flag evaluation options
-   * @returns {Promise<EvaluationDetails<boolean>>} Flag evaluation details response
-   */
   getBooleanDetails(
     flagKey: string,
     defaultValue: boolean,
@@ -151,16 +96,6 @@ export class OpenFeatureClient implements Client {
     );
   }
 
-  /**
-   * Performs a flag evaluation that returns a string.
-   *
-   * @param {string} flagKey The flag key uniquely identifies a particular flag
-   * @template {string} T A optional generic argument constraining the string
-   * @param {T} defaultValue The value returned if an error occurs
-   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
-   * @param {FlagEvaluationOptions} options Additional flag evaluation options
-   * @returns {Promise<T>} Flag evaluation response
-   */
   async getStringValue<T extends string = string>(
     flagKey: string,
     defaultValue: T,
@@ -170,16 +105,6 @@ export class OpenFeatureClient implements Client {
     return (await this.getStringDetails<T>(flagKey, defaultValue, context, options)).value;
   }
 
-  /**
-   * Performs a flag evaluation that a returns an evaluation details object.
-   *
-   * @param {string} flagKey The flag key uniquely identifies a particular flag
-   * @template {string} T A optional generic argument constraining the string
-   * @param {T} defaultValue The value returned if an error occurs
-   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
-   * @param {FlagEvaluationOptions} options Additional flag evaluation options
-   * @returns {Promise<EvaluationDetails<T>>} Flag evaluation details response
-   */
   getStringDetails<T extends string = string>(
     flagKey: string,
     defaultValue: T,
@@ -197,16 +122,6 @@ export class OpenFeatureClient implements Client {
     );
   }
 
-  /**
-   * Performs a flag evaluation that returns a number.
-   *
-   * @param {string} flagKey The flag key uniquely identifies a particular flag
-   * @template {number} T A optional generic argument constraining the number
-   * @param {T} defaultValue The value returned if an error occurs
-   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
-   * @param {FlagEvaluationOptions} options Additional flag evaluation options
-   * @returns {Promise<T>} Flag evaluation response
-   */
   async getNumberValue<T extends number = number>(
     flagKey: string,
     defaultValue: T,
@@ -216,16 +131,6 @@ export class OpenFeatureClient implements Client {
     return (await this.getNumberDetails(flagKey, defaultValue, context, options)).value;
   }
 
-  /**
-   * Performs a flag evaluation that a returns an evaluation details object.
-   *
-   * @param {string} flagKey The flag key uniquely identifies a particular flag
-   * @template {number} T A optional generic argument constraining the number
-   * @param {T} defaultValue The value returned if an error occurs
-   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
-   * @param {FlagEvaluationOptions} options Additional flag evaluation options
-   * @returns {Promise<EvaluationDetails<T>>} Flag evaluation details response
-   */
   getNumberDetails<T extends number = number>(
     flagKey: string,
     defaultValue: T,
@@ -243,16 +148,6 @@ export class OpenFeatureClient implements Client {
     );
   }
 
-  /**
-   * Performs a flag evaluation that returns an object.
-   *
-   * @param {string} flagKey The flag key uniquely identifies a particular flag
-   * @template {JsonValue} T A optional generic argument describing the structure
-   * @param {T} defaultValue The value returned if an error occurs
-   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
-   * @param {FlagEvaluationOptions} options Additional flag evaluation options
-   * @returns {Promise<T>} Flag evaluation response
-   */
   async getObjectValue<T extends JsonValue = JsonValue>(
     flagKey: string,
     defaultValue: T,
@@ -262,16 +157,6 @@ export class OpenFeatureClient implements Client {
     return (await this.getObjectDetails(flagKey, defaultValue, context, options)).value;
   }
 
-  /**
-   * Performs a flag evaluation that a returns an evaluation details object.
-   *
-   * @param {string} flagKey The flag key uniquely identifies a particular flag
-   * @template {JsonValue} T A optional generic argument describing the structure
-   * @param {T} defaultValue The value returned if an error occurs
-   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
-   * @param {FlagEvaluationOptions} options Additional flag evaluation options
-   * @returns {Promise<EvaluationDetails<T>>} Flag evaluation details response
-   */
   getObjectDetails<T extends JsonValue = JsonValue>(
     flagKey: string,
     defaultValue: T,
