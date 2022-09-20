@@ -11,6 +11,7 @@ import {
   FlagValueType,
   Hook,
   HookContext,
+  JsonValue,
   Logger,
   Provider,
   ResolutionDetails,
@@ -154,38 +155,41 @@ export class OpenFeatureClient implements Client {
    * Performs a flag evaluation that returns a string.
    *
    * @param {string} flagKey The flag key uniquely identifies a particular flag
-   * @param {string} defaultValue The value returned if an error occurs
+   * @template {string} T A optional generic argument constraining the string
+   * @param {T} defaultValue The value returned if an error occurs
    * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
-   * @returns {Promise<string>} Flag evaluation response
+   * @returns {Promise<T>} Flag evaluation response
    */
-  async getStringValue(
+  async getStringValue<T extends string = string>(
     flagKey: string,
-    defaultValue: string,
+    defaultValue: T,
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
-  ): Promise<string> {
-    return (await this.getStringDetails(flagKey, defaultValue, context, options)).value;
+  ): Promise<T> {
+    return (await this.getStringDetails<T>(flagKey, defaultValue, context, options)).value;
   }
 
   /**
    * Performs a flag evaluation that a returns an evaluation details object.
    *
    * @param {string} flagKey The flag key uniquely identifies a particular flag
-   * @param {boolean} defaultValue The value returned if an error occurs
+   * @template {string} T A optional generic argument constraining the string
+   * @param {T} defaultValue The value returned if an error occurs
    * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
-   * @returns {Promise<EvaluationDetails<string>>} Flag evaluation details response
+   * @returns {Promise<EvaluationDetails<T>>} Flag evaluation details response
    */
-  getStringDetails(
+  getStringDetails<T extends string = string>(
     flagKey: string,
-    defaultValue: string,
+    defaultValue: T,
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
-  ): Promise<EvaluationDetails<string>> {
-    return this.evaluate<string>(
+  ): Promise<EvaluationDetails<T>> {
+    return this.evaluate<T>(
       flagKey,
-      this._provider.resolveStringEvaluation,
+      // this isolates providers from our restricted string generic argument.
+      this._provider.resolveStringEvaluation as () => Promise<EvaluationDetails<T>>,
       defaultValue,
       'string',
       context,
@@ -197,17 +201,18 @@ export class OpenFeatureClient implements Client {
    * Performs a flag evaluation that returns a number.
    *
    * @param {string} flagKey The flag key uniquely identifies a particular flag
-   * @param {number} defaultValue The value returned if an error occurs
+   * @template {number} T A optional generic argument constraining the number
+   * @param {T} defaultValue The value returned if an error occurs
    * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
-   * @returns {Promise<number>} Flag evaluation response
+   * @returns {Promise<T>} Flag evaluation response
    */
-  async getNumberValue(
+  async getNumberValue<T extends number = number>(
     flagKey: string,
-    defaultValue: number,
+    defaultValue: T,
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
-  ): Promise<number> {
+  ): Promise<T> {
     return (await this.getNumberDetails(flagKey, defaultValue, context, options)).value;
   }
 
@@ -215,20 +220,22 @@ export class OpenFeatureClient implements Client {
    * Performs a flag evaluation that a returns an evaluation details object.
    *
    * @param {string} flagKey The flag key uniquely identifies a particular flag
-   * @param {number} defaultValue The value returned if an error occurs
+   * @template {number} T A optional generic argument constraining the number
+   * @param {T} defaultValue The value returned if an error occurs
    * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
-   * @returns {Promise<EvaluationDetails<number>>} Flag evaluation details response
+   * @returns {Promise<EvaluationDetails<T>>} Flag evaluation details response
    */
-  getNumberDetails(
+  getNumberDetails<T extends number = number>(
     flagKey: string,
-    defaultValue: number,
+    defaultValue: T,
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
-  ): Promise<EvaluationDetails<number>> {
-    return this.evaluate<number>(
+  ): Promise<EvaluationDetails<T>> {
+    return this.evaluate<T>(
       flagKey,
-      this._provider.resolveNumberEvaluation,
+      // this isolates providers from our restricted number generic argument.
+      this._provider.resolveNumberEvaluation as () => Promise<EvaluationDetails<T>>,
       defaultValue,
       'number',
       context,
@@ -240,12 +247,13 @@ export class OpenFeatureClient implements Client {
    * Performs a flag evaluation that returns an object.
    *
    * @param {string} flagKey The flag key uniquely identifies a particular flag
-   * @param {object} defaultValue The value returned if an error occurs
+   * @template {JsonValue} T A optional generic argument describing the structure
+   * @param {T} defaultValue The value returned if an error occurs
    * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
-   * @returns {Promise<object>} Flag evaluation response
+   * @returns {Promise<T>} Flag evaluation response
    */
-  async getObjectValue<T extends object>(
+  async getObjectValue<T extends JsonValue = JsonValue>(
     flagKey: string,
     defaultValue: T,
     context?: EvaluationContext,
@@ -258,12 +266,13 @@ export class OpenFeatureClient implements Client {
    * Performs a flag evaluation that a returns an evaluation details object.
    *
    * @param {string} flagKey The flag key uniquely identifies a particular flag
-   * @param {object} defaultValue The value returned if an error occurs
+   * @template {JsonValue} T A optional generic argument describing the structure
+   * @param {T} defaultValue The value returned if an error occurs
    * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
-   * @returns {Promise<EvaluationDetails<object>>} Flag evaluation details response
+   * @returns {Promise<EvaluationDetails<T>>} Flag evaluation details response
    */
-  getObjectDetails<T extends object>(
+  getObjectDetails<T extends JsonValue = JsonValue>(
     flagKey: string,
     defaultValue: T,
     context?: EvaluationContext,
