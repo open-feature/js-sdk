@@ -115,7 +115,7 @@ describe('OpenFeatureClient', () => {
           it('should return string, and call string resolver', async () => {
             const stringFlag = 'my-string-flag';
             const defaultStringValue = 'default-value';
-            const value = await client.getStringValue(stringFlag, defaultStringValue);
+            const value: string = await client.getStringValue(stringFlag, defaultStringValue);
   
             expect(value).toEqual(STRING_VALUE);
             expect(MOCK_PROVIDER.resolveStringEvaluation).toHaveBeenCalledWith(stringFlag, defaultStringValue, {}, {});
@@ -127,7 +127,7 @@ describe('OpenFeatureClient', () => {
             const stringFlag = 'my-string-flag';
             type MyRestrictedString = 'val' | 'other';
             const defaultStringValue = 'other';
-            const value = await client.getStringValue<MyRestrictedString>(stringFlag, defaultStringValue);
+            const value: MyRestrictedString = await client.getStringValue<MyRestrictedString>(stringFlag, defaultStringValue);
   
             expect(value).toEqual(STRING_VALUE);
             expect(MOCK_PROVIDER.resolveStringEvaluation).toHaveBeenCalledWith(stringFlag, defaultStringValue, {}, {});
@@ -140,7 +140,7 @@ describe('OpenFeatureClient', () => {
           it('should return number, and call number resolver', async () => {
             const numberFlag = 'my-number-flag';
             const defaultNumberValue = 1970;
-            const value = await client.getNumberValue(numberFlag, defaultNumberValue);
+            const value: number = await client.getNumberValue(numberFlag, defaultNumberValue);
   
             expect(value).toEqual(NUMBER_VALUE);
             expect(MOCK_PROVIDER.resolveNumberEvaluation).toHaveBeenCalledWith(numberFlag, defaultNumberValue, {}, {});
@@ -152,7 +152,7 @@ describe('OpenFeatureClient', () => {
             const numberFlag = 'my-number-flag';
             type MyRestrictedNumber = 4096 | 2048;
             const defaultNumberValue = 4096;
-            const value = await client.getNumberValue<MyRestrictedNumber>(numberFlag, defaultNumberValue);
+            const value: MyRestrictedNumber = await client.getNumberValue<MyRestrictedNumber>(numberFlag, defaultNumberValue);
   
             expect(value).toEqual(NUMBER_VALUE);
             expect(MOCK_PROVIDER.resolveNumberEvaluation).toHaveBeenCalledWith(numberFlag, defaultNumberValue, {}, {});
@@ -166,7 +166,7 @@ describe('OpenFeatureClient', () => {
           it('should return JsonValue, and call object resolver', async () => {
             const objectFlag = 'my-object-flag';
             const defaultObjectFlag = {};
-            const value = await client.getObjectValue(objectFlag, defaultObjectFlag);
+            const value: JsonValue = await client.getObjectValue(objectFlag, defaultObjectFlag);
   
             // compare the object
             expect(value).toEqual(OBJECT_VALUE);
@@ -197,12 +197,12 @@ describe('OpenFeatureClient', () => {
               } 
             }
 
-            const defaultMyTYpeFlag: MyType = {
+            const defaultMyTypeFlag: MyType = {
               inner: {
                 booleanKey: false
               }
             };
-            const value = await client.getObjectValue<MyType>(objectFlag, defaultMyTYpeFlag);
+            const value: MyType = await client.getObjectValue<MyType>(objectFlag, defaultMyTypeFlag);
   
             const innerBooleanValue: boolean = value.inner.booleanKey;
             expect(innerBooleanValue).toBeTruthy();

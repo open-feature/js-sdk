@@ -66,6 +66,12 @@ export interface Features {
   /**
    * Get a string flag value.
    */
+   getStringValue(
+    flagKey: string,
+    defaultValue: string,
+    context?: EvaluationContext,
+    options?: FlagEvaluationOptions
+  ): Promise<string>;
   getStringValue<T extends string = string>(
     flagKey: string,
     defaultValue: T,
@@ -76,6 +82,12 @@ export interface Features {
   /**
    * Get a string flag with additional details.
    */
+  getStringDetails(
+    flagKey: string,
+    defaultValue: string,
+    context?: EvaluationContext,
+    options?: FlagEvaluationOptions
+  ): Promise<EvaluationDetails<string>>;
   getStringDetails<T extends string = string>(
     flagKey: string,
     defaultValue: T,
@@ -86,6 +98,12 @@ export interface Features {
   /**
    * Get a number flag value.
    */
+  getNumberValue(
+    flagKey: string,
+    defaultValue: number,
+    context?: EvaluationContext,
+    options?: FlagEvaluationOptions
+  ): Promise<number>;
   getNumberValue<T extends number = number>(
     flagKey: string,
     defaultValue: T,
@@ -96,6 +114,12 @@ export interface Features {
   /**
    * Get a number flag with additional details.
    */
+   getNumberDetails(
+    flagKey: string,
+    defaultValue: number,
+    context?: EvaluationContext,
+    options?: FlagEvaluationOptions
+  ): Promise<EvaluationDetails<number>>;
   getNumberDetails<T extends number = number>(
     flagKey: string,
     defaultValue: T,
@@ -106,6 +130,12 @@ export interface Features {
   /**
    * Get an object (JSON) flag value.
    */
+  getObjectValue(
+    flagKey: string,
+    defaultValue: JsonValue,
+    context?: EvaluationContext,
+    options?: FlagEvaluationOptions
+  ): Promise<JsonValue>;
   getObjectValue<T extends JsonValue = JsonValue>(
     flagKey: string,
     defaultValue: T,
@@ -122,6 +152,12 @@ export interface Features {
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): Promise<EvaluationDetails<JsonValue>>;
+  getObjectDetails<T extends JsonValue = JsonValue>(
+    flagKey: string,
+    defaultValue: T,
+    context?: EvaluationContext,
+    options?: FlagEvaluationOptions
+  ): Promise<EvaluationDetails<T>>;
 }
 
 /**
