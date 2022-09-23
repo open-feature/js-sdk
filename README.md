@@ -10,7 +10,7 @@ This is the JavaScript implementation of [OpenFeature](https://openfeature.dev),
 
 We support multiple data types for flags (numbers, strings, booleans, objects) as well as hooks, which can alter the lifecycle of a flag evaluation.
 
-This library is intended to be used in server-side contexts and has not been evaluated for use client-side or on mobile devices.
+**This library is intended to be used in server-side contexts and has only experimental support for web usage.**
 
 ## Installation
 

@@ -36,11 +36,9 @@
     "dist/"
   ],
   "exports": {
-    "node": {
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js",
-      "default": "./dist/esm/index.js"
-    }
+    "import": "./dist/esm/index.js",
+    "require": "./dist/cjs/index.js",
+    "default": "./dist/cjs/index.js"
   },
   "devDependencies": {
     "@types/jest": "^28.1.4",
