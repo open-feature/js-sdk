@@ -83,19 +83,6 @@ class OpenFeatureAPI implements GlobalApi {
     return this;
   }
 
-  setTransactionContextPropagator(transactionContextPropagator: TransactionContextPropagator) {
-    this._transactionContextPropagator = transactionContextPropagator;
-    return this;
-  }
-
-  setTransactionContext(transactionContext: TransactionContext, callback: () => void) {
-    this._transactionContextPropagator.setTransactionContext(transactionContext, callback);
-  }
-
-  getTransactionContext(): TransactionContext {
-    return this._transactionContextPropagator.getTransactionContext();
-  }
-
   setContext(context: EvaluationContext): OpenFeatureAPI {
     this._context = context;
     return this;
@@ -103,6 +90,23 @@ class OpenFeatureAPI implements GlobalApi {
 
   getContext(): EvaluationContext {
     return this._context;
+  }
+
+  setTransactionContextPropagator(transactionContextPropagator: TransactionContextPropagator): OpenFeatureAPI {
+    this._transactionContextPropagator = transactionContextPropagator;
+    return this;
+  }
+
+  setTransactionContext<R>(
+    transactionContext: TransactionContext,
+    callback: (...args: unknown[]) => R,
+    ...args: unknown[]
+  ): void {
+    this._transactionContextPropagator.setTransactionContext(transactionContext, callback, ...args);
+  }
+
+  getTransactionContext(): TransactionContext {
+    return this._transactionContextPropagator.getTransactionContext();
   }
 }
 
