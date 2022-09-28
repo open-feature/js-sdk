@@ -1,5 +1,5 @@
-import { OpenFeatureError } from './error-abstract';
-import { ErrorCode } from './codes';
+import { ErrorCode } from '../types';
+import { OpenFeatureError } from './open-feature-error-abstract';
 
 export class TypeMismatchError extends OpenFeatureError {
   code: ErrorCode;

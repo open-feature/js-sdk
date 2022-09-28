@@ -1,7 +1,7 @@
-import { OpenFeatureClient } from '../src/client.js';
-import { ERROR_REASON, GENERAL_ERROR } from '../src/constants.js';
-import { OpenFeature } from '../src/open-feature.js';
-import { Client, EvaluationContext, EvaluationDetails, JsonArray, JsonObject, JsonValue, Provider, ResolutionDetails } from '../src/types.js';
+import { OpenFeatureClient } from '../src/client';
+import { ErrorCode, FlagNotFoundError } from '../src/index';
+import { OpenFeature } from '../src/open-feature';
+import { Client, EvaluationContext, EvaluationDetails, JsonArray, JsonObject, JsonValue, Provider, ResolutionDetails, StandardResolutionReasons } from '../src/types';
 
 const BOOLEAN_VALUE = true;
 const STRING_VALUE = 'val';
@@ -321,42 +321,74 @@ describe('OpenFeatureClient', () => {
     });
 
     describe('Abnormal execution', () => {
-      let details: EvaluationDetails<number>;
+      const NON_OPEN_FEATURE_ERROR_MESSAGE = 'A null dereference or something, I dunno.';
+      const OPEN_FEATURE_ERROR_MESSAGE = 'This ain\'t the flag you\'re looking for.';
+      let nonOpenFeatureErrorDetails: EvaluationDetails<number>;
+      let openFeatureErrorDetails : EvaluationDetails<string>;
       let client: Client;
       const errorProvider = {
         name: 'error-mock',
 
         resolveNumberEvaluation: jest.fn((): Promise<ResolutionDetails<number>> => {
-          throw new Error('Fake error!');
+          throw new Error(NON_OPEN_FEATURE_ERROR_MESSAGE);  // throw a non-open-feature error
+        }),
+        resolveStringEvaluation: jest.fn((): Promise<ResolutionDetails<string>> => {
+          throw new FlagNotFoundError(OPEN_FEATURE_ERROR_MESSAGE);  // throw an open-feature error
         }),
       } as unknown as Provider;
-      const defaultValue = 123;
+      const defaultNumberValue = 123;
+      const defaultStringValue = 'hey!';
 
       beforeAll(async () => {
         OpenFeature.setProvider(errorProvider);
         client = OpenFeature.getClient();
-        details = await client.getNumberDetails('some-flag', defaultValue);
+        nonOpenFeatureErrorDetails = await client.getNumberDetails('some-flag', defaultNumberValue);
+        openFeatureErrorDetails = await client.getStringDetails('some-flag', defaultStringValue);
       });
 
       describe('Requirement 1.4.7', () => {
-        it('error code hould contain error', () => {
-          expect(details.errorCode).toBeTruthy();
-          expect(details.errorCode).toEqual(GENERAL_ERROR);
+        describe('OpenFeatureError', () => {
+          it('should contain error code', () => {
+            expect(openFeatureErrorDetails.errorCode).toBeTruthy();
+            expect(openFeatureErrorDetails.errorCode).toEqual(ErrorCode.FLAG_NOT_FOUND); // should get code from thrown OpenFeatureError
+          });
+        });
+        
+        describe('Non-OpenFeatureError', () => {
+          it('should contain error code', () => {
+            expect(nonOpenFeatureErrorDetails.errorCode).toBeTruthy();
+            expect(nonOpenFeatureErrorDetails.errorCode).toEqual(ErrorCode.GENERAL); // should fall back to GENERAL
+          });
         });
       });
 
       describe('Requirement 1.4.8', () => {
-        it('should contain "error" reason', () => {
-          expect(details.reason).toEqual(ERROR_REASON);
+        it('should contain error reason', () => {
+          expect(nonOpenFeatureErrorDetails.reason).toEqual(StandardResolutionReasons.ERROR);
+          expect(openFeatureErrorDetails.reason).toEqual(StandardResolutionReasons.ERROR);
         });
       });
 
       describe('Requirement 1.4.9', () => {
         it('must not throw, must return default', async () => {
-          details = await client.getNumberDetails('some-flag', defaultValue);
+          nonOpenFeatureErrorDetails = await client.getNumberDetails('some-flag', defaultNumberValue);
 
-          expect(details).toBeTruthy();
-          expect(details.value).toEqual(defaultValue);
+          expect(nonOpenFeatureErrorDetails).toBeTruthy();
+          expect(nonOpenFeatureErrorDetails.value).toEqual(defaultNumberValue);
+        });
+      });
+
+      describe('Requirement 1.4.12', () => {
+        describe('OpenFeatureError', () => {
+          it('should contain "error" message', () => {
+            expect(openFeatureErrorDetails.errorMessage).toEqual(OPEN_FEATURE_ERROR_MESSAGE);
+          });
+        });
+        
+        describe('Non-OpenFeatureError', () => {
+          it('should contain "error" message', () => {
+            expect(nonOpenFeatureErrorDetails.errorMessage).toEqual(NON_OPEN_FEATURE_ERROR_MESSAGE);
+          });
         });
       });
     });

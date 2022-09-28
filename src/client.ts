@@ -1,9 +1,10 @@
-import { ERROR_REASON, GENERAL_ERROR } from './constants';
-import { OpenFeature } from './open-feature';
+import { OpenFeatureError } from './errors';
 import { SafeLogger } from './logger';
+import { OpenFeature } from './open-feature';
 import {
   Client,
   ClientMetadata,
+  ErrorCode,
   EvaluationContext,
   EvaluationDetails,
   FlagEvaluationOptions,
@@ -14,7 +15,7 @@ import {
   JsonValue,
   Logger,
   Provider,
-  ResolutionDetails,
+  ResolutionDetails, StandardResolutionReasons
 } from './types';
 
 type OpenFeatureClientOptions = {
@@ -223,14 +224,17 @@ export class OpenFeatureClient implements Client {
 
       return evaluationDetails;
     } catch (err: unknown) {
-      const errorCode = (!!err && (err as { code: string }).code) || GENERAL_ERROR;
+
+      const errorMessage: string = (err as Error)?.message;
+      const errorCode: ErrorCode = (err as OpenFeatureError)?.code || ErrorCode.GENERAL;
 
       await this.errorHooks(allHooksReversed, hookContext, err, options);
 
       return {
         errorCode,
+        errorMessage,
         value: defaultValue,
-        reason: ERROR_REASON,
+        reason: StandardResolutionReasons.ERROR,
         flagKey,
       };
     } finally {
