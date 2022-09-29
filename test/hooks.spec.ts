@@ -1,5 +1,5 @@
-import { OpenFeature } from '../src/open-feature.js';
-import { Client, EvaluationContext, FlagValueType, Hook, Provider, ResolutionDetails } from '../src/types.js';
+import { OpenFeature } from '../src/open-feature';
+import { Client, EvaluationContext, FlagValueType, Hook, Provider, ResolutionDetails } from '../src/types';
 
 const BOOLEAN_VALUE = true;
 

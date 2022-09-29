@@ -272,55 +272,85 @@ export interface Provider {
   ): Promise<ResolutionDetails<T>>;
 }
 
-export enum StandardResolutionReasons {
+export const StandardResolutionReasons = {
   /**
-   * Indicates that the feature flag is targeting
-   * 100% of the targeting audience,
-   * e.g. 100% rollout percentage
+   * The resolved value was the result of a dynamic evaluation, such as a rule or specific user-targeting.
    */
-  TARGETING_MATCH = 'TARGETING_MATCH',
+  TARGETING_MATCH: 'TARGETING_MATCH',
+  
   /**
-   * Indicates that the feature flag is targeting
-   * a subset of the targeting audience,
-   * e.g. less than 100% rollout percentage
+   * The resolved value was the result of pseudorandom assignment.
    */
-  SPLIT = 'SPLIT',
+  SPLIT: 'SPLIT',
+
   /**
-   * Indicates that the feature flag is disabled
+   * The resolved value was the result of the flag being disabled in the management system.
    */
-  DISABLED = 'DISABLED',
+  DISABLED: 'DISABLED',
+
   /**
-   * Indicates that the feature flag evaluated to the
-   * default value as passed in getBooleanValue/getBooleanValueDetails and
-   * similar functions in the Client
+   * 	The resolved value was configured statically, or otherwise fell back to a pre-configured value.
    */
-  DEFAULT = 'DEFAULT',
+  DEFAULT: 'DEFAULT',
+
   /**
-   * Indicates that the feature flag evaluated to a
-   * static value, for example, the default value for the flag
+   * The reason for the resolved value could not be determined.
+   */
+  UNKNOWN: 'UNKNOWN',
+
+  /**
+   * The resolved value was the result of an error.
    *
-   * Note: Typically means that no dynamic evaluation has been
-   * executed for the feature flag
+   * Note: The `errorCode` and `errorMessage` fields may contain additional details of this error. 
    */
-  STATIC = 'STATIC',
+  ERROR: 'ERROR',
+} as const;
+
+export enum ErrorCode {
   /**
-   * Indicates an unknown issue occurred during evaluation
+   * The value was resolved before the provider was ready.
    */
-  UNKNOWN = 'UNKNOWN',
+  PROVIDER_NOT_READY = 'PROVIDER_NOT_READY',
+
   /**
-   * Indicates that an error occurred during evaluation
-   *
-   * Note: The `errorCode`-field contains the details of this error
+   * The flag could not be found.
    */
-  ERROR = 'ERROR',
+  FLAG_NOT_FOUND = 'FLAG_NOT_FOUND',
+
+  /**
+   * An error was encountered parsing data, such as a flag configuration.
+   */
+  PARSE_ERROR = 'PARSE_ERROR',
+
+  /**
+   * The type of the flag value does not match the expected type.
+   */
+  TYPE_MISMATCH = 'TYPE_MISMATCH',
+
+  /**
+   * The provider requires a targeting key and one was not provided in the evaluation context.
+   */
+  TARGETING_KEY_MISSING = 'TARGETING_KEY_MISSING',
+
+  /**
+   * The evaluation context does not meet provider requirements.
+   */
+  INVALID_CONTEXT = 'INVALID_CONTEXT',
+
+  /**
+   * An error with an unspecified code.
+   */
+  GENERAL = 'GENERAL',
 }
+
 export type ResolutionReason = keyof typeof StandardResolutionReasons | (string & Record<never, never>);
 
 export type ResolutionDetails<U> = {
   value: U;
   variant?: string;
   reason?: ResolutionReason;
-  errorCode?: string;
+  errorCode?: ErrorCode;
+  errorMessage?: string;
 };
 
 export type EvaluationDetails<T extends FlagValue> = {
