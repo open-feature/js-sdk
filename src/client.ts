@@ -15,7 +15,8 @@ import {
   JsonValue,
   Logger,
   Provider,
-  ResolutionDetails, StandardResolutionReasons
+  ResolutionDetails,
+  StandardResolutionReasons,
 } from './types';
 
 type OpenFeatureClientOptions = {
@@ -48,7 +49,7 @@ export class OpenFeatureClient implements Client {
     this._clientLogger = new SafeLogger(logger);
     return this;
   }
-  
+
   setContext(context: EvaluationContext): OpenFeatureClient {
     this._context = context;
     return this;
@@ -224,7 +225,6 @@ export class OpenFeatureClient implements Client {
 
       return evaluationDetails;
     } catch (err: unknown) {
-
       const errorMessage: string = (err as Error)?.message;
       const errorCode: ErrorCode = (err as OpenFeatureError)?.code || ErrorCode.GENERAL;
 

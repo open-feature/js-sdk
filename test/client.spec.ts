@@ -1,5 +1,5 @@
 import { OpenFeatureClient } from '../src/client';
-import { ErrorCode, FlagNotFoundError } from '../src/index';
+import { ErrorCode, FlagNotFoundError } from '../src';
 import { OpenFeature } from '../src/open-feature';
 import { Client, EvaluationContext, EvaluationDetails, JsonArray, JsonObject, JsonValue, Provider, ResolutionDetails, StandardResolutionReasons } from '../src/types';
 
