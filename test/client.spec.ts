@@ -11,8 +11,9 @@ import {
   Provider,
   ResolutionDetails,
   StandardResolutionReasons,
+  TransactionContext,
+  TransactionContextPropagator,
 } from '../src/types';
-import { TransactionContext, TransactionContextPropagator } from '../src/types.js';
 
 const BOOLEAN_VALUE = true;
 const STRING_VALUE = 'val';
