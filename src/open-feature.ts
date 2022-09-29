@@ -9,7 +9,7 @@ const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/js.api');
 type OpenFeatureGlobal = {
   [GLOBAL_OPENFEATURE_API_KEY]?: OpenFeatureAPI;
 };
-const _global = global as OpenFeatureGlobal;
+const _globalThis = globalThis as OpenFeatureGlobal;
 
 class OpenFeatureAPI implements GlobalApi {
   private _provider: Provider = NOOP_PROVIDER;
@@ -18,13 +18,13 @@ class OpenFeatureAPI implements GlobalApi {
   private _logger: Logger = new DefaultLogger();
 
   static getInstance(): OpenFeatureAPI {
-    const globalApi = _global[GLOBAL_OPENFEATURE_API_KEY];
+    const globalApi = _globalThis[GLOBAL_OPENFEATURE_API_KEY];
     if (globalApi) {
       return globalApi;
     }
 
     const instance = new OpenFeatureAPI();
-    _global[GLOBAL_OPENFEATURE_API_KEY] = instance;
+    _globalThis[GLOBAL_OPENFEATURE_API_KEY] = instance;
     return instance;
   }
 
