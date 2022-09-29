@@ -1,7 +1,7 @@
-import { OpenFeatureClient } from '../src/client.js';
-import { NOOP_PROVIDER } from '../src/no-op-provider.js';
-import { OpenFeature } from '../src/open-feature.js';
-import { Provider } from '../src/types.js';
+import { OpenFeatureClient } from '../src/client';
+import { NOOP_PROVIDER } from '../src/no-op-provider';
+import { OpenFeature } from '../src/open-feature';
+import { Provider } from '../src/types';
 
 describe('OpenFeature', () => {
   afterEach(() => {
