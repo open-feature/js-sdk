@@ -93,7 +93,14 @@ class OpenFeatureAPI implements GlobalApi {
   }
 
   setTransactionContextPropagator(transactionContextPropagator: TransactionContextPropagator): OpenFeatureAPI {
-    this._transactionContextPropagator = transactionContextPropagator;
+    const baseMessage = 'Invalid TransactionContextPropagator, will not be set: ';
+    if (typeof transactionContextPropagator.getTransactionContext !== 'function') {
+      this._logger.error(`${baseMessage}: getTransactionContext is not a function.`);
+    } else if (typeof transactionContextPropagator.setTransactionContext !== 'function') {
+      this._logger.error(`${baseMessage}: setTransactionContext is not a function.`);
+    } else {
+      this._transactionContextPropagator = transactionContextPropagator;
+    }
     return this;
   }
 
@@ -106,7 +113,14 @@ class OpenFeatureAPI implements GlobalApi {
   }
 
   getTransactionContext(): TransactionContext {
-    return this._transactionContextPropagator.getTransactionContext();
+    try {
+      return this._transactionContextPropagator.getTransactionContext();
+    } catch (err: unknown) {
+      const error = err as Error | undefined;
+      this._logger.error(`Error getting transaction context: ${error?.message}, returning empty context.`);
+      this._logger.error(error?.stack);
+      return {};
+    }
   }
 }
 
