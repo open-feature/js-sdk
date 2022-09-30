@@ -559,7 +559,7 @@ export interface TransactionContextPropagator {
    * Returns the currently defined transaction context using the registered transaction
    * context propagator.
    *
-   * @returns {TransactionContext} The currently defined transaction context
+   * @returns {TransactionContext} The current transaction context
    */
   getTransactionContext(): TransactionContext;
 
