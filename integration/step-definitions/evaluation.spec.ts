@@ -5,9 +5,7 @@ import {
   EvaluationDetails,
   JsonObject,
   JsonValue,
-  ResolutionDetails,
-  ResolutionReason,
-  StandardResolutionReasons
+  ResolutionDetails, StandardResolutionReasons
 } from '../../src/types';
 
 // load the feature file.
@@ -122,7 +120,7 @@ defineFeature(feature, (test) => {
       (expectedValue: string, expectedVariant: string, expectedReason: string) => {
         expect(details.value).toEqual(expectedValue === 'true');
         expect(details.variant).toEqual(expectedVariant);
-        expect(details.reason).toEqual(convertExpectationToStatic(expectedReason));
+        expect(details.reason).toEqual(expectedReason);
       }
     );
   });
@@ -144,7 +142,7 @@ defineFeature(feature, (test) => {
       (expectedValue: string, expectedVariant: string, expectedReason: string) => {
         expect(details.value).toEqual(expectedValue);
         expect(details.variant).toEqual(expectedVariant);
-        expect(details.reason).toEqual(convertExpectationToStatic(expectedReason));
+        expect(details.reason).toEqual(expectedReason);
       }
     );
   });
@@ -166,7 +164,7 @@ defineFeature(feature, (test) => {
       (expectedValue: string, expectedVariant: string, expectedReason: string) => {
         expect(details.value).toEqual(Number.parseInt(expectedValue));
         expect(details.variant).toEqual(expectedVariant);
-        expect(details.reason).toEqual(convertExpectationToStatic(expectedReason));
+        expect(details.reason).toEqual(expectedReason);
       }
     );
   });
@@ -188,7 +186,7 @@ defineFeature(feature, (test) => {
       (expectedValue: string, expectedVariant: string, expectedReason: string) => {
         expect(details.value).toEqual(Number.parseFloat(expectedValue));
         expect(details.variant).toEqual(expectedVariant);
-        expect(details.reason).toEqual(convertExpectationToStatic(expectedReason));
+        expect(details.reason).toEqual(expectedReason);
       }
     );
   });
@@ -217,7 +215,7 @@ defineFeature(feature, (test) => {
       /^the variant should be '(.*)', and the reason should be '(.*)'$/,
       (expectedVariant: string, expectedReason: string) => {
         expect(details.variant).toEqual(expectedVariant);
-        expect(details.reason).toEqual(convertExpectationToStatic(expectedReason));
+        expect(details.reason).toEqual(expectedReason);
       }
     );
   });
@@ -315,6 +313,3 @@ defineFeature(feature, (test) => {
     );
   });
 });
-
-const convertExpectationToStatic = (reason: ResolutionReason) =>
-  reason === StandardResolutionReasons.DEFAULT ? StandardResolutionReasons.STATIC : undefined;
