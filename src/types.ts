@@ -280,7 +280,7 @@ export const StandardResolutionReasons = {
    * The resolved value was the result of a dynamic evaluation, such as a rule or specific user-targeting.
    */
   TARGETING_MATCH: 'TARGETING_MATCH',
-  
+
   /**
    * The resolved value was the result of pseudorandom assignment.
    */
@@ -304,7 +304,7 @@ export const StandardResolutionReasons = {
   /**
    * The resolved value was the result of an error.
    *
-   * Note: The `errorCode` and `errorMessage` fields may contain additional details of this error. 
+   * Note: The `errorCode` and `errorMessage` fields may contain additional details of this error.
    */
   ERROR: 'ERROR',
 } as const;
@@ -537,6 +537,9 @@ export type TransactionContext = EvaluationContext;
 
 interface ManageTransactionContextPropagator<T> extends TransactionContextPropagator {
   /**
+   * EXPERIMENTAL: Transaction context propagation is experimental and subject to change.
+   * The OpenFeature Enhancement Proposal regarding transaction context can be found [here](https://github.com/open-feature/ofep/pull/32).
+   *
    * Sets a transaction context propagator on this receiver. The transaction context
    * propagator is responsible for persisting context for the duration of a single
    * transaction.
@@ -550,6 +553,9 @@ interface ManageTransactionContextPropagator<T> extends TransactionContextPropag
 
 export interface TransactionContextPropagator {
   /**
+   * EXPERIMENTAL: Transaction context propagation is experimental and subject to change.
+   * The OpenFeature Enhancement Proposal regarding transaction context can be found [here](https://github.com/open-feature/ofep/pull/32).
+   *
    * Returns the currently defined transaction context using the registered transaction
    * context propagator.
    *
@@ -558,6 +564,9 @@ export interface TransactionContextPropagator {
   getTransactionContext(): TransactionContext;
 
   /**
+   * EXPERIMENTAL: Transaction context propagation is experimental and subject to change.
+   * The OpenFeature Enhancement Proposal regarding transaction context can be found [here](https://github.com/open-feature/ofep/pull/32).
+   *
    * Sets the transaction context using the registered transaction context propagator.
    *
    * @template R The return value of the callback
