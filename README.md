@@ -48,6 +48,10 @@ We value having as few runtime dependencies as possible. The addition of any dep
 
 Run tests with `npm test`.
 
+### Integration tests
+
+The continuous integration runs a set of [gherkin integration tests](https://github.com/open-feature/test-harness/blob/main/features/evaluation.feature) using [`flagd`](https://github.com/open-feature/flagd). These tests run with the "integration" npm script. If you'd like to run them locally, you can start the flagd testbed with `docker run -p 8013:8013 ghcr.io/open-feature/flagd-testbed:latest` and then run `npm run integration`.
+
 ### Packaging
 
 Both ES modules and CommonJS modules are supported, so consumers can use both `require` and `import` functions to utilize this module. This is accomplished by building 2 variations of the output, under `dist/esm` and `dist/cjs`, respectively. To force resolution of the `dist/esm/**.js*` files as modules, a package json with only the context `{"type": "module"}` is included at a in a `postbuild` step. Type declarations are included at `/dist/types/`
