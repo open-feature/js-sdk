@@ -94,9 +94,9 @@ class OpenFeatureAPI implements GlobalApi {
 
   setTransactionContextPropagator(transactionContextPropagator: TransactionContextPropagator): OpenFeatureAPI {
     const baseMessage = 'Invalid TransactionContextPropagator, will not be set: ';
-    if (typeof transactionContextPropagator.getTransactionContext !== 'function') {
+    if (typeof transactionContextPropagator?.getTransactionContext !== 'function') {
       this._logger.error(`${baseMessage}: getTransactionContext is not a function.`);
-    } else if (typeof transactionContextPropagator.setTransactionContext !== 'function') {
+    } else if (typeof transactionContextPropagator?.setTransactionContext !== 'function') {
       this._logger.error(`${baseMessage}: setTransactionContext is not a function.`);
     } else {
       this._transactionContextPropagator = transactionContextPropagator;
