@@ -1,7 +1,19 @@
-import { OpenFeatureClient } from '../src/client';
 import { ErrorCode, FlagNotFoundError } from '../src';
+import { OpenFeatureClient } from '../src/client';
 import { OpenFeature } from '../src/open-feature';
-import { Client, EvaluationContext, EvaluationDetails, JsonArray, JsonObject, JsonValue, Provider, ResolutionDetails, StandardResolutionReasons } from '../src/types';
+import {
+  Client,
+  EvaluationContext,
+  EvaluationDetails,
+  JsonArray,
+  JsonObject,
+  JsonValue,
+  Provider,
+  ResolutionDetails,
+  StandardResolutionReasons,
+  TransactionContext,
+  TransactionContextPropagator,
+} from '../src/types';
 
 const BOOLEAN_VALUE = true;
 const STRING_VALUE = 'val';
@@ -13,15 +25,15 @@ const INNER_NULL_KEY = 'nullKey';
 const INNER_BOOLEAN_KEY = 'booleanKey';
 const INNER_STRING_KEY = 'stringKey';
 const INNER_NUMBER_KEY = 'numberKey';
-const INNER_ARRAY_KEY = 'arrayKey'; 
+const INNER_ARRAY_KEY = 'arrayKey';
 const OBJECT_VALUE: JsonValue = {
   [INNER_KEY]: {
     [INNER_NULL_KEY]: null,
     [INNER_BOOLEAN_KEY]: BOOLEAN_VALUE,
     [INNER_STRING_KEY]: STRING_VALUE,
     [INNER_NUMBER_KEY]: NUMBER_VALUE,
-    [INNER_ARRAY_KEY]: ARRAY_VALUE
-  }
+    [INNER_ARRAY_KEY]: ARRAY_VALUE,
+  },
 };
 
 const DATETIME_VALUE = new Date(2022, 5, 13, 18, 20, 0);
@@ -116,7 +128,7 @@ describe('OpenFeatureClient', () => {
             const stringFlag = 'my-string-flag';
             const defaultStringValue = 'default-value';
             const value: string = await client.getStringValue(stringFlag, defaultStringValue);
-  
+
             expect(value).toEqual(STRING_VALUE);
             expect(MOCK_PROVIDER.resolveStringEvaluation).toHaveBeenCalledWith(stringFlag, defaultStringValue, {}, {});
           });
@@ -127,8 +139,11 @@ describe('OpenFeatureClient', () => {
             const stringFlag = 'my-string-flag';
             type MyRestrictedString = 'val' | 'other';
             const defaultStringValue = 'other';
-            const value: MyRestrictedString = await client.getStringValue<MyRestrictedString>(stringFlag, defaultStringValue);
-  
+            const value: MyRestrictedString = await client.getStringValue<MyRestrictedString>(
+              stringFlag,
+              defaultStringValue
+            );
+
             expect(value).toEqual(STRING_VALUE);
             expect(MOCK_PROVIDER.resolveStringEvaluation).toHaveBeenCalledWith(stringFlag, defaultStringValue, {}, {});
           });
@@ -141,7 +156,7 @@ describe('OpenFeatureClient', () => {
             const numberFlag = 'my-number-flag';
             const defaultNumberValue = 1970;
             const value: number = await client.getNumberValue(numberFlag, defaultNumberValue);
-  
+
             expect(value).toEqual(NUMBER_VALUE);
             expect(MOCK_PROVIDER.resolveNumberEvaluation).toHaveBeenCalledWith(numberFlag, defaultNumberValue, {}, {});
           });
@@ -152,13 +167,15 @@ describe('OpenFeatureClient', () => {
             const numberFlag = 'my-number-flag';
             type MyRestrictedNumber = 4096 | 2048;
             const defaultNumberValue = 4096;
-            const value: MyRestrictedNumber = await client.getNumberValue<MyRestrictedNumber>(numberFlag, defaultNumberValue);
-  
+            const value: MyRestrictedNumber = await client.getNumberValue<MyRestrictedNumber>(
+              numberFlag,
+              defaultNumberValue
+            );
+
             expect(value).toEqual(NUMBER_VALUE);
             expect(MOCK_PROVIDER.resolveNumberEvaluation).toHaveBeenCalledWith(numberFlag, defaultNumberValue, {}, {});
           });
         });
-
       });
 
       describe('getObjectValue', () => {
@@ -167,10 +184,10 @@ describe('OpenFeatureClient', () => {
             const objectFlag = 'my-object-flag';
             const defaultObjectFlag = {};
             const value: JsonValue = await client.getObjectValue(objectFlag, defaultObjectFlag);
-  
+
             // compare the object
             expect(value).toEqual(OBJECT_VALUE);
-  
+
             // explore the object - type assertions required for safety.
             const jsonObject: JsonObject = (value as JsonObject)[INNER_KEY] as JsonObject;
             const nullValue = jsonObject?.[INNER_NULL_KEY] as null;
@@ -178,7 +195,7 @@ describe('OpenFeatureClient', () => {
             const stringValue = jsonObject?.[INNER_STRING_KEY] as string;
             const numberValue = jsonObject?.[INNER_NUMBER_KEY] as number;
             const arrayValue = jsonObject?.[INNER_ARRAY_KEY] as JsonArray;
-  
+
             expect(nullValue).toEqual(null);
             expect(booleanValue).toEqual(BOOLEAN_VALUE);
             expect(stringValue).toEqual(STRING_VALUE);
@@ -193,17 +210,17 @@ describe('OpenFeatureClient', () => {
 
             type MyType = {
               inner: {
-                booleanKey: boolean
-              } 
-            }
+                booleanKey: boolean;
+              };
+            };
 
             const defaultMyTypeFlag: MyType = {
               inner: {
-                booleanKey: false
-              }
+                booleanKey: false,
+              },
             };
             const value: MyType = await client.getObjectValue<MyType>(objectFlag, defaultMyTypeFlag);
-  
+
             const innerBooleanValue: boolean = value.inner.booleanKey;
             expect(innerBooleanValue).toBeTruthy();
           });
@@ -322,18 +339,18 @@ describe('OpenFeatureClient', () => {
 
     describe('Abnormal execution', () => {
       const NON_OPEN_FEATURE_ERROR_MESSAGE = 'A null dereference or something, I dunno.';
-      const OPEN_FEATURE_ERROR_MESSAGE = 'This ain\'t the flag you\'re looking for.';
+      const OPEN_FEATURE_ERROR_MESSAGE = "This ain't the flag you're looking for.";
       let nonOpenFeatureErrorDetails: EvaluationDetails<number>;
-      let openFeatureErrorDetails : EvaluationDetails<string>;
+      let openFeatureErrorDetails: EvaluationDetails<string>;
       let client: Client;
       const errorProvider = {
         name: 'error-mock',
 
         resolveNumberEvaluation: jest.fn((): Promise<ResolutionDetails<number>> => {
-          throw new Error(NON_OPEN_FEATURE_ERROR_MESSAGE);  // throw a non-open-feature error
+          throw new Error(NON_OPEN_FEATURE_ERROR_MESSAGE); // throw a non-open-feature error
         }),
         resolveStringEvaluation: jest.fn((): Promise<ResolutionDetails<string>> => {
-          throw new FlagNotFoundError(OPEN_FEATURE_ERROR_MESSAGE);  // throw an open-feature error
+          throw new FlagNotFoundError(OPEN_FEATURE_ERROR_MESSAGE); // throw an open-feature error
         }),
       } as unknown as Provider;
       const defaultNumberValue = 123;
@@ -353,7 +370,7 @@ describe('OpenFeatureClient', () => {
             expect(openFeatureErrorDetails.errorCode).toEqual(ErrorCode.FLAG_NOT_FOUND); // should get code from thrown OpenFeatureError
           });
         });
-        
+
         describe('Non-OpenFeatureError', () => {
           it('should contain error code', () => {
             expect(nonOpenFeatureErrorDetails.errorCode).toBeTruthy();
@@ -384,7 +401,7 @@ describe('OpenFeatureClient', () => {
             expect(openFeatureErrorDetails.errorMessage).toEqual(OPEN_FEATURE_ERROR_MESSAGE);
           });
         });
-        
+
         describe('Non-OpenFeatureError', () => {
           it('should contain "error" message', () => {
             expect(nonOpenFeatureErrorDetails.errorMessage).toEqual(NON_OPEN_FEATURE_ERROR_MESSAGE);
@@ -483,31 +500,55 @@ describe('OpenFeatureClient', () => {
     });
 
     describe('3.2.1, 3.2.2', () => {
-      it('Evaluation context MUST be merged in the order: API (global; lowest precedence) -> client -> invocation -> before hooks (highest precedence), with duplicate values being overwritten.', async () => {
+      it('Evaluation context MUST be merged in the order: API (global; lowest precedence) -> transaction context -> client -> invocation -> before hooks (highest precedence), with duplicate values being overwritten.', async () => {
         const flagKey = 'some-other-flag';
         const defaultValue = false;
         const globalContext: EvaluationContext = {
           globalContextValue: 'abc',
           globalContextValueToOverwrite: 'xxx', // should be overwritten
         };
-        const clientContext: EvaluationContext = {
-          clientContextValue: 'def',
-          clientContextValueToOverwrite: 'xxx', // should be overwritten
+        const transactionContext: TransactionContext = {
+          transactionContextValue: 'def',
+          transactionContextValueToOverwrite: 'xxx', // should be overwritten
           globalContextValueToOverwrite: '123',
         };
+        const clientContext: EvaluationContext = {
+          clientContextValue: 'ghi',
+          clientContextValueToOverwrite: 'xxx', // should be overwritten
+          transactionContextValueToOverwrite: '456',
+        };
         const invocationContext: EvaluationContext = {
-          invocationContextValue: 'ghi',
+          invocationContextValue: 'jkl',
           invocationContextValueToOverwrite: 'xxx', // should be overwritten
-          clientContextValueToOverwrite: '456',
+          clientContextValueToOverwrite: '789',
         };
         const beforeHookContext: EvaluationContext = {
-          invocationContextValueToOverwrite: '789',
-          beforeHookContextValue: 'jkl',
+          invocationContextValueToOverwrite: '012',
+          beforeHookContextValue: 'mno',
         };
 
+        // Set Global Context
         OpenFeature.setProvider(provider).setContext(globalContext);
+
+        // Set Transaction Context
+        class LocalTransactionContextPropagator implements TransactionContextPropagator {
+          private context: TransactionContext = {};
+          getTransactionContext(): EvaluationContext {
+            return this.context;
+          }
+          setTransactionContext(transactionContext: EvaluationContext, callback: () => void): void {
+            this.context = transactionContext;
+            callback();
+          }
+        }
+        OpenFeature.setTransactionContextPropagator(new LocalTransactionContextPropagator());
+        OpenFeature.setTransactionContext(transactionContext, jest.fn());
+
+        // Set Client Context
         const client = OpenFeature.getClient('contextual', 'test', clientContext);
+        // Set Hook Context
         client.addHooks({ before: () => beforeHookContext });
+
         await client.getBooleanValue(flagKey, defaultValue, invocationContext);
         expect(provider.resolveBooleanEvaluation).toHaveBeenCalledWith(
           expect.anything(),
@@ -515,6 +556,7 @@ describe('OpenFeatureClient', () => {
           // expect merged in the correct order...
           expect.objectContaining({
             ...globalContext,
+            ...transactionContext,
             ...clientContext,
             ...invocationContext,
             ...beforeHookContext,

@@ -1,7 +1,19 @@
 import { OpenFeatureClient } from './client';
 import { DefaultLogger, SafeLogger } from './logger';
 import { NOOP_PROVIDER } from './no-op-provider';
-import { Client, EvaluationContext, FlagValue, GlobalApi, Hook, Logger, Provider, ProviderMetadata } from './types';
+import { NOOP_TRANSACTION_CONTEXT_PROPAGATOR } from './no-op-transaction-context-propagator';
+import {
+  Client,
+  EvaluationContext,
+  FlagValue,
+  GlobalApi,
+  Hook,
+  Logger,
+  Provider,
+  ProviderMetadata,
+  TransactionContext,
+  TransactionContextPropagator,
+} from './types';
 
 // use a symbol as a key for the global singleton
 const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/js.api');
@@ -13,6 +25,7 @@ const _globalThis = globalThis as OpenFeatureGlobal;
 
 class OpenFeatureAPI implements GlobalApi {
   private _provider: Provider = NOOP_PROVIDER;
+  private _transactionContextPropagator: TransactionContextPropagator = NOOP_TRANSACTION_CONTEXT_PROPAGATOR;
   private _context: EvaluationContext = {};
   private _hooks: Hook[] = [];
   private _logger: Logger = new DefaultLogger();
@@ -77,6 +90,37 @@ class OpenFeatureAPI implements GlobalApi {
 
   getContext(): EvaluationContext {
     return this._context;
+  }
+
+  setTransactionContextPropagator(transactionContextPropagator: TransactionContextPropagator): OpenFeatureAPI {
+    const baseMessage = 'Invalid TransactionContextPropagator, will not be set: ';
+    if (typeof transactionContextPropagator?.getTransactionContext !== 'function') {
+      this._logger.error(`${baseMessage}: getTransactionContext is not a function.`);
+    } else if (typeof transactionContextPropagator?.setTransactionContext !== 'function') {
+      this._logger.error(`${baseMessage}: setTransactionContext is not a function.`);
+    } else {
+      this._transactionContextPropagator = transactionContextPropagator;
+    }
+    return this;
+  }
+
+  setTransactionContext<R>(
+    transactionContext: TransactionContext,
+    callback: (...args: unknown[]) => R,
+    ...args: unknown[]
+  ): void {
+    this._transactionContextPropagator.setTransactionContext(transactionContext, callback, ...args);
+  }
+
+  getTransactionContext(): TransactionContext {
+    try {
+      return this._transactionContextPropagator.getTransactionContext();
+    } catch (err: unknown) {
+      const error = err as Error | undefined;
+      this._logger.error(`Error getting transaction context: ${error?.message}, returning empty context.`);
+      this._logger.error(error?.stack);
+      return {};
+    }
   }
 }
 

@@ -1,7 +1,8 @@
 import { OpenFeatureClient } from '../src/client';
 import { NOOP_PROVIDER } from '../src/no-op-provider';
+import { NOOP_TRANSACTION_CONTEXT_PROPAGATOR } from '../src/no-op-transaction-context-propagator';
 import { OpenFeature } from '../src/open-feature';
-import { Provider } from '../src/types';
+import { Provider, TransactionContextPropagator } from '../src/types';
 
 describe('OpenFeature', () => {
   afterEach(() => {
@@ -51,5 +52,35 @@ describe('OpenFeature', () => {
       .getClient();
 
     expect(client).toBeDefined();
+  });
+
+  describe('transaction context safety', () => {
+    it('invalid getTransactionContext is not registered', () => {
+      OpenFeature.setTransactionContextPropagator({ setTransactionContext: () => undefined } as unknown as TransactionContextPropagator);
+      expect(OpenFeature['_transactionContextPropagator']).toBe(NOOP_TRANSACTION_CONTEXT_PROPAGATOR);
+    });
+
+    it('invalid setTransactionContext is not registered', () => {
+      OpenFeature.setTransactionContextPropagator({ getTransactionContext: () => Object.assign({}) } as unknown as TransactionContextPropagator);
+      expect(OpenFeature['_transactionContextPropagator']).toBe(NOOP_TRANSACTION_CONTEXT_PROPAGATOR);
+    });
+
+    it('throwing getTransactionContext defaults', async () => {
+      const mockPropagator: TransactionContextPropagator = {
+        getTransactionContext: jest.fn(() => {
+          throw Error('Transaction context error!');
+        }),
+        setTransactionContext: jest.fn((context, callback) => {
+          callback();
+        })
+      };
+
+      OpenFeature.setTransactionContextPropagator(mockPropagator);
+      expect(OpenFeature['_transactionContextPropagator']).toBe(mockPropagator);
+      const client = OpenFeature.getClient();
+      const result = await client.getBooleanValue('test', true);
+      expect(result).toEqual(true);
+      expect(mockPropagator.getTransactionContext).toHaveBeenCalled();
+    });
   });
 });

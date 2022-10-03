@@ -1,4 +1,4 @@
-type PrimitiveValue = null | boolean | string | number ;
+type PrimitiveValue = null | boolean | string | number;
 
 export type JsonObject = { [key: string]: JsonValue };
 
@@ -12,7 +12,11 @@ export type JsonValue = PrimitiveValue | JsonObject | JsonArray;
 /**
  * Represents a JSON node value, or Date.
  */
-export type EvaluationContextValue = PrimitiveValue | Date | { [key: string]: EvaluationContextValue } | EvaluationContextValue[];
+export type EvaluationContextValue =
+  | PrimitiveValue
+  | Date
+  | { [key: string]: EvaluationContextValue }
+  | EvaluationContextValue[];
 
 /**
  * A container for arbitrary contextual data that can be used as a basis for dynamic evaluation
@@ -43,7 +47,6 @@ export interface Logger {
 }
 
 export interface Features {
-  
   /**
    * Performs a flag evaluation that returns a boolean.
    *
@@ -86,7 +89,7 @@ export interface Features {
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
    * @returns {Promise<T>} Flag evaluation response
    */
-   getStringValue(
+  getStringValue(
     flagKey: string,
     defaultValue: string,
     context?: EvaluationContext,
@@ -155,7 +158,7 @@ export interface Features {
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
    * @returns {Promise<EvaluationDetails<T>>} Flag evaluation details response
    */
-   getNumberDetails(
+  getNumberDetails(
     flagKey: string,
     defaultValue: number,
     context?: EvaluationContext,
@@ -277,7 +280,7 @@ export const StandardResolutionReasons = {
    * The resolved value was the result of a dynamic evaluation, such as a rule or specific user-targeting.
    */
   TARGETING_MATCH: 'TARGETING_MATCH',
-  
+
   /**
    * The resolved value was the result of pseudorandom assignment.
    */
@@ -301,7 +304,7 @@ export const StandardResolutionReasons = {
   /**
    * The resolved value was the result of an error.
    *
-   * Note: The `errorCode` and `errorMessage` fields may contain additional details of this error. 
+   * Note: The `errorCode` and `errorMessage` fields may contain additional details of this error.
    */
   ERROR: 'ERROR',
 } as const;
@@ -361,7 +364,11 @@ export interface Client extends EvaluationLifeCycle<Client>, Features, ManageCon
   readonly metadata: ClientMetadata;
 }
 
-export interface GlobalApi extends EvaluationLifeCycle<GlobalApi>, ManageContext<GlobalApi>, ManageLogger<GlobalApi> {
+export interface GlobalApi
+  extends EvaluationLifeCycle<GlobalApi>,
+    ManageContext<GlobalApi>,
+    ManageLogger<GlobalApi>,
+    ManageTransactionContextPropagator<GlobalApi> {
   readonly providerMetadata: ProviderMetadata;
   /**
    * A factory function for creating new OpenFeature clients. Clients can contain
@@ -374,7 +381,7 @@ export interface GlobalApi extends EvaluationLifeCycle<GlobalApi>, ManageContext
    * @returns {Client} OpenFeature Client
    */
   getClient(name?: string, version?: string, context?: EvaluationContext): Client;
-  
+
   /**
    * Sets the provider that OpenFeature will use for flag evaluations. Setting
    * a provider supersedes the current provider used in new and existing clients.
@@ -382,7 +389,7 @@ export interface GlobalApi extends EvaluationLifeCycle<GlobalApi>, ManageContext
    * @param {Provider} provider The provider responsible for flag evaluations.
    * @returns {GlobalApi} OpenFeature API
    */
-   setProvider(provider: Provider): GlobalApi
+  setProvider(provider: Provider): GlobalApi;
 }
 
 interface EvaluationLifeCycle<T> {
@@ -442,7 +449,7 @@ interface ManageLogger<T> {
    * unless overridden in a particular client.
    *
    * @template T The type of the receiver
-   * @param {Logger} logger The logger to to be used
+   * @param {Logger} logger The logger to be used
    * @returns {T} The receiver (this object)
    */
   setLogger(logger: Logger): T;
@@ -519,4 +526,57 @@ export interface Hook<T extends FlagValue = FlagValue> {
    * @param hookHints
    */
   finally?(hookContext: Readonly<HookContext<T>>, hookHints?: HookHints): Promise<void> | void;
+}
+
+/**
+ * Transaction context is a mechanism for adding transaction specific context that
+ * is merged with evaluation context prior to flag evaluation. Examples of potential
+ * transaction specific context include: a user id, user agent, or request path.
+ */
+export type TransactionContext = EvaluationContext;
+
+interface ManageTransactionContextPropagator<T> extends TransactionContextPropagator {
+  /**
+   * EXPERIMENTAL: Transaction context propagation is experimental and subject to change.
+   * The OpenFeature Enhancement Proposal regarding transaction context can be found [here](https://github.com/open-feature/ofep/pull/32).
+   *
+   * Sets a transaction context propagator on this receiver. The transaction context
+   * propagator is responsible for persisting context for the duration of a single
+   * transaction.
+   *
+   * @template T The type of the receiver
+   * @param {TransactionContextPropagator} transactionContextPropagator The context propagator to be used
+   * @returns {T} The receiver (this object)
+   */
+  setTransactionContextPropagator(transactionContextPropagator: TransactionContextPropagator): T;
+}
+
+export interface TransactionContextPropagator {
+  /**
+   * EXPERIMENTAL: Transaction context propagation is experimental and subject to change.
+   * The OpenFeature Enhancement Proposal regarding transaction context can be found [here](https://github.com/open-feature/ofep/pull/32).
+   *
+   * Returns the currently defined transaction context using the registered transaction
+   * context propagator.
+   *
+   * @returns {TransactionContext} The current transaction context
+   */
+  getTransactionContext(): TransactionContext;
+
+  /**
+   * EXPERIMENTAL: Transaction context propagation is experimental and subject to change.
+   * The OpenFeature Enhancement Proposal regarding transaction context can be found [here](https://github.com/open-feature/ofep/pull/32).
+   *
+   * Sets the transaction context using the registered transaction context propagator.
+   *
+   * @template R The return value of the callback
+   * @param {TransactionContext} transactionContext The transaction specific context
+   * @param {(...args: unknown[]) => R} callback Callback function used to set the transaction context on the stack
+   * @param {...unknown[]} args Optional arguments that are passed to the callback function
+   */
+  setTransactionContext<R>(
+    transactionContext: TransactionContext,
+    callback: (...args: unknown[]) => R,
+    ...args: unknown[]
+  ): void;
 }

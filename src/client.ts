@@ -194,6 +194,7 @@ export class OpenFeatureClient implements Client {
     // merge global and client contexts
     const mergedContext = {
       ...OpenFeature.getContext(),
+      ...OpenFeature.getTransactionContext(),
       ...this._context,
       ...invocationContext,
     };
