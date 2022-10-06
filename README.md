@@ -38,11 +38,11 @@ const value = await client.getBooleanValue('enabled-new-feature', false);
 
 ## Development
 
-## System Requirements
+### System Requirements
 
 node 16+, npm 8+ are recommended.
 
-## Compilation target(s)
+### Compilation target(s)
 
 We target `es2015`, and publish both ES-modules and CommonJS modules.
 
