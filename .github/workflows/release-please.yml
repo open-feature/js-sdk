@@ -15,19 +15,24 @@ jobs:
           command: manifest
           token: ${{secrets.GITHUB_TOKEN}}
           default-branch: main
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      release_tag_name: ${{ steps.release.outputs.tag_name }}
 
+  npm-release:
+    needs: Release-please
+    runs-on: ubuntu-latest
+    if: ${{ needs.release-please.outputs.release_created }}
+    steps:
       # The logic below handles the npm publication:
       - name: Checkout Repository
-        if: ${{ steps.release.outputs.releases_created }}
         uses: actions/checkout@v3
       - name: Setup Node
         uses: actions/setup-node@v3
-        if: ${{ steps.release.outputs.releases_created }}
         with:
           node-version: 16
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: "https://registry.npmjs.org"
       - name: Build Packages
-        if: ${{ steps.release.outputs.releases_created }}
         run: |
           npm ci
           npm run build
@@ -36,7 +41,17 @@ jobs:
       # need to publish all unpublished versions to NPM here
       # Our scripts only publish versions that do not already exist.
       - name: Publish to NPM
-        if: ${{ steps.release.outputs.releases_created }}
+        if: ${{secrets.NPM_TOKEN}}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
         run: npm publish --access public
+
+      - name: Build Docs
+        run: npm run docs
+
+      - name: Deploy Documentation 🚀
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: typedoc

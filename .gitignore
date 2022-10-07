@@ -106,3 +106,6 @@ dist
 # yalc stuff
 yalc.lock
 .yalc/
+
+# Ignore generated doc folder
+typedoc
