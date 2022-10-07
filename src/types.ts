@@ -1,4 +1,4 @@
-type PrimitiveValue = null | boolean | string | number;
+export type PrimitiveValue = null | boolean | string | number;
 
 export type JsonObject = { [key: string]: JsonValue };
 
@@ -225,6 +225,11 @@ export interface Features {
  * Implementation for resolving all the required flag types must be defined.
  */
 export interface Provider {
+  /**
+   * Get metadata about registered provider.
+   *
+   * @returns {ProviderMetadata} Provider Metadata
+   */
   readonly metadata: ProviderMetadata;
   /**
    * A provider hook exposes a mechanism for provider authors to register hooks
@@ -544,6 +549,7 @@ interface ManageTransactionContextPropagator<T> extends TransactionContextPropag
    * propagator is responsible for persisting context for the duration of a single
    * transaction.
    *
+   * @experimental
    * @template T The type of the receiver
    * @param {TransactionContextPropagator} transactionContextPropagator The context propagator to be used
    * @returns {T} The receiver (this object)
@@ -559,6 +565,7 @@ export interface TransactionContextPropagator {
    * Returns the currently defined transaction context using the registered transaction
    * context propagator.
    *
+   * @experimental
    * @returns {TransactionContext} The current transaction context
    */
   getTransactionContext(): TransactionContext;
@@ -569,6 +576,7 @@ export interface TransactionContextPropagator {
    *
    * Sets the transaction context using the registered transaction context propagator.
    *
+   * @experimental
    * @template R The return value of the callback
    * @param {TransactionContext} transactionContext The transaction specific context
    * @param {(...args: unknown[]) => R} callback Callback function used to set the transaction context on the stack
