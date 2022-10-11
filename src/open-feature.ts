@@ -23,13 +23,22 @@ type OpenFeatureGlobal = {
 };
 const _globalThis = globalThis as OpenFeatureGlobal;
 
-class OpenFeatureAPI implements GlobalApi {
+export class OpenFeatureAPI implements GlobalApi {
   private _provider: Provider = NOOP_PROVIDER;
   private _transactionContextPropagator: TransactionContextPropagator = NOOP_TRANSACTION_CONTEXT_PROPAGATOR;
   private _context: EvaluationContext = {};
   private _hooks: Hook[] = [];
   private _logger: Logger = new DefaultLogger();
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  private constructor() {}
+
+  /**
+   * Gets a singleton instance of the OpenFeature API.
+   *
+   * @ignore
+   * @returns {OpenFeatureAPI} OpenFeature API
+   */
   static getInstance(): OpenFeatureAPI {
     const globalApi = _globalThis[GLOBAL_OPENFEATURE_API_KEY];
     if (globalApi) {
@@ -124,4 +133,9 @@ class OpenFeatureAPI implements GlobalApi {
   }
 }
 
+/**
+ * A singleton instance of the OpenFeature API.
+ *
+ * @returns {OpenFeatureAPI} OpenFeature API
+ */
 export const OpenFeature = OpenFeatureAPI.getInstance();
