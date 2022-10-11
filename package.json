@@ -1,6 +1,6 @@
 {
   "name": "@openfeature/js-sdk",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "OpenFeature SDK for JavaScript",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",

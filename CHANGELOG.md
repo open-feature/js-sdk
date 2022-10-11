@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/open-feature/js-sdk/compare/js-sdk-v0.5.0...js-sdk-v0.5.1) (2022-10-11)
+
+
+### Features
+
+* add typedoc support ([#268](https://github.com/open-feature/js-sdk/issues/268)) ([198336b](https://github.com/open-feature/js-sdk/commit/198336b098f167f858675235214cc907ede10182))
+
 ## [0.5.0](https://github.com/open-feature/js-sdk/compare/js-sdk-v0.4.0...js-sdk-v0.5.0) (2022-10-03)
 
 
