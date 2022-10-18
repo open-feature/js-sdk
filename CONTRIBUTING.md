@@ -84,10 +84,7 @@ Open a pull request against the main js-sdk repository.
 
 A PR is considered to be **ready to merge** when:
 
-- Major feedbacks are resolved.
-- It has been open for review for at least one working day. This gives people
-  reasonable time to review.
-- Trivial change (typo, cosmetic, doc, etc.) doesn't have to wait for one day.
+- Major feedback is resolved.
 - Urgent fix can take exception as long as it has been actively communicated.
 
 Any Maintainer can merge the PR once it is **ready to merge**. Note, that some
@@ -100,7 +97,7 @@ on each other), the owner should try to get people aligned by:
 - Consolidating the perspectives and putting a summary in the PR. It is
   recommended to add a link into the PR description, which points to a comment
   with a summary in the PR conversation.
-- Tagging subdomain experts (by looking at the change history) in the PR asking
+- Tagging domain experts (by looking at the change history) in the PR asking
   for suggestion.
 - Reaching out to more people on the [CNCF OpenFeature Slack channel](https://cloud-native.slack.com/archives/C0344AANLA1).
 - Stepping back to see if it makes sense to narrow down the scope of the PR or
