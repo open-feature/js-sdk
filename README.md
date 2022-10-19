@@ -30,12 +30,32 @@ yarn add @openfeature/js-sdk
 ```typescript
 import { OpenFeature } from '@openfeature/js-sdk';
 
-OpenFeature.setProvider(new MyProvider());
+// configure a provider
+OpenFeature.setProvider(new YourProviderOfChoice());
 
-const client = OpenFeature.getClient();
+// create a client
+const client = OpenFeature.getClient('my-app');
 
-const value = await client.getBooleanValue('enabled-new-feature', false);
+// get a bool value
+const boolValue = await client.getBooleanValue('boolFlag', false);
+
+// get a string value
+const stringValue = await client.getStringValue('stringFlag', 'default');
+
+// get an numeric value
+const numberValue = await client.getNumberValue('intFlag', 1);
+
+// get an object value
+const object = await client.getObjectValue<MyObject>('objectFlag', {});
+
+// add a value to the invocation context
+const context: EvaluationContext = {
+  myInvocationKey: 'myInvocationValue',
+};
+const contextAwareValue = await client.getBooleanValue('boolFlag', false, context);
 ```
+
+For complete documentation, visit: https://docs.openfeature.dev/docs/category/concepts
 
 ## Contributing
 
