@@ -43,7 +43,7 @@
     "default": "./dist/cjs/index.js"
   },
   "devDependencies": {
-    "@openfeature/flagd-provider": "~0.6.0",
+    "@openfeature/flagd-provider": "~0.7.0",
     "@types/jest": "^28.1.4",
     "@types/node": "^18.0.3",
     "@typescript-eslint/eslint-plugin": "^5.23.0",
