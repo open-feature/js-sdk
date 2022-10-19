@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.0](https://github.com/open-feature/js-sdk/compare/v0.5.1...v1.0.0) (2022-10-19)
+
+
+### Miscellaneous Chores
+
+* release 1.0.0 ([930f754](https://github.com/open-feature/js-sdk/commit/930f754a4b4d70e4b0f70aef0d6b899cf90d9f8d))
+
 ## [0.5.1](https://github.com/open-feature/js-sdk/compare/js-sdk-v0.5.0...js-sdk-v0.5.1) (2022-10-11)
 
 
