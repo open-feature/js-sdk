@@ -1,0 +1,6 @@
+- build different output dists?
+- remove as much unneeded stuff as possible from root package.json
+- create per-package tsconfigs?
+- create per-package tests?
+- do we need an entry point for shared?
+- should shared be called common?

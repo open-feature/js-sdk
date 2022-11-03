@@ -1,6 +1,7 @@
-import { OpenFeature } from '../../src/open-feature.js';
-import { FlagdProvider } from '@openfeature/flagd-provider';
+
 import assert from 'assert';
+import { OpenFeature } from '../../src';
+import { FlagdProvider } from '@openfeature/flagd-provider';
 
 const FLAGD_NAME = 'flagd Provider';
 

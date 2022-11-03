@@ -1,0 +1,31 @@
+{
+  "name": "@openfeature/shared",
+  "version": "0.0.1",
+  "description": "Shared js/web components",
+  "devDependencies": {},
+  "scripts": {
+    "test": "jest --verbose",
+    "clean": "shx rm -rf ./dist",
+    "type": "tsc --project ./tsconfig.json --declaration --emitDeclarationOnly",
+    "build:esm": "esbuild src/index.ts --bundle --sourcemap --target=es2016 --format=esm --outfile=./dist/esm/index.js --analyze",
+    "build:cjs": "esbuild src/index.ts --bundle --sourcemap --target=es2016 --format=cjs --outfile=./dist/cjs/index.js --analyze",
+    "build:rollup-types": "rollup -c ../../rollup.config.mjs",
+    "build": "npm run clean && npm run build:esm && npm run build:cjs && npm run build:rollup-types"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/open-feature/js-sdk.git"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/open-feature/js-sdk/issues"
+  },
+  "homepage": "https://github.com/open-feature/js-sdk#readme",
+  "keywords": [
+    "openfeature",
+    "feature",
+    "flags",
+    "toggles"
+  ]
+}

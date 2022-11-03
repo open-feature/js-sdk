@@ -1,5 +1,12 @@
-import { GeneralError, ParseError, FlagNotFoundError, TypeMismatchError, TargetingKeyMissingError, InvalidContextError } from '../src/errors';
-import { ErrorCode } from '../src/types';
+import {
+  ErrorCode,
+  FlagNotFoundError,
+  GeneralError,
+  InvalidContextError,
+  ParseError,
+  TargetingKeyMissingError,
+  TypeMismatchError,
+} from '../src';
 
 describe('Errors', () => {
   it('GeneralError', () => {

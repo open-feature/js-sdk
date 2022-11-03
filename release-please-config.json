@@ -1,13 +1,27 @@
 {
-  "bootstrap-sha": "198336b098f167f858675235214cc907ede10182",
+  "bootstrap-sha": "87786d78d988b49a063851bbf7fd57388fe6dfea",
+  "plugins": ["node-workspace"],
   "packages": {
-    ".": {
+    "packages/server": {
       "release-type": "node",
-      "monorepo-tags": false,
-      "include-component-in-tag": false,
       "prerelease": false,
       "bump-minor-pre-major": true,
-      "bump-patch-for-minor-pre-major": true
+      "bump-patch-for-minor-pre-major": true,
+      "versioning": "default"
+    },
+    "packages/client": {
+      "release-type": "node",
+      "prerelease": true,
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": true,
+      "versioning": "default"
+    },
+    "packages/shared": {
+      "release-type": "node",
+      "prerelease": true,
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": true,
+      "versioning": "default"
     }
   }
 }
