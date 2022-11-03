@@ -1,0 +1,4 @@
+# These owners will be the default owners for everything in
+# the repo. Unless a later match takes precedence
+* @toddbaert @beeme1mr
+.github/workflows/publish-experimental.yml @toddbaert @beeme1mr
