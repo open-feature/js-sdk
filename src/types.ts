@@ -1,4 +1,35 @@
+import EventEmitter from 'events';
+
 export type PrimitiveValue = null | boolean | string | number;
+
+export interface EventProvider {
+  readonly events: EventEmitter;
+  readonly ready: boolean;
+}
+
+export enum ProviderEvents {
+  Ready = 'PROVIDER_READY',
+  Error = 'PROVIDER_ERROR',
+  ConfigurationChanged = 'PROVIDER_CONFIGURATION_CHANGED',
+  Shutdown = 'PROVIDER_SHUTDOWN',
+};
+
+export enum ApiEvents {
+  ProviderChanged = 'providerChanged',
+}
+
+export interface Eventing {
+  addHandler(notificationType: string, handler: Handler): void
+}
+
+export type EventContext = {
+  notificationType: string;
+  [key: string]: unknown;
+}
+
+export type Handler = (eventContext?: EventContext) => void
+
+export type EventCallbackMessage = (eventContext: EventContext) => void
 
 export type JsonObject = { [key: string]: JsonValue };
 
@@ -226,6 +257,7 @@ export interface Features {
  */
 export interface Provider {
   readonly metadata: ProviderMetadata;
+
   /**
    * A provider hook exposes a mechanism for provider authors to register hooks
    * to tap into various stages of the flag evaluation lifecycle. These hooks can
@@ -302,6 +334,11 @@ export const StandardResolutionReasons = {
   UNKNOWN: 'UNKNOWN',
 
   /**
+   * A cached value was resolved.
+   */
+  CACHED: 'CACHED',
+
+  /**
    * The resolved value was the result of an error.
    *
    * Note: The `errorCode` and `errorMessage` fields may contain additional details of this error.
@@ -360,7 +397,7 @@ export type EvaluationDetails<T extends FlagValue> = {
   flagKey: string;
 } & ResolutionDetails<T>;
 
-export interface Client extends EvaluationLifeCycle<Client>, Features, ManageContext<Client>, ManageLogger<Client> {
+export interface Client extends EvaluationLifeCycle<Client>, Features, ManageContext<Client>, ManageLogger<Client>, Eventing {
   readonly metadata: ClientMetadata;
 }
 

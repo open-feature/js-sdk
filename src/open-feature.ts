@@ -1,8 +1,10 @@
+import { EventEmitter } from 'events';
 import { OpenFeatureClient } from './client';
 import { DefaultLogger, SafeLogger } from './logger';
 import { NOOP_PROVIDER } from './no-op-provider';
 import { NOOP_TRANSACTION_CONTEXT_PROPAGATOR } from './no-op-transaction-context-propagator';
 import {
+  ApiEvents,
   Client,
   EvaluationContext,
   FlagValue,
@@ -24,6 +26,7 @@ type OpenFeatureGlobal = {
 const _globalThis = globalThis as OpenFeatureGlobal;
 
 export class OpenFeatureAPI implements GlobalApi {
+  events: EventEmitter = new EventEmitter();
   private _provider: Provider = NOOP_PROVIDER;
   private _transactionContextPropagator: TransactionContextPropagator = NOOP_TRANSACTION_CONTEXT_PROPAGATOR;
   private _context: EvaluationContext = {};
@@ -88,7 +91,11 @@ export class OpenFeatureAPI implements GlobalApi {
   }
 
   setProvider(provider: Provider): OpenFeatureAPI {
-    this._provider = provider;
+    // ignore no-ops
+    if (this._provider !== provider) {
+      this._provider = provider;
+      this.events.emit(ApiEvents.ProviderChanged);
+    }
     return this;
   }
 
