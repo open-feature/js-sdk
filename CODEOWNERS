@@ -1,8 +1,7 @@
-# These owners will be the default owners for everything in
 # the repo. Unless a later match takes precedence
 * @toddbaert @beeme1mr
 
-# The publish-experimental workflow is sensitive because if modified,
-# it could publish something experimental as a proper version. 
-# We should carefully monitor changes to this file
-.github/workflows/publish-experimental.yml @toddbaert @beeme1mr
+# The publish workflows are sensitive because if modified,
+# they could publish something experimental as a proper version. 
+# We should carefully monitor changes to this folder
+.github/workflows/* @toddbaert @beeme1mr
