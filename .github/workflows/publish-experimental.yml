@@ -30,9 +30,9 @@ jobs:
       - name: Build
         run: npm run build
 
-      # create an experimental version at this SHA (vX.X.X-experimental-4742ef14cc0ea07e3569eee56899937452a55a9c)
+      # create an experimental version at this SHA, with minor incremented (vX.X+1.X-experimental-4742ef14cc0ea07e3569eee56899937452a55a9c)
       - name: Version
-        run: npm version "$(npm run current-version -s)-experimental-$(git rev-parse HEAD)" --no-git-tag-version
+        run: npm version minor --no-git-tag-version && npm version "$(npm run current-version -s)-experimental-$(git rev-parse HEAD)" --no-git-tag-version
 
       - name: Publish
         run: npm publish --tag experimental --access public
