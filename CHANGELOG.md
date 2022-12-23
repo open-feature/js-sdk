@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/open-feature/js-sdk/compare/v1.0.0...v1.0.1) (2022-12-23)
+
+
+### Bug Fixes
+
+* include types in exports ([#355](https://github.com/open-feature/js-sdk/issues/355)) ([11f8efe](https://github.com/open-feature/js-sdk/commit/11f8efe14c4128c5c83469eb8a41205c951f34d9))
+
 ## [1.0.0](https://github.com/open-feature/js-sdk/compare/v0.5.1...v1.0.0) (2022-10-19)
 
 
