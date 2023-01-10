@@ -109,3 +109,6 @@ yalc.lock
 
 # Ignore generated doc folder
 typedoc
+
+# IDE
+.idea
