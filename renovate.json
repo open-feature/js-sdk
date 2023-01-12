@@ -13,7 +13,7 @@
   ],
   "regexManagers": [
     {
-      "fileMatch": ["^.github/workflows/build-and-push.yml$", "^CONTRIBUTING.md$", "^.github/workflows/pr-checks.yaml$"],
+      "fileMatch": ["^CONTRIBUTING.md$", "^.github/workflows/pr-checks.yaml$"],
       "matchStrings": ["ghcr\\.io\\/open-feature\\/flagd-testbed:(?<currentValue>.*?)\\n"],
       "depNameTemplate": "open-feature/test-harness",
       "datasourceTemplate": "github-releases"
