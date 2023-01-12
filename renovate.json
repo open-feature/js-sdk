@@ -10,5 +10,13 @@
       "matchCurrentVersion": "!/^0/",
       "automerge": true
     }
+  ],
+  "regexManagers": [
+    {
+      "fileMatch": ["^CONTRIBUTING.md$", "^.github/workflows/pr-checks.yaml$"],
+      "matchStrings": ["ghcr\\.io\\/open-feature\\/flagd-testbed:(?<currentValue>.*?)\\n"],
+      "depNameTemplate": "open-feature/test-harness",
+      "datasourceTemplate": "github-releases"
+    }
   ]
 }
