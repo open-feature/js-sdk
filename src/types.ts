@@ -300,6 +300,16 @@ export const StandardResolutionReasons = {
    * The reason for the resolved value could not be determined.
    */
   UNKNOWN: 'UNKNOWN',
+  
+  /**
+   * The resolved value is static (no dynamic evaluation).
+   */
+  STATIC: 'STATIC',
+  
+  /**
+   * The resolved value was retrieved from cache.
+   */
+  CACHED: 'CACHED',
 
   /**
    * The resolved value was the result of an error.
