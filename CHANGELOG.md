@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/open-feature/js-sdk/compare/v1.0.1...v1.1.0) (2023-01-23)
+
+
+### Features
+
+* add STATIC, CACHED reasons ([#360](https://github.com/open-feature/js-sdk/issues/360)) ([2396ea6](https://github.com/open-feature/js-sdk/commit/2396ea60bfe6eab2ff57a66580f714b76dcca678))
+
 ## [1.0.1](https://github.com/open-feature/js-sdk/compare/v1.0.0...v1.0.1) (2022-12-23)
 
 
