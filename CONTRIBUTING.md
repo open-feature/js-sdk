@@ -71,7 +71,8 @@ To start working on a new feature or bugfix, create a new branch and start worki
 ```bash
 git checkout -b feat/NAME_OF_FEATURE
 # Make your changes
-git commit
+git add .
+git commit --signoff
 git push fork feat/NAME_OF_FEATURE
 ```
 
