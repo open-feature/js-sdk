@@ -1,4 +1,4 @@
-import { DefaultLogger, SafeLogger } from './logger';
+import { DefaultLogger } from './logger';
 import { NOOP_TRANSACTION_CONTEXT_PROPAGATOR } from './no-op-transaction-context-propagator';
 import { EvaluationContext, Logger, TransactionContext, TransactionContextPropagator } from './types';
 

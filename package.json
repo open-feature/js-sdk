@@ -5,7 +5,7 @@
   "scripts": {
     "test": "jest --selectProjects=server --selectProjects=shared --verbose",
     "integration": "git submodule update --init --recursive && shx cp test-harness/features/evaluation.feature packages/server/integration/features && jest --selectProjects=server-e2e --verbose",
-    "lint": "npm run lint --workspace=packages/client --workspace=packages/server",
+    "lint": "npm run lint --workspace=packages/shared --workspace=packages/client --workspace=packages/server",
     "clean": "shx rm -rf ./dist",
     "build": "npm run build --workspace=packages/shared --workspace=packages/client --workspace=packages/server",
     "publish-all": "npm run publish-if-not-exists --workspace=packages/client --workspace=packages/server",
