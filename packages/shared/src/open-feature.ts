@@ -9,7 +9,6 @@ export abstract class OpenFeatureCommonAPI {
 
   abstract close(): void;
   abstract clearHooks(): this
-  //abstract setContext(context: EvaluationContext): OpenFeatureCommonAPI
   abstract setLogger(logger: Logger): this;
 
   getContext(): EvaluationContext {
