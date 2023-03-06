@@ -1,0 +1,9 @@
+{
+    "entryPointStrategy": "packages",
+    "entryPoints": [
+        "packages/shared",
+        "packages/server",
+        "packages/client"
+    ],
+    "out": "typedoc"
+  }

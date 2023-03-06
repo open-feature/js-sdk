@@ -24,7 +24,8 @@
     "build": "npm run clean && npm run build:web-esm && npm run build:web-cjs && npm run build:rollup-types",
     "postbuild": "shx cp ./../../package.esm.json ./dist/esm/package.json",
     "current-version": "echo $npm_package_version",
-    "publish-if-not-exists": "cp $NPM_CONFIG_USERCONFIG .npmrc && if [ \"$(npm show $npm_package_name@$npm_package_version version)\" = \"$(npm run current-version -s)\" ]; then echo 'already published, skipping'; else npm publish --access public --tag experimental; fi"
+    "publish-if-not-exists": "cp $NPM_CONFIG_USERCONFIG .npmrc && if [ \"$(npm show $npm_package_name@$npm_package_version version)\" = \"$(npm run current-version -s)\" ]; then echo 'already published, skipping'; else npm publish --access public --tag experimental; fi",
+    "docs": "typedoc"
   },
   "repository": {
     "type": "git",
@@ -44,7 +45,7 @@
     "url": "https://github.com/open-feature/js-sdk/issues"
   },
   "homepage": "https://github.com/open-feature/js-sdk#readme",
-  "dependencies": {
+  "devDependencies": {
     "@openfeature/shared": "file:../shared"
   }
 }

@@ -94,12 +94,10 @@
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
   "typedocOptions": {
-    "name": "OpenFeature SDK",
-    // "excludePrivate": true,
+    "name": "OpenFeature Web SDK",
     "entryPoints": [
       "src/index.ts"
-    ],
-    "out": "typedoc"
+    ]
   },
   "include": [
     "./src/**/*"

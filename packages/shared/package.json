@@ -1,6 +1,7 @@
 {
   "name": "@openfeature/shared",
   "version": "0.0.1",
+  "main": "src/index",
   "description": "Shared js/web components",
   "devDependencies": {},
   "scripts": {

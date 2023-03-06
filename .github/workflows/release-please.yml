@@ -44,12 +44,12 @@ jobs:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
         run: npm run publish-all
 
-      # - name: Build Docs
-      #   run: npm run docs
+      - name: Build Docs
+        run: npm run docs
 
-      # - name: Deploy Documentation 🚀
-      #   uses: JamesIves/github-pages-deploy-action@releases/v3
-      #   with:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     BRANCH: gh-pages
-      #     FOLDER: typedoc
+      - name: Deploy Documentation 🚀
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: typedoc

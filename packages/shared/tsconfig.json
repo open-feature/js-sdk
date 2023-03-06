@@ -92,11 +92,9 @@
   },
   "typedocOptions": {
     "name": "OpenFeature SDK",
-    // "excludePrivate": true,
     "entryPoints": [
       "src/index.ts"
-    ],
-    "out": "typedoc"
+    ]
   },
   "include": [
     "./src/**/*"
