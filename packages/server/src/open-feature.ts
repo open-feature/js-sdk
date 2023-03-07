@@ -1,8 +1,7 @@
 import { NOOP_PROVIDER } from './no-op-provider';
 import { Logger, OpenFeatureCommonAPI, SafeLogger } from '@openfeature/shared';
-import { ApiEvents, EvaluationContext, FlagValue, ProviderMetadata } from '@openfeature/shared';
+import { EvaluationContext, FlagValue, ProviderMetadata } from '@openfeature/shared';
 import { OpenFeatureClient } from './client';
-import EventEmitter from 'events';
 import { Client, Hook, Provider } from './types';
 
 // use a symbol as a key for the global singleton
@@ -14,7 +13,6 @@ type OpenFeatureGlobal = {
 const _globalThis = globalThis as OpenFeatureGlobal;
 
 export class OpenFeatureAPI extends OpenFeatureCommonAPI {
-  events: EventEmitter = new EventEmitter();
   protected _hooks: Hook[] = [];
   protected _provider: Provider = NOOP_PROVIDER;
 
@@ -73,15 +71,10 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
     return this;
   }
 
-  close() {
-    this?._provider?.onClose?.();
-  }
-
   setProvider(provider: Provider): this {
     // ignore no-ops
     if (this._provider !== provider) {
       this._provider = provider;
-      this.events.emit(ApiEvents.ProviderChanged);
     }
     return this;
   }

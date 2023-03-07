@@ -85,8 +85,8 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
     return this;
   }
 
-  close() {
-    this?._provider?.onClose?.();
+  async close(): Promise<void> {
+    await this?._provider?.onClose?.();
   }
 
   getClient(name?: string, version?: string, context?: EvaluationContext): Client {

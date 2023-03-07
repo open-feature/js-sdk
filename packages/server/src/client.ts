@@ -1,6 +1,4 @@
-import { SafeLogger } from '@openfeature/shared';
 import {
-  ApiEvents,
   ClientMetadata,
   ErrorCode, EvaluationContext,
   EvaluationDetails,
@@ -9,14 +7,10 @@ import {
   Handler,
   HookContext,
   JsonValue,
-  Logger,
-  ProviderEvents,
-  ResolutionDetails,
-  StandardResolutionReasons
+  Logger, OpenFeatureError, ResolutionDetails, SafeLogger, StandardResolutionReasons
 } from '@openfeature/shared';
-import { OpenFeature, OpenFeatureAPI } from './open-feature';
-import { OpenFeatureError } from '@openfeature/shared';
-import { Client, Hook, Provider, FlagEvaluationOptions, EventProvider } from './types';
+import { OpenFeature } from './open-feature';
+import { Client, FlagEvaluationOptions, Hook, Provider } from './types';
 
 type OpenFeatureClientOptions = {
   name?: string;
@@ -38,7 +32,7 @@ export class OpenFeatureClient implements Client {
   constructor(
     // we always want the client to use the current provider,
     // so pass a function to always access the currently registered one.
-    private readonly providerAccessor: () => Provider & Partial<EventProvider>,
+    private readonly providerAccessor: () => Provider,
     private readonly globalLogger: () => Logger,
     options: OpenFeatureClientOptions,
     context: EvaluationContext = {}
@@ -48,17 +42,6 @@ export class OpenFeatureClient implements Client {
       version: options.version,
     } as const;
     this._context = context;
-
-    this.attachListeners();
-    OpenFeatureAPI.getInstance().events.on(ApiEvents.ProviderChanged, () => this.attachListeners());
-  }
-
-  addHandler(eventType: ProviderEvents, handler: Handler): void {
-    this._handlerWrappers.push({eventType, handler});
-    if (eventType === ProviderEvents.Ready && this.providerAccessor().ready) {
-      // run immediately, we're ready.
-      handler();
-    }
   }
 
   setLogger(logger: Logger): OpenFeatureClient {
@@ -317,22 +300,11 @@ export class OpenFeatureClient implements Client {
     }
   }
 
-  private get _provider(): Provider & Partial<EventProvider> {
+  private get _provider(): Provider {
     return this.providerAccessor();
   }
 
   private get _logger() {
     return this._clientLogger || this.globalLogger();
-  }
-
-  private attachListeners() {
-    // iterate over the event types
-    Object.values(ProviderEvents)
-      .forEach(e => this.providerAccessor().events?.on(e, () => {
-        // on each event type, fire the associated handlers
-        this._handlerWrappers
-          .filter(wrapper => wrapper.eventType === e)
-          .forEach(wrapper => wrapper.handler());
-      }));
   }
 }

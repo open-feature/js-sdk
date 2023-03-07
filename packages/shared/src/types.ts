@@ -285,5 +285,5 @@ export interface TransactionContextPropagator {
 
 export interface CommonProvider {
   readonly metadata: ProviderMetadata;
-  onClose?(): void;
+  // TODO: move close from client Provider here once we want it in server
 }

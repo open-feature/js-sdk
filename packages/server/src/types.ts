@@ -1,11 +1,9 @@
-import EventEmitter from 'events';
 import {
   BeforeHookContext,
   ClientMetadata,
   CommonProvider,
   EvaluationContext,
   EvaluationDetails,
-  Eventing,
   FlagValue,
   HookContext,
   HookHints,
@@ -331,8 +329,7 @@ export interface Client
   extends EvaluationLifeCycle<Client>,
     Features,
     ManageContext<Client>,
-    ManageLogger<Client>,
-    Eventing {
+    ManageLogger<Client> {
   readonly metadata: ClientMetadata;
 }
 
@@ -362,9 +359,4 @@ export interface GlobalApi
    * @returns {GlobalApi} OpenFeature API
    */
   setProvider(provider: Provider): GlobalApi;
-}
-
-export interface EventProvider {
-  readonly events: EventEmitter;
-  readonly ready: boolean;
 }

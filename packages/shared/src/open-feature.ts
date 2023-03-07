@@ -7,7 +7,7 @@ export abstract class OpenFeatureCommonAPI {
   protected _context: EvaluationContext = {};
   protected _logger: Logger = new DefaultLogger();
 
-  abstract close(): void;
+  // TODO: move close from client to new abstract here when we want close in server.
   abstract clearHooks(): this
   abstract setLogger(logger: Logger): this;
 

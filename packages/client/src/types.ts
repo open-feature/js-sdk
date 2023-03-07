@@ -36,6 +36,9 @@ export interface Provider extends CommonProvider {
   // client vs global context?
   onContextChange?(oldContext: EvaluationContext, newContext: EvaluationContext): Promise<void>
 
+  // TODO: move to common Provider type when we want close in server
+  onClose?(): Promise<void>;
+
   /**
    * Resolve a boolean flag and its evaluation details.
    */
