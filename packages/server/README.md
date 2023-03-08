@@ -16,7 +16,7 @@ yarn add @openfeature/js-sdk
 
 ## Usage
 
-To configure the SDK you'll need to add a provider to the `OpenFeature` global signleton. From there, you can generate a `client` which is usable by your code. While you'll likely want a provider for your specific backend, we've provided a `NoopProvider`, which simply returns the default value.
+To configure the SDK you'll need to add a provider to the `OpenFeature` global singleton. From there, you can generate a `client` which is usable by your code. While you'll likely want a provider for your specific backend, we've provided a `NoopProvider`, which simply returns the default value.
 
 ```typescript
 import { OpenFeature } from '@openfeature/js-sdk';
