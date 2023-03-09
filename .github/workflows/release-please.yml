@@ -42,7 +42,7 @@ jobs:
       - name: Publish to NPM
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-        run: npm publish --access public
+        run: npm run publish-all
 
       - name: Build Docs
         run: npm run docs

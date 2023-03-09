@@ -1,18 +1,9 @@
-import { ErrorCode, FlagNotFoundError } from '../src';
+import { ErrorCode, EvaluationContext, EvaluationDetails, FlagNotFoundError, JsonArray, JsonObject, JsonValue, ResolutionDetails, StandardResolutionReasons, TransactionContext, TransactionContextPropagator } from '../src';
 import { OpenFeatureClient } from '../src/client';
 import { OpenFeature } from '../src/open-feature';
 import {
-  Client,
-  EvaluationContext,
-  EvaluationDetails,
-  JsonArray,
-  JsonObject,
-  JsonValue,
-  Provider,
-  ResolutionDetails,
-  StandardResolutionReasons,
-  TransactionContext,
-  TransactionContextPropagator,
+  Client, Provider,
+
 } from '../src/types';
 
 const BOOLEAN_VALUE = true;

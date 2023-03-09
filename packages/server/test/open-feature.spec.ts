@@ -1,12 +1,18 @@
+import { NOOP_TRANSACTION_CONTEXT_PROPAGATOR, TransactionContextPropagator } from '@openfeature/shared';
 import { OpenFeatureClient } from '../src/client';
 import { NOOP_PROVIDER } from '../src/no-op-provider';
-import { NOOP_TRANSACTION_CONTEXT_PROPAGATOR } from '../src/no-op-transaction-context-propagator';
-import { OpenFeature } from '../src/open-feature';
-import { Provider, TransactionContextPropagator } from '../src/types';
+import { OpenFeature, OpenFeatureAPI } from '../src/open-feature';
+import { Provider,  } from '../src/types';
 
 describe('OpenFeature', () => {
   afterEach(() => {
     jest.clearAllMocks();
+  });
+
+  describe('Requirement 1.1.1', () => {
+    it('OpenFeatureAPI should be a singleton', () => {
+      expect(OpenFeature === OpenFeatureAPI.getInstance()).toBeTruthy();
+    });
   });
 
   describe('Requirement 1.1.2', () => {

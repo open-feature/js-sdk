@@ -1,22 +1,15 @@
 import { defineFeature, loadFeature } from 'jest-cucumber';
-import { OpenFeature } from '../../src/open-feature';
-import {
-  EvaluationContext,
-  EvaluationDetails,
-  JsonObject,
-  JsonValue,
-  ResolutionDetails, StandardResolutionReasons
-} from '../../src/types';
-
+import { JsonValue, JsonObject, EvaluationDetails, EvaluationContext, ResolutionDetails, StandardResolutionReasons } from '@openfeature/shared';
+import { OpenFeature } from './../../src';
 // load the feature file.
-const feature = loadFeature('integration/features/evaluation.feature');
+const feature = loadFeature('packages/server/integration/features/evaluation.feature');
 
 // get a client (flagd provider registered in setup)
 const client = OpenFeature.getClient();
 
 const givenAnOpenfeatureClientIsRegisteredWithCacheDisabled = (given: (stepMatcher: string, stepDefinitionCallback: () => void) => void) => {
   // TODO: when the FlagdProvider is updated to support caching, we may need to disable it here for this test to work as expected.
-  given('an openfeature client is registered with cache disabled', () => undefined);
+  given('a provider is registered with cache disabled', () => undefined);
 };
 
 defineFeature(feature, (test) => {

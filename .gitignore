@@ -112,3 +112,6 @@ typedoc
 
 # IDE
 .idea
+
+# license files copied from root
+packages/**/LICENSE

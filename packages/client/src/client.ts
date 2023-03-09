@@ -1,39 +1,44 @@
-import { OpenFeatureError } from './errors';
-import { SafeLogger } from './logger';
-import { OpenFeature } from './open-feature';
+import { OpenFeatureError } from '@openfeature/shared';
+import { SafeLogger } from '@openfeature/shared';
 import {
-  Client,
+  ApiEvents,
   ClientMetadata,
-  ErrorCode,
-  EvaluationContext,
+  ErrorCode, EvaluationContext,
   EvaluationDetails,
-  FlagEvaluationOptions,
   FlagValue,
   FlagValueType,
-  Hook,
+  Handler,
   HookContext,
   JsonValue,
   Logger,
-  Provider,
+  ProviderEvents,
   ResolutionDetails,
-  StandardResolutionReasons,
-} from './types';
+  StandardResolutionReasons
+} from '@openfeature/shared';
+import { OpenFeature } from './open-feature';
+import { Client, EventProvider, FlagEvaluationOptions, Hook, Provider } from './types';
 
 type OpenFeatureClientOptions = {
   name?: string;
   version?: string;
 };
 
+type HandlerWrapper = {
+  eventType: string;
+  handler: Handler;
+}
+
 export class OpenFeatureClient implements Client {
   readonly metadata: ClientMetadata;
   private _context: EvaluationContext;
   private _hooks: Hook[] = [];
   private _clientLogger?: Logger;
+  private _handlerWrappers: HandlerWrapper[] = [];
 
   constructor(
     // we always want the client to use the current provider,
     // so pass a function to always access the currently registered one.
-    private readonly providerAccessor: () => Provider,
+    private readonly providerAccessor: () => Provider & Partial<EventProvider>,
     private readonly globalLogger: () => Logger,
     options: OpenFeatureClientOptions,
     context: EvaluationContext = {}
@@ -43,20 +48,22 @@ export class OpenFeatureClient implements Client {
       version: options.version,
     } as const;
     this._context = context;
+
+    this.attachListeners();
+    window.dispatchEvent(new CustomEvent(ApiEvents.ProviderChanged));
+  }
+
+  addHandler(eventType: ProviderEvents, handler: Handler): void {
+    this._handlerWrappers.push({eventType, handler});
+    if (eventType === ProviderEvents.Ready && this.providerAccessor().ready) {
+      // run immediately, we're ready.
+      handler();
+    }
   }
 
   setLogger(logger: Logger): OpenFeatureClient {
     this._clientLogger = new SafeLogger(logger);
     return this;
-  }
-
-  setContext(context: EvaluationContext): OpenFeatureClient {
-    this._context = context;
-    return this;
-  }
-
-  getContext(): EvaluationContext {
-    return this._context;
   }
 
   addHooks(...hooks: Hook<FlagValue>[]): OpenFeatureClient {
@@ -73,13 +80,13 @@ export class OpenFeatureClient implements Client {
     return this;
   }
 
-  async getBooleanValue(
+  getBooleanValue(
     flagKey: string,
     defaultValue: boolean,
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
-  ): Promise<boolean> {
-    return (await this.getBooleanDetails(flagKey, defaultValue, context, options)).value;
+  ): boolean {
+    return this.getBooleanDetails(flagKey, defaultValue, context, options).value;
   }
 
   getBooleanDetails(
@@ -87,7 +94,7 @@ export class OpenFeatureClient implements Client {
     defaultValue: boolean,
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
-  ): Promise<EvaluationDetails<boolean>> {
+  ): EvaluationDetails<boolean> {
     return this.evaluate<boolean>(
       flagKey,
       this._provider.resolveBooleanEvaluation,
@@ -98,13 +105,13 @@ export class OpenFeatureClient implements Client {
     );
   }
 
-  async getStringValue<T extends string = string>(
+  getStringValue<T extends string = string>(
     flagKey: string,
     defaultValue: T,
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
-  ): Promise<T> {
-    return (await this.getStringDetails<T>(flagKey, defaultValue, context, options)).value;
+  ): T {
+    return this.getStringDetails<T>(flagKey, defaultValue, context, options).value;
   }
 
   getStringDetails<T extends string = string>(
@@ -112,11 +119,11 @@ export class OpenFeatureClient implements Client {
     defaultValue: T,
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
-  ): Promise<EvaluationDetails<T>> {
+  ): EvaluationDetails<T> {
     return this.evaluate<T>(
       flagKey,
       // this isolates providers from our restricted string generic argument.
-      this._provider.resolveStringEvaluation as () => Promise<EvaluationDetails<T>>,
+      this._provider.resolveStringEvaluation as () => EvaluationDetails<T>,
       defaultValue,
       'string',
       context,
@@ -124,13 +131,13 @@ export class OpenFeatureClient implements Client {
     );
   }
 
-  async getNumberValue<T extends number = number>(
+  getNumberValue<T extends number = number>(
     flagKey: string,
     defaultValue: T,
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
-  ): Promise<T> {
-    return (await this.getNumberDetails(flagKey, defaultValue, context, options)).value;
+  ): T {
+    return this.getNumberDetails(flagKey, defaultValue, context, options).value;
   }
 
   getNumberDetails<T extends number = number>(
@@ -138,11 +145,11 @@ export class OpenFeatureClient implements Client {
     defaultValue: T,
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
-  ): Promise<EvaluationDetails<T>> {
+  ): EvaluationDetails<T> {
     return this.evaluate<T>(
       flagKey,
       // this isolates providers from our restricted number generic argument.
-      this._provider.resolveNumberEvaluation as () => Promise<EvaluationDetails<T>>,
+      this._provider.resolveNumberEvaluation as () => EvaluationDetails<T>,
       defaultValue,
       'number',
       context,
@@ -150,13 +157,13 @@ export class OpenFeatureClient implements Client {
     );
   }
 
-  async getObjectValue<T extends JsonValue = JsonValue>(
+  getObjectValue<T extends JsonValue = JsonValue>(
     flagKey: string,
     defaultValue: T,
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
-  ): Promise<T> {
-    return (await this.getObjectDetails(flagKey, defaultValue, context, options)).value;
+  ): T {
+    return this.getObjectDetails(flagKey, defaultValue, context, options).value;
   }
 
   getObjectDetails<T extends JsonValue = JsonValue>(
@@ -164,23 +171,23 @@ export class OpenFeatureClient implements Client {
     defaultValue: T,
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
-  ): Promise<EvaluationDetails<T>> {
+  ): EvaluationDetails<T> {
     return this.evaluate<T>(flagKey, this._provider.resolveObjectEvaluation, defaultValue, 'object', context, options);
   }
 
-  private async evaluate<T extends FlagValue>(
+  private evaluate<T extends FlagValue>(
     flagKey: string,
     resolver: (
       flagKey: string,
       defaultValue: T,
       context: EvaluationContext,
       logger: Logger
-    ) => Promise<ResolutionDetails<T>>,
+    ) => ResolutionDetails<T>,
     defaultValue: T,
     flagType: FlagValueType,
     invocationContext: EvaluationContext = {},
     options: FlagEvaluationOptions = {}
-  ): Promise<EvaluationDetails<T>> {
+  ): EvaluationDetails<T> {
     // merge global, client, and evaluation context
 
     const allHooks = [
@@ -212,24 +219,24 @@ export class OpenFeatureClient implements Client {
     };
 
     try {
-      const frozenContext = await this.beforeHooks(allHooks, hookContext, options);
+      const frozenContext = this.beforeHooks(allHooks, hookContext, options);
 
       // run the referenced resolver, binding the provider.
-      const resolution = await resolver.call(this._provider, flagKey, defaultValue, frozenContext, this._logger);
+      const resolution = resolver.call(this._provider, flagKey, defaultValue, frozenContext, this._logger);
 
       const evaluationDetails = {
         ...resolution,
         flagKey,
       };
 
-      await this.afterHooks(allHooksReversed, hookContext, evaluationDetails, options);
+      this.afterHooks(allHooksReversed, hookContext, evaluationDetails, options);
 
       return evaluationDetails;
     } catch (err: unknown) {
       const errorMessage: string = (err as Error)?.message;
       const errorCode: ErrorCode = (err as OpenFeatureError)?.code || ErrorCode.GENERAL;
 
-      await this.errorHooks(allHooksReversed, hookContext, err, options);
+      this.errorHooks(allHooksReversed, hookContext, err, options);
 
       return {
         errorCode,
@@ -239,11 +246,11 @@ export class OpenFeatureClient implements Client {
         flagKey,
       };
     } finally {
-      await this.finallyHooks(allHooksReversed, hookContext, options);
+      this.finallyHooks(allHooksReversed, hookContext, options);
     }
   }
 
-  private async beforeHooks(hooks: Hook[], hookContext: HookContext, options: FlagEvaluationOptions) {
+  private beforeHooks(hooks: Hook[], hookContext: HookContext, options: FlagEvaluationOptions) {
     for (const hook of hooks) {
       // freeze the hookContext
       Object.freeze(hookContext);
@@ -251,7 +258,7 @@ export class OpenFeatureClient implements Client {
       // use Object.assign to avoid modification of frozen hookContext
       Object.assign(hookContext.context, {
         ...hookContext.context,
-        ...(await hook?.before?.(hookContext, Object.freeze(options.hookHints))),
+        ...hook?.before?.(hookContext, Object.freeze(options.hookHints)),
       });
     }
 
@@ -259,7 +266,7 @@ export class OpenFeatureClient implements Client {
     return Object.freeze(hookContext.context);
   }
 
-  private async afterHooks(
+  private afterHooks(
     hooks: Hook[],
     hookContext: HookContext,
     evaluationDetails: EvaluationDetails<FlagValue>,
@@ -267,15 +274,15 @@ export class OpenFeatureClient implements Client {
   ) {
     // run "after" hooks sequentially
     for (const hook of hooks) {
-      await hook?.after?.(hookContext, evaluationDetails, options.hookHints);
+      hook?.after?.(hookContext, evaluationDetails, options.hookHints);
     }
   }
 
-  private async errorHooks(hooks: Hook[], hookContext: HookContext, err: unknown, options: FlagEvaluationOptions) {
+  private errorHooks(hooks: Hook[], hookContext: HookContext, err: unknown, options: FlagEvaluationOptions) {
     // run "error" hooks sequentially
     for (const hook of hooks) {
       try {
-        await hook?.error?.(hookContext, err, options.hookHints);
+        hook?.error?.(hookContext, err, options.hookHints);
       } catch (err) {
         this._logger.error(`Unhandled error during 'error' hook: ${err}`);
         if (err instanceof Error) {
@@ -286,11 +293,11 @@ export class OpenFeatureClient implements Client {
     }
   }
 
-  private async finallyHooks(hooks: Hook[], hookContext: HookContext, options: FlagEvaluationOptions) {
+  private finallyHooks(hooks: Hook[], hookContext: HookContext, options: FlagEvaluationOptions) {
     // run "finally" hooks sequentially
     for (const hook of hooks) {
       try {
-        await hook?.finally?.(hookContext, options.hookHints);
+        hook?.finally?.(hookContext, options.hookHints);
       } catch (err) {
         this._logger.error(`Unhandled error during 'finally' hook: ${err}`);
         if (err instanceof Error) {
@@ -301,11 +308,22 @@ export class OpenFeatureClient implements Client {
     }
   }
 
-  private get _provider() {
+  private get _provider(): Provider & Partial<EventProvider> {
     return this.providerAccessor();
   }
 
   private get _logger() {
     return this._clientLogger || this.globalLogger();
+  }
+
+  private attachListeners() {
+    // iterate over the event types
+    Object.values(ProviderEvents)
+      .forEach(eventType => window.addEventListener(eventType, () => {
+        // on each event type, fire the associated handlers
+        this._handlerWrappers
+          .filter(wrapper => wrapper.eventType === eventType)
+          .forEach(wrapper => wrapper.handler());
+      }));
   }
 }

@@ -16,6 +16,11 @@ Install dependencies with `npm ci`. `npm install` will update the package-lock.j
 
 We value having as few runtime dependencies as possible. The addition of any dependencies requires careful consideration and review.
 
+### Modules
+
+This repository uses [NPM workspaces](https://docs.npmjs.com/cli/v9/using-npm/workspaces) to establish a simple monorepo.
+Within the root project, there is one common project (`packages/shared`) which features common interfaces and code, consumed by the published modules (`packages/server` and `packages/client`). The shared module is bundled transparently into the published modules - it is not published itself. Changes in `packages/shared` will result in releases of the dependant modules via Release Please.
+
 ### Testing
 
 Run tests with `npm test`.
