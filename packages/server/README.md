@@ -87,3 +87,6 @@ const boolValue = await client.getBooleanValue('boolFlag', false, {}, { hooks: [
 ```
 
 A list of available hooks can be found [here][server-side-artifacts].
+
+[server-side-artifacts]: https://docs.openfeature.dev/docs/reference/technologies/server/javascript
+[hook-interface]: https://open-feature.github.io/js-sdk/interfaces/Hook.html
