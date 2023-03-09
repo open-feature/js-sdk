@@ -46,6 +46,6 @@
   },
   "homepage": "https://github.com/open-feature/js-sdk#readme",
   "devDependencies": {
-    "@openfeature/shared": "file:../shared"
+    "@openfeature/shared": "0.0.1"
   }
 }
