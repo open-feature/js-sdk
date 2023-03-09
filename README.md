@@ -41,35 +41,6 @@ yarn add @openfeature/js-sdk
 
 See [README.md](./packages/server/README.md)
 
-## Client
-
-[![npm version](https://badge.fury.io/js/@openfeature%2Fwe-sdk.svg)](https://badge.fury.io/js/@openfeature%2Fjs-sdk)
-[![v0.5.1](https://img.shields.io/static/v1?label=Specification&message=v0.5.1&color=yellow)](https://github.com/open-feature/spec/tree/v0.5.1)
-
-<p align="center">
-  <strong>
-    <!-- TODO: add getting started -->
-    <!-- TODO: add direct link to client module when published -->
-    <a href="https://open-feature.github.io/js-sdk">API Documentation<a/>
-  </strong>
-</p>
-
----
-
-### Installation
-
-```shell
-npm install @openfeature/web-sdk
-```
-
-or
-
-```shell
-yarn add @openfeature/web-sdk
-```
-
-See [README.md](./packages/client/README.md)
-
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to contribute to the OpenFeature project.

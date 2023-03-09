@@ -1,6 +1,7 @@
 {
   "name": "@openfeature/js",
   "version": "0.0.0",
+  "private": true,
   "description": "OpenFeature SDK for JavaScript",
   "scripts": {
     "test": "jest --selectProjects=server --selectProjects=shared --verbose",
