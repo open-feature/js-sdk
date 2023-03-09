@@ -1,6 +1,6 @@
 {
   "name": "@openfeature/js-sdk",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "OpenFeature SDK for JavaScript",
   "main": "./dist/cjs/index.js",
   "files": [
@@ -45,6 +45,6 @@
   },
   "homepage": "https://github.com/open-feature/js-sdk#readme",
   "devDependencies": {
-    "@openfeature/shared": "0.0.1"
+    "@openfeature/shared": "0.0.2"
   }
 }
