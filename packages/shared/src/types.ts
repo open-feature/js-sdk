@@ -1,9 +1,24 @@
 export type PrimitiveValue = null | boolean | string | number;
 
 export enum ProviderEvents {
+  /**
+   * The provider is ready to evaluate flags.
+   */
   Ready = 'PROVIDER_READY',
+
+  /**
+   * The provider is in an error state.
+   */
   Error = 'PROVIDER_ERROR',
+  
+  /**
+   * The flag configuration in the source-of-truth has changed.
+   */
   ConfigurationChanged = 'PROVIDER_CONFIGURATION_CHANGED',
+  
+  /**
+   * The provider is transitioning to a state of unavailability.
+   */
   Shutdown = 'PROVIDER_SHUTDOWN',
 };
 
