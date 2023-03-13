@@ -3,7 +3,7 @@ import { SafeLogger } from '@openfeature/shared';
 import {
   ApiEvents,
   ClientMetadata,
-  ErrorCode, EvaluationContext,
+  ErrorCode,
   EvaluationDetails,
   FlagValue,
   FlagValueType,
