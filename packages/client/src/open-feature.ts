@@ -89,12 +89,11 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
     await this?._provider?.onClose?.();
   }
 
-  getClient(name?: string, version?: string, context?: EvaluationContext): Client {
+  getClient(name?: string, version?: string): Client {
     return new OpenFeatureClient(
       () => this._provider,
       () => this._logger,
       { name, version },
-      context
     );
   }
 }

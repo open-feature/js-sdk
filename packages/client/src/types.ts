@@ -45,7 +45,6 @@ export interface Provider extends CommonProvider {
   resolveBooleanEvaluation(
     flagKey: string,
     defaultValue: boolean,
-    context: EvaluationContext,
     logger: Logger
   ): ResolutionDetails<boolean>;
 
@@ -55,7 +54,6 @@ export interface Provider extends CommonProvider {
   resolveStringEvaluation(
     flagKey: string,
     defaultValue: string,
-    context: EvaluationContext,
     logger: Logger
   ): ResolutionDetails<string>;
 
@@ -65,7 +63,6 @@ export interface Provider extends CommonProvider {
   resolveNumberEvaluation(
     flagKey: string,
     defaultValue: number,
-    context: EvaluationContext,
     logger: Logger
   ): ResolutionDetails<number>;
 
@@ -75,7 +72,6 @@ export interface Provider extends CommonProvider {
   resolveObjectEvaluation<T extends JsonValue>(
     flagKey: string,
     defaultValue: T,
-    context: EvaluationContext,
     logger: Logger
   ): ResolutionDetails<T>;
 }
@@ -166,14 +162,12 @@ export interface Features {
    *
    * @param {string} flagKey The flag key uniquely identifies a particular flag
    * @param {boolean} defaultValue The value returned if an error occurs
-   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
    * @returns {boolean} Flag evaluation response
    */
   getBooleanValue(
     flagKey: string,
     defaultValue: boolean,
-    context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): boolean;
 
@@ -182,14 +176,12 @@ export interface Features {
    *
    * @param {string} flagKey The flag key uniquely identifies a particular flag
    * @param {boolean} defaultValue The value returned if an error occurs
-   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
    * @returns {EvaluationDetails<boolean>} Flag evaluation details response
    */
   getBooleanDetails(
     flagKey: string,
     defaultValue: boolean,
-    context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): EvaluationDetails<boolean>;
 
@@ -199,20 +191,17 @@ export interface Features {
    * @param {string} flagKey The flag key uniquely identifies a particular flag
    * @template {string} T A optional generic argument constraining the string
    * @param {T} defaultValue The value returned if an error occurs
-   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
    * @returns {T} Flag evaluation response
    */
   getStringValue(
     flagKey: string,
     defaultValue: string,
-    context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): string;
   getStringValue<T extends string = string>(
     flagKey: string,
     defaultValue: T,
-    context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): T;
 
@@ -222,20 +211,17 @@ export interface Features {
    * @param {string} flagKey The flag key uniquely identifies a particular flag
    * @template {string} T A optional generic argument constraining the string
    * @param {T} defaultValue The value returned if an error occurs
-   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
    * @returns {EvaluationDetails<T>} Flag evaluation details response
    */
   getStringDetails(
     flagKey: string,
     defaultValue: string,
-    context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): EvaluationDetails<string>;
   getStringDetails<T extends string = string>(
     flagKey: string,
     defaultValue: T,
-    context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): EvaluationDetails<T>;
 
@@ -245,20 +231,17 @@ export interface Features {
    * @param {string} flagKey The flag key uniquely identifies a particular flag
    * @template {number} T A optional generic argument constraining the number
    * @param {T} defaultValue The value returned if an error occurs
-   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
    * @returns {T} Flag evaluation response
    */
   getNumberValue(
     flagKey: string,
     defaultValue: number,
-    context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): number
   getNumberValue<T extends number = number>(
     flagKey: string,
     defaultValue: T,
-    context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): T;
 
@@ -268,20 +251,17 @@ export interface Features {
    * @param {string} flagKey The flag key uniquely identifies a particular flag
    * @template {number} T A optional generic argument constraining the number
    * @param {T} defaultValue The value returned if an error occurs
-   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
    * @returns {Promise<EvaluationDetails<T>>} Flag evaluation details response
    */
   getNumberDetails(
     flagKey: string,
     defaultValue: number,
-    context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): EvaluationDetails<number>;
   getNumberDetails<T extends number = number>(
     flagKey: string,
     defaultValue: T,
-    context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): EvaluationDetails<T>;
 
@@ -291,20 +271,17 @@ export interface Features {
    * @param {string} flagKey The flag key uniquely identifies a particular flag
    * @template {JsonValue} T A optional generic argument describing the structure
    * @param {T} defaultValue The value returned if an error occurs
-   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
    * @returns {Promise<T>} Flag evaluation response
    */
   getObjectValue(
     flagKey: string,
     defaultValue: JsonValue,
-    context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): JsonValue;
   getObjectValue<T extends JsonValue = JsonValue>(
     flagKey: string,
     defaultValue: T,
-    context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): T;
 
@@ -314,20 +291,17 @@ export interface Features {
    * @param {string} flagKey The flag key uniquely identifies a particular flag
    * @template {JsonValue} T A optional generic argument describing the structure
    * @param {T} defaultValue The value returned if an error occurs
-   * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
    * @returns {Promise<EvaluationDetails<T>>} Flag evaluation details response
    */
   getObjectDetails(
     flagKey: string,
     defaultValue: JsonValue,
-    context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): EvaluationDetails<JsonValue>;
   getObjectDetails<T extends JsonValue = JsonValue>(
     flagKey: string,
     defaultValue: T,
-    context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): EvaluationDetails<T>;
 }

@@ -30,7 +30,6 @@ type HandlerWrapper = {
 
 export class OpenFeatureClient implements Client {
   readonly metadata: ClientMetadata;
-  private _context: EvaluationContext;
   private _hooks: Hook[] = [];
   private _clientLogger?: Logger;
   private _handlerWrappers: HandlerWrapper[] = [];
@@ -41,13 +40,11 @@ export class OpenFeatureClient implements Client {
     private readonly providerAccessor: () => Provider & Partial<EventProvider>,
     private readonly globalLogger: () => Logger,
     options: OpenFeatureClientOptions,
-    context: EvaluationContext = {}
   ) {
     this.metadata = {
       name: options.name,
       version: options.version,
     } as const;
-    this._context = context;
 
     this.attachListeners();
     window.dispatchEvent(new CustomEvent(ApiEvents.ProviderChanged));
@@ -83,16 +80,14 @@ export class OpenFeatureClient implements Client {
   getBooleanValue(
     flagKey: string,
     defaultValue: boolean,
-    context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): boolean {
-    return this.getBooleanDetails(flagKey, defaultValue, context, options).value;
+    return this.getBooleanDetails(flagKey, defaultValue, options).value;
   }
 
   getBooleanDetails(
     flagKey: string,
     defaultValue: boolean,
-    context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): EvaluationDetails<boolean> {
     return this.evaluate<boolean>(
@@ -100,7 +95,6 @@ export class OpenFeatureClient implements Client {
       this._provider.resolveBooleanEvaluation,
       defaultValue,
       'boolean',
-      context,
       options
     );
   }
@@ -108,16 +102,14 @@ export class OpenFeatureClient implements Client {
   getStringValue<T extends string = string>(
     flagKey: string,
     defaultValue: T,
-    context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): T {
-    return this.getStringDetails<T>(flagKey, defaultValue, context, options).value;
+    return this.getStringDetails<T>(flagKey, defaultValue, options).value;
   }
 
   getStringDetails<T extends string = string>(
     flagKey: string,
     defaultValue: T,
-    context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): EvaluationDetails<T> {
     return this.evaluate<T>(
@@ -126,7 +118,6 @@ export class OpenFeatureClient implements Client {
       this._provider.resolveStringEvaluation as () => EvaluationDetails<T>,
       defaultValue,
       'string',
-      context,
       options
     );
   }
@@ -134,16 +125,14 @@ export class OpenFeatureClient implements Client {
   getNumberValue<T extends number = number>(
     flagKey: string,
     defaultValue: T,
-    context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): T {
-    return this.getNumberDetails(flagKey, defaultValue, context, options).value;
+    return this.getNumberDetails(flagKey, defaultValue, options).value;
   }
 
   getNumberDetails<T extends number = number>(
     flagKey: string,
     defaultValue: T,
-    context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): EvaluationDetails<T> {
     return this.evaluate<T>(
@@ -152,7 +141,6 @@ export class OpenFeatureClient implements Client {
       this._provider.resolveNumberEvaluation as () => EvaluationDetails<T>,
       defaultValue,
       'number',
-      context,
       options
     );
   }
@@ -160,19 +148,17 @@ export class OpenFeatureClient implements Client {
   getObjectValue<T extends JsonValue = JsonValue>(
     flagKey: string,
     defaultValue: T,
-    context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): T {
-    return this.getObjectDetails(flagKey, defaultValue, context, options).value;
+    return this.getObjectDetails(flagKey, defaultValue, options).value;
   }
 
   getObjectDetails<T extends JsonValue = JsonValue>(
     flagKey: string,
     defaultValue: T,
-    context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): EvaluationDetails<T> {
-    return this.evaluate<T>(flagKey, this._provider.resolveObjectEvaluation, defaultValue, 'object', context, options);
+    return this.evaluate<T>(flagKey, this._provider.resolveObjectEvaluation, defaultValue, 'object', options);
   }
 
   private evaluate<T extends FlagValue>(
@@ -180,12 +166,10 @@ export class OpenFeatureClient implements Client {
     resolver: (
       flagKey: string,
       defaultValue: T,
-      context: EvaluationContext,
       logger: Logger
     ) => ResolutionDetails<T>,
     defaultValue: T,
     flagType: FlagValueType,
-    invocationContext: EvaluationContext = {},
     options: FlagEvaluationOptions = {}
   ): EvaluationDetails<T> {
     // merge global, client, and evaluation context
@@ -199,11 +183,8 @@ export class OpenFeatureClient implements Client {
     const allHooksReversed = [...allHooks].reverse();
 
     // merge global and client contexts
-    const mergedContext = {
+    const context = {
       ...OpenFeature.getContext(),
-      ...OpenFeature.getTransactionContext(),
-      ...this._context,
-      ...invocationContext,
     };
 
     // this reference cannot change during the course of evaluation
@@ -214,15 +195,15 @@ export class OpenFeatureClient implements Client {
       flagValueType: flagType,
       clientMetadata: this.metadata,
       providerMetadata: OpenFeature.providerMetadata,
-      context: mergedContext,
+      context,
       logger: this._logger,
     };
 
     try {
-      const frozenContext = this.beforeHooks(allHooks, hookContext, options);
+      this.beforeHooks(allHooks, hookContext, options);
 
       // run the referenced resolver, binding the provider.
-      const resolution = resolver.call(this._provider, flagKey, defaultValue, frozenContext, this._logger);
+      const resolution = resolver.call(this._provider, flagKey, defaultValue, this._logger);
 
       const evaluationDetails = {
         ...resolution,
