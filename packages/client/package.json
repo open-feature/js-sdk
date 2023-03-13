@@ -24,7 +24,7 @@
     "postbuild": "shx cp ./../../package.esm.json ./dist/esm/package.json",
     "current-version": "echo $npm_package_version",
     "prepack": "shx cp ./../../LICENSE ./LICENSE",
-    "publish-if-not-exists": "cp $NPM_CONFIG_USERCONFIG .npmrc && if [ \"$(npm show $npm_package_name@$npm_package_version version)\" = \"$(npm run current-version -s)\" ]; then echo 'already published, skipping'; else npm publish --access public --tag experimental; fi",
+    "publish-if-not-exists": "cp $NPM_CONFIG_USERCONFIG .npmrc && if [ \"$(npm show $npm_package_name@$npm_package_version version)\" = \"$(npm run current-version -s)\" ]; then echo 'already published, skipping'; else npm publish --access public; fi",
     "docs": "typedoc"
   },
   "repository": {
