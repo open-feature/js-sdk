@@ -39,12 +39,16 @@ export interface Provider extends CommonProvider {
   // TODO: move to common Provider type when we want close in server
   onClose?(): Promise<void>;
 
+  // TODO: move to common Provider type when we want close in server
+  initialize?(context: EvaluationContext): Promise<void>;
+
   /**
    * Resolve a boolean flag and its evaluation details.
    */
   resolveBooleanEvaluation(
     flagKey: string,
     defaultValue: boolean,
+    context: EvaluationContext,
     logger: Logger
   ): ResolutionDetails<boolean>;
 
@@ -54,6 +58,7 @@ export interface Provider extends CommonProvider {
   resolveStringEvaluation(
     flagKey: string,
     defaultValue: string,
+    context: EvaluationContext,
     logger: Logger
   ): ResolutionDetails<string>;
 
@@ -63,6 +68,7 @@ export interface Provider extends CommonProvider {
   resolveNumberEvaluation(
     flagKey: string,
     defaultValue: number,
+    context: EvaluationContext,
     logger: Logger
   ): ResolutionDetails<number>;
 
@@ -72,6 +78,7 @@ export interface Provider extends CommonProvider {
   resolveObjectEvaluation<T extends JsonValue>(
     flagKey: string,
     defaultValue: T,
+    context: EvaluationContext,
     logger: Logger
   ): ResolutionDetails<T>;
 }
@@ -342,6 +349,6 @@ export interface GlobalApi
   setProvider(provider: Provider): GlobalApi;
 }
 
-export interface EventProvider {
-  readonly ready: boolean;
-}
+// export interface EventProvider {
+//   readonly ready: boolean;
+// }

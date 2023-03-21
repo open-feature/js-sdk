@@ -1,5 +1,5 @@
 import { NOOP_PROVIDER } from './no-op-provider';
-import { Logger, OpenFeatureCommonAPI, SafeLogger } from '@openfeature/shared';
+import { Logger, OpenFeatureCommonAPI, ProviderEvents, SafeLogger } from '@openfeature/shared';
 import { ApiEvents, EvaluationContext, FlagValue, ProviderMetadata } from '@openfeature/shared';
 import { OpenFeatureClient } from './client';
 import { Client, Hook, Provider } from './types';
@@ -16,7 +16,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
 
   protected _hooks: Hook[] = [];
   protected _provider: Provider = NOOP_PROVIDER;
-
+  _providerReady = false;
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor() {
@@ -79,6 +79,18 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
     if (this._provider !== provider) {
       const oldProvider = this._provider;
       this._provider = provider;
+      this._providerReady = false;
+      if (typeof this._provider?.initialize === 'function') {
+        this._provider.initialize?.(this._context)?.then(() => {
+          this._providerReady = true;
+          window.dispatchEvent(new CustomEvent(ProviderEvents.Ready));
+        })?.catch(() => {
+          window.dispatchEvent(new CustomEvent(ProviderEvents.Error));
+        });
+      } else {
+        this._providerReady = true;
+        window.dispatchEvent(new CustomEvent(ProviderEvents.Ready));
+      }
       window.dispatchEvent(new CustomEvent(ApiEvents.ProviderChanged));
       oldProvider?.onClose?.();
     }

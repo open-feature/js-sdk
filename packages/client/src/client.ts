@@ -1,4 +1,4 @@
-import { OpenFeatureError } from '@openfeature/shared';
+import { EvaluationContext, OpenFeatureError } from '@openfeature/shared';
 import { SafeLogger } from '@openfeature/shared';
 import {
   ApiEvents,
@@ -16,7 +16,7 @@ import {
   StandardResolutionReasons
 } from '@openfeature/shared';
 import { OpenFeature } from './open-feature';
-import { Client, EventProvider, FlagEvaluationOptions, Hook, Provider } from './types';
+import { Client, FlagEvaluationOptions, Hook, Provider } from './types';
 
 type OpenFeatureClientOptions = {
   name?: string;
@@ -37,7 +37,7 @@ export class OpenFeatureClient implements Client {
   constructor(
     // we always want the client to use the current provider,
     // so pass a function to always access the currently registered one.
-    private readonly providerAccessor: () => Provider & Partial<EventProvider>,
+    private readonly providerAccessor: () => Provider,
     private readonly globalLogger: () => Logger,
     options: OpenFeatureClientOptions,
   ) {
@@ -52,7 +52,8 @@ export class OpenFeatureClient implements Client {
 
   addHandler(eventType: ProviderEvents, handler: Handler): void {
     this._handlerWrappers.push({eventType, handler});
-    if (eventType === ProviderEvents.Ready && this.providerAccessor().ready) {
+    // TODO: figure this out
+    if (eventType === ProviderEvents.Ready && OpenFeature._providerReady) {
       // run immediately, we're ready.
       handler();
     }
@@ -166,6 +167,7 @@ export class OpenFeatureClient implements Client {
     resolver: (
       flagKey: string,
       defaultValue: T,
+      context: EvaluationContext,
       logger: Logger
     ) => ResolutionDetails<T>,
     defaultValue: T,
@@ -182,7 +184,6 @@ export class OpenFeatureClient implements Client {
     ];
     const allHooksReversed = [...allHooks].reverse();
 
-    // merge global and client contexts
     const context = {
       ...OpenFeature.getContext(),
     };
@@ -203,7 +204,7 @@ export class OpenFeatureClient implements Client {
       this.beforeHooks(allHooks, hookContext, options);
 
       // run the referenced resolver, binding the provider.
-      const resolution = resolver.call(this._provider, flagKey, defaultValue, this._logger);
+      const resolution = resolver.call(this._provider, flagKey, defaultValue, context, this._logger);
 
       const evaluationDetails = {
         ...resolution,
@@ -289,7 +290,7 @@ export class OpenFeatureClient implements Client {
     }
   }
 
-  private get _provider(): Provider & Partial<EventProvider> {
+  private get _provider(): Provider {
     return this.providerAccessor();
   }
 
