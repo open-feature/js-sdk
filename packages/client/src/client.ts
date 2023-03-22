@@ -15,6 +15,7 @@ import {
   ResolutionDetails,
   StandardResolutionReasons
 } from '@openfeature/shared';
+import { EventEmitter } from 'events'
 import { OpenFeature } from './open-feature';
 import { Client, FlagEvaluationOptions, Hook, Provider } from './types';
 
@@ -38,6 +39,8 @@ export class OpenFeatureClient implements Client {
     // we always want the client to use the current provider,
     // so pass a function to always access the currently registered one.
     private readonly providerAccessor: () => Provider,
+    private readonly providerReady: () => boolean,
+    apiEvents: () => EventEmitter,
     private readonly globalLogger: () => Logger,
     options: OpenFeatureClientOptions,
   ) {
@@ -47,13 +50,14 @@ export class OpenFeatureClient implements Client {
     } as const;
 
     this.attachListeners();
-    window.dispatchEvent(new CustomEvent(ApiEvents.ProviderChanged));
+    apiEvents().on(ApiEvents.ProviderChanged, () => {
+      this.attachListeners();      
+    });
   }
 
   addHandler(eventType: ProviderEvents, handler: Handler): void {
     this._handlerWrappers.push({eventType, handler});
-    // TODO: figure this out
-    if (eventType === ProviderEvents.Ready && OpenFeature._providerReady) {
+    if (eventType === ProviderEvents.Ready && this.providerReady()) {
       // run immediately, we're ready.
       handler();
     }
@@ -301,7 +305,7 @@ export class OpenFeatureClient implements Client {
   private attachListeners() {
     // iterate over the event types
     Object.values(ProviderEvents)
-      .forEach(eventType => window.addEventListener(eventType, () => {
+      .forEach(eventType => this._provider.events?.on(eventType, () => {
         // on each event type, fire the associated handlers
         this._handlerWrappers
           .filter(wrapper => wrapper.eventType === eventType)

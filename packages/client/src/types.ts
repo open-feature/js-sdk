@@ -16,6 +16,7 @@ import {
   ProviderMetadata,
   ResolutionDetails,
 } from '@openfeature/shared';
+import EventEmitter from 'events';
 
 /**
  * Interface that providers must implement to resolve flag values for their particular
@@ -33,13 +34,34 @@ export interface Provider extends CommonProvider {
    */
   readonly hooks?: Hook[];
 
-  // client vs global context?
+  /**
+   * An event emitter for ProviderEvents.
+   * @see ProviderEvents
+   */
+  events?: EventEmitter;
+
+  /**
+   * A handler function to reconcile changes when the static context.
+   * Called by the SDK when the context is changed.
+   * 
+   * @param oldContext 
+   * @param newContext 
+   */
   onContextChange?(oldContext: EvaluationContext, newContext: EvaluationContext): Promise<void>
 
   // TODO: move to common Provider type when we want close in server
   onClose?(): Promise<void>;
 
   // TODO: move to common Provider type when we want close in server
+  /**
+   * A handler function used to setup the provider.
+   * Called by the SDK after the provider is set.
+   * When the returned promise resolves, the SDK fires the ProviderEvents.Ready event.
+   * If the returned promise rejects, the SDK fires the ProviderEvents.Error event.
+   * Use this function to perform any context-dependent setup within the provider.
+   * 
+   * @param context 
+   */
   initialize?(context: EvaluationContext): Promise<void>;
 
   /**

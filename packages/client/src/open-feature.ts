@@ -1,7 +1,7 @@
-import { NOOP_PROVIDER } from './no-op-provider';
-import { Logger, OpenFeatureCommonAPI, ProviderEvents, SafeLogger } from '@openfeature/shared';
-import { ApiEvents, EvaluationContext, FlagValue, ProviderMetadata } from '@openfeature/shared';
+import { ApiEvents, EvaluationContext, FlagValue, Logger, OpenFeatureCommonAPI, ProviderEvents, ProviderMetadata, SafeLogger } from '@openfeature/shared';
+import { EventEmitter } from 'events';
 import { OpenFeatureClient } from './client';
+import { NOOP_PROVIDER } from './no-op-provider';
 import { Client, Hook, Provider } from './types';
 
 // use a symbol as a key for the global singleton
@@ -14,9 +14,10 @@ const _globalThis = globalThis as OpenFeatureGlobal;
 
 export class OpenFeatureAPI extends OpenFeatureCommonAPI {
 
+  private _apiEvents = new EventEmitter();
+  private _providerReady = false;
   protected _hooks: Hook[] = [];
   protected _provider: Provider = NOOP_PROVIDER;
-  _providerReady = false;
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor() {
@@ -80,18 +81,23 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
       const oldProvider = this._provider;
       this._provider = provider;
       this._providerReady = false;
+
+      if (!this._provider.events) {
+        this._provider.events = new EventEmitter();
+      }
+
       if (typeof this._provider?.initialize === 'function') {
         this._provider.initialize?.(this._context)?.then(() => {
           this._providerReady = true;
-          window.dispatchEvent(new CustomEvent(ProviderEvents.Ready));
+          this._provider.events?.emit(ProviderEvents.Ready);
         })?.catch(() => {
-          window.dispatchEvent(new CustomEvent(ProviderEvents.Error));
+          this._provider.events?.emit(ProviderEvents.Error);
         });
       } else {
         this._providerReady = true;
-        window.dispatchEvent(new CustomEvent(ProviderEvents.Ready));
+        this._provider.events?.emit(ProviderEvents.Ready);
       }
-      window.dispatchEvent(new CustomEvent(ApiEvents.ProviderChanged));
+      this._apiEvents.emit(ApiEvents.ProviderChanged);
       oldProvider?.onClose?.();
     }
     return this;
@@ -104,6 +110,8 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
   getClient(name?: string, version?: string): Client {
     return new OpenFeatureClient(
       () => this._provider,
+      () => this._providerReady,
+      () => this._apiEvents,
       () => this._logger,
       { name, version },
     );
