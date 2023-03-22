@@ -16,6 +16,7 @@ import {
   ProviderMetadata,
   ResolutionDetails,
 } from '@openfeature/shared';
+import EventEmitter from 'events';
 
 /**
  * Interface that providers must implement to resolve flag values for their particular
@@ -33,11 +34,35 @@ export interface Provider extends CommonProvider {
    */
   readonly hooks?: Hook[];
 
-  // client vs global context?
+  /**
+   * An event emitter for ProviderEvents.
+   * @see ProviderEvents
+   */
+  events?: EventEmitter;
+
+  /**
+   * A handler function to reconcile changes when the static context.
+   * Called by the SDK when the context is changed.
+   * 
+   * @param oldContext 
+   * @param newContext 
+   */
   onContextChange?(oldContext: EvaluationContext, newContext: EvaluationContext): Promise<void>
 
   // TODO: move to common Provider type when we want close in server
   onClose?(): Promise<void>;
+
+  // TODO: move to common Provider type when we want close in server
+  /**
+   * A handler function used to setup the provider.
+   * Called by the SDK after the provider is set.
+   * When the returned promise resolves, the SDK fires the ProviderEvents.Ready event.
+   * If the returned promise rejects, the SDK fires the ProviderEvents.Error event.
+   * Use this function to perform any context-dependent setup within the provider.
+   * 
+   * @param context 
+   */
+  initialize?(context: EvaluationContext): Promise<void>;
 
   /**
    * Resolve a boolean flag and its evaluation details.
@@ -45,6 +70,7 @@ export interface Provider extends CommonProvider {
   resolveBooleanEvaluation(
     flagKey: string,
     defaultValue: boolean,
+    context: EvaluationContext,
     logger: Logger
   ): ResolutionDetails<boolean>;
 
@@ -54,6 +80,7 @@ export interface Provider extends CommonProvider {
   resolveStringEvaluation(
     flagKey: string,
     defaultValue: string,
+    context: EvaluationContext,
     logger: Logger
   ): ResolutionDetails<string>;
 
@@ -63,6 +90,7 @@ export interface Provider extends CommonProvider {
   resolveNumberEvaluation(
     flagKey: string,
     defaultValue: number,
+    context: EvaluationContext,
     logger: Logger
   ): ResolutionDetails<number>;
 
@@ -72,6 +100,7 @@ export interface Provider extends CommonProvider {
   resolveObjectEvaluation<T extends JsonValue>(
     flagKey: string,
     defaultValue: T,
+    context: EvaluationContext,
     logger: Logger
   ): ResolutionDetails<T>;
 }
@@ -340,8 +369,4 @@ export interface GlobalApi
    * @returns {GlobalApi} OpenFeature API
    */
   setProvider(provider: Provider): GlobalApi;
-}
-
-export interface EventProvider {
-  readonly ready: boolean;
 }

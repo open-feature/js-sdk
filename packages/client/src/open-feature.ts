@@ -1,7 +1,7 @@
-import { NOOP_PROVIDER } from './no-op-provider';
-import { Logger, OpenFeatureCommonAPI, SafeLogger } from '@openfeature/shared';
-import { ApiEvents, EvaluationContext, FlagValue, ProviderMetadata } from '@openfeature/shared';
+import { ApiEvents, EvaluationContext, FlagValue, Logger, OpenFeatureCommonAPI, ProviderEvents, ProviderMetadata, SafeLogger } from '@openfeature/shared';
+import { EventEmitter } from 'events';
 import { OpenFeatureClient } from './client';
+import { NOOP_PROVIDER } from './no-op-provider';
 import { Client, Hook, Provider } from './types';
 
 // use a symbol as a key for the global singleton
@@ -14,9 +14,10 @@ const _globalThis = globalThis as OpenFeatureGlobal;
 
 export class OpenFeatureAPI extends OpenFeatureCommonAPI {
 
+  private _apiEvents = new EventEmitter();
+  private _providerReady = false;
   protected _hooks: Hook[] = [];
   protected _provider: Provider = NOOP_PROVIDER;
-
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor() {
@@ -79,7 +80,24 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
     if (this._provider !== provider) {
       const oldProvider = this._provider;
       this._provider = provider;
-      window.dispatchEvent(new CustomEvent(ApiEvents.ProviderChanged));
+      this._providerReady = false;
+
+      if (!this._provider.events) {
+        this._provider.events = new EventEmitter();
+      }
+
+      if (typeof this._provider?.initialize === 'function') {
+        this._provider.initialize?.(this._context)?.then(() => {
+          this._providerReady = true;
+          this._provider.events?.emit(ProviderEvents.Ready);
+        })?.catch(() => {
+          this._provider.events?.emit(ProviderEvents.Error);
+        });
+      } else {
+        this._providerReady = true;
+        this._provider.events?.emit(ProviderEvents.Ready);
+      }
+      this._apiEvents.emit(ApiEvents.ProviderChanged);
       oldProvider?.onClose?.();
     }
     return this;
@@ -91,7 +109,11 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
 
   getClient(name?: string, version?: string): Client {
     return new OpenFeatureClient(
+      // functions are passed here to make sure that these values are always up to date,
+      // and so we don't have to make these public properties on the API class. 
       () => this._provider,
+      () => this._providerReady,
+      () => this._apiEvents,
       () => this._logger,
       { name, version },
     );

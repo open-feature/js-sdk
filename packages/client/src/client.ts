@@ -1,4 +1,4 @@
-import { OpenFeatureError } from '@openfeature/shared';
+import { EvaluationContext, OpenFeatureError } from '@openfeature/shared';
 import { SafeLogger } from '@openfeature/shared';
 import {
   ApiEvents,
@@ -15,8 +15,9 @@ import {
   ResolutionDetails,
   StandardResolutionReasons
 } from '@openfeature/shared';
+import { EventEmitter } from 'events';
 import { OpenFeature } from './open-feature';
-import { Client, EventProvider, FlagEvaluationOptions, Hook, Provider } from './types';
+import { Client, FlagEvaluationOptions, Hook, Provider } from './types';
 
 type OpenFeatureClientOptions = {
   name?: string;
@@ -35,9 +36,11 @@ export class OpenFeatureClient implements Client {
   private _handlerWrappers: HandlerWrapper[] = [];
 
   constructor(
-    // we always want the client to use the current provider,
-    // so pass a function to always access the currently registered one.
-    private readonly providerAccessor: () => Provider & Partial<EventProvider>,
+    // functions are passed here to make sure that these values are always up to date,
+    // and so we don't have to make these public properties on the API class. 
+    private readonly providerAccessor: () => Provider,
+    private readonly providerReady: () => boolean,
+    apiEvents: () => EventEmitter,
     private readonly globalLogger: () => Logger,
     options: OpenFeatureClientOptions,
   ) {
@@ -47,12 +50,14 @@ export class OpenFeatureClient implements Client {
     } as const;
 
     this.attachListeners();
-    window.dispatchEvent(new CustomEvent(ApiEvents.ProviderChanged));
+    apiEvents().on(ApiEvents.ProviderChanged, () => {
+      this.attachListeners();      
+    });
   }
 
   addHandler(eventType: ProviderEvents, handler: Handler): void {
     this._handlerWrappers.push({eventType, handler});
-    if (eventType === ProviderEvents.Ready && this.providerAccessor().ready) {
+    if (eventType === ProviderEvents.Ready && this.providerReady()) {
       // run immediately, we're ready.
       handler();
     }
@@ -166,6 +171,7 @@ export class OpenFeatureClient implements Client {
     resolver: (
       flagKey: string,
       defaultValue: T,
+      context: EvaluationContext,
       logger: Logger
     ) => ResolutionDetails<T>,
     defaultValue: T,
@@ -182,7 +188,6 @@ export class OpenFeatureClient implements Client {
     ];
     const allHooksReversed = [...allHooks].reverse();
 
-    // merge global and client contexts
     const context = {
       ...OpenFeature.getContext(),
     };
@@ -203,7 +208,7 @@ export class OpenFeatureClient implements Client {
       this.beforeHooks(allHooks, hookContext, options);
 
       // run the referenced resolver, binding the provider.
-      const resolution = resolver.call(this._provider, flagKey, defaultValue, this._logger);
+      const resolution = resolver.call(this._provider, flagKey, defaultValue, context, this._logger);
 
       const evaluationDetails = {
         ...resolution,
@@ -289,7 +294,7 @@ export class OpenFeatureClient implements Client {
     }
   }
 
-  private get _provider(): Provider & Partial<EventProvider> {
+  private get _provider(): Provider {
     return this.providerAccessor();
   }
 
@@ -300,7 +305,7 @@ export class OpenFeatureClient implements Client {
   private attachListeners() {
     // iterate over the event types
     Object.values(ProviderEvents)
-      .forEach(eventType => window.addEventListener(eventType, () => {
+      .forEach(eventType => this._provider.events?.on(eventType, () => {
         // on each event type, fire the associated handlers
         this._handlerWrappers
           .filter(wrapper => wrapper.eventType === eventType)
