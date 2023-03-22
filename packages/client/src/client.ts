@@ -36,8 +36,8 @@ export class OpenFeatureClient implements Client {
   private _handlerWrappers: HandlerWrapper[] = [];
 
   constructor(
-    // we always want the client to use the current provider,
-    // so pass a function to always access the currently registered one.
+    // functions are passed here to make sure that these values are always up to date,
+    // and so we don't have to make these public properties on the API class. 
     private readonly providerAccessor: () => Provider,
     private readonly providerReady: () => boolean,
     apiEvents: () => EventEmitter,

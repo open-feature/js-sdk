@@ -109,6 +109,8 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
 
   getClient(name?: string, version?: string): Client {
     return new OpenFeatureClient(
+      // functions are passed here to make sure that these values are always up to date,
+      // and so we don't have to make these public properties on the API class. 
       () => this._provider,
       () => this._providerReady,
       () => this._apiEvents,

@@ -370,7 +370,3 @@ export interface GlobalApi
    */
   setProvider(provider: Provider): GlobalApi;
 }
-
-// export interface EventProvider {
-//   readonly ready: boolean;
-// }
