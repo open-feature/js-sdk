@@ -15,7 +15,7 @@ import {
   ResolutionDetails,
   StandardResolutionReasons
 } from '@openfeature/shared';
-import { EventEmitter } from 'events'
+import { EventEmitter } from 'events';
 import { OpenFeature } from './open-feature';
 import { Client, FlagEvaluationOptions, Hook, Provider } from './types';
 
