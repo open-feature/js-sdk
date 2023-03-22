@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.0-experimental](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.1.0-experimental...web-sdk-v0.2.0-experimental) (2023-03-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* use node style events, add initialize ([#379](https://github.com/open-feature/js-sdk/issues/379))
+
+### Features
+
+* use node style events, add initialize ([#379](https://github.com/open-feature/js-sdk/issues/379)) ([6625918](https://github.com/open-feature/js-sdk/commit/662591861140cb9b387b3810aa2b2353f7af257e))
+
 ## [0.1.0-experimental](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.0.2-experimental...web-sdk-v0.1.0-experimental) (2023-03-13)
 
 
