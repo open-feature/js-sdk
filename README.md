@@ -60,6 +60,5 @@ Made with [contrib.rocks](https://contrib.rocks).
 [Apache License 2.0](LICENSE)
 
 [openfeature-website]: https://openfeature.dev
-[server-side-artifacts]: https://docs.openfeature.dev/docs/reference/technologies/server/javascript
 [hook-interface]: https://open-feature.github.io/js-sdk/interfaces/Hook.html
 [client-side-github-issue]: https://github.com/open-feature/spec/issues/167
