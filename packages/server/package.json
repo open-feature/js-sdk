@@ -44,6 +44,9 @@
     "url": "https://github.com/open-feature/js-sdk/issues"
   },
   "homepage": "https://github.com/open-feature/js-sdk#readme",
+  "engines": {
+    "node": ">=16"
+  },
   "devDependencies": {
     "@openfeature/shared": "0.0.2"
   }

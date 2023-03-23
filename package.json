@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/open-feature/js-sdk#readme",
   "engines": {
-    "node": ">=14"
+    "node": ">=16"
   },
   "devDependencies": {
     "@openfeature/flagd-provider": "~0.7.0",
