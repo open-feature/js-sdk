@@ -6,6 +6,13 @@
   * devDependencies
     * @openfeature/shared bumped from 0.0.1 to 0.0.2
 
+## [1.2.0](https://github.com/open-feature/js-sdk/compare/js-sdk-v1.1.1...js-sdk-v1.2.0) (2023-03-24)
+
+
+### Features
+
+* add caching for pipelines ([#384](https://github.com/open-feature/js-sdk/issues/384)) ([55acc05](https://github.com/open-feature/js-sdk/commit/55acc05b2676f09b0b1606701e8568eaeee1f8c0))
+
 ## [1.1.0](https://github.com/open-feature/js-sdk/compare/v1.0.1...v1.1.0) (2023-01-23)
 
 
