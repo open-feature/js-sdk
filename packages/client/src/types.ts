@@ -36,6 +36,7 @@ export interface Provider extends CommonProvider {
 
   /**
    * An event emitter for ProviderEvents.
+   * 
    * @see ProviderEvents
    */
   events?: OpenFeatureEventEmitter;
