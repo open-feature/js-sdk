@@ -15,7 +15,7 @@ import {
   ResolutionDetails,
   StandardResolutionReasons
 } from '@openfeature/shared';
-import { EventEmitter } from 'events';
+import { OpenFeatureEventEmitter } from '.';
 import { OpenFeature } from './open-feature';
 import { Client, FlagEvaluationOptions, Hook, Provider } from './types';
 
@@ -40,7 +40,7 @@ export class OpenFeatureClient implements Client {
     // and so we don't have to make these public properties on the API class. 
     private readonly providerAccessor: () => Provider,
     private readonly providerReady: () => boolean,
-    apiEvents: () => EventEmitter,
+    apiEvents: () => OpenFeatureEventEmitter,
     private readonly globalLogger: () => Logger,
     options: OpenFeatureClientOptions,
   ) {

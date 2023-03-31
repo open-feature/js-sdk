@@ -10,10 +10,17 @@ export default {
     file: './dist/types.d.ts',
     format: 'es', // module format doesn't really matter here since output i
   },
+  external: [
+    // function indicating which deps should be considered external: non-external deps will have their types bundled
+    (id) => {
+      // bundle 'events' types
+      return id !== 'events'
+    }
+  ],
   plugins: [
     alias({
       entries: [{ find: '@openfeature/shared', replacement: '../shared/dist/types.d.ts' }],
     }),
-    dts({tsconfig: './tsconfig.json'}),
-  ]
+    dts({tsconfig: './tsconfig.json', respectExternal: true}),
+  ],
 };

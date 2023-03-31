@@ -16,7 +16,7 @@ import {
   ProviderMetadata,
   ResolutionDetails,
 } from '@openfeature/shared';
-import EventEmitter from 'events';
+import { OpenFeatureEventEmitter } from '.';
 
 /**
  * Interface that providers must implement to resolve flag values for their particular
@@ -36,9 +36,10 @@ export interface Provider extends CommonProvider {
 
   /**
    * An event emitter for ProviderEvents.
+   * 
    * @see ProviderEvents
    */
-  events?: EventEmitter;
+  events?: OpenFeatureEventEmitter;
 
   /**
    * A handler function to reconcile changes when the static context.
