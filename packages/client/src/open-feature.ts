@@ -1,5 +1,5 @@
 import { ApiEvents, EvaluationContext, FlagValue, Logger, OpenFeatureCommonAPI, ProviderEvents, ProviderMetadata, SafeLogger } from '@openfeature/shared';
-import { EventEmitter } from 'events';
+import { OpenFeatureEventEmitter } from '.';
 import { OpenFeatureClient } from './client';
 import { NOOP_PROVIDER } from './no-op-provider';
 import { Client, Hook, Provider } from './types';
@@ -14,7 +14,7 @@ const _globalThis = globalThis as OpenFeatureGlobal;
 
 export class OpenFeatureAPI extends OpenFeatureCommonAPI {
 
-  private _apiEvents = new EventEmitter();
+  private _apiEvents = new OpenFeatureEventEmitter();
   private _providerReady = false;
   protected _hooks: Hook[] = [];
   protected _provider: Provider = NOOP_PROVIDER;
@@ -83,7 +83,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
       this._providerReady = false;
 
       if (!this._provider.events) {
-        this._provider.events = new EventEmitter();
+        this._provider.events = new OpenFeatureEventEmitter();
       }
 
       if (typeof this._provider?.initialize === 'function') {
