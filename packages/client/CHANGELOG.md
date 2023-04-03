@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1-experimental](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.3.0-experimental...web-sdk-v0.3.1-experimental) (2023-04-03)
+
+
+### Bug Fixes
+
+* import cycle ([#395](https://github.com/open-feature/js-sdk/issues/395)) ([ac0f10d](https://github.com/open-feature/js-sdk/commit/ac0f10d04e61d37965fe25bc8d5f7efa0ba717d6))
+
 ## [0.3.0-experimental](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.2.0-experimental...web-sdk-v0.3.0-experimental) (2023-04-03)
 
 
