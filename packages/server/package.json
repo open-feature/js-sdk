@@ -49,5 +49,9 @@
   },
   "devDependencies": {
     "@openfeature/shared": "0.0.2"
+  },
+  "typedoc": {
+    "displayName": "OpenFeature JS SDK",
+    "entryPoint": "./src/index.ts"
   }
 }

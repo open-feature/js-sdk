@@ -16,7 +16,8 @@ import {
   ProviderMetadata,
   ResolutionDetails,
 } from '@openfeature/shared';
-import { OpenFeatureEventEmitter } from '.';
+import { EventEmitter as OpenFeatureEventEmitter } from 'events';
+export { OpenFeatureEventEmitter };
 
 /**
  * Interface that providers must implement to resolve flag values for their particular
