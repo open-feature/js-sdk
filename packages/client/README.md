@@ -1,6 +1,6 @@
 # @openfeature/web-sdk
 
-Experimental web implementation of intended for use in web-browsers.
+Experimental web implementation of OpenFeature intended for use in web-browsers.
   
 ## Installation
 

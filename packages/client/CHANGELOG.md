@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.3.1-experimental](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.3.0-experimental...web-sdk-v0.3.1-experimental) (2023-04-03)
+
+
+### Bug Fixes
+
+* import cycle ([#395](https://github.com/open-feature/js-sdk/issues/395)) ([ac0f10d](https://github.com/open-feature/js-sdk/commit/ac0f10d04e61d37965fe25bc8d5f7efa0ba717d6))
+
+## [0.3.0-experimental](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.2.0-experimental...web-sdk-v0.3.0-experimental) (2023-04-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* use bundled event emitter type ([#389](https://github.com/open-feature/js-sdk/issues/389))
+
+### Features
+
+* use bundled event emitter type ([#389](https://github.com/open-feature/js-sdk/issues/389)) ([47d1634](https://github.com/open-feature/js-sdk/commit/47d16341106a79e86d78a8dc40fd9b9491b7fc5a))
+
+
+### Bug Fixes
+
+* fix readme typo ([a23f899](https://github.com/open-feature/js-sdk/commit/a23f899d688606f624af3baf93e8eabd1cd26096))
+
 ## [0.2.0-experimental](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.1.0-experimental...web-sdk-v0.2.0-experimental) (2023-03-22)
 
 

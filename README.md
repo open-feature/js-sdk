@@ -4,6 +4,7 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/open-feature/js-sdk/badge.svg)](https://snyk.io/test/github/open-feature/js-sdk)
 [![codecov](https://codecov.io/gh/open-feature/js-sdk/branch/main/graph/badge.svg?token=3DC5XOEHMY)](https://codecov.io/gh/open-feature/js-sdk)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/6594/badge)](https://bestpractices.coreinfrastructure.org/projects/6594)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fopen-feature%2Fjs-sdk.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fopen-feature%2Fjs-sdk?ref=badge_shield)
 
 This repository contains the JavaScript implementations of [OpenFeature][openfeature-website], a vendor-agnostic abstraction library for evaluating feature flags.
 
@@ -62,3 +63,6 @@ Made with [contrib.rocks](https://contrib.rocks).
 [openfeature-website]: https://openfeature.dev
 [hook-interface]: https://open-feature.github.io/js-sdk/interfaces/Hook.html
 [client-side-github-issue]: https://github.com/open-feature/spec/issues/167
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fopen-feature%2Fjs-sdk.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fopen-feature%2Fjs-sdk?ref=badge_large)

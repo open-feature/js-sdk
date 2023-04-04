@@ -1,8 +1,16 @@
-import { ApiEvents, EvaluationContext, FlagValue, Logger, OpenFeatureCommonAPI, ProviderEvents, ProviderMetadata, SafeLogger } from '@openfeature/shared';
-import { OpenFeatureEventEmitter } from '.';
+import {
+  ApiEvents,
+  EvaluationContext,
+  FlagValue,
+  Logger,
+  OpenFeatureCommonAPI,
+  ProviderEvents,
+  ProviderMetadata,
+  SafeLogger,
+} from '@openfeature/shared';
 import { OpenFeatureClient } from './client';
 import { NOOP_PROVIDER } from './no-op-provider';
-import { Client, Hook, Provider } from './types';
+import { Client, Hook, OpenFeatureEventEmitter, Provider } from './types';
 
 // use a symbol as a key for the global singleton
 const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/js.api');
