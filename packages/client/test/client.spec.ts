@@ -1,6 +1,5 @@
 import {
   ErrorCode,
-  EvaluationContext,
   EvaluationDetails,
   JsonValue,
   JsonArray,
@@ -15,8 +14,6 @@ import {
   Client, Provider,
 
 } from '../src/types';
-
-const DATETIME_VALUE = new Date(2022, 5, 13, 18, 20, 0);
 
 const BOOLEAN_VALUE = true;
 const STRING_VALUE = 'val';
@@ -55,11 +52,11 @@ const MOCK_PROVIDER: Provider = {
     name: 'mock',
   },
 
-  events: undefined, hooks: [], initialize(context): Promise<void> {
+  events: undefined, hooks: [], initialize(): Promise<void> {
     return Promise.resolve(undefined);
   }, onClose(): Promise<void> {
     return Promise.resolve(undefined);
-  }, onContextChange(oldContext, newContext): Promise<void> {
+  }, onContextChange(): Promise<void> {
     return Promise.resolve(undefined);
   },
 
@@ -88,7 +85,7 @@ const MOCK_PROVIDER: Provider = {
     };
 
   }),
-  resolveStringEvaluation: jest.fn(<U extends string>(): ResolutionDetails<string> => {
+  resolveStringEvaluation: jest.fn( (): ResolutionDetails<string> => {
     return {
       value: STRING_VALUE,
       variant: STRING_VARIANT,
