@@ -7,7 +7,7 @@ import {
   JsonObject,
   ResolutionDetails,
   StandardResolutionReasons,
-
+  FlagNotFoundError,
 } from '../src';
 import {OpenFeatureClient} from '../src/client';
 import {OpenFeature} from '../src/open-feature';
@@ -15,6 +15,8 @@ import {
   Client, Provider,
 
 } from '../src/types';
+
+const DATETIME_VALUE = new Date(2022, 5, 13, 18, 20, 0);
 
 const BOOLEAN_VALUE = true;
 const STRING_VALUE = 'val';
@@ -302,3 +304,129 @@ describe('OpenFeatureClient', () => {
     });
   });
 });
+
+describe('Requirement 1.4.3.1', () => {
+  describe('generic support', () => {
+    it('should support generics', async () => {
+      // No generic information exists at runtime, but this test has some value in ensuring the generic args still exist in the typings.
+      const client = OpenFeature.getClient();
+      const details: ResolutionDetails<JsonValue> = await client.getObjectDetails('flag', { key: 'value' });
+
+      expect(details).toBeDefined();
+    });
+  });
+});
+
+describe('Evaluation details structure', () => {
+  const flagKey = 'number-details';
+  const defaultValue = 1970;
+  let details: EvaluationDetails<number>;
+
+  describe('Normal execution', () => {
+    beforeAll(async () => {
+      const client = OpenFeature.getClient();
+      details = await client.getNumberDetails(flagKey, defaultValue);
+
+      expect(details).toBeDefined();
+    });
+
+    describe('Requirement 1.4.2, 1.4.3', () => {
+      it('should contain flag value', () => {
+        expect(details.value).toEqual(NUMBER_VALUE);
+      });
+    });
+
+    describe('Requirement 1.4.4', () => {
+      it('should contain flag key', () => {
+        expect(details.flagKey).toEqual(flagKey);
+      });
+    });
+
+    describe('Requirement 1.4.5', () => {
+      it('should contain flag variant', () => {
+        expect(details.variant).toEqual(NUMBER_VARIANT);
+      });
+    });
+
+    describe('Requirement 1.4.6', () => {
+      it('should contain reason', () => {
+        expect(details.reason).toEqual(REASON);
+      });
+    });
+  });
+
+  describe('Abnormal execution', () => {
+    const NON_OPEN_FEATURE_ERROR_MESSAGE = 'A null dereference or something, I dunno.';
+    const OPEN_FEATURE_ERROR_MESSAGE = "This ain't the flag you're looking for.";
+    let nonOpenFeatureErrorDetails: EvaluationDetails<number>;
+    let openFeatureErrorDetails: EvaluationDetails<string>;
+    let client: Client;
+    const errorProvider = {
+      name: 'error-mock',
+
+      resolveNumberEvaluation: jest.fn((): Promise<ResolutionDetails<number>> => {
+        throw new Error(NON_OPEN_FEATURE_ERROR_MESSAGE); // throw a non-open-feature error
+      }),
+      resolveStringEvaluation: jest.fn((): Promise<ResolutionDetails<string>> => {
+        throw new FlagNotFoundError(OPEN_FEATURE_ERROR_MESSAGE); // throw an open-feature error
+      }),
+    } as unknown as Provider;
+    const defaultNumberValue = 123;
+    const defaultStringValue = 'hey!';
+
+    beforeAll(async () => {
+      OpenFeature.setProvider(errorProvider);
+      client = OpenFeature.getClient();
+      nonOpenFeatureErrorDetails = await client.getNumberDetails('some-flag', defaultNumberValue);
+      openFeatureErrorDetails = await client.getStringDetails('some-flag', defaultStringValue);
+    });
+
+    describe('Requirement 1.4.7', () => {
+      describe('OpenFeatureError', () => {
+        it('should contain error code', () => {
+          expect(openFeatureErrorDetails.errorCode).toBeTruthy();
+          expect(openFeatureErrorDetails.errorCode).toEqual(ErrorCode.FLAG_NOT_FOUND); // should get code from thrown OpenFeatureError
+        });
+      });
+
+      describe('Non-OpenFeatureError', () => {
+        it('should contain error code', () => {
+          expect(nonOpenFeatureErrorDetails.errorCode).toBeTruthy();
+          expect(nonOpenFeatureErrorDetails.errorCode).toEqual(ErrorCode.GENERAL); // should fall back to GENERAL
+        });
+      });
+    });
+
+    describe('Requirement 1.4.8', () => {
+      it('should contain error reason', () => {
+        expect(nonOpenFeatureErrorDetails.reason).toEqual(StandardResolutionReasons.ERROR);
+        expect(openFeatureErrorDetails.reason).toEqual(StandardResolutionReasons.ERROR);
+      });
+    });
+
+    describe('Requirement 1.4.9', () => {
+      it('must not throw, must return default', async () => {
+        nonOpenFeatureErrorDetails = await client.getNumberDetails('some-flag', defaultNumberValue);
+
+        expect(nonOpenFeatureErrorDetails).toBeTruthy();
+        expect(nonOpenFeatureErrorDetails.value).toEqual(defaultNumberValue);
+      });
+    });
+
+    describe('Requirement 1.4.12', () => {
+      describe('OpenFeatureError', () => {
+        it('should contain "error" message', () => {
+          expect(openFeatureErrorDetails.errorMessage).toEqual(OPEN_FEATURE_ERROR_MESSAGE);
+        });
+      });
+
+      describe('Non-OpenFeatureError', () => {
+        it('should contain "error" message', () => {
+          expect(nonOpenFeatureErrorDetails.errorMessage).toEqual(NON_OPEN_FEATURE_ERROR_MESSAGE);
+        });
+      });
+    });
+  });
+});
+
+// context tests are not needed?
