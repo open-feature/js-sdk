@@ -94,19 +94,19 @@ class MyProvider implements Provider {
     name: 'My Provider',
   } as const;
 
-  resolveBooleanEvaluation(_: string, defaultValue: boolean): ResolutionDetails<boolean> {
+  resolveBooleanEvaluation(flagKey: string, defaultValue: boolean): ResolutionDetails<boolean> {
     // resolve a boolean flag value
   }
 
-  resolveStringEvaluation(_: string, defaultValue: string): ResolutionDetails<string> {
+  resolveStringEvaluation(flagKey: string, defaultValue: string): ResolutionDetails<string> {
     // resolve a string flag value
   }
 
-  resolveNumberEvaluation(_: string, defaultValue: number): ResolutionDetails<number> {
+  resolveNumberEvaluation(flagKey: string, defaultValue: number): ResolutionDetails<number> {
     // resolve a numeric flag value
   }
 
-  resolveObjectEvaluation<T extends JsonValue>(_: string, defaultValue: T): ResolutionDetails<T> {
+  resolveObjectEvaluation<T extends JsonValue>(flagKey: string, defaultValue: T): ResolutionDetails<T> {
     // resolve an object flag value
   }
 ```
