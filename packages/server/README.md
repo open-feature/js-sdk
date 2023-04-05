@@ -153,7 +153,7 @@ class MyLogger implements Logger {
 }
 
 // set the logger
-OpenFeature.setLogger(MyLogger);
+OpenFeature.setLogger(new MyLogger());
 ```
 
 See [here](https://open-feature.github.io/js-sdk/modules/OpenFeature_JS_SDK.html) for the complete API documentation.
