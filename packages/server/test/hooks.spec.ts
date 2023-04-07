@@ -574,7 +574,6 @@ describe('Hooks', () => {
                 expect(invocationErrorHook.error).not.toHaveBeenCalled();
                 expect(clientErrorHook.error).not.toHaveBeenCalled();
                 expect(globalErrorHook.error).not.toHaveBeenCalled();
-                done();
               } catch (err) {
                 done(err);
               }

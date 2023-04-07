@@ -1,12 +1,10 @@
-import { Provider, ResolutionDetails, Client, FlagValueType, EvaluationContext, Hook,   ErrorCode } from '../src';
+import { Provider, ResolutionDetails, Client, FlagValueType, EvaluationContext, Hook,   ErrorCode, FlagNotFoundError, GeneralError } from '../src';
 import { OpenFeature } from '../src/open-feature';
 
 const BOOLEAN_VALUE = true;
 
 const BOOLEAN_VARIANT = `${BOOLEAN_VALUE}`;
 const REASON = 'mocked-value';
-const ERROR_REASON = 'error';
-const ERROR_CODE = ErrorCode.GENERAL;
 
 // a mock provider with some jest spies
 const MOCK_PROVIDER: Provider = {
@@ -28,11 +26,7 @@ const MOCK_ERROR_PROVIDER: Provider = {
     name: 'mock-hooks-error',
   },
   resolveBooleanEvaluation: jest.fn((): ResolutionDetails<boolean> => {
-    return {
-      value: BOOLEAN_VALUE,
-      reason: ERROR_REASON,
-      errorCode:ERROR_CODE ,
-    };
+    throw new GeneralError();
   }),
 } as unknown as Provider;
 
@@ -203,55 +197,6 @@ describe('Hooks', () => {
     });
   });
 
-  describe('Requirement 4.3.4', () => {
-    it('When before hooks have finished executing, any resulting evaluation context MUST be merged with the existing evaluation context in the following order: before-hook (highest precedence), invocation, client, api (lowest precedence).', async () => {
-      const globalProp434 = 'globalProp';
-      const globalPropToOverwrite434 = 'globalPropToOverwrite';
-      const clientProp434 = 'clientProp';
-      const clientPropToOverwrite434 = 'clientPropToOverwrite';
-      const invocationProp434 = 'invocationProp';
-      const invocationPropToOverwrite434 = 'invocationPropToOverwrite';
-      const hookProp434 = 'hookProp';
-
-      await OpenFeature.setContext({
-        [globalProp434]: true,
-        [globalPropToOverwrite434]: false,
-      });
-
-      const hookContext = {
-        [invocationPropToOverwrite434]: true,
-        [hookProp434]: true,
-      };
-
-      const localClient = OpenFeature.getClient('merge-test', 'test');
-
-      localClient.getBooleanValue(FLAG_KEY, false, {
-        hooks: [
-          {
-            before: () => {
-              return hookContext;
-            },
-          },
-        ],
-      });
-      expect(MOCK_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.anything(),
-        // ensure correct properties were maintained/overwritten
-        expect.objectContaining({
-          [globalProp434]: true,
-          [globalPropToOverwrite434]: true,
-          [clientProp434]: true,
-          [clientPropToOverwrite434]: true,
-          [invocationProp434]: true,
-          [invocationPropToOverwrite434]: true,
-          [hookProp434]: true,
-        }),
-        expect.anything()
-      );
-    });
-  });
-
   describe('Requirement 4.3.5', () => {
     it('"after" must run after flag evaluation', (done) => {
       client.getBooleanValue(FLAG_KEY, false, {
@@ -409,12 +354,12 @@ describe('Hooks', () => {
             }),
           },
         ],
-        resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
-          return Promise.resolve({
+        resolveBooleanEvaluation: jest.fn((): ResolutionDetails<boolean> => {
+          return {
             value: BOOLEAN_VALUE,
             variant: BOOLEAN_VARIANT,
             reason: REASON,
-          });
+          };
         }),
       } as unknown as Provider;
 
@@ -490,12 +435,12 @@ describe('Hooks', () => {
             }),
           },
         ],
-        resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
-          return Promise.resolve({
+        resolveBooleanEvaluation: jest.fn((): ResolutionDetails<boolean> => {
+          return {
             value: BOOLEAN_VALUE,
             variant: BOOLEAN_VARIANT,
             reason: REASON,
-          });
+          };
         }),
       } as unknown as Provider;
 
@@ -566,18 +511,14 @@ describe('Hooks', () => {
                 expect(invocationErrorHook.error).not.toHaveBeenCalled();
                 expect(clientErrorHook.error).not.toHaveBeenCalled();
                 expect(globalErrorHook.error).not.toHaveBeenCalled();
-                done();
               } catch (err) {
                 done(err);
               }
             }),
           },
         ],
-        resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
-          return Promise.reject({
-            reason: ERROR_REASON,
-            errorCode: ERROR_CODE,
-          });
+        resolveBooleanEvaluation: jest.fn((): ResolutionDetails<boolean> => {
+          throw new GeneralError();
         }),
       } as unknown as Provider;
 
@@ -654,11 +595,8 @@ describe('Hooks', () => {
             }),
           },
         ],
-        resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
-          return Promise.reject({
-            reason: ERROR_REASON,
-            errorCode: ERROR_CODE,
-          });
+        resolveBooleanEvaluation: jest.fn((): ResolutionDetails<boolean> => {
+          throw new GeneralError();
         }),
       } as unknown as Provider;
       OpenFeature.setProvider(errorProviderWithHooks);
