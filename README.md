@@ -22,7 +22,7 @@
 
 ### Why standardize feature flags?
 
-Standardizing feature flags unify tools and vendors behind a common interface which avoids vendor lock-in at the code level. Additionally, it offers a framework for building extensions and integrations and allows providers to focus on their unique value proposition.
+Standardizing feature flags unifies tools and vendors behind a common interface which avoids vendor lock-in at the code level. Additionally, it offers a framework for building extensions and integrations and allows providers to focus on their unique value proposition.
 
 ## 🔧 Components
 
