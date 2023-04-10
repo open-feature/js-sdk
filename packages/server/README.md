@@ -7,7 +7,7 @@
   </picture>
 </p>
 
-<h2 align="center">OpenFeature JS SDK</h2>
+<h2 align="center">OpenFeature Server SDK</h2>
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Specification](https://img.shields.io/static/v1?label=Specification&message=v0.5.2&color=yellow)](https://github.com/open-feature/spec/tree/v0.5.2)
