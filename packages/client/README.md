@@ -77,7 +77,7 @@ If the flag system you're using supports targeting, you can provide the input da
 
 ```typescript
 // global context for static data
-OpenFeature.setContext({ origin: document.location.host })
+await OpenFeature.setContext({ origin: document.location.host })
 
 // use contextual data to determine a flag value
 const boolValue = client.getBooleanValue('some-flag', false);
