@@ -60,7 +60,7 @@ yarn add @openfeature/web-sdk
 import { OpenFeature } from '@openfeature/web-sdk';
 
 // configure a provider
-OpenFeature.setProvider(new YourProviderOfChoice());
+await OpenFeature.setProvider(new YourProviderOfChoice());
 
 // create a client
 const client = OpenFeature.getClient('my-app');
