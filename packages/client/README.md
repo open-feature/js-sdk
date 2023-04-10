@@ -47,7 +47,7 @@ yarn add @openfeature/web-sdk
 
 ## 🌟 Features:
 
-- support for various backend [providers](https://docs.openfeature.dev/docs/reference/concepts/provider)
+- support for various [providers](https://docs.openfeature.dev/docs/reference/concepts/provider)
 - easy integration and extension via [hooks](https://docs.openfeature.dev/docs/reference/concepts/hooks)
 - bool, string, numeric and object flag types
 - [context-aware](https://docs.openfeature.dev/docs/reference/concepts/evaluation-context) evaluation
