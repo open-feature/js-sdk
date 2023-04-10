@@ -75,7 +75,11 @@ If the flag system you're using supports targeting, you can provide the input da
 OpenFeature.setContext({ appVersion: process.env.APP_VERSION })
 
 // request context
-const requestContext = { userEmail: req.session.email, product: req.productId };
+const requestContext = {
+  targetingKey: req.session.id,
+  email: req.session.email,
+  product: req.productId
+};
 
 // use merged contextual data to determine a flag value
 const boolValue = await client.getBooleanValue('some-flag', false, requestContext);
