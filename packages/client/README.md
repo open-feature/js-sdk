@@ -80,7 +80,7 @@ If the flag system you're using supports targeting, you can provide the input da
 OpenFeature.setContext({ origin: document.location.host })
 
 // use contextual data to determine a flag value
-const boolValue = await client.getBooleanValue('some-flag', false);
+const boolValue = client.getBooleanValue('some-flag', false);
 ```
 
 ### Providers:
