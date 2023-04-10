@@ -49,7 +49,7 @@ yarn add @openfeature/web-sdk
 
 - support for various [providers](https://docs.openfeature.dev/docs/reference/concepts/provider)
 - easy integration and extension via [hooks](https://docs.openfeature.dev/docs/reference/concepts/hooks)
-- bool, string, numeric and object flag types
+- handle flags of any type: bool, string, numeric and object
 - [context-aware](https://docs.openfeature.dev/docs/reference/concepts/evaluation-context) evaluation
 
 ## 🚀 Usage:
