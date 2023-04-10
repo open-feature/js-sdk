@@ -34,6 +34,15 @@ For details, including API documentation, see the respective README files.
 
 Each have slightly different APIs, but shared many underlying types and components
 
+## ⭐️ Support the project
+
+- Give this repo a ⭐️!
+- Follow us social media:
+  - Twitter: [@openfeature](https://twitter.com/openfeature)
+  - LinkedIn: [OpenFeature](https://www.linkedin.com/company/openfeature/)
+- Join us on [Slack](https://cloud-native.slack.com/archives/C0344AANLA1)
+- For more check out our [community page](https://docs.openfeature.dev/community/)
+
 ## 🤝 Contributing
 
 Interested in contributing? Great, we'd love your help! To get started, take a look at the [CONTRIBUTING](CONTRIBUTING.md) guide.
@@ -51,14 +60,5 @@ Made with [contrib.rocks](https://contrib.rocks).
 [Apache License 2.0](LICENSE)
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fopen-feature%2Fjs-sdk.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fopen-feature%2Fjs-sdk?ref=badge_large)
-
-## ⭐️ Support the project
-
-- Give this repo a ⭐️!
-- Follow us social media:
-  - Twitter: [@openfeature](https://twitter.com/openfeature)
-  - LinkedIn: [OpenFeature](https://www.linkedin.com/company/openfeature/)
-- Join us on [Slack](https://cloud-native.slack.com/archives/C0344AANLA1)
-- For more check out our [community page](https://docs.openfeature.dev/community/)
 
 [openfeature-website]: https://openfeature.dev
