@@ -37,7 +37,7 @@ Each have slightly different APIs, but share many underlying types and component
 ## ⭐️ Support the project
 
 - Give this repo a ⭐️!
-- [Contribute](#contributing) to this repo
+- [Contribute](#-contributing) to this repo
 - Follow us social media:
   - Twitter: [@openfeature](https://twitter.com/openfeature)
   - LinkedIn: [OpenFeature](https://www.linkedin.com/company/openfeature/)
