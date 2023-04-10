@@ -59,6 +59,6 @@ Made with [contrib.rocks](https://contrib.rocks).
   - Twitter: [@openfeature](https://twitter.com/openfeature)
   - LinkedIn: [OpenFeature](https://www.linkedin.com/company/openfeature/)
 - Join us on [Slack](https://cloud-native.slack.com/archives/C0344AANLA1)
-- Check out our [community repo](https://github.com/open-feature/community)
+- For more check out our [community page](https://docs.openfeature.dev/community/)
 
 [openfeature-website]: https://openfeature.dev
