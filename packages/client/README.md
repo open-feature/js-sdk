@@ -10,6 +10,7 @@
 <h2 align="center">OpenFeature Web SDK</h2>
 
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+[![npm version](https://badge.fury.io/js/@openfeature%2Fjs-sdk.svg)](https://www.npmjs.com/package/@openfeature/web-sdk)
 [![Specification](https://img.shields.io/static/v1?label=Specification&message=v0.5.2&color=yellow)](https://github.com/open-feature/spec/tree/v0.5.2)
 
 ## 🧪 This SDK is experimental
