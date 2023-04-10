@@ -55,3 +55,12 @@ Made with [contrib.rocks](https://contrib.rocks).
 [openfeature-website]: https://openfeature.dev
 [hook-interface]: https://open-feature.github.io/js-sdk/interfaces/Hook.html
 [client-side-github-issue]: https://github.com/open-feature/spec/issues/167
+
+## ⭐️ Support the project
+
+- Give this repo a ⭐️!
+- Follow us social media:
+  - Twitter: [@openfeature](https://twitter.com/openfeature)
+  - LinkedIn: [OpenFeature](https://www.linkedin.com/company/openfeature/)
+- Join us on [Slack](https://cloud-native.slack.com/archives/C0344AANLA1)
+- Check out our [community repo](https://github.com/open-feature/community)
