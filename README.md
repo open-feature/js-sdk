@@ -32,7 +32,7 @@ For details, including API documentation, see the respective README files.
 - [Server SDK](./packages/server/README.md), for use in Node.js and similar runtimes.
 - [Client SDK](./packages/client/README.md), for use in the web browser.
 
-Each have slightly different APIs, but shared many underlying types and components
+Each have slightly different APIs, but share many underlying types and components.
 
 ## ⭐️ Support the project
 
