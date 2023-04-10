@@ -158,6 +158,8 @@ class MyLogger implements Logger {
 OpenFeature.setLogger(new MyLogger());
 ```
 
+### Complete API documentation:
+
 See [here](https://open-feature.github.io/js-sdk/modules/OpenFeature_Web_SDK.html) for the complete API documentation.
 
 [openfeature-website]: https://openfeature.dev
