@@ -157,3 +157,5 @@ OpenFeature.setLogger(new MyLogger());
 ```
 
 See [here](https://open-feature.github.io/js-sdk/modules/OpenFeature_JS_SDK.html) for the complete API documentation.
+
+[openfeature-website]: https://openfeature.dev

@@ -52,10 +52,6 @@ Made with [contrib.rocks](https://contrib.rocks).
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fopen-feature%2Fjs-sdk.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fopen-feature%2Fjs-sdk?ref=badge_large)
 
-[openfeature-website]: https://openfeature.dev
-[hook-interface]: https://open-feature.github.io/js-sdk/interfaces/Hook.html
-[client-side-github-issue]: https://github.com/open-feature/spec/issues/167
-
 ## ⭐️ Support the project
 
 - Give this repo a ⭐️!
@@ -64,3 +60,5 @@ Made with [contrib.rocks](https://contrib.rocks).
   - LinkedIn: [OpenFeature](https://www.linkedin.com/company/openfeature/)
 - Join us on [Slack](https://cloud-native.slack.com/archives/C0344AANLA1)
 - Check out our [community repo](https://github.com/open-feature/community)
+
+[openfeature-website]: https://openfeature.dev
