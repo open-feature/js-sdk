@@ -12,7 +12,7 @@
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Specification](https://img.shields.io/static/v1?label=Specification&message=v0.5.2&color=yellow)](https://github.com/open-feature/spec/tree/v0.5.2)
 
-## 👋 Hey there! Thanks for checking out the OpenFeature Web SDK
+## 👋 Hey there! Thanks for checking out the OpenFeature Server SDK
 
 ### What is OpenFeature?
 
