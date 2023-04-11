@@ -130,11 +130,15 @@ export default {
     },
     {
       displayName: 'client-e2e',
-      testEnvironment: 'jsdom',
+      testEnvironment: 'node',
       preset: 'ts-jest',
       testMatch: ['<rootDir>/packages/client/integration/**/*.spec.ts'],
       modulePathIgnorePatterns: ['.*/node-modules/'],
       setupFiles: ['<rootDir>/packages/client/integration/step-definitions/setup.ts'],
+      moduleNameMapper: {
+        '^uuid$': require.resolve('uuid'),
+        '^(.*)\\.js$': ['$1', '$1.js']
+      },
     },
   ],
 
