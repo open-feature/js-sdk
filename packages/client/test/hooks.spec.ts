@@ -1,4 +1,4 @@
-import { Provider, ResolutionDetails, Client, FlagValueType, EvaluationContext, Hook,   ErrorCode, FlagNotFoundError, GeneralError } from '../src';
+import { Provider, ResolutionDetails, Client, FlagValueType, EvaluationContext, Hook, GeneralError } from '../src';
 import { OpenFeature } from '../src/open-feature';
 
 const BOOLEAN_VALUE = true;
