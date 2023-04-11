@@ -130,7 +130,7 @@ export default {
     },
     {
       displayName: 'client-e2e',
-      testEnvironment: 'node',
+      testEnvironment: 'jsdom',
       preset: 'ts-jest',
       testMatch: ['<rootDir>/packages/client/integration/**/*.spec.ts'],
       modulePathIgnorePatterns: ['.*/node-modules/'],
