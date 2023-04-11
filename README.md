@@ -1,52 +1,52 @@
-# OpenFeature JavaScript SDKs
+<!-- markdownlint-disable MD033 -->
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/open-feature/community/0e23508c163a6a1ac8c0ced3e4bd78faafe627c7/assets/logo/horizontal/white/openfeature-horizontal-white.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/open-feature/community/0e23508c163a6a1ac8c0ced3e4bd78faafe627c7/assets/logo/horizontal/black/openfeature-horizontal-black.svg">
+    <img align="center" alt="OpenFeature Logo">
+  </picture>
+</p>
 
-[![a](https://img.shields.io/badge/slack-%40cncf%2Fopenfeature-brightgreen?style=flat&logo=slack)](https://cloud-native.slack.com/archives/C0344AANLA1)
+<h2 align="center">OpenFeature JavaScript SDKs</h2>
+
 [![Known Vulnerabilities](https://snyk.io/test/github/open-feature/js-sdk/badge.svg)](https://snyk.io/test/github/open-feature/js-sdk)
 [![codecov](https://codecov.io/gh/open-feature/js-sdk/branch/main/graph/badge.svg?token=3DC5XOEHMY)](https://codecov.io/gh/open-feature/js-sdk)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/6594/badge)](https://bestpractices.coreinfrastructure.org/projects/6594)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fopen-feature%2Fjs-sdk.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fopen-feature%2Fjs-sdk?ref=badge_shield)
 
-This repository contains the JavaScript implementations of [OpenFeature][openfeature-website], a vendor-agnostic abstraction library for evaluating feature flags.
+## 👋 Hey there! Thanks for checking out the OpenFeature JavaScript SDKs
 
-We support multiple data types for flags (numbers, strings, booleans, objects) as well as hooks, which can alter the lifecycle of a flag evaluation.
+### What is OpenFeature?
 
-## Server
+[OpenFeature][openfeature-website] is an open standard that provides a vendor-agnostic, community-driven API for feature flagging that works with your favorite feature flag management tool.
 
----
+### Why standardize feature flags?
 
-[![npm version](https://badge.fury.io/js/@openfeature%2Fjs-sdk.svg)](https://badge.fury.io/js/@openfeature%2Fjs-sdk)
-[![v0.5.1](https://img.shields.io/static/v1?label=Specification&message=v0.5.1&color=yellow)](https://github.com/open-feature/spec/tree/v0.5.1)
+Standardizing feature flags unifies tools and vendors behind a common interface which avoids vendor lock-in at the code level. Additionally, it offers a framework for building extensions and integrations and allows providers to focus on their unique value proposition.
 
-<p align="center">
-  <strong>
-    <!-- TODO: add direct link to server module when published -->
-    <a href="https://docs.openfeature.dev/docs/tutorials/getting-started/node">Getting Started<a/>
-    &nbsp;&nbsp;&bull;&nbsp;&nbsp;
-    <a href="https://open-feature.github.io/js-sdk">API Documentation<a/>
-  </strong>
-</p>
+## 🔧 Components
 
----
+This repository contains both the server-side JS and web-browser SDKs.
+For details, including API documentation, see the respective README files.
 
-### Installation
+- [Server SDK](./packages/server/README.md), for use in Node.js and similar runtimes.
+- [Client SDK](./packages/client/README.md), for use in the web browser.
 
-```shell
-npm install @openfeature/js-sdk
-```
+Each have slightly different APIs, but share many underlying types and components.
 
-or
+## ⭐️ Support the project
 
-```shell
-yarn add @openfeature/js-sdk
-```
+- Give this repo a ⭐️!
+- [Contribute](#-contributing) to this repo
+- Follow us social media:
+  - Twitter: [@openfeature](https://twitter.com/openfeature)
+  - LinkedIn: [OpenFeature](https://www.linkedin.com/company/openfeature/)
+- Join us on [Slack](https://cloud-native.slack.com/archives/C0344AANLA1)
+- For more check out our [community page](https://docs.openfeature.dev/community/)
 
-See [README.md](./packages/server/README.md)
+## 🤝 Contributing
 
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to contribute to the OpenFeature project.
-
-Our community meetings are held regularly and open to everyone. Check the [OpenFeature community calendar](https://calendar.google.com/calendar/u/0?cid=MHVhN2kxaGl2NWRoMThiMjd0b2FoNjM2NDRAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ) for specific dates and the Zoom meeting links.
+Interested in contributing? Great, we'd love your help! To get started, take a look at the [CONTRIBUTING](CONTRIBUTING.md) guide.
 
 ### Thanks to everyone that has already contributed
 
@@ -56,13 +56,10 @@ Our community meetings are held regularly and open to everyone. Check the [OpenF
 
 Made with [contrib.rocks](https://contrib.rocks).
 
-## License
+## 📜 License
 
 [Apache License 2.0](LICENSE)
 
-[openfeature-website]: https://openfeature.dev
-[hook-interface]: https://open-feature.github.io/js-sdk/interfaces/Hook.html
-[client-side-github-issue]: https://github.com/open-feature/spec/issues/167
-
-
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fopen-feature%2Fjs-sdk.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fopen-feature%2Fjs-sdk?ref=badge_large)
+
+[openfeature-website]: https://openfeature.dev
