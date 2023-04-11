@@ -1,24 +1,22 @@
-import { Provider, ResolutionDetails, Client, FlagValueType, EvaluationContext, Hook } from '../src';
+import { Provider, ResolutionDetails, Client, FlagValueType, EvaluationContext, Hook, GeneralError } from '../src';
 import { OpenFeature } from '../src/open-feature';
 
 const BOOLEAN_VALUE = true;
 
 const BOOLEAN_VARIANT = `${BOOLEAN_VALUE}`;
 const REASON = 'mocked-value';
-const ERROR_REASON = 'error';
-const ERROR_CODE = 'MOCKED_ERROR';
 
 // a mock provider with some jest spies
 const MOCK_PROVIDER: Provider = {
   metadata: {
     name: 'mock-hooks-success',
   },
-  resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
-    return Promise.resolve({
+  resolveBooleanEvaluation: jest.fn((): ResolutionDetails<boolean> => {
+    return {
       value: BOOLEAN_VALUE,
       variant: BOOLEAN_VARIANT,
       reason: REASON,
-    });
+    };
   }),
 } as unknown as Provider;
 
@@ -27,11 +25,8 @@ const MOCK_ERROR_PROVIDER: Provider = {
   metadata: {
     name: 'mock-hooks-error',
   },
-  resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
-    return Promise.reject({
-      reason: ERROR_REASON,
-      errorCode: ERROR_CODE,
-    });
+  resolveBooleanEvaluation: jest.fn((): ResolutionDetails<boolean> => {
+    throw new GeneralError();
   }),
 } as unknown as Provider;
 
@@ -56,7 +51,7 @@ describe('Hooks', () => {
 
   describe('Requirement 4.1.1, 4.1.2', () => {
     it('must provide flagKey, flagType, evaluationContext, defaultValue, client metadata and provider metadata', (done) => {
-      client.getBooleanValue(FLAG_KEY, false, undefined, {
+      client.getBooleanValue(FLAG_KEY, false, {
         hooks: [
           {
             before: (hookContext) => {
@@ -80,7 +75,7 @@ describe('Hooks', () => {
 
   describe('Requirement 4.1.3', () => {
     it('flagKey, flagType, defaultValue must be immutable', (done) => {
-      client.getBooleanValue(FLAG_KEY, false, undefined, {
+      client.getBooleanValue(FLAG_KEY, false,  {
         hooks: [
           {
             before: (hookContext) => {
@@ -108,7 +103,7 @@ describe('Hooks', () => {
   describe('Requirement 4.1.4', () => {
     describe('before', () => {
       it('evaluationContext must be mutable', (done) => {
-        client.getBooleanValue(FLAG_KEY, false, undefined, {
+        client.getBooleanValue(FLAG_KEY, false,{
           hooks: [
             {
               before: (hookContext) => {
@@ -129,7 +124,7 @@ describe('Hooks', () => {
 
     describe('after', () => {
       it('evaluationContext must be immutable', (done) => {
-        client.getBooleanValue(FLAG_KEY, false, undefined, {
+        client.getBooleanValue(FLAG_KEY, false, {
           hooks: [
             {
               after: (hookContext) => {
@@ -152,7 +147,7 @@ describe('Hooks', () => {
 
   describe('4.3.2', () => {
     it('"before" must run before flag resolution', async () => {
-      await client.getBooleanValue(FLAG_KEY, false, undefined, {
+      await client.getBooleanValue(FLAG_KEY, false, {
         hooks: [
           {
             before: () => {
@@ -177,7 +172,7 @@ describe('Hooks', () => {
 
   describe('Requirement 4.3.3', () => {
     it('EvaluationContext must be passed to next "before" hook', (done) => {
-      client.getBooleanValue(FLAG_KEY, false, undefined, {
+      client.getBooleanValue(FLAG_KEY, false, {
         hooks: [
           {
             before: () => {
@@ -202,67 +197,9 @@ describe('Hooks', () => {
     });
   });
 
-  describe('Requirement 4.3.4', () => {
-    it('When before hooks have finished executing, any resulting evaluation context MUST be merged with the existing evaluation context in the following order: before-hook (highest precedence), invocation, client, api (lowest precedence).', async () => {
-      const globalProp434 = 'globalProp';
-      const globalPropToOverwrite434 = 'globalPropToOverwrite';
-      const clientProp434 = 'clientProp';
-      const clientPropToOverwrite434 = 'clientPropToOverwrite';
-      const invocationProp434 = 'invocationProp';
-      const invocationPropToOverwrite434 = 'invocationPropToOverwrite';
-      const hookProp434 = 'hookProp';
-
-      OpenFeature.setContext({
-        [globalProp434]: true,
-        [globalPropToOverwrite434]: false,
-      });
-      const clientContext = {
-        [clientProp434]: true,
-        [clientPropToOverwrite434]: false,
-        [globalPropToOverwrite434]: true,
-      };
-      const invocationContext = {
-        [invocationProp434]: true,
-        [invocationPropToOverwrite434]: false,
-        [clientPropToOverwrite434]: true,
-      };
-      const hookContext = {
-        [invocationPropToOverwrite434]: true,
-        [hookProp434]: true,
-      };
-
-      const localClient = OpenFeature.getClient('merge-test', 'test', clientContext);
-
-      await localClient.getBooleanValue(FLAG_KEY, false, invocationContext, {
-        hooks: [
-          {
-            before: () => {
-              return hookContext;
-            },
-          },
-        ],
-      });
-      expect(MOCK_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.anything(),
-        // ensure correct properties were maintained/overwritten
-        expect.objectContaining({
-          [globalProp434]: true,
-          [globalPropToOverwrite434]: true,
-          [clientProp434]: true,
-          [clientPropToOverwrite434]: true,
-          [invocationProp434]: true,
-          [invocationPropToOverwrite434]: true,
-          [hookProp434]: true,
-        }),
-        expect.anything()
-      );
-    });
-  });
-
   describe('Requirement 4.3.5', () => {
     it('"after" must run after flag evaluation', (done) => {
-      client.getBooleanValue(FLAG_KEY, false, undefined, {
+      client.getBooleanValue(FLAG_KEY, false, {
         hooks: [
           {
             after: () => {
@@ -287,7 +224,7 @@ describe('Hooks', () => {
 
     describe('Requirement 4.3.6', () => {
       it('"error" must run if any errors occur', (done) => {
-        client.getBooleanValue(FLAG_KEY, false, undefined, {
+        client.getBooleanValue(FLAG_KEY, false, {
           hooks: [
             {
               error: () => {
@@ -327,7 +264,7 @@ describe('Hooks', () => {
           },
         };
 
-        client.getBooleanValue(FLAG_KEY, false, undefined, {
+        client.getBooleanValue(FLAG_KEY, false, {
           hooks: [afterAndFinallyHook],
         });
       });
@@ -350,7 +287,7 @@ describe('Hooks', () => {
           },
         };
 
-        client.getBooleanValue(FLAG_KEY, false, undefined, {
+        client.getBooleanValue(FLAG_KEY, false, {
           hooks: [errorAndFinallyHook],
         });
       });
@@ -417,12 +354,12 @@ describe('Hooks', () => {
             }),
           },
         ],
-        resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
-          return Promise.resolve({
+        resolveBooleanEvaluation: jest.fn((): ResolutionDetails<boolean> => {
+          return {
             value: BOOLEAN_VALUE,
             variant: BOOLEAN_VARIANT,
             reason: REASON,
-          });
+          };
         }),
       } as unknown as Provider;
 
@@ -433,7 +370,7 @@ describe('Hooks', () => {
       OpenFeature.addHooks(globalBeforeHook);
       client.addHooks(clientBeforeHook);
 
-      client.getBooleanValue(FLAG_KEY, false, undefined, {
+      client.getBooleanValue(FLAG_KEY, false, {
         hooks: [invocationBeforeHook],
       });
     });
@@ -498,12 +435,12 @@ describe('Hooks', () => {
             }),
           },
         ],
-        resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
-          return Promise.resolve({
+        resolveBooleanEvaluation: jest.fn((): ResolutionDetails<boolean> => {
+          return {
             value: BOOLEAN_VALUE,
             variant: BOOLEAN_VARIANT,
             reason: REASON,
-          });
+          };
         }),
       } as unknown as Provider;
 
@@ -514,7 +451,7 @@ describe('Hooks', () => {
       OpenFeature.addHooks(globalAfterHook);
       client.addHooks(clientAfterHook);
 
-      client.getBooleanValue(FLAG_KEY, false, undefined, {
+      client.getBooleanValue(FLAG_KEY, false, {
         hooks: [invocationAfterHook],
       });
     });
@@ -580,11 +517,8 @@ describe('Hooks', () => {
             }),
           },
         ],
-        resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
-          return Promise.reject({
-            reason: ERROR_REASON,
-            errorCode: ERROR_CODE,
-          });
+        resolveBooleanEvaluation: jest.fn((): ResolutionDetails<boolean> => {
+          throw new GeneralError();
         }),
       } as unknown as Provider;
 
@@ -595,7 +529,7 @@ describe('Hooks', () => {
       OpenFeature.addHooks(globalErrorHook);
       client.addHooks(clientErrorHook);
 
-      client.getBooleanValue(FLAG_KEY, false, undefined, {
+      client.getBooleanValue(FLAG_KEY, false, {
         hooks: [invocationErrorHook],
       });
     });
@@ -661,11 +595,8 @@ describe('Hooks', () => {
             }),
           },
         ],
-        resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
-          return Promise.reject({
-            reason: ERROR_REASON,
-            errorCode: ERROR_CODE,
-          });
+        resolveBooleanEvaluation: jest.fn((): ResolutionDetails<boolean> => {
+          throw new GeneralError();
         }),
       } as unknown as Provider;
       OpenFeature.setProvider(errorProviderWithHooks);
@@ -675,7 +606,7 @@ describe('Hooks', () => {
       OpenFeature.addHooks(globalFinallyHook);
       client.addHooks(clientFinallyHook);
 
-      client.getBooleanValue(FLAG_KEY, false, undefined, {
+      client.getBooleanValue(FLAG_KEY, false, {
         hooks: [invocationFinallyHook],
       });
     });
@@ -704,7 +635,7 @@ describe('Hooks', () => {
         },
       };
 
-      client.getBooleanValue(FLAG_KEY, false, undefined, {
+      client.getBooleanValue(FLAG_KEY, false, {
         hooks: [secondFinallyHook, firstFinallyHook], // remember error hooks run in reverse order
       });
     });
@@ -733,7 +664,7 @@ describe('Hooks', () => {
         },
       };
 
-      client.getBooleanValue(FLAG_KEY, false, undefined, {
+      client.getBooleanValue(FLAG_KEY, false, {
         hooks: [secondErrorHook, firstErrorHook], // remember error hooks run in reverse order
       });
     });
@@ -759,7 +690,7 @@ describe('Hooks', () => {
         }),
       };
 
-      client.getBooleanValue(FLAG_KEY, false, undefined, {
+      client.getBooleanValue(FLAG_KEY, false, {
         hooks: [beforeAndErrorHook],
       });
     });
@@ -783,7 +714,7 @@ describe('Hooks', () => {
         }),
       };
 
-      client.getBooleanValue(FLAG_KEY, false, undefined, {
+      client.getBooleanValue(FLAG_KEY, false, {
         hooks: [afterAndErrorHook],
       });
     });
@@ -816,7 +747,7 @@ describe('Hooks', () => {
         }),
       };
 
-      client.getBooleanValue(FLAG_KEY, false, undefined, {
+      client.getBooleanValue(FLAG_KEY, false, {
         hooks: [clientBeforeHook, beforeAndErrorHook],
       });
     });
@@ -828,7 +759,7 @@ describe('Hooks', () => {
       OpenFeature.clearHooks();
       client.clearHooks();
 
-      client.getBooleanValue(FLAG_KEY, false, undefined, {
+      client.getBooleanValue(FLAG_KEY, false, {
         hooks: [
           {
             before: (_, hookHints) => {
@@ -868,7 +799,7 @@ describe('Hooks', () => {
       OpenFeature.clearHooks();
       client.clearHooks();
 
-      client.getBooleanValue(FLAG_KEY, false, undefined, {
+      client.getBooleanValue(FLAG_KEY, false, {
         hooks: [
           {
             before: (_, hookHints) => {
@@ -896,78 +827,4 @@ describe('Hooks', () => {
     });
   });
 
-  describe('async hooks', () => {
-    describe('before, after, finally', () => {
-      it('should be awaited, run in order', (done) => {
-        OpenFeature.setProvider(MOCK_PROVIDER);
-
-        const asyncBeforeAfterFinally: Hook = {
-          before: jest.fn(() => {
-            return new Promise<EvaluationContext>((resolve) =>
-              setTimeout(() => {
-                resolve({ beforeRan: true });
-              }, 100)
-            );
-          }),
-          after: jest.fn((hookContext) => {
-            try {
-              expect(asyncBeforeAfterFinally.before).toHaveBeenCalled();
-              expect(hookContext.context.beforeRan).toBeTruthy();
-              return Promise.resolve();
-            } catch (err) {
-              done(err);
-            }
-          }),
-          finally: () => {
-            try {
-              expect(asyncBeforeAfterFinally.after).toHaveBeenCalled();
-              done();
-            } catch (err) {
-              done(err);
-            }
-          },
-        };
-
-        client.getBooleanValue(FLAG_KEY, false, undefined, {
-          hooks: [asyncBeforeAfterFinally],
-        });
-      });
-    });
-
-    describe('before, error, finally', () => {
-      it('should be awaited, run in order', (done) => {
-        OpenFeature.setProvider(MOCK_PROVIDER);
-
-        const asyncBeforeErrorFinally = {
-          before: jest.fn(() => {
-            return new Promise<EvaluationContext>((resolve, reject) =>
-              setTimeout(() => {
-                reject();
-              }, 100)
-            );
-          }),
-          error: jest.fn(() => {
-            try {
-              expect(asyncBeforeErrorFinally.before).toHaveBeenCalled();
-            } catch (err) {
-              done(err);
-            }
-            return Promise.resolve();
-          }),
-          finally: () => {
-            try {
-              expect(asyncBeforeErrorFinally.error).toHaveBeenCalled();
-              done();
-            } catch (err) {
-              done(err);
-            }
-          },
-        };
-
-        client.getBooleanValue(FLAG_KEY, false, undefined, {
-          hooks: [asyncBeforeErrorFinally],
-        });
-      });
-    });
-  });
 });

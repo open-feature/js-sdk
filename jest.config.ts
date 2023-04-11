@@ -111,15 +111,23 @@ export default {
     {
       displayName: 'server',
       testEnvironment: 'node',
-      preset: 'ts-jest',      
+      preset: 'ts-jest',
       testMatch: [
         '<rootDir>/packages/server/test/**/*.spec.ts'
       ]
     },
     {
+      displayName: 'client',
+      testEnvironment: 'node',
+      preset: 'ts-jest',
+      testMatch: [
+        '<rootDir>/packages/client/test/**/*.spec.ts'
+      ]
+    },
+    {
       displayName: 'server-e2e',
       testEnvironment: 'node',
-      preset: 'ts-jest',      
+      preset: 'ts-jest',
       testMatch: [
         '<rootDir>/packages/server/integration/**/*.spec.ts'
       ],
