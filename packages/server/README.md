@@ -43,10 +43,10 @@ yarn add @openfeature/js-sdk
 
 ## 🌟 Features:
 
-- support for various [providers](https://docs.openfeature.dev/docs/reference/concepts/provider)
-- easy integration and extension via [hooks](https://docs.openfeature.dev/docs/reference/concepts/hooks)
+- support for various [providers](https://openfeature.dev/docs/reference/concepts/provider)
+- easy integration and extension via [hooks](https://openfeature.dev/docs/reference/concepts/hooks)
 - handle flags of any type: bool, string, numeric and object
-- [context-aware](https://docs.openfeature.dev/docs/reference/concepts/evaluation-context) evaluation
+- [context-aware](https://openfeature.dev/docs/reference/concepts/evaluation-context) evaluation
 
 ## 🚀 Usage:
 
@@ -68,7 +68,7 @@ const boolValue = await client.getBooleanValue('boolFlag', false);
 ### Context-aware evaluation:
 
 Sometimes the value of a flag must take into account some dynamic criteria about the application or user, such as the user location, IP, email address, or the location of the server.
-In OpenFeature, we refer to this as [`targeting`](https://docs.openfeature.dev/specification/glossary#targeting).
+In OpenFeature, we refer to this as [`targeting`](https://openfeature.dev/specification/glossary#targeting).
 If the flag system you're using supports targeting, you can provide the input data using the `EvaluationContext`.
 
 ```typescript
@@ -116,7 +116,7 @@ class MyProvider implements Provider {
   }
 ```
 
-See [here](https://docs.openfeature.dev/docs/reference/technologies/server/javascript) for a catalog of available providers.
+See [here](https://openfeature.dev/docs/reference/technologies/server/javascript) for a catalog of available providers.
 
 ### Hooks:
 
@@ -134,7 +134,7 @@ export class GlobalDebugHook implements Hook {
 }
 ```
 
-See [here](https://docs.openfeature.dev/docs/reference/technologies/server/javascript) for a catalog of available hooks.
+See [here](https://openfeature.dev/docs/reference/technologies/server/javascript) for a catalog of available hooks.
 
 ### Logging:
 

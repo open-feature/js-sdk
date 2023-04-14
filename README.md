@@ -42,7 +42,7 @@ Each have slightly different APIs, but share many underlying types and component
   - Twitter: [@openfeature](https://twitter.com/openfeature)
   - LinkedIn: [OpenFeature](https://www.linkedin.com/company/openfeature/)
 - Join us on [Slack](https://cloud-native.slack.com/archives/C0344AANLA1)
-- For more check out our [community page](https://docs.openfeature.dev/community/)
+- For more check out our [community page](https://openfeature.dev/community/)
 
 ## 🤝 Contributing
 
