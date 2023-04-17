@@ -43,12 +43,51 @@ defineFeature(feature, (test) => {
       /^a boolean flag with key "(.*)" is evaluated with default value "(.*)"$/,
       async (key: string, defaultValue: string) => {
         flagKey = key;
-        value = await client.getBooleanValue(flagKey, defaultValue === 'true');
+        value = client.getBooleanValue(flagKey, defaultValue === 'true');
       }
     );
 
     then(/^the resolved boolean value should be "(.*)"$/, (expectedValue: string) => {
       expect(value).toEqual(expectedValue === 'true');
+    });
+  });
+
+  test('Resolves string value', ({ given, when, then }) => {
+    let flagKey: string;
+    let value: string;
+
+    givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
+
+    when(
+      /^a string flag with key "(.*)" is evaluated with default value "(.*)"$/,
+      async (key: string, defaultValue: string) => {
+        flagKey = key;
+        value = client.getStringValue(flagKey, defaultValue);
+      }
+    );
+
+    then(/^the resolved string value should be "(.*)"$/, (expectedValue: string) => {
+      expect(value).toEqual(expectedValue);
+    });
+  });
+
+  test('Resolves integer value', ({ given, when, then }) => {
+    let flagKey: string;
+    let value: number;
+
+    givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
+
+    when(
+      /^an integer flag with key "(.*)" is evaluated with default value (\d+)$/,
+      (key: string, defaultValue: number) => {
+        flagKey = key;
+        value = client.getNumberValue(flagKey, defaultValue);
+      }
+    );
+
+    then(/^the resolved integer value should be (\d+)$/, (expectedStringValue: string) => {
+      const expectedNumberValue = parseInt(expectedStringValue);
+      expect(value).toEqual(expectedNumberValue);
     });
   });
 });
