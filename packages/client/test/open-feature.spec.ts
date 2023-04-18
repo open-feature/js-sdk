@@ -1,6 +1,18 @@
-import { OpenFeatureClient } from '../src/client';
-import { OpenFeature, OpenFeatureAPI } from '../src/open-feature';
-import { Provider,  } from '../src/types';
+import {OpenFeatureClient} from '../src/client';
+import {OpenFeature, OpenFeatureAPI} from '../src/open-feature';
+import {Provider,} from '../src/types';
+
+const MOCK_PROVIDER: Provider = {
+  metadata: {
+    name: 'mock-events-success',
+  },
+  initialize: jest.fn(() => {
+    return Promise.resolve('started');
+  }),
+  onClose: jest.fn(() => {
+    return Promise.resolve('closed');
+  }),
+} as unknown as Provider;
 
 describe('OpenFeature', () => {
   afterEach(() => {
@@ -15,10 +27,28 @@ describe('OpenFeature', () => {
 
   describe('Requirement 1.1.2', () => {
     it('should equal previously set provider', () => {
-      const fakeProvider = { metadata: 'test' } as unknown as Provider;
+      const fakeProvider = {metadata: 'test'} as unknown as Provider;
       OpenFeature.setProvider(fakeProvider);
       expect(OpenFeature.providerMetadata === fakeProvider.metadata).toBeTruthy();
     });
+
+    describe('Requirement 1.1.2.2', () => {
+      it('MUST invoke the `initialize` function on the newly registered provider before using it to resolve flag values', () => {
+        OpenFeature.setProvider(MOCK_PROVIDER);
+        expect(OpenFeature['_provider']).toBe(MOCK_PROVIDER);
+        expect(MOCK_PROVIDER.initialize).toHaveBeenCalled();
+      });
+    });
+    describe('Requirement 1.1.2.3', () => {
+      it('MUST invoke the `shutdown` function on the previously registered provider once it\'s no longer being used to resolve flag values.', () => {
+        const fakeProvider = {metadata: 'test'} as unknown as Provider;
+        OpenFeature.setProvider(MOCK_PROVIDER);
+        OpenFeature.setProvider(fakeProvider);
+        expect(MOCK_PROVIDER.onClose).toHaveBeenCalled();
+      });
+    });
+
+
   });
 
   describe('Requirement 1.1.3', () => {
@@ -51,12 +81,22 @@ describe('OpenFeature', () => {
         .clearHooks()
         .setLogger(console)
         .getClient();
-        
-  
+
+
       expect(client).toBeDefined();
     });
 
-    
+
   });
 
+  describe('Requirement 1.6.1', () => {
+    it('MUST define a `shutdown` function, which, when called, must call the respective `shutdown` function on the active provider', () => {
+      OpenFeature.setProvider(MOCK_PROVIDER);
+      expect(OpenFeature['_provider']).toBe(MOCK_PROVIDER);
+      OpenFeature.close().then(
+        () => {
+          expect(MOCK_PROVIDER.onClose).toHaveBeenCalled();
+        });
+    });
+  });
 });
