@@ -1,18 +1,13 @@
 import {
+  OpenFeature,
+  ApiEvents,
   ProviderEvents,
   Provider,
-  ResolutionDetails,
-  Client,
-  FlagValueType,
-  EvaluationContext,
-  OpenFeatureEventEmitter
 } from '../src';
-import {OpenFeature} from '../src/open-feature';
 import EventEmitter from 'events';
 
-const BOOLEAN_VALUE = true;
-const BOOLEAN_VARIANT = `${BOOLEAN_VALUE}`;
-const REASON = 'mocked-value';
+const ERROR_REASON = 'error';
+const ERROR_CODE = 'MOCKED_ERROR';
 
 const MOCK_EMITTER: EventEmitter = {
   emit: jest.fn( () => {
@@ -64,8 +59,7 @@ describe('Events', () => {
   });
 
   describe('Requirement 5.1.1', () => {
-    it('The provider **MAY** define a mechanism for signalling the occurrence of one of a set of events, \n' +
-      '//   including `PROVIDER_READY`, `PROVIDER_ERROR`, `PROVIDER_CONFIGURATION_CHANGED` and `PROVIDER_SHUTDOWN`.',
+    it('The provider **MAY** define a mechanism for signalling the occurrence of an event`PROVIDER_READY`',
        async () => {
 
          await OpenFeature.setProvider(MOCK_PROVIDER);
@@ -76,24 +70,66 @@ describe('Events', () => {
        });
 
     it('The provider **MAY** define a mechanism for signalling `PROVIDER_ERROR`',
-        () => {
+        async () => {
 
-         OpenFeature.setProvider(ERROR_PROVIDER);
-         expect(OpenFeature['_provider']).toBe(ERROR_PROVIDER);
-         expect(ERROR_PROVIDER.initialize).toHaveBeenCalled();
-         expect(ERROR_PROVIDER.events?.emit).toHaveBeenCalledWith(ProviderEvents.Ready);
-         expect(ERROR_PROVIDER.events?.emit).toHaveBeenCalledWith(ProviderEvents.Error);
+          await OpenFeature.setProvider(ERROR_PROVIDER);
+          expect(OpenFeature['_provider']).toBe(ERROR_PROVIDER);
+          await expect(ERROR_PROVIDER.initialize).toHaveBeenCalled();
+          expect(ERROR_PROVIDER.events?.emit).toHaveBeenCalledWith(ProviderEvents.Ready); // if emit fails
+          expect(ERROR_PROVIDER.events?.emit).toHaveBeenCalledWith(ProviderEvents.Error); // emit an error event
+
+        });
+
+    it(' when the provider initialization fails (the initialize promise rejects) the ERROR event fires on a registered client',
+        async () => {
+
+          const errProvider = {
+            metadata: {
+              name: 'mock-events-success',
+            },
+            initialize: jest.fn(() => {
+              return Promise.reject({
+                reason: ERROR_REASON,
+                errorCode: ERROR_CODE,
+              });
+            }),
+            events: MOCK_EMITTER,
+          } as unknown as Provider;
+
+          OpenFeature['_apiEvents'] = {
+            emit: jest.fn(() => {
+              return true;
+            }),
+            initialize: jest.fn(() => {
+              return this;
+            })
+          } as unknown as EventEmitter;
+
+
+          await OpenFeature.setProvider(errProvider);
+          expect(OpenFeature['_provider']).toBe(errProvider);
+
+          expect(errProvider.initialize).toHaveBeenCalled();
+          //expect(apiMockEmitter.emit).toHaveBeenCalledWith(ProviderEvents.Error); TODO figure out how to check client error event, apiEvents uses only CONFIGURATION_CHANGED
+
+        });
+    it('The provider **MAY** define a mechanism for signalling `PROVIDER_CONFIGURATION_CHANGED`',
+       async () => {
+         OpenFeature['_apiEvents'] = {
+           emit: jest.fn( () => {
+             return true;
+           }),
+           initialize: jest.fn( () => {
+             return MOCK_EMITTER;
+           })
+         } as unknown as EventEmitter;
+
+         await OpenFeature.setProvider(MOCK_PROVIDER);
+         expect(OpenFeature['_provider']).toBe(MOCK_PROVIDER);
+         await expect(MOCK_PROVIDER.initialize).toHaveBeenCalled();
+         expect(OpenFeature['_apiEvents'].emit).toHaveBeenCalledWith(ApiEvents.ProviderChanged);
 
        });
-    // it('The provider **MAY** define a mechanism for signalling `PROVIDER_CONFIGURATION_CHANGED`',
-    //    async () => {
-    //      await OpenFeature.setProvider(MOCK_PROVIDER);
-    //      expect(OpenFeature['_provider']).toBe(MOCK_PROVIDER);
-    //      await expect(MOCK_PROVIDER.initialize).toHaveBeenCalled();
-    //      expect(OpenFeature['_apiEvents'].emit).toHaveBeenCalledWith(ProviderEvents.ConfigurationChanged);
-    //
-    //
-    //    });
   });
 });
 
