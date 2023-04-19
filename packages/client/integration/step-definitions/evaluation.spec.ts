@@ -35,15 +35,13 @@ defineFeature(feature, (test) => {
 
   test('Resolves boolean value', ({ given, when, then }) => {
     let value: boolean;
-    let flagKey: string;
 
     givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
 
     when(
       /^a boolean flag with key "(.*)" is evaluated with default value "(.*)"$/,
       async (key: string, defaultValue: string) => {
-        flagKey = key;
-        value = client.getBooleanValue(flagKey, defaultValue === 'true');
+        value = client.getBooleanValue(key, defaultValue === 'true');
       }
     );
 
@@ -53,7 +51,6 @@ defineFeature(feature, (test) => {
   });
 
   test('Resolves string value', ({ given, when, then }) => {
-    let flagKey: string;
     let value: string;
 
     givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
@@ -61,8 +58,7 @@ defineFeature(feature, (test) => {
     when(
       /^a string flag with key "(.*)" is evaluated with default value "(.*)"$/,
       async (key: string, defaultValue: string) => {
-        flagKey = key;
-        value = client.getStringValue(flagKey, defaultValue);
+        value = client.getStringValue(key, defaultValue);
       }
     );
 
@@ -72,7 +68,6 @@ defineFeature(feature, (test) => {
   });
 
   test('Resolves integer value', ({ given, when, then }) => {
-    let flagKey: string;
     let value: number;
 
     givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
@@ -80,8 +75,7 @@ defineFeature(feature, (test) => {
     when(
       /^an integer flag with key "(.*)" is evaluated with default value (\d+)$/,
       (key: string, defaultValue: number) => {
-        flagKey = key;
-        value = client.getNumberValue(flagKey, defaultValue);
+        value = client.getNumberValue(key, defaultValue);
       }
     );
 
@@ -89,5 +83,41 @@ defineFeature(feature, (test) => {
       const expectedNumberValue = parseInt(expectedStringValue);
       expect(value).toEqual(expectedNumberValue);
     });
+  });
+
+  // test('Resolves float value', ({ given, when, then }) => {
+  //   let value: number;
+  //   givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
+  //
+  //   when(
+  //     /^a float flag with key "(.*)" is evaluated with default value (\d+)$/,
+  //     (key: string, defaultValue: number) => {
+  //       value = client.getNumberValue(key, defaultValue);
+  //     }
+  //   );
+  //
+  //   then(/^the resolved float value should be (\d+)$/, (expectedStringValue: string) => {
+  //     const expectedNumberValue = parseInt(expectedStringValue);
+  //     expect(value).toEqual(expectedNumberValue);
+  //   });
+  // });
+
+  test('Resolves object value', ({ given, when, then }) => {
+    let value: JsonValue;
+    givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
+
+    when(/^an object flag with key "(.*)" is evaluated with a null default value$/, (key: string) => {
+      value = client.getObjectValue<JsonValue>(key, {});
+    });
+
+    then(
+      /^the resolved object value should be contain fields "(.*)", "(.*)", and "(.*)", with values "(.*)", "(.*)" and (\d+), respectively$/,
+      (field1: string, field2: string, field3: string, boolVal: string, strVal: string, intVal: string) => {
+        const jsonObject = value as JsonObject;
+        expect(jsonObject[field1]).toEqual(boolVal === 'true');
+        expect(jsonObject[field2]).toEqual(strVal);
+        expect(jsonObject[field3]).toEqual(Number.parseInt(intVal));
+      }
+    );
   });
 });
