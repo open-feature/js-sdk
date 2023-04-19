@@ -85,22 +85,22 @@ defineFeature(feature, (test) => {
     });
   });
 
-  // test('Resolves float value', ({ given, when, then }) => {
-  //   let value: number;
-  //   givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
-  //
-  //   when(
-  //     /^a float flag with key "(.*)" is evaluated with default value (\d+)$/,
-  //     (key: string, defaultValue: number) => {
-  //       value = client.getNumberValue(key, defaultValue);
-  //     }
-  //   );
-  //
-  //   then(/^the resolved float value should be (\d+)$/, (expectedStringValue: string) => {
-  //     const expectedNumberValue = parseInt(expectedStringValue);
-  //     expect(value).toEqual(expectedNumberValue);
-  //   });
-  // });
+  test('Resolves float value', ({ given, when, then }) => {
+    let value: number;
+
+    givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
+
+    when(
+      /^a float flag with key "(.*)" is evaluated with default value (\d+\.?\d*)$/,
+      (key: string, defaultValue: string) => {
+        value = client.getNumberValue(key, Number.parseFloat(defaultValue));
+      }
+    );
+
+    then(/^the resolved float value should be (\d+\.?\d*)$/, (expectedValue: string) => {
+      expect(value).toEqual(Number.parseFloat(expectedValue));
+    });
+  });
 
   test('Resolves object value', ({ given, when, then }) => {
     let value: JsonValue;
