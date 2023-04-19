@@ -246,7 +246,7 @@ defineFeature(feature, (test) => {
 
     when(
       /^context contains keys "(.*)", "(.*)", "(.*)", "(.*)" with values "(.*)", "(.*)", (\d+), "(.*)"$/,
-      (
+      async (
         stringField1: string,
         stringField2: string,
         intField: string,
@@ -260,19 +260,22 @@ defineFeature(feature, (test) => {
         context[stringField2] = stringValue2;
         context[intField] = Number.parseInt(intValue);
         context[boolField] = boolValue === 'true';
+
+        await OpenFeature.setContext(context);
       }
     );
 
     and(/^a flag with key "(.*)" is evaluated with default value "(.*)"$/, (key: string, defaultValue: string) => {
       flagKey = key;
-      value = client.getStringValue(flagKey, defaultValue, context);
+      value = client.getStringValue(flagKey, defaultValue);
     });
 
     then(/^the resolved string response should be "(.*)"$/, (expectedValue: string) => {
       expect(value).toEqual(expectedValue);
     });
 
-    and(/^the resolved flag value is "(.*)" when the context is empty$/, (expectedValue) => {
+    and(/^the resolved flag value is "(.*)" when the context is empty$/, async (expectedValue) => {
+      await OpenFeature.setContext({});
       const emptyContextValue = client.getStringValue(flagKey, 'nope', {});
       expect(emptyContextValue).toEqual(expectedValue);
     });
