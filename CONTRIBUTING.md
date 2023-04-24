@@ -33,8 +33,13 @@ docker run -p 8013:8013 ghcr.io/open-feature/flagd-testbed:latest
 ```
 and then run
 ```
-npm run integration
+npm run integration-server
 ```
+for the server integration tests and
+```
+npm run integration-client
+```
+for the client integration tests.
 
 ### Packaging
 
