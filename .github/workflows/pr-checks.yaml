@@ -35,8 +35,11 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Integration
-        run: npm run integration
+      - name: Server SDK integration tests
+        run: npm run integration-server
+
+      - name: Client SDK integration tests
+        run: npm run integration-client
 
       - name: Test
         run: npm run test
