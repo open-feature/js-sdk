@@ -112,30 +112,34 @@ export default {
       displayName: 'server',
       testEnvironment: 'node',
       preset: 'ts-jest',
-      testMatch: [
-        '<rootDir>/packages/server/test/**/*.spec.ts'
-      ]
+      testMatch: ['<rootDir>/packages/server/test/**/*.spec.ts'],
     },
     {
       displayName: 'client',
       testEnvironment: 'node',
       preset: 'ts-jest',
-      testMatch: [
-        '<rootDir>/packages/client/test/**/*.spec.ts'
-      ]
+      testMatch: ['<rootDir>/packages/client/test/**/*.spec.ts'],
     },
     {
       displayName: 'server-e2e',
       testEnvironment: 'node',
       preset: 'ts-jest',
-      testMatch: [
-        '<rootDir>/packages/server/integration/**/*.spec.ts'
-      ],
-      modulePathIgnorePatterns: [
-        '.*/node-modules/'
-      ],
+      testMatch: ['<rootDir>/packages/server/integration/**/*.spec.ts'],
+      modulePathIgnorePatterns: ['.*/node-modules/'],
       setupFiles: ['<rootDir>/packages/server/integration/step-definitions/setup.ts'],
-    }
+    },
+    {
+      displayName: 'client-e2e',
+      testEnvironment: 'node',
+      preset: 'ts-jest',
+      testMatch: ['<rootDir>/packages/client/integration/**/*.spec.ts'],
+      modulePathIgnorePatterns: ['.*/node-modules/'],
+      setupFiles: ['<rootDir>/packages/client/integration/step-definitions/setup.ts'],
+      moduleNameMapper: {
+        '^uuid$': require.resolve('uuid'),
+        '^(.*)\\.js$': ['$1', '$1.js']
+      },
+    },
   ],
 
   // Use this configuration option to add custom reporters to Jest
