@@ -48,7 +48,7 @@
     "node": ">=16"
   },
   "devDependencies": {
-    "@openfeature/shared": "0.0.2"
+    "@openfeature/shared": "0.0.3"
   },
   "typedoc": {
     "displayName": "OpenFeature JS SDK",
