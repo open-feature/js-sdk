@@ -6,9 +6,8 @@ import {
   EvaluationContext,
   ResolutionDetails,
   StandardResolutionReasons,
-  ProviderEvents,
 } from '@openfeature/shared';
-import { OpenFeature, Client } from '../../';
+import { OpenFeature, ProviderEvents } from '../../';
 // load the feature file.
 const feature = loadFeature('packages/client/integration/features/evaluation.feature');
 

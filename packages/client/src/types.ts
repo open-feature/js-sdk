@@ -4,7 +4,6 @@ import {
   CommonProvider,
   EvaluationContext,
   EvaluationDetails,
-  Eventing,
   FlagValue,
   HookContext,
   HookHints,
@@ -18,6 +17,50 @@ import {
 } from '@openfeature/shared';
 import { EventEmitter as OpenFeatureEventEmitter } from 'events';
 export { OpenFeatureEventEmitter };
+
+export enum ProviderEvents {
+  /**
+   * The provider is ready to evaluate flags.
+   */
+  Ready = 'PROVIDER_READY',
+
+  /**
+   * The provider is in an error state.
+   */
+  Error = 'PROVIDER_ERROR',
+  
+  /**
+   * The flag configuration in the source-of-truth has changed.
+   */
+  ConfigurationChanged = 'PROVIDER_CONFIGURATION_CHANGED',
+  
+  /**
+   * The provider's cached state is not longer valid and may not be up-to-date with the source of truth.
+   */
+  Stale = 'PROVIDER_STALE',
+};
+
+export interface EventData {
+  flagKeysChanged?: string[],
+  changeMetadata?: { [key: string]: boolean | string } // similar to flag metadata
+}
+
+export enum ApiEvents {
+  ProviderChanged = 'providerChanged',
+}
+
+export interface Eventing {
+  addHandler(notificationType: string, handler: Handler): void
+}
+
+export type EventContext = {
+  notificationType: string;
+  [key: string]: unknown;
+}
+
+export type Handler = (eventContext?: EventContext) => void
+
+export type EventCallbackMessage = (eventContext: EventContext) => void
 
 /**
  * Interface that providers must implement to resolve flag values for their particular

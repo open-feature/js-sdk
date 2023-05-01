@@ -1,16 +1,14 @@
 import {
-  ApiEvents,
   EvaluationContext,
   FlagValue,
   Logger,
   OpenFeatureCommonAPI,
-  ProviderEvents,
   ProviderMetadata,
   SafeLogger,
 } from '@openfeature/shared';
 import { OpenFeatureClient } from './client';
 import { NOOP_PROVIDER } from './no-op-provider';
-import { Client, Hook, OpenFeatureEventEmitter, Provider } from './types';
+import { ApiEvents, Client, Hook, OpenFeatureEventEmitter, Provider, ProviderEvents } from './types';
 
 // use a symbol as a key for the global singleton
 const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/js.api');
@@ -21,7 +19,6 @@ type OpenFeatureGlobal = {
 const _globalThis = globalThis as OpenFeatureGlobal;
 
 export class OpenFeatureAPI extends OpenFeatureCommonAPI {
-
   private _apiEvents = new OpenFeatureEventEmitter();
   private _providerReady = false;
   protected _hooks: Hook[] = [];
@@ -95,12 +92,15 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
       }
 
       if (typeof this._provider?.initialize === 'function') {
-        this._provider.initialize?.(this._context)?.then(() => {
-          this._providerReady = true;
-          this._provider.events?.emit(ProviderEvents.Ready);
-        })?.catch(() => {
-          this._provider.events?.emit(ProviderEvents.Error);
-        });
+        this._provider
+          .initialize?.(this._context)
+          ?.then(() => {
+            this._providerReady = true;
+            this._provider.events?.emit(ProviderEvents.Ready);
+          })
+          ?.catch(() => {
+            this._provider.events?.emit(ProviderEvents.Error);
+          });
       } else {
         this._providerReady = true;
         this._provider.events?.emit(ProviderEvents.Ready);
@@ -118,12 +118,12 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
   getClient(name?: string, version?: string): Client {
     return new OpenFeatureClient(
       // functions are passed here to make sure that these values are always up to date,
-      // and so we don't have to make these public properties on the API class. 
+      // and so we don't have to make these public properties on the API class.
       () => this._provider,
       () => this._providerReady,
       () => this._apiEvents,
       () => this._logger,
-      { name, version },
+      { name, version }
     );
   }
 }
