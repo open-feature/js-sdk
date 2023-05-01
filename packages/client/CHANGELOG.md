@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2-experimental](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.3.1-experimental...web-sdk-v0.3.2-experimental) (2023-05-01)
+
+
+### Bug Fixes
+
+* remove events exports from server ([#413](https://github.com/open-feature/js-sdk/issues/413)) ([7cac0c8](https://github.com/open-feature/js-sdk/commit/7cac0c87abfe6d6962b7f64a58b25d76ed06d4cb))
+
 ## [0.3.1-experimental](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.3.0-experimental...web-sdk-v0.3.1-experimental) (2023-04-03)
 
 
