@@ -12,50 +12,66 @@
 <div class="col-8 col-content">
 <div class="tsd-page-title">
 <h2>@openfeature/js</h2></div>
-<div class="tsd-panel tsd-typography">
-<a href="#openfeature-javascript-sdks" id="openfeature-javascript-sdks" style="color: inherit; text-decoration: none;">
-  <h1>OpenFeature JavaScript SDKs</h1>
-</a>
-<p><a href="https://cloud-native.slack.com/archives/C0344AANLA1"><img src="https://img.shields.io/badge/slack-%40cncf%2Fopenfeature-brightgreen?style=flat&logo=slack" alt="a"></a>
-<a href="https://snyk.io/test/github/open-feature/js-sdk"><img src="https://snyk.io/test/github/open-feature/js-sdk/badge.svg" alt="Known Vulnerabilities"></a>
+<div class="tsd-panel tsd-typography"><!-- markdownlint-disable MD033 -->
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/open-feature/community/0e23508c163a6a1ac8c0ced3e4bd78faafe627c7/assets/logo/horizontal/white/openfeature-horizontal-white.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/open-feature/community/0e23508c163a6a1ac8c0ced3e4bd78faafe627c7/assets/logo/horizontal/black/openfeature-horizontal-black.svg">
+    <img align="center" alt="OpenFeature Logo">
+  </picture>
+</p>
+
+<h2 align="center">OpenFeature JavaScript SDKs</h2>
+
+<p><a href="https://snyk.io/test/github/open-feature/js-sdk"><img src="https://snyk.io/test/github/open-feature/js-sdk/badge.svg" alt="Known Vulnerabilities"></a>
 <a href="https://codecov.io/gh/open-feature/js-sdk"><img src="https://codecov.io/gh/open-feature/js-sdk/branch/main/graph/badge.svg?token=3DC5XOEHMY" alt="codecov"></a>
 <a href="https://bestpractices.coreinfrastructure.org/projects/6594"><img src="https://bestpractices.coreinfrastructure.org/projects/6594/badge" alt="CII Best Practices"></a>
 <a href="https://app.fossa.com/projects/git%2Bgithub.com%2Fopen-feature%2Fjs-sdk?ref=badge_shield"><img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2Fopen-feature%2Fjs-sdk.svg?type=shield" alt="FOSSA Status"></a></p>
-<p>This repository contains the JavaScript implementations of <a href="https://openfeature.dev">OpenFeature</a>, a vendor-agnostic abstraction library for evaluating feature flags.</p>
-<p>We support multiple data types for flags (numbers, strings, booleans, objects) as well as hooks, which can alter the lifecycle of a flag evaluation.</p>
 
-<a href="#server" id="server" style="color: inherit; text-decoration: none;">
-  <h2>Server</h2>
+<a href="#👋-hey-there-thanks-for-checking-out-the-openfeature-javascript-sdks" id="👋-hey-there-thanks-for-checking-out-the-openfeature-javascript-sdks" style="color: inherit; text-decoration: none;">
+  <h2>👋 Hey there! Thanks for checking out the OpenFeature JavaScript SDKs</h2>
 </a>
-<hr>
-<p><a href="https://badge.fury.io/js/@openfeature%2Fjs-sdk"><img src="https://badge.fury.io/js/@openfeature%2Fjs-sdk.svg" alt="npm version"></a>
-<a href="https://github.com/open-feature/spec/tree/v0.5.1"><img src="https://img.shields.io/static/v1?label=Specification&message=v0.5.1&color=yellow" alt="v0.5.1"></a></p>
-<p align="center">
-  <strong>
-    <!-- TODO: add direct link to server module when published -->
-    <a href="https://docs.openfeature.dev/docs/tutorials/getting-started/node">Getting Started<a/>
-    &nbsp;&nbsp;&bull;&nbsp;&nbsp;
-    <a href="https://open-feature.github.io/js-sdk">API Documentation<a/>
-  </strong>
-</p>
 
-<hr>
-
-<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
-  <h3>Installation</h3>
+<a href="#what-is-openfeature" id="what-is-openfeature" style="color: inherit; text-decoration: none;">
+  <h3>What is OpenFeature?</h3>
 </a>
-<pre><code class="language-shell"><span class="hl-0">npm install @openfeature/js-sdk</span>
-</code></pre>
-<p>or</p>
-<pre><code class="language-shell"><span class="hl-0">yarn add @openfeature/js-sdk</span>
-</code></pre>
-<p>See <a href="./packages/server/README.md">README.md</a></p>
+<p><a href="https://openfeature.dev">OpenFeature</a> is an open standard that provides a vendor-agnostic, community-driven API for feature flagging that works with your favorite feature flag management tool.</p>
 
-<a href="#contributing" id="contributing" style="color: inherit; text-decoration: none;">
-  <h2>Contributing</h2>
+<a href="#why-standardize-feature-flags" id="why-standardize-feature-flags" style="color: inherit; text-decoration: none;">
+  <h3>Why standardize feature flags?</h3>
 </a>
-<p>See <a href="CONTRIBUTING.md">CONTRIBUTING.md</a> for details on how to contribute to the OpenFeature project.</p>
-<p>Our community meetings are held regularly and open to everyone. Check the <a href="https://calendar.google.com/calendar/u/0?cid=MHVhN2kxaGl2NWRoMThiMjd0b2FoNjM2NDRAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ">OpenFeature community calendar</a> for specific dates and the Zoom meeting links.</p>
+<p>Standardizing feature flags unifies tools and vendors behind a common interface which avoids vendor lock-in at the code level. Additionally, it offers a framework for building extensions and integrations and allows providers to focus on their unique value proposition.</p>
+
+<a href="#🔧-components" id="🔧-components" style="color: inherit; text-decoration: none;">
+  <h2>🔧 Components</h2>
+</a>
+<p>This repository contains both the server-side JS and web-browser SDKs.
+For details, including API documentation, see the respective README files.</p>
+<ul>
+<li><a href="./packages/server/README.md">Server SDK</a>, for use in Node.js and similar runtimes.</li>
+<li><a href="./packages/client/README.md">Client SDK</a>, for use in the web browser.</li>
+</ul>
+<p>Each have slightly different APIs, but share many underlying types and components.</p>
+
+<a href="#⭐️-support-the-project" id="⭐️-support-the-project" style="color: inherit; text-decoration: none;">
+  <h2>⭐️ Support the project</h2>
+</a>
+<ul>
+<li>Give this repo a ⭐️!</li>
+<li><a href="#-contributing">Contribute</a> to this repo</li>
+<li>Follow us social media:<ul>
+<li>Twitter: <a href="https://twitter.com/openfeature">@openfeature</a></li>
+<li>LinkedIn: <a href="https://www.linkedin.com/company/openfeature/">OpenFeature</a></li>
+</ul>
+</li>
+<li>Join us on <a href="https://cloud-native.slack.com/archives/C0344AANLA1">Slack</a></li>
+<li>For more check out our <a href="https://openfeature.dev/community/">community page</a></li>
+</ul>
+
+<a href="#🤝-contributing" id="🤝-contributing" style="color: inherit; text-decoration: none;">
+  <h2>🤝 Contributing</h2>
+</a>
+<p>Interested in contributing? Great, we&#39;d love your help! To get started, take a look at the <a href="CONTRIBUTING.md">CONTRIBUTING</a> guide.</p>
 
 <a href="#thanks-to-everyone-that-has-already-contributed" id="thanks-to-everyone-that-has-already-contributed" style="color: inherit; text-decoration: none;">
   <h3>Thanks to everyone that has already contributed</h3>
@@ -66,8 +82,8 @@
 
 <p>Made with <a href="https://contrib.rocks">contrib.rocks</a>.</p>
 
-<a href="#license" id="license" style="color: inherit; text-decoration: none;">
-  <h2>License</h2>
+<a href="#📜-license" id="📜-license" style="color: inherit; text-decoration: none;">
+  <h2>📜 License</h2>
 </a>
 <p><a href="LICENSE">Apache License 2.0</a></p>
 <p><a href="https://app.fossa.com/projects/git%2Bgithub.com%2Fopen-feature%2Fjs-sdk?ref=badge_large"><img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2Fopen-feature%2Fjs-sdk.svg?type=large" alt="FOSSA Status"></a></p>
