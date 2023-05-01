@@ -4,7 +4,6 @@ import {
   EvaluationDetails,
   FlagValue,
   FlagValueType,
-  Handler,
   HookContext,
   JsonValue,
   Logger, OpenFeatureError, ResolutionDetails, SafeLogger, StandardResolutionReasons
@@ -17,17 +16,12 @@ type OpenFeatureClientOptions = {
   version?: string;
 };
 
-type HandlerWrapper = {
-  eventType: string;
-  handler: Handler;
-}
 
 export class OpenFeatureClient implements Client {
   readonly metadata: ClientMetadata;
   private _context: EvaluationContext;
   private _hooks: Hook[] = [];
   private _clientLogger?: Logger;
-  private _handlerWrappers: HandlerWrapper[] = [];
 
   constructor(
     // we always want the client to use the current provider,

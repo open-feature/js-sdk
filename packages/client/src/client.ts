@@ -1,22 +1,19 @@
 import { EvaluationContext, OpenFeatureError } from '@openfeature/shared';
 import { SafeLogger } from '@openfeature/shared';
 import {
-  ApiEvents,
   ClientMetadata,
   ErrorCode,
   EvaluationDetails,
   FlagValue,
   FlagValueType,
-  Handler,
   HookContext,
   JsonValue,
   Logger,
-  ProviderEvents,
   ResolutionDetails,
   StandardResolutionReasons
 } from '@openfeature/shared';
 import { OpenFeature } from './open-feature';
-import { Client, FlagEvaluationOptions, Hook, OpenFeatureEventEmitter, Provider } from './types';
+import { ApiEvents, Client, FlagEvaluationOptions, Handler, Hook, OpenFeatureEventEmitter, Provider, ProviderEvents } from './types';
 
 type OpenFeatureClientOptions = {
   name?: string;
