@@ -35,7 +35,7 @@ describe('OpenFeature', () => {
     describe('Requirement 1.1.2.2', () => {
       it('MUST invoke the `initialize` function on the newly registered provider before using it to resolve flag values', () => {
         OpenFeature.setProvider(MOCK_PROVIDER);
-        expect(OpenFeature['_provider']).toBe(MOCK_PROVIDER);
+        expect(OpenFeature.providerMetadata.name).toBe('mock-events-success');
         expect(MOCK_PROVIDER.initialize).toHaveBeenCalled();
       });
     });
@@ -92,7 +92,7 @@ describe('OpenFeature', () => {
   describe('Requirement 1.6.1', () => {
     it('MUST define a `shutdown` function, which, when called, must call the respective `shutdown` function on the active provider', () => {
       OpenFeature.setProvider(MOCK_PROVIDER);
-      expect(OpenFeature['_provider']).toBe(MOCK_PROVIDER);
+      expect(OpenFeature.providerMetadata.name).toBe('mock-events-success');
       OpenFeature.close().then(
         () => {
           expect(MOCK_PROVIDER.onClose).toHaveBeenCalled();
