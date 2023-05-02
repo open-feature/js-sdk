@@ -5,9 +5,9 @@
   "description": "OpenFeature SDK for JavaScript",
   "scripts": {
     "test": "jest --selectProjects=server --selectProjects=shared --selectProjects=client --verbose",
-    "integration-server": "git submodule update --init --recursive && shx cp test-harness/features/evaluation.feature packages/server/integration/features && jest --selectProjects=server-e2e --verbose",
-    "integration-client": "git submodule update --init --recursive && shx cp test-harness/features/evaluation.feature packages/client/integration/features && jest --selectProjects=client-e2e --verbose",
-    "integration": "npm run integration-server && npm run integration-client",
+    "e2e-server": "git submodule update --init --recursive && shx cp test-harness/features/evaluation.feature packages/server/e2e/features && jest --selectProjects=server-e2e --verbose",
+    "e2e-client": "git submodule update --init --recursive && shx cp test-harness/features/evaluation.feature packages/client/e2e/features && jest --selectProjects=client-e2e --verbose",
+    "e2e": "npm run e2e-server && npm run e2e-client",
     "lint": "npm run lint --workspace=packages/shared --workspace=packages/client --workspace=packages/server",
     "clean": "shx rm -rf ./dist",
     "build": "npm run build --workspace=packages/shared --workspace=packages/client --workspace=packages/server",

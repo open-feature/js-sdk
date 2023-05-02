@@ -6,7 +6,7 @@
 
 node 16+, npm 8+ are recommended.
 
-### Compilation target(s)
+### Compilation Target(s)
 
 We target `es2015`, and publish both ES-modules and CommonJS modules.
 
@@ -25,21 +25,21 @@ Within the root project, there is one common project (`packages/shared`) which f
 
 Run tests with `npm test`.
 
-### Integration tests
+### End-to-End Tests
 
-The continuous integration runs a set of [gherkin integration tests](https://github.com/open-feature/test-harness/blob/main/features/evaluation.feature) using [`flagd`](https://github.com/open-feature/flagd). These tests run with the "integration" npm script. If you'd like to run them locally, you can start the flagd testbed with
+The continuous integration runs a set of [gherkin e2e tests](https://github.com/open-feature/test-harness/blob/main/features/evaluation.feature) using [`flagd`](https://github.com/open-feature/flagd). These tests run with the "e2e" npm script. If you'd like to run them locally, you can start the flagd testbed with
 ```
 docker run -p 8013:8013 ghcr.io/open-feature/flagd-testbed:latest
 ```
 and then run
 ```
-npm run integration-server
+npm run e2e-server
 ```
-for the server integration tests and
+for the server e2e tests and
 ```
-npm run integration-client
+npm run e2e-client
 ```
-for the client integration tests.
+for the client e2e tests.
 
 ### Packaging
 

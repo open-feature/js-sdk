@@ -1,46 +1,30 @@
 import { defineFeature, loadFeature } from 'jest-cucumber';
-import {
-  JsonValue,
-  JsonObject,
-  EvaluationDetails,
-  EvaluationContext,
-  ResolutionDetails,
-  StandardResolutionReasons,
-} from '@openfeature/shared';
-import { OpenFeature, ProviderEvents } from '../../';
+import { JsonValue, JsonObject, EvaluationDetails, EvaluationContext, ResolutionDetails, StandardResolutionReasons } from '@openfeature/shared';
+import { OpenFeature } from './../../src';
 // load the feature file.
-const feature = loadFeature('packages/client/integration/features/evaluation.feature');
+const feature = loadFeature('packages/server/e2e/features/evaluation.feature');
 
 // get a client (flagd provider registered in setup)
 const client = OpenFeature.getClient();
 
-const givenAnOpenfeatureClientIsRegisteredWithCacheDisabled = (
-  given: (stepMatcher: string, stepDefinitionCallback: () => void) => void
-) => {
+const givenAnOpenfeatureClientIsRegisteredWithCacheDisabled = (given: (stepMatcher: string, stepDefinitionCallback: () => void) => void) => {
   // TODO: when the FlagdProvider is updated to support caching, we may need to disable it here for this test to work as expected.
   given('a provider is registered with cache disabled', () => undefined);
 };
 
 defineFeature(feature, (test) => {
-  beforeAll((done) => {
-    client.addHandler(ProviderEvents.Ready, () => {
-      done();
-    });
-  });
-
-  afterAll(() => {
-    OpenFeature.close();
-  });
 
   test('Resolves boolean value', ({ given, when, then }) => {
     let value: boolean;
+    let flagKey: string;
 
     givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
 
     when(
       /^a boolean flag with key "(.*)" is evaluated with default value "(.*)"$/,
-      (key: string, defaultValue: string) => {
-        value = client.getBooleanValue(key, defaultValue === 'true');
+      async (key: string, defaultValue: string) => {
+        flagKey = key;
+        value = await client.getBooleanValue(flagKey, defaultValue === 'true');
       }
     );
 
@@ -51,13 +35,15 @@ defineFeature(feature, (test) => {
 
   test('Resolves string value', ({ given, when, then }) => {
     let value: string;
+    let flagKey: string;
 
     givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
 
     when(
       /^a string flag with key "(.*)" is evaluated with default value "(.*)"$/,
-      (key: string, defaultValue: string) => {
-        value = client.getStringValue(key, defaultValue);
+      async (key: string, defaultValue: string) => {
+        flagKey = key;
+        value = await client.getStringValue(flagKey, defaultValue);
       }
     );
 
@@ -68,31 +54,34 @@ defineFeature(feature, (test) => {
 
   test('Resolves integer value', ({ given, when, then }) => {
     let value: number;
+    let flagKey: string;
 
     givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
 
     when(
       /^an integer flag with key "(.*)" is evaluated with default value (\d+)$/,
-      (key: string, defaultValue: number) => {
-        value = client.getNumberValue(key, defaultValue);
+      async (key: string, defaultValue: string) => {
+        flagKey = key;
+        value = await client.getNumberValue(flagKey, Number.parseInt(defaultValue));
       }
     );
 
-    then(/^the resolved integer value should be (\d+)$/, (expectedStringValue: string) => {
-      const expectedNumberValue = parseInt(expectedStringValue);
-      expect(value).toEqual(expectedNumberValue);
+    then(/^the resolved integer value should be (\d+)$/, (expectedValue: string) => {
+      expect(value).toEqual(Number.parseInt(expectedValue));
     });
   });
 
   test('Resolves float value', ({ given, when, then }) => {
     let value: number;
+    let flagKey: string;
 
     givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
 
     when(
       /^a float flag with key "(.*)" is evaluated with default value (\d+\.?\d*)$/,
-      (key: string, defaultValue: string) => {
-        value = client.getNumberValue(key, Number.parseFloat(defaultValue));
+      async (key: string, defaultValue: string) => {
+        flagKey = key;
+        value = await client.getNumberValue(flagKey, Number.parseFloat(defaultValue));
       }
     );
 
@@ -103,31 +92,37 @@ defineFeature(feature, (test) => {
 
   test('Resolves object value', ({ given, when, then }) => {
     let value: JsonValue;
+    let flagKey: string;
+
     givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
 
-    when(/^an object flag with key "(.*)" is evaluated with a null default value$/, (key: string) => {
-      value = client.getObjectValue<JsonValue>(key, {});
+    when(/^an object flag with key "(.*)" is evaluated with a null default value$/, async (key: string) => {
+      flagKey = key;
+      value = await client.getObjectValue(flagKey, {});
     });
 
     then(
       /^the resolved object value should be contain fields "(.*)", "(.*)", and "(.*)", with values "(.*)", "(.*)" and (\d+), respectively$/,
-      (field1: string, field2: string, field3: string, boolVal: string, strVal: string, intVal: string) => {
+      (field1: string, field2: string, field3: string, boolValue: string, stringValue: string, intValue: string) => {
         const jsonObject = value as JsonObject;
-        expect(jsonObject[field1]).toEqual(boolVal === 'true');
-        expect(jsonObject[field2]).toEqual(strVal);
-        expect(jsonObject[field3]).toEqual(Number.parseInt(intVal));
+        expect(jsonObject[field1]).toEqual(boolValue === 'true');
+        expect(jsonObject[field2]).toEqual(stringValue);
+        expect(jsonObject[field3]).toEqual(Number.parseInt(intValue));
       }
     );
   });
 
   test('Resolves boolean details', ({ given, when, then }) => {
     let details: EvaluationDetails<boolean>;
+    let flagKey: string;
+
     givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
 
     when(
       /^a boolean flag with key "(.*)" is evaluated with details and default value "(.*)"$/,
-      (key: string, defaultValue: string) => {
-        details = client.getBooleanDetails(key, defaultValue === 'true');
+      async (key: string, defaultValue: string) => {
+        flagKey = key;
+        details = await client.getBooleanDetails(flagKey, defaultValue === 'true');
       }
     );
 
@@ -143,13 +138,15 @@ defineFeature(feature, (test) => {
 
   test('Resolves string details', ({ given, when, then }) => {
     let details: EvaluationDetails<string>;
+    let flagKey: string;
 
     givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
 
     when(
       /^a string flag with key "(.*)" is evaluated with details and default value "(.*)"$/,
-      (key: string, defaultValue: string) => {
-        details = client.getStringDetails(key, defaultValue);
+      async (key: string, defaultValue: string) => {
+        flagKey = key;
+        details = await client.getStringDetails(flagKey, defaultValue);
       }
     );
 
@@ -165,13 +162,15 @@ defineFeature(feature, (test) => {
 
   test('Resolves integer details', ({ given, when, then }) => {
     let details: EvaluationDetails<number>;
+    let flagKey: string;
 
     givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
 
     when(
       /^an integer flag with key "(.*)" is evaluated with details and default value (\d+)$/,
-      (key: string, defaultValue: string) => {
-        details = client.getNumberDetails(key, Number.parseInt(defaultValue));
+      async (key: string, defaultValue: string) => {
+        flagKey = key;
+        details = await client.getNumberDetails(flagKey, Number.parseInt(defaultValue));
       }
     );
 
@@ -187,13 +186,15 @@ defineFeature(feature, (test) => {
 
   test('Resolves float details', ({ given, when, then }) => {
     let details: EvaluationDetails<number>;
+    let flagKey: string;
 
     givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
 
     when(
       /^a float flag with key "(.*)" is evaluated with details and default value (\d+\.?\d*)$/,
-      (key: string, defaultValue: string) => {
-        details = client.getNumberDetails(key, Number.parseFloat(defaultValue));
+      async (key: string, defaultValue: string) => {
+        flagKey = key;
+        details = await client.getNumberDetails(flagKey, Number.parseFloat(defaultValue));
       }
     );
 
@@ -209,11 +210,13 @@ defineFeature(feature, (test) => {
 
   test('Resolves object details', ({ given, when, then, and }) => {
     let details: EvaluationDetails<JsonValue>; // update this after merge
+    let flagKey: string;
 
     givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
 
-    when(/^an object flag with key "(.*)" is evaluated with details and a null default value$/, (key: string) => {
-      details = client.getObjectDetails(key, {}); // update this after merge
+    when(/^an object flag with key "(.*)" is evaluated with details and a null default value$/, async (key: string) => {
+      flagKey = key;
+      details = await client.getObjectDetails(flagKey, {}); // update this after merge
     });
 
     then(
@@ -245,7 +248,7 @@ defineFeature(feature, (test) => {
 
     when(
       /^context contains keys "(.*)", "(.*)", "(.*)", "(.*)" with values "(.*)", "(.*)", (\d+), "(.*)"$/,
-      async (
+      (
         stringField1: string,
         stringField2: string,
         intField: string,
@@ -259,14 +262,12 @@ defineFeature(feature, (test) => {
         context[stringField2] = stringValue2;
         context[intField] = Number.parseInt(intValue);
         context[boolField] = boolValue === 'true';
-
-        await OpenFeature.setContext(context);
       }
     );
 
-    and(/^a flag with key "(.*)" is evaluated with default value "(.*)"$/, (key: string, defaultValue: string) => {
+    and(/^a flag with key "(.*)" is evaluated with default value "(.*)"$/, async (key: string, defaultValue: string) => {
       flagKey = key;
-      value = client.getStringValue(flagKey, defaultValue);
+      value = await client.getStringValue(flagKey, defaultValue, context);
     });
 
     then(/^the resolved string response should be "(.*)"$/, (expectedValue: string) => {
@@ -274,8 +275,7 @@ defineFeature(feature, (test) => {
     });
 
     and(/^the resolved flag value is "(.*)" when the context is empty$/, async (expectedValue) => {
-      await OpenFeature.setContext({});
-      const emptyContextValue = client.getStringValue(flagKey, 'nope', {});
+      const emptyContextValue = await client.getStringValue(flagKey, 'nope', {});
       expect(emptyContextValue).toEqual(expectedValue);
     });
   });
@@ -289,10 +289,10 @@ defineFeature(feature, (test) => {
 
     when(
       /^a non-existent string flag with key "(.*)" is evaluated with details and a default value "(.*)"$/,
-      (key: string, defaultValue: string) => {
+      async (key: string, defaultValue: string) => {
         flagKey = key;
         fallbackValue = defaultValue;
-        details = client.getStringDetails(flagKey, defaultValue);
+        details = await client.getStringDetails(flagKey, defaultValue);
       }
     );
 
@@ -318,10 +318,10 @@ defineFeature(feature, (test) => {
 
     when(
       /^a string flag with key "(.*)" is evaluated as an integer, with details and a default value (\d+)$/,
-      (key: string, defaultValue: string) => {
+      async (key: string, defaultValue: string) => {
         flagKey = key;
         fallbackValue = Number.parseInt(defaultValue);
-        details = client.getNumberDetails(flagKey, Number.parseInt(defaultValue));
+        details = await client.getNumberDetails(flagKey, Number.parseInt(defaultValue));
       }
     );
 
