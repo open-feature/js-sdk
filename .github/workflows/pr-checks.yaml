@@ -61,5 +61,5 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: SDK integration tests
-        run: npm run integration
+      - name: SDK e2e tests
+        run: npm run e2e

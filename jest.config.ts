@@ -124,17 +124,17 @@ export default {
       displayName: 'server-e2e',
       testEnvironment: 'node',
       preset: 'ts-jest',
-      testMatch: ['<rootDir>/packages/server/integration/**/*.spec.ts'],
+      testMatch: ['<rootDir>/packages/server/e2e/**/*.spec.ts'],
       modulePathIgnorePatterns: ['.*/node-modules/'],
-      setupFiles: ['<rootDir>/packages/server/integration/step-definitions/setup.ts'],
+      setupFiles: ['<rootDir>/packages/server/e2e/step-definitions/setup.ts'],
     },
     {
       displayName: 'client-e2e',
       testEnvironment: 'node',
       preset: 'ts-jest',
-      testMatch: ['<rootDir>/packages/client/integration/**/*.spec.ts'],
+      testMatch: ['<rootDir>/packages/client/e2e/**/*.spec.ts'],
       modulePathIgnorePatterns: ['.*/node-modules/'],
-      setupFiles: ['<rootDir>/packages/client/integration/step-definitions/setup.ts'],
+      setupFiles: ['<rootDir>/packages/client/e2e/step-definitions/setup.ts'],
       moduleNameMapper: {
         '^uuid$': require.resolve('uuid'),
         '^(.*)\\.js$': ['$1', '$1.js']
