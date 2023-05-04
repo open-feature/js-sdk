@@ -1,10 +1,30 @@
-import { addListener, nextTick } from 'process';
 import { ApiEvents, OpenFeature, Provider, ProviderEvents, OpenFeatureEventEmitter } from '../src';
-
 
 const ERROR_REASON = 'error';
 const ERROR_CODE = 'MOCKED_ERROR';
 
+const MOCK_PROVIDER = {
+  metadata: {
+    name: 'mock-events',
+  },
+  initialize: jest.fn(() => {
+    return Promise.resolve(undefined);
+  }),
+  events: new OpenFeatureEventEmitter(),
+} as unknown as Provider;
+
+const ERROR_MOCK_PROVIDER = {
+  metadata: {
+    name: 'mock-events-failure',
+  },
+  initialize: jest.fn(() => {
+    return Promise.reject({
+      reason: ERROR_REASON,
+      errorCode: ERROR_CODE,
+    });
+  }),
+  events: new OpenFeatureEventEmitter(),
+} as unknown as Provider;
 
 describe('Events', () => {
   // set timeouts short for this suite.
@@ -40,29 +60,17 @@ describe('Events', () => {
 
     it('It defines a mechanism for signalling `PROVIDER_ERROR`', (done) => {
 
-      const errProvider = {
-        metadata: {
-          name: 'mock-events-failure',
-        },
-        initialize: jest.fn(() => {
-          return Promise.reject({
-            reason: ERROR_REASON,
-            errorCode: ERROR_CODE,
-          });
-        }),
-        events: new OpenFeatureEventEmitter(),
-      } as unknown as Provider;
       //make sure an error event is fired when initialize promise reject
-      errProvider.events?.addListener(ProviderEvents.Error, () => {
+      ERROR_MOCK_PROVIDER.events?.addListener(ProviderEvents.Error, () => {
         try {
           expect(OpenFeature.providerMetadata.name).toBe('mock-events-failure');
-          expect(errProvider.initialize).toHaveBeenCalled();
+          expect(ERROR_MOCK_PROVIDER.initialize).toHaveBeenCalled();
           done();
         } catch (err) {
           done(err);
         }
       });
-      OpenFeature.setProvider(errProvider);
+      OpenFeature.setProvider(ERROR_MOCK_PROVIDER);
     });
 
     it('It defines a mechanism for signalling `PROVIDER_CONFIGURATION_CHANGED`', (done) => {
@@ -89,7 +97,88 @@ describe('Events', () => {
       OpenFeature.setProvider(myProvider);
     });
   });
+  describe('Requirement 5.2.1, 5.2.3, 5.2.4, 5.2.5, 5.2.6 ', () => {
+    it('The `client` MUST provide an `addHandler` function for attaching callbacks to `provider events`, which accepts event type(s) and a `event handler function`.', (done) => {
 
+      const client = OpenFeature.getClient();
+      client.addHandler(ProviderEvents.ConfigurationChanged, () => {
+        done();
+      });
+      OpenFeature.setProvider(MOCK_PROVIDER);
+    });
+
+
+    it('If the provider `initialize` function terminates normally, `PROVIDER_READY` handlers MUST run', (done) => {
+
+      const client = OpenFeature.getClient();
+      client.addHandler(ProviderEvents.Ready, () => {
+        done();
+      });
+      OpenFeature.setProvider(MOCK_PROVIDER);
+
+    });
+
+
+    it('If the provider `initialize` function terminates abnormally, `PROVIDER_ERROR` handlers MUST run.', (done) => {
+
+      const client = OpenFeature.getClient();
+      client.addHandler(ProviderEvents.Error, () => {
+        done();
+      });
+      OpenFeature.setProvider(ERROR_MOCK_PROVIDER);
+
+    });
+
+    it('`PROVIDER_READY` handlers added after the provider is already in a ready state MUST run immediately.', (done) => {
+
+      const client = OpenFeature.getClient();
+
+      MOCK_PROVIDER.events?.addListener(ProviderEvents.Ready, () => {
+        try {
+          expect(MOCK_PROVIDER.initialize).toHaveBeenCalled();
+          jest.setTimeout(10);
+          let count=0;
+          client.addHandler(ProviderEvents.Ready, () => {
+            if (count==0) {count++;  done();}
+          });
+        } catch (err) {
+          done(err);
+        }
+      });
+
+      OpenFeature.setProvider(MOCK_PROVIDER);
+
+    });
+
+    it('Event handlers MUST persist across `provider` changes.', (done) => {
+
+      const client = OpenFeature.getClient();
+
+      const myProvider: Provider = {
+        metadata: {
+          name: 'first',
+        },
+        initialize: jest.fn(() => {
+          return Promise.resolve(undefined);
+        }),
+        events: new OpenFeatureEventEmitter(),
+      } as unknown as Provider;
+
+      OpenFeature.setProvider(myProvider);
+      let counter = 0;
+      client.addHandler(ProviderEvents.Ready, () => {
+        if (OpenFeature.providerMetadata.name== myProvider.metadata.name){
+          OpenFeature.setProvider(MOCK_PROVIDER);
+          counter ++;
+        } else {
+          expect(counter).toBeGreaterThan(0);
+          expect(OpenFeature.providerMetadata.name).toBe(MOCK_PROVIDER.metadata.name);
+          if (counter==1) {done();}
+        }
+
+      });
+
+    });
+
+  });
 });
-
-
