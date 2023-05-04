@@ -37,14 +37,14 @@ const ERROR_MOCK_PROVIDER = {
 describe('Events', () => {
   // set timeouts short for this suite.
   jest.setTimeout(1000);
-  let API = new (OpenFeatureAPI as any)();
+  let API = new (OpenFeatureAPI as any)(); 
 
   afterEach(() => {
     jest.clearAllMocks();
-    API = new (OpenFeatureAPI as any)();
+    API = new (OpenFeatureAPI as any)(); //TODO this hacky thing should be removed when https://github.com/open-feature/spec/pull/183/files is implemented
   });
 
-  describe('Requirement 5.1.1, 5.1.3', () => {
+  describe('Requirement 5.1.1', () => {
     it('The provider defines a mechanism for signalling the occurrence of an event`PROVIDER_READY`', (done) => {
       const myProvider: Provider = {
         metadata: {
@@ -58,7 +58,7 @@ describe('Events', () => {
 
       myProvider.events?.addListener(ProviderEvents.Ready, () => {
         try {
-          expect(API.providerMetadata.name).toBe('mock-events');
+          expect(API.providerMetadata.name).toBe(myProvider.metadata.name);
           expect(myProvider.initialize).toHaveBeenCalled();
           done();
         } catch (err) {
@@ -81,7 +81,7 @@ describe('Events', () => {
       } as unknown as Provider;
       API['_apiEvents'].addListener(ApiEvents.ProviderChanged, () => {
         try {
-          expect(API.providerMetadata.name).toBe('mock-events');
+          expect(API.providerMetadata.name).toBe(myProvider.metadata.name);
           done();
         } catch (err) {
           done(err);
@@ -95,7 +95,7 @@ describe('Events', () => {
       //make sure an error event is fired when initialize promise reject
       ERROR_MOCK_PROVIDER.events?.addListener(ProviderEvents.Error, () => {
         try {
-          expect(API.providerMetadata.name).toBe('mock-events-failure');
+          expect(API.providerMetadata.name).toBe(ERROR_MOCK_PROVIDER.metadata.name);
           expect(ERROR_MOCK_PROVIDER.initialize).toHaveBeenCalled();
           done();
         } catch (err) {
