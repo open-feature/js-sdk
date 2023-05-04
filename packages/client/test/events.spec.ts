@@ -1,5 +1,4 @@
 import {
-  ApiEvents,
   Provider,
   ProviderEvents,
   OpenFeatureEventEmitter,
@@ -37,7 +36,7 @@ const ERROR_MOCK_PROVIDER = {
 describe('Events', () => {
   // set timeouts short for this suite.
   jest.setTimeout(1000);
-  let API = new (OpenFeatureAPI as any)(); 
+  let API: OpenFeatureAPI = new (OpenFeatureAPI as any)(); 
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -66,29 +65,6 @@ describe('Events', () => {
         }
       });
       API.setProvider(myProvider);
-    });
-
-    it('It defines a mechanism for signalling `PROVIDER_CONFIGURATION_CHANGED`', (done) => {
-      API['_apiEvents'] = new OpenFeatureEventEmitter();
-      const myProvider: Provider = {
-        metadata: {
-          name: 'mock-events',
-        },
-        initialize: jest.fn(() => {
-          return Promise.resolve(undefined);
-        }),
-        events: new OpenFeatureEventEmitter(),
-      } as unknown as Provider;
-      API['_apiEvents'].addListener(ApiEvents.ProviderChanged, () => {
-        try {
-          expect(API.providerMetadata.name).toBe(myProvider.metadata.name);
-          done();
-        } catch (err) {
-          done(err);
-        }
-      });
-      API.setProvider(myProvider);
-
     });
 
     it('It defines a mechanism for signalling `PROVIDER_ERROR`', (done) => {
@@ -130,6 +106,16 @@ describe('Events', () => {
         done();
       });
       API.setProvider(ERROR_MOCK_PROVIDER);
+    });
+
+    it('It defines a mechanism for signalling `PROVIDER_CONFIGURATION_CHANGED`', (done) => {
+      const client = API.getClient();
+      client.addHandler(ProviderEvents.ConfigurationChanged, () => {
+        done();
+      });
+      API.setProvider(MOCK_PROVIDER);
+      // emit a change event from the mock provider
+      MOCK_PROVIDER.events?.emit(ProviderEvents.ConfigurationChanged)
     });
 
     it('`PROVIDER_READY` handlers added after the provider is already in a ready state MUST run immediately.', (done) => {
