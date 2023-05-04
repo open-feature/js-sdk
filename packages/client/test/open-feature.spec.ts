@@ -81,21 +81,18 @@ describe('OpenFeature', () => {
         .clearHooks()
         .setLogger(console)
         .getClient();
-
-
       expect(client).toBeDefined();
     });
-
-
   });
 
   describe('Requirement 1.6.1', () => {
-    it('MUST define a `shutdown` function, which, when called, must call the respective `shutdown` function on the active provider', () => {
+    it('MUST define a `shutdown` function, which, when called, must call the respective `shutdown` function on the active provider', (done) => {
       OpenFeature.setProvider(MOCK_PROVIDER);
       expect(OpenFeature.providerMetadata.name).toBe('mock-events-success');
       OpenFeature.close().then(
         () => {
           expect(MOCK_PROVIDER.onClose).toHaveBeenCalled();
+          done();
         });
     });
   });
