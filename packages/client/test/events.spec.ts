@@ -45,26 +45,17 @@ describe('Events', () => {
 
   describe('Requirement 5.1.1', () => {
     it('The provider defines a mechanism for signalling the occurrence of an event`PROVIDER_READY`', (done) => {
-      const myProvider: Provider = {
-        metadata: {
-          name: 'mock-events',
-        },
-        initialize: jest.fn(() => {
-          return Promise.resolve(undefined);
-        }),
-        events: new OpenFeatureEventEmitter(),
-      } as unknown as Provider;
 
-      myProvider.events?.addListener(ProviderEvents.Ready, () => {
+      MOCK_PROVIDER.events?.addListener(ProviderEvents.Ready, () => {
         try {
-          expect(API.providerMetadata.name).toBe(myProvider.metadata.name);
-          expect(myProvider.initialize).toHaveBeenCalled();
+          expect(API.providerMetadata.name).toBe(MOCK_PROVIDER.metadata.name);
+          expect(MOCK_PROVIDER.initialize).toHaveBeenCalled();
           done();
         } catch (err) {
           done(err);
         }
       });
-      API.setProvider(myProvider);
+      API.setProvider(MOCK_PROVIDER);
     });
 
     it('It defines a mechanism for signalling `PROVIDER_ERROR`', (done) => {
