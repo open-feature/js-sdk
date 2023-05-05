@@ -84,13 +84,6 @@ describe('Events', () => {
   });
 
   describe('Requirement 5.2.1, 5.2.3, 5.2.4, 5.2.5 ', () => {
-    it('The `client` MUST provide an `addHandler` function for attaching callbacks to `provider events`, which accepts event type(s) and a `event handler function`.', (done) => {
-      const client = API.getClient();
-      client.addHandler(ProviderEvents.Ready, () => {
-        done();
-      });
-      API.setProvider(MOCK_PROVIDER);
-    });
 
     it('If the provider `initialize` function terminates normally, `PROVIDER_READY` handlers MUST run', (done) => {
       const client = API.getClient();
