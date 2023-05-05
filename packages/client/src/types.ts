@@ -45,10 +45,6 @@ export interface EventData {
   changeMetadata?: { [key: string]: boolean | string } // similar to flag metadata
 }
 
-export enum ApiEvents {
-  ProviderChanged = 'providerChanged',
-}
-
 export interface Eventing {
   addHandler(notificationType: string, handler: Handler): void
 }

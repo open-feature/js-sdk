@@ -8,7 +8,7 @@ import {
 } from '@openfeature/shared';
 import { OpenFeatureClient } from './client';
 import { NOOP_PROVIDER } from './no-op-provider';
-import { ApiEvents, Client, Hook, OpenFeatureEventEmitter, Provider, ProviderEvents } from './types';
+import { Client, Hook, OpenFeatureEventEmitter, Provider, ProviderEvents } from './types';
 
 // use a symbol as a key for the global singleton
 const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/js.api');
@@ -19,10 +19,10 @@ type OpenFeatureGlobal = {
 const _globalThis = globalThis as OpenFeatureGlobal;
 
 export class OpenFeatureAPI extends OpenFeatureCommonAPI {
-  private _apiEvents = new OpenFeatureEventEmitter();
   private _providerReady = false;
   protected _hooks: Hook[] = [];
   protected _provider: Provider = NOOP_PROVIDER;
+  private readonly _events = new OpenFeatureEventEmitter();
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor() {
@@ -87,9 +87,8 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
       this._provider = provider;
       this._providerReady = false;
 
-      if (!this._provider.events) {
-        this._provider.events = new OpenFeatureEventEmitter();
-      }
+      this.removeListeners(oldProvider);
+      this.attachListeners(this._provider);
 
       if (typeof this._provider?.initialize === 'function') {
         this._provider
@@ -105,7 +104,6 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
         this._providerReady = true;
         this._provider.events?.emit(ProviderEvents.Ready);
       }
-      this._apiEvents.emit(ApiEvents.ProviderChanged);
       oldProvider?.onClose?.();
     }
     return this;
@@ -121,10 +119,23 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
       // and so we don't have to make these public properties on the API class.
       () => this._provider,
       () => this._providerReady,
-      () => this._apiEvents,
+      () => this._events,
       () => this._logger,
       { name, version }
     );
+  }
+
+  private attachListeners(newProvider: Provider) {
+    // iterate over the event types
+    Object.values(ProviderEvents)
+      .forEach(eventType => newProvider.events?.on(eventType, () => {
+        // on each event type, fire the associated handlers
+        this._events.emit(eventType);
+      }));
+  }
+
+  private removeListeners(newProvider: Provider) {
+    newProvider.events?.removeAllListeners();
   }
 }
 
