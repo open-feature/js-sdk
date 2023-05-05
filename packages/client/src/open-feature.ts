@@ -134,8 +134,8 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
       }));
   }
 
-  private removeListeners(newProvider: Provider) {
-    newProvider.events?.removeAllListeners();
+  private removeListeners(oldProvider: Provider) {
+    oldProvider.events?.removeAllListeners();
   }
 }
 
