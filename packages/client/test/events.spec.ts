@@ -36,7 +36,7 @@ const ERROR_MOCK_PROVIDER = {
 describe('Events', () => {
   // set timeouts short for this suite.
   jest.setTimeout(1000);
-  let API: OpenFeatureAPI = new (OpenFeatureAPI as any)(); 
+  let API: OpenFeatureAPI = new (OpenFeatureAPI as any)();
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -115,7 +115,7 @@ describe('Events', () => {
       });
       API.setProvider(MOCK_PROVIDER);
       // emit a change event from the mock provider
-      MOCK_PROVIDER.events?.emit(ProviderEvents.ConfigurationChanged)
+      MOCK_PROVIDER.events?.emit(ProviderEvents.ConfigurationChanged);
     });
 
     it('`PROVIDER_READY` handlers added after the provider is already in a ready state MUST run immediately.', (done) => {
