@@ -41,7 +41,7 @@ describe('Events', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
-    API = new (OpenFeatureAPI as any)(); //TODO this hacky thing should be removed when https://github.com/open-feature/spec/pull/183/files is implemented
+    API = new (OpenFeatureAPI as any)(); //TODO this hacky thing should be removed with provider mapping: https://github.com/open-feature/js-sdk/issues/421
   });
 
   describe('Requirement 5.1.1', () => {
