@@ -95,14 +95,14 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
           .initialize?.(this._context)
           ?.then(() => {
             this._providerReady = true;
-            this._provider.events?.emit(ProviderEvents.Ready);
+            this._events?.emit(ProviderEvents.Ready);
           })
           ?.catch(() => {
-            this._provider.events?.emit(ProviderEvents.Error);
+            this._events?.emit(ProviderEvents.Error);
           });
       } else {
         this._providerReady = true;
-        this._provider.events?.emit(ProviderEvents.Ready);
+        this._events?.emit(ProviderEvents.Ready);
       }
       oldProvider?.onClose?.();
     }
