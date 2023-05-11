@@ -13,30 +13,24 @@ import {
   StandardResolutionReasons
 } from '@openfeature/shared';
 import { OpenFeature } from './open-feature';
-import { ApiEvents, Client, FlagEvaluationOptions, Handler, Hook, OpenFeatureEventEmitter, Provider, ProviderEvents } from './types';
+import { Client, FlagEvaluationOptions, Handler, Hook, OpenFeatureEventEmitter, Provider, ProviderEvents } from './types';
 
 type OpenFeatureClientOptions = {
   name?: string;
   version?: string;
 };
 
-type HandlerWrapper = {
-  eventType: string;
-  handler: Handler;
-}
-
 export class OpenFeatureClient implements Client {
   readonly metadata: ClientMetadata;
   private _hooks: Hook[] = [];
   private _clientLogger?: Logger;
-  private _handlerWrappers: HandlerWrapper[] = [];
 
   constructor(
     // functions are passed here to make sure that these values are always up to date,
     // and so we don't have to make these public properties on the API class. 
     private readonly providerAccessor: () => Provider,
     private readonly providerReady: () => boolean,
-    apiEvents: () => OpenFeatureEventEmitter,
+    private readonly events: () => OpenFeatureEventEmitter,
     private readonly globalLogger: () => Logger,
     options: OpenFeatureClientOptions,
   ) {
@@ -44,15 +38,10 @@ export class OpenFeatureClient implements Client {
       name: options.name,
       version: options.version,
     } as const;
-
-    this.attachListeners();
-    apiEvents().on(ApiEvents.ProviderChanged, () => {
-      this.attachListeners();      
-    });
   }
 
   addHandler(eventType: ProviderEvents, handler: Handler): void {
-    this._handlerWrappers.push({eventType, handler});
+    this.events().on(eventType, handler);
     if (eventType === ProviderEvents.Ready && this.providerReady()) {
       // run immediately, we're ready.
       handler();
@@ -296,16 +285,5 @@ export class OpenFeatureClient implements Client {
 
   private get _logger() {
     return this._clientLogger || this.globalLogger();
-  }
-
-  private attachListeners() {
-    // iterate over the event types
-    Object.values(ProviderEvents)
-      .forEach(eventType => this._provider.events?.on(eventType, () => {
-        // on each event type, fire the associated handlers
-        this._handlerWrappers
-          .filter(wrapper => wrapper.eventType === eventType)
-          .forEach(wrapper => wrapper.handler());
-      }));
   }
 }
