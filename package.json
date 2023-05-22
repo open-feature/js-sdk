@@ -57,7 +57,7 @@
     "jest-cucumber": "^3.0.1",
     "jest-environment-jsdom": "^29.4.3",
     "jest-environment-node": "^29.4.3",
-    "jest-junit": "^15.0.0",
+    "jest-junit": "^16.0.0",
     "prettier": "^2.6.2",
     "rollup": "^3.18.0",
     "rollup-plugin-dts": "^5.2.0",
