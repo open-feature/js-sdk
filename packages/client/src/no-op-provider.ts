@@ -1,4 +1,4 @@
-import { ResolutionDetails, JsonValue } from '@openfeature/shared';
+import { JsonValue, ProviderStatus, ResolutionDetails } from '@openfeature/shared';
 import { Provider } from './types';
 
 const REASON_NO_OP = 'No-op';
@@ -10,6 +10,10 @@ class NoopFeatureProvider implements Provider {
   readonly metadata = {
     name: 'No-op Provider',
   } as const;
+
+  get status(): ProviderStatus {
+    return ProviderStatus.NOT_READY;
+  }
 
   resolveBooleanEvaluation(_: string, defaultValue: boolean): ResolutionDetails<boolean> {
     return this.noOp(defaultValue);

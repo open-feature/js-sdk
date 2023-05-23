@@ -8,18 +8,14 @@ import {
   StandardResolutionReasons,
   FlagNotFoundError,
 } from '../src';
-import {OpenFeatureClient} from '../src/client';
-import {OpenFeature} from '../src/open-feature';
-import {
-  Client, Provider,
-
-} from '../src/types';
+import { OpenFeatureClient } from '../src/client';
+import { OpenFeature } from '../src/open-feature';
+import { Client, Provider } from '../src/types';
 
 const BOOLEAN_VALUE = true;
 const STRING_VALUE = 'val';
 const NUMBER_VALUE = 10;
 const ARRAY_VALUE: JsonValue[] = [];
-
 
 const INNER_KEY = 'inner';
 const INNER_NULL_KEY = 'nullKey';
@@ -44,19 +40,21 @@ const NUMBER_VARIANT = `${NUMBER_VALUE}`;
 const OBJECT_VARIANT = 'json';
 const REASON = 'mocked-value';
 
-
 // a mock provider with some jest spies
 const MOCK_PROVIDER: Provider = {
-
   metadata: {
     name: 'mock',
   },
 
-  events: undefined, hooks: [], initialize(): Promise<void> {
+  events: undefined,
+  hooks: [],
+  initialize(): Promise<void> {
     return Promise.resolve(undefined);
-  }, onClose(): Promise<void> {
+  },
+  onClose(): Promise<void> {
     return Promise.resolve(undefined);
-  }, onContextChange(): Promise<void> {
+  },
+  onContextChange(): Promise<void> {
     return Promise.resolve(undefined);
   },
 
@@ -69,12 +67,11 @@ const MOCK_PROVIDER: Provider = {
   }),
 
   resolveObjectEvaluation: jest.fn(<U extends JsonValue>(): ResolutionDetails<U> => {
-
-    return <ResolutionDetails<U>>({
+    return <ResolutionDetails<U>>{
       value: OBJECT_VALUE as U,
       variant: OBJECT_VARIANT,
       reason: REASON,
-    });
+    };
   }) as <U>() => ResolutionDetails<U>,
 
   resolveBooleanEvaluation: jest.fn((): ResolutionDetails<boolean> => {
@@ -83,15 +80,14 @@ const MOCK_PROVIDER: Provider = {
       variant: BOOLEAN_VARIANT,
       reason: REASON,
     };
-
   }),
-  resolveStringEvaluation: jest.fn( (): ResolutionDetails<string> => {
+  resolveStringEvaluation: jest.fn((): ResolutionDetails<string> => {
     return {
       value: STRING_VALUE,
       variant: STRING_VARIANT,
       reason: REASON,
     };
-  })
+  }),
 };
 
 describe('OpenFeatureClient', () => {
@@ -469,6 +465,3 @@ describe('Evaluation details structure', () => {
     });
   });
 });
-
-
-

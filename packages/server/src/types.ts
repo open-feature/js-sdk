@@ -23,7 +23,6 @@ import {
  * Implementation for resolving all the required flag types must be defined.
  */
 export interface Provider extends CommonProvider {
-
   /**
    * A provider hook exposes a mechanism for provider authors to register hooks
    * to tap into various stages of the flag evaluation lifecycle. These hooks can
@@ -202,6 +201,7 @@ export interface Features {
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): Promise<string>;
+
   getStringValue<T extends string = string>(
     flagKey: string,
     defaultValue: T,
@@ -225,6 +225,7 @@ export interface Features {
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): Promise<EvaluationDetails<string>>;
+
   getStringDetails<T extends string = string>(
     flagKey: string,
     defaultValue: T,
@@ -248,6 +249,7 @@ export interface Features {
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): Promise<number>;
+
   getNumberValue<T extends number = number>(
     flagKey: string,
     defaultValue: T,
@@ -271,6 +273,7 @@ export interface Features {
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): Promise<EvaluationDetails<number>>;
+
   getNumberDetails<T extends number = number>(
     flagKey: string,
     defaultValue: T,
@@ -294,6 +297,7 @@ export interface Features {
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): Promise<JsonValue>;
+
   getObjectValue<T extends JsonValue = JsonValue>(
     flagKey: string,
     defaultValue: T,
@@ -317,6 +321,7 @@ export interface Features {
     context?: EvaluationContext,
     options?: FlagEvaluationOptions
   ): Promise<EvaluationDetails<JsonValue>>;
+
   getObjectDetails<T extends JsonValue = JsonValue>(
     flagKey: string,
     defaultValue: T,
@@ -325,11 +330,7 @@ export interface Features {
   ): Promise<EvaluationDetails<T>>;
 }
 
-export interface Client
-  extends EvaluationLifeCycle<Client>,
-    Features,
-    ManageContext<Client>,
-    ManageLogger<Client> {
+export interface Client extends EvaluationLifeCycle<Client>, Features, ManageContext<Client>, ManageLogger<Client> {
   readonly metadata: ClientMetadata;
 }
 
@@ -339,24 +340,76 @@ export interface GlobalApi
     ManageLogger<GlobalApi>,
     ManageTransactionContextPropagator<GlobalApi> {
   readonly providerMetadata: ProviderMetadata;
+
   /**
-   * A factory function for creating new OpenFeature clients. Clients can contain
+   * A factory function for creating new unnamed OpenFeature clients. Clients can contain
    * their own state (e.g. logger, hook, context). Multiple clients can be used
    * to segment feature flag configuration.
    *
+   * All unnamed clients use the same provider set via {@link this.setProvider setProvider}.
+   *
    * @param {string} name The name of the client
-   * @param {string} version The version of the client
+   * @param {string} version The version of the client (only used for metadata)
    * @param {EvaluationContext} context Evaluation context that should be set on the client to used during flag evaluations
    * @returns {Client} OpenFeature Client
    */
+  getClient(context?: EvaluationContext): Client;
+
+  /**
+   * A factory function for creating new named OpenFeature clients. Clients can contain
+   * their own state (e.g. logger, hook, context). Multiple clients can be used
+   * to segment feature flag configuration.
+   *
+   * If there is already a provider bound to this name via {@link this.setProvider setProvider}, this provider will be used.
+   * Otherwise, the default provider is used until a provider is assigned to that name.
+   *
+   * @param {string} name The name of the client
+   * @param {EvaluationContext} context Evaluation context that should be set on the client to used during flag evaluations
+   * @returns {Client} OpenFeature Client
+   */
+  getClient(name: string, context?: EvaluationContext): Client;
+
+  /**
+   * A factory function for creating new named OpenFeature clients. Clients can contain
+   * their own state (e.g. logger, hook, context). Multiple clients can be used
+   * to segment feature flag configuration.
+   *
+   * If there is already a provider bound to this name via {@link this.setProvider setProvider}, this provider will be used.
+   * Otherwise, the default provider is used until a provider is assigned to that name.
+   *
+   * @param {string} name The name of the client
+   * @param {string} version The version of the client (only used for metadata)
+   * @param {EvaluationContext} context Evaluation context that should be set on the client to used during flag evaluations
+   * @returns {Client} OpenFeature Client
+   */
+  getClient(name: string, version: string, context?: EvaluationContext): Client;
+
+  getClient(
+    nameOrContext?: string | EvaluationContext,
+    versionOrContext?: string | EvaluationContext,
+    contextOrUndefined?: EvaluationContext
+  ): Client;
+
   getClient(name?: string, version?: string, context?: EvaluationContext): Client;
 
   /**
-   * Sets the provider that OpenFeature will use for flag evaluations. Setting
-   * a provider supersedes the current provider used in new and existing clients.
+   * Sets the provider that OpenFeature will use for flag evaluations of clients without a name.
+   * Setting a provider supersedes the current provider used in new and existing clients without a name.
    *
    * @param {Provider} provider The provider responsible for flag evaluations.
    * @returns {GlobalApi} OpenFeature API
    */
   setProvider(provider: Provider): GlobalApi;
+
+  /**
+   * Sets the provider that OpenFeature will use for flag evaluations of clients with the given name.
+   * Setting a provider supersedes the current provider used in new and existing clients with that name.
+   *
+   * @param {string} client The name to identify the client
+   * @param {Provider} provider The provider responsible for flag evaluations.
+   * @returns {GlobalApi} OpenFeature API
+   */
+  setProvider(client: string, provider: Provider): GlobalApi;
+
+  setProvider(clientOrProvider?: string | Provider, providerOrUndefined?: Provider): GlobalApi;
 }

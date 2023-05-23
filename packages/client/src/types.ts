@@ -28,35 +28,35 @@ export enum ProviderEvents {
    * The provider is in an error state.
    */
   Error = 'PROVIDER_ERROR',
-  
+
   /**
    * The flag configuration in the source-of-truth has changed.
    */
   ConfigurationChanged = 'PROVIDER_CONFIGURATION_CHANGED',
-  
+
   /**
    * The provider's cached state is not longer valid and may not be up-to-date with the source of truth.
    */
   Stale = 'PROVIDER_STALE',
-};
+}
 
 export interface EventData {
-  flagKeysChanged?: string[],
-  changeMetadata?: { [key: string]: boolean | string } // similar to flag metadata
+  flagKeysChanged?: string[];
+  changeMetadata?: { [key: string]: boolean | string }; // similar to flag metadata
 }
 
 export interface Eventing {
-  addHandler(notificationType: string, handler: Handler): void
+  addHandler(notificationType: string, handler: Handler): void;
 }
 
 export type EventContext = {
   notificationType: string;
   [key: string]: unknown;
-}
+};
 
-export type Handler = (eventContext?: EventContext) => void
+export type Handler = (eventContext?: EventContext) => void;
 
-export type EventCallbackMessage = (eventContext: EventContext) => void
+export type EventCallbackMessage = (eventContext: EventContext) => void;
 
 /**
  * Interface that providers must implement to resolve flag values for their particular
@@ -65,7 +65,6 @@ export type EventCallbackMessage = (eventContext: EventContext) => void
  * Implementation for resolving all the required flag types must be defined.
  */
 export interface Provider extends CommonProvider {
-
   /**
    * A provider hook exposes a mechanism for provider authors to register hooks
    * to tap into various stages of the flag evaluation lifecycle. These hooks can
@@ -76,7 +75,7 @@ export interface Provider extends CommonProvider {
 
   /**
    * An event emitter for ProviderEvents.
-   * 
+   *
    * @see ProviderEvents
    */
   events?: OpenFeatureEventEmitter;
@@ -84,11 +83,11 @@ export interface Provider extends CommonProvider {
   /**
    * A handler function to reconcile changes when the static context.
    * Called by the SDK when the context is changed.
-   * 
-   * @param oldContext 
-   * @param newContext 
+   *
+   * @param oldContext
+   * @param newContext
    */
-  onContextChange?(oldContext: EvaluationContext, newContext: EvaluationContext): Promise<void>
+  onContextChange?(oldContext: EvaluationContext, newContext: EvaluationContext): Promise<void>;
 
   // TODO: move to common Provider type when we want close in server
   onClose?(): Promise<void>;
@@ -100,8 +99,8 @@ export interface Provider extends CommonProvider {
    * When the returned promise resolves, the SDK fires the ProviderEvents.Ready event.
    * If the returned promise rejects, the SDK fires the ProviderEvents.Error event.
    * Use this function to perform any context-dependent setup within the provider.
-   * 
-   * @param context 
+   *
+   * @param context
    */
   initialize?(context: EvaluationContext): Promise<void>;
 
@@ -154,10 +153,7 @@ export interface Hook<T extends FlagValue = FlagValue> {
    * @param hookContext
    * @param hookHints
    */
-  before?(
-    hookContext: BeforeHookContext,
-    hookHints?: HookHints
-  ): EvaluationContext | void;
+  before?(hookContext: BeforeHookContext, hookHints?: HookHints): EvaluationContext | void;
 
   /**
    * Runs after flag values are successfully resolved from the provider.
@@ -166,11 +162,7 @@ export interface Hook<T extends FlagValue = FlagValue> {
    * @param evaluationDetails
    * @param hookHints
    */
-  after?(
-    hookContext: Readonly<HookContext<T>>,
-    evaluationDetails: EvaluationDetails<T>,
-    hookHints?: HookHints
-  ): void;
+  after?(hookContext: Readonly<HookContext<T>>, evaluationDetails: EvaluationDetails<T>, hookHints?: HookHints): void;
 
   /**
    * Runs in the event of an unhandled error or promise rejection during flag resolution, or any attached hooks.
@@ -235,11 +227,7 @@ export interface Features {
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
    * @returns {boolean} Flag evaluation response
    */
-  getBooleanValue(
-    flagKey: string,
-    defaultValue: boolean,
-    options?: FlagEvaluationOptions
-  ): boolean;
+  getBooleanValue(flagKey: string, defaultValue: boolean, options?: FlagEvaluationOptions): boolean;
 
   /**
    * Performs a flag evaluation that a returns an evaluation details object.
@@ -264,16 +252,8 @@ export interface Features {
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
    * @returns {T} Flag evaluation response
    */
-  getStringValue(
-    flagKey: string,
-    defaultValue: string,
-    options?: FlagEvaluationOptions
-  ): string;
-  getStringValue<T extends string = string>(
-    flagKey: string,
-    defaultValue: T,
-    options?: FlagEvaluationOptions
-  ): T;
+  getStringValue(flagKey: string, defaultValue: string, options?: FlagEvaluationOptions): string;
+  getStringValue<T extends string = string>(flagKey: string, defaultValue: T, options?: FlagEvaluationOptions): T;
 
   /**
    * Performs a flag evaluation that a returns an evaluation details object.
@@ -284,11 +264,7 @@ export interface Features {
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
    * @returns {EvaluationDetails<T>} Flag evaluation details response
    */
-  getStringDetails(
-    flagKey: string,
-    defaultValue: string,
-    options?: FlagEvaluationOptions
-  ): EvaluationDetails<string>;
+  getStringDetails(flagKey: string, defaultValue: string, options?: FlagEvaluationOptions): EvaluationDetails<string>;
   getStringDetails<T extends string = string>(
     flagKey: string,
     defaultValue: T,
@@ -304,16 +280,8 @@ export interface Features {
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
    * @returns {T} Flag evaluation response
    */
-  getNumberValue(
-    flagKey: string,
-    defaultValue: number,
-    options?: FlagEvaluationOptions
-  ): number
-  getNumberValue<T extends number = number>(
-    flagKey: string,
-    defaultValue: T,
-    options?: FlagEvaluationOptions
-  ): T;
+  getNumberValue(flagKey: string, defaultValue: number, options?: FlagEvaluationOptions): number;
+  getNumberValue<T extends number = number>(flagKey: string, defaultValue: T, options?: FlagEvaluationOptions): T;
 
   /**
    * Performs a flag evaluation that a returns an evaluation details object.
@@ -324,11 +292,7 @@ export interface Features {
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
    * @returns {Promise<EvaluationDetails<T>>} Flag evaluation details response
    */
-  getNumberDetails(
-    flagKey: string,
-    defaultValue: number,
-    options?: FlagEvaluationOptions
-  ): EvaluationDetails<number>;
+  getNumberDetails(flagKey: string, defaultValue: number, options?: FlagEvaluationOptions): EvaluationDetails<number>;
   getNumberDetails<T extends number = number>(
     flagKey: string,
     defaultValue: T,
@@ -344,16 +308,8 @@ export interface Features {
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
    * @returns {Promise<T>} Flag evaluation response
    */
-  getObjectValue(
-    flagKey: string,
-    defaultValue: JsonValue,
-    options?: FlagEvaluationOptions
-  ): JsonValue;
-  getObjectValue<T extends JsonValue = JsonValue>(
-    flagKey: string,
-    defaultValue: T,
-    options?: FlagEvaluationOptions
-  ): T;
+  getObjectValue(flagKey: string, defaultValue: JsonValue, options?: FlagEvaluationOptions): JsonValue;
+  getObjectValue<T extends JsonValue = JsonValue>(flagKey: string, defaultValue: T, options?: FlagEvaluationOptions): T;
 
   /**
    * Performs a flag evaluation that a returns an evaluation details object.
@@ -376,11 +332,7 @@ export interface Features {
   ): EvaluationDetails<T>;
 }
 
-export interface Client
-  extends EvaluationLifeCycle<Client>,
-    Features,
-    ManageLogger<Client>,
-    Eventing {
+export interface Client extends EvaluationLifeCycle<Client>, Features, ManageLogger<Client>, Eventing {
   readonly metadata: ClientMetadata;
 }
 

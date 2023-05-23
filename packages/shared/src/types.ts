@@ -34,11 +34,13 @@ export type FlagValue = boolean | string | number | JsonValue;
 
 export type FlagValueType = 'boolean' | 'string' | 'number' | 'object';
 
-
 export interface Logger {
   error(...args: unknown[]): void;
+
   warn(...args: unknown[]): void;
+
   info(...args: unknown[]): void;
+
   debug(...args: unknown[]): void;
 }
 
@@ -59,7 +61,7 @@ export const StandardResolutionReasons = {
   DISABLED: 'DISABLED',
 
   /**
-   * 	The resolved value was configured statically, or otherwise fell back to a pre-configured value.
+   *  The resolved value was configured statically, or otherwise fell back to a pre-configured value.
    */
   DEFAULT: 'DEFAULT',
 
@@ -67,12 +69,12 @@ export const StandardResolutionReasons = {
    * The reason for the resolved value could not be determined.
    */
   UNKNOWN: 'UNKNOWN',
-  
+
   /**
    * The resolved value is static (no dynamic evaluation).
    */
   STATIC: 'STATIC',
-  
+
   /**
    * The resolved value was retrieved from cache.
    */
@@ -187,6 +189,7 @@ interface Metadata {}
 export interface ClientMetadata extends Metadata {
   readonly version?: string;
   readonly name?: string;
+  readonly provider: ProviderMetadata;
 }
 
 export interface ProviderMetadata extends Metadata {
@@ -263,7 +266,14 @@ export interface TransactionContextPropagator {
   ): void;
 }
 
+export enum ProviderStatus {
+  NOT_READY = 'NOT_READY',
+  READY = 'READY',
+  ERROR = 'ERROR',
+}
+
 export interface CommonProvider {
   readonly metadata: ProviderMetadata;
+  readonly status?: ProviderStatus;
   // TODO: move close from client Provider here once we want it in server
 }

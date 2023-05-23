@@ -2,198 +2,235 @@ import {
   Provider,
   ProviderEvents,
   OpenFeatureEventEmitter,
-  OpenFeatureAPI,
+  ProviderMetadata,
+  ProviderStatus,
+  ResolutionDetails,
+  JsonValue,
+  OpenFeature,
 } from '../src';
+import { v4 as uuid } from 'uuid';
 
 const ERROR_REASON = 'error';
 const ERROR_CODE = 'MOCKED_ERROR';
 
-const MOCK_EVENT_PROVIDER = {
-  metadata: {
-    name: 'mock-events',
-  },
-  initialize: jest.fn(() => {
-    return Promise.resolve(undefined);
-  }),
-  events: new OpenFeatureEventEmitter(),
-} as unknown as Provider;
+class MockProvider implements Provider {
+  readonly metadata: ProviderMetadata;
+  readonly events?: OpenFeatureEventEmitter;
+  private hasInitialize: boolean;
+  private failOnInit: boolean;
+  private enableEvents: boolean;
+  status?: ProviderStatus = undefined;
 
-const MOCK_ERROR_EVENT_PROVIDER = {
-  metadata: {
-    name: 'mock-events-failure',
-  },
-  initialize: jest.fn(() => {
-    return Promise.reject({
-      reason: ERROR_REASON,
-      errorCode: ERROR_CODE,
-    });
-  }),
-  events: new OpenFeatureEventEmitter(),
-} as unknown as Provider;
+  constructor(options?: {
+    hasInitialize?: boolean;
+    initialStatus?: ProviderStatus;
+    enableEvents?: boolean;
+    failOnInit?: boolean;
+    name?: string;
+  }) {
+    this.metadata = { name: options?.name ?? 'mock-provider' };
+    this.hasInitialize = options?.hasInitialize ?? true;
+    this.status = options?.initialStatus ?? ProviderStatus.NOT_READY;
+    this.enableEvents = options?.enableEvents ?? true;
+    this.failOnInit = options?.failOnInit ?? false;
 
-const MOCK_NO_EVENT_PROVIDER = {
-  metadata: {
-    name: 'mock-no-events',
-  },
-  initialize: jest.fn(() => {
-    return Promise.resolve(undefined);
-  }),
-  // no events.
-} as unknown as Provider;
+    if (this.enableEvents) {
+      this.events = new OpenFeatureEventEmitter();
+    }
 
-const MOCK_ERROR_NO_EVENT_PROVIDER = {
-  metadata: {
-    name: 'mock-no-events-failure',
-  },
-  initialize: jest.fn(() => {
-    return Promise.reject({
-      reason: ERROR_REASON,
-      errorCode: ERROR_CODE,
-    });
-  }),
-  // no events.
-} as unknown as Provider;
+    if (this.hasInitialize) {
+      this.initialize = jest.fn(async () => {
+        if (this.failOnInit) {
+          throw {
+            reason: ERROR_REASON,
+            errorCode: ERROR_CODE,
+          };
+        }
+
+        this.status = ProviderStatus.READY;
+      });
+    }
+  }
+
+  initialize: jest.Mock<Promise<void>, []> | undefined;
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  async onClose(): Promise<void> {}
+
+  resolveBooleanEvaluation(): ResolutionDetails<boolean> {
+    throw new Error('Not implemented');
+  }
+
+  resolveNumberEvaluation(): ResolutionDetails<number> {
+    throw new Error('Not implemented');
+  }
+
+  resolveObjectEvaluation<T extends JsonValue>(): ResolutionDetails<T> {
+    throw new Error('Not implemented');
+  }
+
+  resolveStringEvaluation(): ResolutionDetails<string> {
+    throw new Error('Not implemented');
+  }
+}
 
 describe('Events', () => {
   // set timeouts short for this suite.
   jest.setTimeout(1000);
-  let API: OpenFeatureAPI = new (OpenFeatureAPI as any)();
+  let clientId = uuid();
 
   afterEach(() => {
-    jest.clearAllMocks();
-    API = new (OpenFeatureAPI as any)(); //TODO this hacky thing should be removed with provider mapping: https://github.com/open-feature/js-sdk/issues/421
+    // jest.clearAllMocks();
+    clientId = uuid();
   });
 
   describe('Requirement 5.1.1', () => {
     describe('provider implements events', () => {
       it('The provider defines a mechanism for signalling the occurrence of an event`PROVIDER_READY`', (done) => {
-        const client = API.getClient();
+        const provider = new MockProvider();
+        const client = OpenFeature.getClient(clientId);
         client.addHandler(ProviderEvents.Ready, () => {
           try {
-            expect(API.providerMetadata.name).toBe(MOCK_EVENT_PROVIDER.metadata.name);
-            expect(MOCK_EVENT_PROVIDER.initialize).toHaveBeenCalled();
+            expect(client.metadata.provider.name).toBe(provider.metadata.name);
+            expect(provider.initialize).toHaveBeenCalled();
             done();
           } catch (err) {
             done(err);
           }
         });
-        API.setProvider(MOCK_EVENT_PROVIDER);
+        OpenFeature.setProvider(clientId, provider);
       });
-  
+
       it('It defines a mechanism for signalling `PROVIDER_ERROR`', (done) => {
         //make sure an error event is fired when initialize promise reject
-        const client = API.getClient();
+        const provider = new MockProvider({ failOnInit: true });
+        const client = OpenFeature.getClient(clientId);
+
         client.addHandler(ProviderEvents.Error, () => {
           try {
-            expect(API.providerMetadata.name).toBe(MOCK_ERROR_EVENT_PROVIDER.metadata.name);
-            expect(MOCK_ERROR_EVENT_PROVIDER.initialize).toHaveBeenCalled();
+            expect(client.metadata.provider.name).toBe(provider.metadata.name);
+            expect(provider.initialize).toHaveBeenCalled();
             done();
           } catch (err) {
             done(err);
           }
         });
-        API.setProvider(MOCK_ERROR_EVENT_PROVIDER);
+
+        OpenFeature.setProvider(clientId, provider);
       });
     });
 
     describe('provider does not implement events', () => {
       it('The provider defines a mechanism for signalling the occurrence of an event`PROVIDER_READY`', (done) => {
-        const client = API.getClient();
+        const provider = new MockProvider({ enableEvents: false });
+        const client = OpenFeature.getClient(clientId);
+
         client.addHandler(ProviderEvents.Ready, () => {
           try {
-            expect(API.providerMetadata.name).toBe(MOCK_NO_EVENT_PROVIDER.metadata.name);
-            expect(MOCK_NO_EVENT_PROVIDER.initialize).toHaveBeenCalled();
+            expect(client.metadata.provider.name).toBe(provider.metadata.name);
             done();
           } catch (err) {
             done(err);
           }
         });
-        API.setProvider(MOCK_NO_EVENT_PROVIDER);
+
+        OpenFeature.setProvider(clientId, provider);
       });
-  
+
       it('It defines a mechanism for signalling `PROVIDER_ERROR`', (done) => {
-        //make sure an error event is fired when initialize promise reject
-        const client = API.getClient();
+        const provider = new MockProvider({ enableEvents: false, failOnInit: true });
+        const client = OpenFeature.getClient(clientId);
+
         client.addHandler(ProviderEvents.Error, () => {
           try {
-            expect(API.providerMetadata.name).toBe(MOCK_ERROR_NO_EVENT_PROVIDER.metadata.name);
-            expect(MOCK_ERROR_NO_EVENT_PROVIDER.initialize).toHaveBeenCalled();
+            expect(client.metadata.provider.name).toBe(provider.metadata.name);
+            expect(provider.initialize).toHaveBeenCalled();
             done();
           } catch (err) {
             done(err);
           }
         });
-        API.setProvider(MOCK_ERROR_NO_EVENT_PROVIDER);
+
+        OpenFeature.setProvider(clientId, provider);
       });
     });
   });
 
   describe('Requirement 5.2.1, 5.2.3, 5.2.4, 5.2.5 ', () => {
-
     it('If the provider `initialize` function terminates normally, `PROVIDER_READY` handlers MUST run', (done) => {
-      const client = API.getClient();
+      const provider = new MockProvider();
+      const client = OpenFeature.getClient(clientId);
+
       client.addHandler(ProviderEvents.Ready, () => {
         done();
       });
-      API.setProvider(MOCK_EVENT_PROVIDER);
+
+      OpenFeature.setProvider(clientId, provider);
     });
 
     it('If the provider `initialize` function terminates abnormally, `PROVIDER_ERROR` handlers MUST run.', (done) => {
-      const client = API.getClient();
+      const provider = new MockProvider({ failOnInit: true });
+      const client = OpenFeature.getClient(clientId);
+
       client.addHandler(ProviderEvents.Error, () => {
         done();
       });
-      API.setProvider(MOCK_ERROR_EVENT_PROVIDER);
+
+      OpenFeature.setProvider(clientId, provider);
     });
 
     it('It defines a mechanism for signalling `PROVIDER_CONFIGURATION_CHANGED`', (done) => {
-      const client = API.getClient();
+      const provider = new MockProvider();
+      const client = OpenFeature.getClient(clientId);
+
       client.addHandler(ProviderEvents.ConfigurationChanged, () => {
         done();
       });
-      API.setProvider(MOCK_EVENT_PROVIDER);
+
+      OpenFeature.setProvider(clientId, provider);
       // emit a change event from the mock provider
-      MOCK_EVENT_PROVIDER.events?.emit(ProviderEvents.ConfigurationChanged);
+      provider.events?.emit(ProviderEvents.ConfigurationChanged);
     });
 
     it('`PROVIDER_READY` handlers added after the provider is already in a ready state MUST run immediately.', (done) => {
-      const client = API.getClient();
-      API.setProvider(MOCK_EVENT_PROVIDER);
-      expect(MOCK_EVENT_PROVIDER.initialize).toHaveBeenCalled();
+      const provider = new MockProvider();
+      const client = OpenFeature.getClient(clientId);
+
+      OpenFeature.setProvider(clientId, provider);
+      expect(provider.initialize).toHaveBeenCalled();
+
+      let handlerCalled = false;
       client.addHandler(ProviderEvents.Ready, () => {
-        done();
+        if (!handlerCalled) {
+          handlerCalled = true;
+          done();
+        }
       });
     });
   });
 
   describe('Requirement 5.2.6 ', () => {
     it('Event handlers MUST persist across `provider` changes.', (done) => {
-      const client = API.getClient();
+      const provider1 = new MockProvider({ name: 'provider-1' });
+      const provider2 = new MockProvider({ name: 'provider-2' });
+      const client = OpenFeature.getClient(clientId);
 
-      const myProvider: Provider = {
-        metadata: {
-          name: 'first',
-        },
-        initialize: jest.fn(() => {
-          return Promise.resolve(undefined);
-        }),
-        events: new OpenFeatureEventEmitter(),
-      } as unknown as Provider;
-
-      API.setProvider(myProvider);
       let counter = 0;
       client.addHandler(ProviderEvents.Ready, () => {
-        if (API.providerMetadata.name == myProvider.metadata.name) {
-          API.setProvider(MOCK_EVENT_PROVIDER);
+        if (client.metadata.provider.name === provider1.metadata.name) {
+          OpenFeature.setProvider(clientId, provider2);
           counter++;
         } else {
+          console.log(counter);
           expect(counter).toBeGreaterThan(0);
-          expect(API.providerMetadata.name).toBe(MOCK_EVENT_PROVIDER.metadata.name);
+          expect(client.metadata.provider.name).toBe(provider2.metadata.name);
           if (counter == 1) {
             done();
           }
         }
       });
+
+      OpenFeature.setProvider(clientId, provider1);
     });
   });
 });

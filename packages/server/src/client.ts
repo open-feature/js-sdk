@@ -1,12 +1,17 @@
 import {
   ClientMetadata,
-  ErrorCode, EvaluationContext,
+  ErrorCode,
+  EvaluationContext,
   EvaluationDetails,
   FlagValue,
   FlagValueType,
   HookContext,
   JsonValue,
-  Logger, OpenFeatureError, ResolutionDetails, SafeLogger, StandardResolutionReasons
+  Logger,
+  OpenFeatureError,
+  ResolutionDetails,
+  SafeLogger,
+  StandardResolutionReasons,
 } from '@openfeature/shared';
 import { OpenFeature } from './open-feature';
 import { Client, FlagEvaluationOptions, Hook, Provider } from './types';
@@ -15,7 +20,6 @@ type OpenFeatureClientOptions = {
   name?: string;
   version?: string;
 };
-
 
 export class OpenFeatureClient implements Client {
   readonly metadata: ClientMetadata;
@@ -34,7 +38,8 @@ export class OpenFeatureClient implements Client {
     this.metadata = {
       name: options.name,
       version: options.version,
-    } as const;
+      provider: this.providerAccessor().metadata,
+    };
     this._context = context;
   }
 
