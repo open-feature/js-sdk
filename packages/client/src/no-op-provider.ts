@@ -12,6 +12,12 @@ class NoopFeatureProvider implements Provider {
   } as const;
 
   get status(): ProviderStatus {
+    /**
+     * This is due to the NoopProvider not being a real provider.
+     * We do not want it to trigger the Ready event handlers, so we never set this to ready.
+     * With the NoopProvider assigned, the client can be assumed to be uninitialized.
+     * https://github.com/open-feature/js-sdk/pull/429#discussion_r1202642654
+     */
     return ProviderStatus.NOT_READY;
   }
 
