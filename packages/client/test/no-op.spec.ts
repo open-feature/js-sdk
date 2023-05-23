@@ -15,10 +15,10 @@ describe('OpenFeatureClient', () => {
     const client = OpenFeature.getClient();
 
     it('should default all evaluations', async () => {
-      await expect(client.getBooleanValue(NO_OP_FLAG, BOOLEAN_VALUE)).toEqual(BOOLEAN_VALUE);
-      await expect(client.getStringValue(NO_OP_FLAG, STRING_VALUE)).toEqual(STRING_VALUE);
-      await expect(client.getNumberValue(NO_OP_FLAG, NUMBER_VALUE)).toEqual(NUMBER_VALUE);
-      await expect(client.getObjectValue(NO_OP_FLAG, OBJECT_VALUE)).toEqual(OBJECT_VALUE);
+      expect(client.getBooleanValue(NO_OP_FLAG, BOOLEAN_VALUE)).toEqual(BOOLEAN_VALUE);
+      expect(client.getStringValue(NO_OP_FLAG, STRING_VALUE)).toEqual(STRING_VALUE);
+      expect(client.getNumberValue(NO_OP_FLAG, NUMBER_VALUE)).toEqual(NUMBER_VALUE);
+      expect(client.getObjectValue(NO_OP_FLAG, OBJECT_VALUE)).toEqual(OBJECT_VALUE);
     });
   });
 });

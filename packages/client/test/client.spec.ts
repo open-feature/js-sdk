@@ -126,10 +126,10 @@ describe('OpenFeatureClient', () => {
 
     describe('flag evaluation', () => {
       describe('getBooleanValue', () => {
-        it('should return boolean, and call boolean resolver', async () => {
+        it('should return boolean, and call boolean resolver', () => {
           const booleanFlag = 'my-boolean-flag';
           const defaultBooleanValue = false;
-          const value = await client.getBooleanValue(booleanFlag, defaultBooleanValue);
+          const value = client.getBooleanValue(booleanFlag, defaultBooleanValue);
 
           expect(value).toEqual(BOOLEAN_VALUE);
           expect(MOCK_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalledWith(booleanFlag, defaultBooleanValue, {}, {});
@@ -138,10 +138,10 @@ describe('OpenFeatureClient', () => {
 
       describe('getStringValue', () => {
         describe('with no generic arg (as string)', () => {
-          it('should return string, and call string resolver', async () => {
+          it('should return string, and call string resolver', () => {
             const stringFlag = 'my-string-flag';
             const defaultStringValue = 'default-value';
-            const value: string = await client.getStringValue(stringFlag, defaultStringValue);
+            const value: string = client.getStringValue(stringFlag, defaultStringValue);
 
             expect(value).toEqual(STRING_VALUE);
             expect(MOCK_PROVIDER.resolveStringEvaluation).toHaveBeenCalledWith(stringFlag, defaultStringValue, {}, {});
@@ -149,14 +149,11 @@ describe('OpenFeatureClient', () => {
         });
 
         describe('with generic arg', () => {
-          it('should return T, and call string resolver', async () => {
+          it('should return T, and call string resolver', () => {
             const stringFlag = 'my-string-flag';
             type MyRestrictedString = 'val' | 'other';
             const defaultStringValue = 'other';
-            const value: MyRestrictedString = await client.getStringValue<MyRestrictedString>(
-              stringFlag,
-              defaultStringValue
-            );
+            const value: MyRestrictedString = client.getStringValue<MyRestrictedString>(stringFlag, defaultStringValue);
 
             expect(value).toEqual(STRING_VALUE);
             expect(MOCK_PROVIDER.resolveStringEvaluation).toHaveBeenCalledWith(stringFlag, defaultStringValue, {}, {});
@@ -165,38 +162,48 @@ describe('OpenFeatureClient', () => {
 
         describe('getNumberValue', () => {
           describe('with no generic arg (as number)', () => {
-            it('should return number, and call number resolver', async () => {
+            it('should return number, and call number resolver', () => {
               const numberFlag = 'my-number-flag';
               const defaultNumberValue = 1970;
-              const value: number = await client.getNumberValue(numberFlag, defaultNumberValue);
+              const value: number = client.getNumberValue(numberFlag, defaultNumberValue);
 
               expect(value).toEqual(NUMBER_VALUE);
-              expect(MOCK_PROVIDER.resolveNumberEvaluation).toHaveBeenCalledWith(numberFlag, defaultNumberValue, {}, {});
+              expect(MOCK_PROVIDER.resolveNumberEvaluation).toHaveBeenCalledWith(
+                numberFlag,
+                defaultNumberValue,
+                {},
+                {}
+              );
             });
           });
 
           describe('with generic arg', () => {
-            it('should return T, and call number resolver', async () => {
+            it('should return T, and call number resolver', () => {
               const numberFlag = 'my-number-flag';
               type MyRestrictedNumber = 4096 | 2048;
               const defaultNumberValue = 4096;
-              const value: MyRestrictedNumber = await client.getNumberValue<MyRestrictedNumber>(
+              const value: MyRestrictedNumber = client.getNumberValue<MyRestrictedNumber>(
                 numberFlag,
                 defaultNumberValue
               );
 
               expect(value).toEqual(NUMBER_VALUE);
-              expect(MOCK_PROVIDER.resolveNumberEvaluation).toHaveBeenCalledWith(numberFlag, defaultNumberValue, {}, {});
+              expect(MOCK_PROVIDER.resolveNumberEvaluation).toHaveBeenCalledWith(
+                numberFlag,
+                defaultNumberValue,
+                {},
+                {}
+              );
             });
           });
         });
 
         describe('getObjectValue', () => {
           describe('with no generic arg (as JsonValue)', () => {
-            it('should return JsonValue, and call object resolver', async () => {
+            it('should return JsonValue, and call object resolver', () => {
               const objectFlag = 'my-object-flag';
               const defaultObjectFlag = {};
-              const value: JsonValue = await client.getObjectValue(objectFlag, defaultObjectFlag);
+              const value: JsonValue = client.getObjectValue(objectFlag, defaultObjectFlag);
 
               // compare the object
               expect(value).toEqual(OBJECT_VALUE);
@@ -218,7 +225,7 @@ describe('OpenFeatureClient', () => {
           });
 
           describe('with generic arg', () => {
-            it('should return T, and call object resolver', async () => {
+            it('should return T, and call object resolver', () => {
               const objectFlag = 'my-object-flag';
 
               type MyType = {
@@ -232,7 +239,7 @@ describe('OpenFeatureClient', () => {
                   booleanKey: false,
                 },
               };
-              const value: MyType = await client.getObjectValue<MyType>(objectFlag, defaultMyTypeFlag);
+              const value: MyType = client.getObjectValue<MyType>(objectFlag, defaultMyTypeFlag);
 
               const innerBooleanValue: boolean = value.inner.booleanKey;
               expect(innerBooleanValue).toBeTruthy();
@@ -251,21 +258,26 @@ describe('OpenFeatureClient', () => {
 
       describe('detailed flag evaluation', () => {
         describe('getBooleanDetails', () => {
-          it('should return boolean details, and call boolean resolver', async () => {
+          it('should return boolean details, and call boolean resolver', () => {
             const booleanFlag = 'my-boolean-flag';
             const defaultBooleanValue = false;
-            const booleanDetails = await client.getBooleanDetails(booleanFlag, defaultBooleanValue);
+            const booleanDetails = client.getBooleanDetails(booleanFlag, defaultBooleanValue);
 
             expect(booleanDetails.value).toEqual(BOOLEAN_VALUE);
             expect(booleanDetails.variant).toEqual(BOOLEAN_VARIANT);
-            expect(MOCK_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalledWith(booleanFlag, defaultBooleanValue, {}, {});
+            expect(MOCK_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalledWith(
+              booleanFlag,
+              defaultBooleanValue,
+              {},
+              {}
+            );
           });
         });
         describe('getStringDetails', () => {
-          it('should return string details, and call string resolver', async () => {
+          it('should return string details, and call string resolver', () => {
             const stringFlag = 'my-string-flag';
             const defaultStringValue = 'default-value';
-            const stringDetails = await client.getStringDetails(stringFlag, defaultStringValue);
+            const stringDetails = client.getStringDetails(stringFlag, defaultStringValue);
 
             expect(stringDetails.value).toEqual(STRING_VALUE);
             expect(stringDetails.variant).toEqual(STRING_VARIANT);
@@ -274,10 +286,10 @@ describe('OpenFeatureClient', () => {
         });
 
         describe('getNumberDetails', () => {
-          it('should return number details, and call number resolver', async () => {
+          it('should return number details, and call number resolver', () => {
             const numberFlag = 'my-number-flag';
             const defaultNumberValue = 1970;
-            const numberDetails = await client.getNumberDetails(numberFlag, defaultNumberValue);
+            const numberDetails = client.getNumberDetails(numberFlag, defaultNumberValue);
 
             expect(numberDetails.value).toEqual(NUMBER_VALUE);
             expect(numberDetails.variant).toEqual(NUMBER_VARIANT);
@@ -286,10 +298,10 @@ describe('OpenFeatureClient', () => {
         });
 
         describe('getObjectDetails', () => {
-          it('should return object details, and call object resolver', async () => {
+          it('should return object details, and call object resolver', () => {
             const objectFlag = 'my-object-flag';
             const defaultObjectFlag = {};
-            const objectDetails = await client.getObjectDetails(objectFlag, defaultObjectFlag);
+            const objectDetails = client.getObjectDetails(objectFlag, defaultObjectFlag);
 
             expect(objectDetails.value).toEqual(OBJECT_VALUE);
             expect(objectDetails.variant).toEqual(OBJECT_VARIANT);
@@ -297,17 +309,16 @@ describe('OpenFeatureClient', () => {
           });
         });
       });
-
     });
   });
 });
 
 describe('Requirement 1.4.3.1', () => {
   describe('generic support', () => {
-    it('should support generics', async () => {
+    it('should support generics', () => {
       // No generic information exists at runtime, but this test has some value in ensuring the generic args still exist in the typings.
       const client = OpenFeature.getClient();
-      const details: ResolutionDetails<JsonValue> = await client.getObjectDetails('flag', { key: 'value' });
+      const details: ResolutionDetails<JsonValue> = client.getObjectDetails('flag', { key: 'value' });
 
       expect(details).toBeDefined();
     });
@@ -320,9 +331,9 @@ describe('Evaluation details structure', () => {
   let details: EvaluationDetails<number>;
 
   describe('Normal execution', () => {
-    beforeAll(async () => {
+    beforeAll(() => {
       const client = OpenFeature.getClient();
-      details = await client.getNumberDetails(flagKey, defaultValue);
+      details = client.getNumberDetails(flagKey, defaultValue);
 
       expect(details).toBeDefined();
     });
@@ -371,11 +382,11 @@ describe('Evaluation details structure', () => {
     const defaultNumberValue = 123;
     const defaultStringValue = 'hey!';
 
-    beforeAll(async () => {
+    beforeAll(() => {
       OpenFeature.setProvider(errorProvider);
       client = OpenFeature.getClient();
-      nonOpenFeatureErrorDetails = await client.getNumberDetails('some-flag', defaultNumberValue);
-      openFeatureErrorDetails = await client.getStringDetails('some-flag', defaultStringValue);
+      nonOpenFeatureErrorDetails = client.getNumberDetails('some-flag', defaultNumberValue);
+      openFeatureErrorDetails = client.getStringDetails('some-flag', defaultStringValue);
     });
 
     describe('Requirement 1.4.7', () => {
@@ -402,8 +413,8 @@ describe('Evaluation details structure', () => {
     });
 
     describe('Requirement 1.4.9', () => {
-      it('must not throw, must return default', async () => {
-        nonOpenFeatureErrorDetails = await client.getNumberDetails('some-flag', defaultNumberValue);
+      it('must not throw, must return default', () => {
+        nonOpenFeatureErrorDetails = client.getNumberDetails('some-flag', defaultNumberValue);
 
         expect(nonOpenFeatureErrorDetails).toBeTruthy();
         expect(nonOpenFeatureErrorDetails.value).toEqual(defaultNumberValue);
