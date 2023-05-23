@@ -93,11 +93,11 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
    * Sets the provider that OpenFeature will use for flag evaluations of providers with the given name.
    * Setting a provider supersedes the current provider used in new and existing clients with that name.
    *
-   * @param {string} client The name to identify the client
+   * @param {string} clientName The name to identify the client
    * @param {Provider} provider The provider responsible for flag evaluations.
    * @returns {GlobalApi} OpenFeature API
    */
-  setProvider(client: string, provider: Provider): this;
+  setProvider(clientName: string, provider: Provider): this;
   setProvider(clientOrProvider?: string | Provider, providerOrUndefined?: Provider): this {
     const client = stringOrUndefined(clientOrProvider);
     const provider = objectOrUndefined<Provider>(clientOrProvider) ?? objectOrUndefined<Provider>(providerOrUndefined);

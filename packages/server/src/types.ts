@@ -405,11 +405,11 @@ export interface GlobalApi
    * Sets the provider that OpenFeature will use for flag evaluations of clients with the given name.
    * Setting a provider supersedes the current provider used in new and existing clients with that name.
    *
-   * @param {string} client The name to identify the client
+   * @param {string} clientName The name to identify the client
    * @param {Provider} provider The provider responsible for flag evaluations.
    * @returns {GlobalApi} OpenFeature API
    */
-  setProvider(client: string, provider: Provider): GlobalApi;
+  setProvider(clientName: string, provider: Provider): GlobalApi;
 
   setProvider(clientOrProvider?: string | Provider, providerOrUndefined?: Provider): GlobalApi;
 }
