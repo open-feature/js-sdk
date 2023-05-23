@@ -106,7 +106,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
       return this;
     }
 
-    const oldProvider = client ? this._providers.get(client) ?? this._provider : this._provider;
+    const oldProvider = this.getProviderForClient(client);
 
     // ignore no-ops
     if (oldProvider === provider) {
