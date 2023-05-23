@@ -7,7 +7,7 @@ import {
   ResolutionDetails,
   StandardResolutionReasons,
 } from '@openfeature/shared';
-import { OpenFeature, ProviderEvents } from '../../';
+import { OpenFeature, ProviderEvents } from '../../src';
 // load the feature file.
 const feature = loadFeature('packages/client/e2e/features/evaluation.feature');
 
@@ -24,7 +24,9 @@ const givenAnOpenfeatureClientIsRegisteredWithCacheDisabled = (
 defineFeature(feature, (test) => {
   beforeAll((done) => {
     client.addHandler(ProviderEvents.Ready, () => {
-      done();
+      setTimeout(() => {
+        done(); // TODO Fix by setting readiness correctly in provider
+      }, 2000);
     });
   });
 
