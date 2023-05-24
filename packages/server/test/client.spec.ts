@@ -402,6 +402,39 @@ describe('OpenFeatureClient', () => {
     });
   });
 
+  describe('Requirement 1.4.13, Requirement 1.4.14', () => {
+    it('should return immutable `flag metadata` as defined by the provider', async () => {
+      const flagMetadata = {
+        url: 'https://test.dev',
+        version: '1',
+      };
+
+      const flagMetadataProvider = {
+        name: 'flag-metadata',
+        resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
+          return Promise.resolve({
+            value: true,
+            flagMetadata,
+          });
+        }),
+      } as unknown as Provider;
+
+      OpenFeature.setProvider(flagMetadataProvider);
+      const client = OpenFeature.getClient();
+      const response = await client.getBooleanDetails('some-flag', false);
+      expect(response.flagMetadata).toBe(flagMetadata);
+      expect(Object.isFrozen(response.flagMetadata)).toBeTruthy();
+    });
+
+    it('should return empty `flag metadata` because it was not set by the provider', async () => {
+      // The mock provider doesn't contain flag metadata
+      OpenFeature.setProvider(MOCK_PROVIDER);
+      const client = OpenFeature.getClient();
+      const response = await client.getBooleanDetails('some-flag', false);
+      expect(response.flagMetadata).toEqual({});
+    });
+  });
+
   describe('Requirement 1.6.1', () => {
     describe('Provider', () => {
       const nonTransformingProvider = {

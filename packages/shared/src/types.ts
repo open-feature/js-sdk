@@ -125,9 +125,17 @@ export enum ErrorCode {
 
 export type ResolutionReason = keyof typeof StandardResolutionReasons | (string & Record<never, never>);
 
+/**
+ * A structure which supports definition of arbitrary properties, with keys of type string, and values of type boolean, string, or number.
+ * 
+ * This structure is populated by a provider for use by an Application Author (via the Evaluation API) or an Application Integrator (via hooks).
+ */
+export type FlagMetadata = Record<string, string | number | boolean>;
+
 export type ResolutionDetails<U> = {
   value: U;
   variant?: string;
+  flagMetadata?: FlagMetadata;
   reason?: ResolutionReason;
   errorCode?: ErrorCode;
   errorMessage?: string;
@@ -135,6 +143,7 @@ export type ResolutionDetails<U> = {
 
 export type EvaluationDetails<T extends FlagValue> = {
   flagKey: string;
+  flagMetadata: Readonly<FlagMetadata>;
 } & ResolutionDetails<T>;
 
 export interface ManageContext<T> {

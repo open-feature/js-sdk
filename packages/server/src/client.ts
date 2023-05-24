@@ -212,6 +212,7 @@ export class OpenFeatureClient implements Client {
 
       const evaluationDetails = {
         ...resolution,
+        flagMetadata: Object.freeze(resolution.flagMetadata ?? {}),
         flagKey,
       };
 
@@ -229,6 +230,7 @@ export class OpenFeatureClient implements Client {
         errorMessage,
         value: defaultValue,
         reason: StandardResolutionReasons.ERROR,
+        flagMetadata: Object.freeze({}),
         flagKey,
       };
     } finally {
