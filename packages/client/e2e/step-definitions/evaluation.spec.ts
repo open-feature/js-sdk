@@ -25,7 +25,7 @@ defineFeature(feature, (test) => {
   beforeAll((done) => {
     client.addHandler(ProviderEvents.Ready, () => {
       setTimeout(() => {
-        done(); // TODO Fix by setting readiness correctly in provider
+        done(); // TODO remove this once flagd provider properly implements readiness (for now, we add a 2s wait).
       }, 2000);
     });
   });
