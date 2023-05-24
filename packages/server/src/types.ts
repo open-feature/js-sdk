@@ -393,7 +393,8 @@ export interface GlobalApi
   getClient(name?: string, version?: string, context?: EvaluationContext): Client;
 
   /**
-   * Sets the provider that OpenFeature will use for flag evaluations of clients without a name.
+   * Sets the default provider for flag evaluations.
+   * This provider will be used by unnamed clients and named clients to which no provider is bound.
    * Setting a provider supersedes the current provider used in new and existing clients without a name.
    *
    * @param {Provider} provider The provider responsible for flag evaluations.

@@ -22,7 +22,7 @@ const _globalThis = globalThis as OpenFeatureGlobal;
 export class OpenFeatureAPI extends OpenFeatureCommonAPI {
   protected _hooks: Hook[] = [];
   private readonly _events = new OpenFeatureEventEmitter();
-  protected _provider: Provider = NOOP_PROVIDER;
+  protected _defaultProvider: Provider = NOOP_PROVIDER;
   protected _clientProviders: Map<string, Provider> = new Map();
   protected _clientEvents: Map<string | undefined, OpenFeatureEventEmitter> = new Map();
 
@@ -54,7 +54,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
    * @returns {ProviderMetadata} Provider Metadata
    */
   get providerMetadata(): ProviderMetadata {
-    return this._provider.metadata;
+    return this._defaultProvider.metadata;
   }
 
   setLogger(logger: Logger): this {
@@ -79,11 +79,12 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
   async setContext(context: EvaluationContext): Promise<void> {
     const oldContext = this._context;
     this._context = context;
-    await this._provider?.onContextChange?.(oldContext, context);
+    await this._defaultProvider?.onContextChange?.(oldContext, context);
   }
 
   /**
-   * Sets the provider that OpenFeature will use for flag evaluations of providers without a name.
+   * Sets the default provider for flag evaluations.
+   * This provider will be used by unnamed clients and named clients to which no provider is bound.
    * Setting a provider supersedes the current provider used in new and existing clients without a name.
    *
    * @param {Provider} provider The provider responsible for flag evaluations.
@@ -100,27 +101,27 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
    */
   setProvider(clientName: string, provider: Provider): this;
   setProvider(clientOrProvider?: string | Provider, providerOrUndefined?: Provider): this {
-    const client = stringOrUndefined(clientOrProvider);
+    const clientName = stringOrUndefined(clientOrProvider);
     const provider = objectOrUndefined<Provider>(clientOrProvider) ?? objectOrUndefined<Provider>(providerOrUndefined);
 
     if (!provider) {
       return this;
     }
 
-    const oldProvider = this.getProviderForClient(client);
+    const oldProvider = this.getProviderForClient(clientName);
 
     // ignore no-ops
     if (oldProvider === provider) {
       return this;
     }
 
-    if (client) {
-      this._clientProviders.set(client, provider);
+    if (clientName) {
+      this._clientProviders.set(clientName, provider);
     } else {
-      this._provider = provider;
+      this._defaultProvider = provider;
     }
 
-    const clientEmitter = this.getEventEmitterForClient(client);
+    const clientEmitter = this.getEventEmitterForClient(clientName);
     this.transferListeners(oldProvider, provider, clientEmitter);
 
     if (typeof provider.initialize === 'function') {
@@ -144,7 +145,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
   }
 
   async close(): Promise<void> {
-    await this?._provider?.onClose?.();
+    await this?._defaultProvider?.onClose?.();
   }
 
   /**
@@ -172,10 +173,10 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
 
   private getProviderForClient(name?: string): Provider {
     if (!name) {
-      return this._provider;
+      return this._defaultProvider;
     }
 
-    return this._clientProviders.get(name) ?? this._provider;
+    return this._clientProviders.get(name) ?? this._defaultProvider;
   }
 
   private getEventEmitterForClient(name?: string): OpenFeatureEventEmitter {

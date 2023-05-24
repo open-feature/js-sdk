@@ -15,7 +15,7 @@ const _globalThis = globalThis as OpenFeatureGlobal;
 
 export class OpenFeatureAPI extends OpenFeatureCommonAPI {
   protected _hooks: Hook[] = [];
-  protected _provider: Provider = NOOP_PROVIDER;
+  protected _defaultProvider: Provider = NOOP_PROVIDER;
   protected _providers: Map<string, Provider> = new Map();
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -51,7 +51,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
    * @returns {ProviderMetadata} Provider Metadata
    */
   get providerMetadata(): ProviderMetadata {
-    return this._provider.metadata;
+    return this._defaultProvider.metadata;
   }
 
   addHooks(...hooks: Hook<FlagValue>[]): this {
@@ -74,7 +74,8 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
   }
 
   /**
-   * Sets the provider that OpenFeature will use for flag evaluations of clients without a name.
+   * Sets the default provider for flag evaluations.
+   * This provider will be used by unnamed clients and named clients to which no provider is bound.
    * Setting a provider supersedes the current provider used in new and existing clients without a name.
    *
    * @param {Provider} provider The provider responsible for flag evaluations.
@@ -91,17 +92,17 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
    */
   setProvider(clientName: string, provider: Provider): this;
   setProvider(clientOrProvider?: string | Provider, providerOrUndefined?: Provider): this {
-    const client = stringOrUndefined(clientOrProvider);
+    const clientName = stringOrUndefined(clientOrProvider);
     const provider = objectOrUndefined<Provider>(clientOrProvider) ?? objectOrUndefined<Provider>(providerOrUndefined);
 
     if (!provider) {
       return this;
     }
 
-    if (client) {
-      this._providers.set(client, provider);
+    if (clientName) {
+      this._providers.set(clientName, provider);
     } else {
-      this._provider = provider;
+      this._defaultProvider = provider;
     }
 
     return this;
@@ -169,10 +170,10 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
 
   private getProviderForClient(name?: string): Provider {
     if (!name) {
-      return this._provider;
+      return this._defaultProvider;
     }
 
-    return this._providers.get(name) ?? this._provider;
+    return this._providers.get(name) ?? this._defaultProvider;
   }
 }
 
