@@ -33,7 +33,7 @@ describe('OpenFeature', () => {
     it('should set the default provider if no name is provided', () => {
       OpenFeature.setProvider(MOCK_PROVIDER);
       const client = OpenFeature.getClient();
-      expect(client.metadata.provider.name).toEqual(MOCK_PROVIDER.metadata.name);
+      expect(client.metadata.providerMetadata.name).toEqual(MOCK_PROVIDER.metadata.name);
     });
 
     it('should not change named providers when setting a new default provider', () => {
@@ -45,8 +45,8 @@ describe('OpenFeature', () => {
       const unnamedClient = OpenFeature.getClient();
       const namedClient = OpenFeature.getClient(name);
 
-      expect(unnamedClient.metadata.provider.name).toEqual(MOCK_PROVIDER.metadata.name);
-      expect(namedClient.metadata.provider.name).toEqual(fakeProvider.metadata.name);
+      expect(unnamedClient.metadata.providerMetadata.name).toEqual(MOCK_PROVIDER.metadata.name);
+      expect(namedClient.metadata.providerMetadata.name).toEqual(fakeProvider.metadata.name);
     });
 
     it('should assign a new provider to existing clients', () => {
@@ -57,7 +57,7 @@ describe('OpenFeature', () => {
       const namedClient = OpenFeature.getClient(name);
       OpenFeature.setProvider(name, fakeProvider);
 
-      expect(namedClient.metadata.provider.name).toEqual(fakeProvider.metadata.name);
+      expect(namedClient.metadata.providerMetadata.name).toEqual(fakeProvider.metadata.name);
     });
   });
 
@@ -88,7 +88,7 @@ describe('OpenFeature', () => {
 
     it('should return a client with the default provider if no provider has been bound to the name', () => {
       const namedClient = OpenFeature.getClient('unbound');
-      expect(namedClient.metadata.provider.name).toEqual(OpenFeature.providerMetadata.name);
+      expect(namedClient.metadata.providerMetadata.name).toEqual(OpenFeature.providerMetadata.name);
     });
 
     it('should return a client with the provider bound to the name', () => {
@@ -98,7 +98,7 @@ describe('OpenFeature', () => {
       OpenFeature.setProvider(name, fakeProvider);
       const namedClient = OpenFeature.getClient(name);
 
-      expect(namedClient.metadata.provider.name).toEqual(fakeProvider.metadata.name);
+      expect(namedClient.metadata.providerMetadata.name).toEqual(fakeProvider.metadata.name);
     });
   });
 

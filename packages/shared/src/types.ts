@@ -189,7 +189,7 @@ interface Metadata {}
 export interface ClientMetadata extends Metadata {
   readonly version?: string;
   readonly name?: string;
-  readonly provider: ProviderMetadata;
+  readonly providerMetadata: ProviderMetadata;
 }
 
 export interface ProviderMetadata extends Metadata {

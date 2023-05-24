@@ -47,7 +47,7 @@ export class OpenFeatureClient implements Client {
     return {
       name: this.options.name,
       version: this.options.version,
-      provider: this.providerAccessor().metadata,
+      providerMetadata: this.providerAccessor().metadata,
     };
   }
 

@@ -38,7 +38,7 @@ export class OpenFeatureClient implements Client {
     this.metadata = {
       name: options.name,
       version: options.version,
-      provider: this.providerAccessor().metadata,
+      providerMetadata: this.providerAccessor().metadata,
     };
     this._context = context;
   }

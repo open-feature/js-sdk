@@ -91,7 +91,7 @@ describe('Events', () => {
         const client = OpenFeature.getClient(clientId);
         client.addHandler(ProviderEvents.Ready, () => {
           try {
-            expect(client.metadata.provider.name).toBe(provider.metadata.name);
+            expect(client.metadata.providerMetadata.name).toBe(provider.metadata.name);
             expect(provider.initialize).toHaveBeenCalled();
             done();
           } catch (err) {
@@ -108,7 +108,7 @@ describe('Events', () => {
 
         client.addHandler(ProviderEvents.Error, () => {
           try {
-            expect(client.metadata.provider.name).toBe(provider.metadata.name);
+            expect(client.metadata.providerMetadata.name).toBe(provider.metadata.name);
             expect(provider.initialize).toHaveBeenCalled();
             done();
           } catch (err) {
@@ -127,7 +127,7 @@ describe('Events', () => {
 
         client.addHandler(ProviderEvents.Ready, () => {
           try {
-            expect(client.metadata.provider.name).toBe(provider.metadata.name);
+            expect(client.metadata.providerMetadata.name).toBe(provider.metadata.name);
             done();
           } catch (err) {
             done(err);
@@ -143,7 +143,7 @@ describe('Events', () => {
 
         client.addHandler(ProviderEvents.Error, () => {
           try {
-            expect(client.metadata.provider.name).toBe(provider.metadata.name);
+            expect(client.metadata.providerMetadata.name).toBe(provider.metadata.name);
             expect(provider.initialize).toHaveBeenCalled();
             done();
           } catch (err) {
@@ -217,13 +217,13 @@ describe('Events', () => {
 
       let counter = 0;
       client.addHandler(ProviderEvents.Ready, () => {
-        if (client.metadata.provider.name === provider1.metadata.name) {
+        if (client.metadata.providerMetadata.name === provider1.metadata.name) {
           OpenFeature.setProvider(clientId, provider2);
           counter++;
         } else {
           console.log(counter);
           expect(counter).toBeGreaterThan(0);
-          expect(client.metadata.provider.name).toBe(provider2.metadata.name);
+          expect(client.metadata.providerMetadata.name).toBe(provider2.metadata.name);
           if (counter == 1) {
             done();
           }
