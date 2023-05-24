@@ -28,35 +28,35 @@ export enum ProviderEvents {
    * The provider is in an error state.
    */
   Error = 'PROVIDER_ERROR',
-  
+
   /**
    * The flag configuration in the source-of-truth has changed.
    */
   ConfigurationChanged = 'PROVIDER_CONFIGURATION_CHANGED',
-  
+
   /**
    * The provider's cached state is not longer valid and may not be up-to-date with the source of truth.
    */
   Stale = 'PROVIDER_STALE',
-};
+}
 
 export interface EventData {
-  flagKeysChanged?: string[],
-  changeMetadata?: { [key: string]: boolean | string } // similar to flag metadata
+  flagKeysChanged?: string[];
+  changeMetadata?: { [key: string]: boolean | string }; // similar to flag metadata
 }
 
 export interface Eventing {
-  addHandler(notificationType: string, handler: Handler): void
+  addHandler(notificationType: string, handler: Handler): void;
 }
 
 export type EventContext = {
   notificationType: string;
   [key: string]: unknown;
-}
+};
 
-export type Handler = (eventContext?: EventContext) => void
+export type Handler = (eventContext?: EventContext) => void;
 
-export type EventCallbackMessage = (eventContext: EventContext) => void
+export type EventCallbackMessage = (eventContext: EventContext) => void;
 
 /**
  * Interface that providers must implement to resolve flag values for their particular
@@ -65,7 +65,6 @@ export type EventCallbackMessage = (eventContext: EventContext) => void
  * Implementation for resolving all the required flag types must be defined.
  */
 export interface Provider extends CommonProvider {
-
   /**
    * A provider hook exposes a mechanism for provider authors to register hooks
    * to tap into various stages of the flag evaluation lifecycle. These hooks can
@@ -76,7 +75,6 @@ export interface Provider extends CommonProvider {
 
   /**
    * An event emitter for ProviderEvents.
-   * 
    * @see ProviderEvents
    */
   events?: OpenFeatureEventEmitter;
@@ -84,11 +82,10 @@ export interface Provider extends CommonProvider {
   /**
    * A handler function to reconcile changes when the static context.
    * Called by the SDK when the context is changed.
-   * 
-   * @param oldContext 
-   * @param newContext 
+   * @param oldContext
+   * @param newContext
    */
-  onContextChange?(oldContext: EvaluationContext, newContext: EvaluationContext): Promise<void>
+  onContextChange?(oldContext: EvaluationContext, newContext: EvaluationContext): Promise<void>;
 
   // TODO: move to common Provider type when we want close in server
   onClose?(): Promise<void>;
@@ -100,8 +97,7 @@ export interface Provider extends CommonProvider {
    * When the returned promise resolves, the SDK fires the ProviderEvents.Ready event.
    * If the returned promise rejects, the SDK fires the ProviderEvents.Error event.
    * Use this function to perform any context-dependent setup within the provider.
-   * 
-   * @param context 
+   * @param context
    */
   initialize?(context: EvaluationContext): Promise<void>;
 
@@ -150,31 +146,21 @@ export interface Hook<T extends FlagValue = FlagValue> {
   /**
    * Runs before flag values are resolved from the provider.
    * If an EvaluationContext is returned, it will be merged with the pre-existing EvaluationContext.
-   *
    * @param hookContext
    * @param hookHints
    */
-  before?(
-    hookContext: BeforeHookContext,
-    hookHints?: HookHints
-  ): EvaluationContext | void;
+  before?(hookContext: BeforeHookContext, hookHints?: HookHints): EvaluationContext | void;
 
   /**
    * Runs after flag values are successfully resolved from the provider.
-   *
    * @param hookContext
    * @param evaluationDetails
    * @param hookHints
    */
-  after?(
-    hookContext: Readonly<HookContext<T>>,
-    evaluationDetails: EvaluationDetails<T>,
-    hookHints?: HookHints
-  ): void;
+  after?(hookContext: Readonly<HookContext<T>>, evaluationDetails: EvaluationDetails<T>, hookHints?: HookHints): void;
 
   /**
    * Runs in the event of an unhandled error or promise rejection during flag resolution, or any attached hooks.
-   *
    * @param hookContext
    * @param error
    * @param hookHints
@@ -184,7 +170,6 @@ export interface Hook<T extends FlagValue = FlagValue> {
   /**
    * Runs after all other hook stages, regardless of success or error.
    * Errors thrown here are unhandled by the client and will surface in application code.
-   *
    * @param hookContext
    * @param hookHints
    */
@@ -198,7 +183,6 @@ interface EvaluationLifeCycle<T> {
    * will not remove existing hooks.
    * Hooks registered on the global API object run with all evaluations.
    * Hooks registered on the client run with all evaluations on that client.
-   *
    * @template T The type of the receiver
    * @param {Hook<FlagValue>[]} hooks A list of hooks that should always run
    * @returns {T} The receiver (this object)
@@ -207,14 +191,12 @@ interface EvaluationLifeCycle<T> {
 
   /**
    * Access all the hooks that are registered on this receiver.
-   *
    * @returns {Hook<FlagValue>[]} A list of the client hooks
    */
   getHooks(): Hook[];
 
   /**
    * Clears all the hooks that are registered on this receiver.
-   *
    * @template T The type of the receiver
    * @returns {T} The receiver (this object)
    */
@@ -229,21 +211,15 @@ export interface FlagEvaluationOptions {
 export interface Features {
   /**
    * Performs a flag evaluation that returns a boolean.
-   *
    * @param {string} flagKey The flag key uniquely identifies a particular flag
    * @param {boolean} defaultValue The value returned if an error occurs
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
    * @returns {boolean} Flag evaluation response
    */
-  getBooleanValue(
-    flagKey: string,
-    defaultValue: boolean,
-    options?: FlagEvaluationOptions
-  ): boolean;
+  getBooleanValue(flagKey: string, defaultValue: boolean, options?: FlagEvaluationOptions): boolean;
 
   /**
    * Performs a flag evaluation that a returns an evaluation details object.
-   *
    * @param {string} flagKey The flag key uniquely identifies a particular flag
    * @param {boolean} defaultValue The value returned if an error occurs
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
@@ -257,38 +233,24 @@ export interface Features {
 
   /**
    * Performs a flag evaluation that returns a string.
-   *
    * @param {string} flagKey The flag key uniquely identifies a particular flag
    * @template {string} T A optional generic argument constraining the string
    * @param {T} defaultValue The value returned if an error occurs
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
    * @returns {T} Flag evaluation response
    */
-  getStringValue(
-    flagKey: string,
-    defaultValue: string,
-    options?: FlagEvaluationOptions
-  ): string;
-  getStringValue<T extends string = string>(
-    flagKey: string,
-    defaultValue: T,
-    options?: FlagEvaluationOptions
-  ): T;
+  getStringValue(flagKey: string, defaultValue: string, options?: FlagEvaluationOptions): string;
+  getStringValue<T extends string = string>(flagKey: string, defaultValue: T, options?: FlagEvaluationOptions): T;
 
   /**
    * Performs a flag evaluation that a returns an evaluation details object.
-   *
    * @param {string} flagKey The flag key uniquely identifies a particular flag
    * @template {string} T A optional generic argument constraining the string
    * @param {T} defaultValue The value returned if an error occurs
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
    * @returns {EvaluationDetails<T>} Flag evaluation details response
    */
-  getStringDetails(
-    flagKey: string,
-    defaultValue: string,
-    options?: FlagEvaluationOptions
-  ): EvaluationDetails<string>;
+  getStringDetails(flagKey: string, defaultValue: string, options?: FlagEvaluationOptions): EvaluationDetails<string>;
   getStringDetails<T extends string = string>(
     flagKey: string,
     defaultValue: T,
@@ -297,38 +259,24 @@ export interface Features {
 
   /**
    * Performs a flag evaluation that returns a number.
-   *
    * @param {string} flagKey The flag key uniquely identifies a particular flag
    * @template {number} T A optional generic argument constraining the number
    * @param {T} defaultValue The value returned if an error occurs
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
    * @returns {T} Flag evaluation response
    */
-  getNumberValue(
-    flagKey: string,
-    defaultValue: number,
-    options?: FlagEvaluationOptions
-  ): number
-  getNumberValue<T extends number = number>(
-    flagKey: string,
-    defaultValue: T,
-    options?: FlagEvaluationOptions
-  ): T;
+  getNumberValue(flagKey: string, defaultValue: number, options?: FlagEvaluationOptions): number;
+  getNumberValue<T extends number = number>(flagKey: string, defaultValue: T, options?: FlagEvaluationOptions): T;
 
   /**
    * Performs a flag evaluation that a returns an evaluation details object.
-   *
    * @param {string} flagKey The flag key uniquely identifies a particular flag
    * @template {number} T A optional generic argument constraining the number
    * @param {T} defaultValue The value returned if an error occurs
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
    * @returns {Promise<EvaluationDetails<T>>} Flag evaluation details response
    */
-  getNumberDetails(
-    flagKey: string,
-    defaultValue: number,
-    options?: FlagEvaluationOptions
-  ): EvaluationDetails<number>;
+  getNumberDetails(flagKey: string, defaultValue: number, options?: FlagEvaluationOptions): EvaluationDetails<number>;
   getNumberDetails<T extends number = number>(
     flagKey: string,
     defaultValue: T,
@@ -337,27 +285,17 @@ export interface Features {
 
   /**
    * Performs a flag evaluation that returns an object.
-   *
    * @param {string} flagKey The flag key uniquely identifies a particular flag
    * @template {JsonValue} T A optional generic argument describing the structure
    * @param {T} defaultValue The value returned if an error occurs
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
    * @returns {Promise<T>} Flag evaluation response
    */
-  getObjectValue(
-    flagKey: string,
-    defaultValue: JsonValue,
-    options?: FlagEvaluationOptions
-  ): JsonValue;
-  getObjectValue<T extends JsonValue = JsonValue>(
-    flagKey: string,
-    defaultValue: T,
-    options?: FlagEvaluationOptions
-  ): T;
+  getObjectValue(flagKey: string, defaultValue: JsonValue, options?: FlagEvaluationOptions): JsonValue;
+  getObjectValue<T extends JsonValue = JsonValue>(flagKey: string, defaultValue: T, options?: FlagEvaluationOptions): T;
 
   /**
    * Performs a flag evaluation that a returns an evaluation details object.
-   *
    * @param {string} flagKey The flag key uniquely identifies a particular flag
    * @template {JsonValue} T A optional generic argument describing the structure
    * @param {T} defaultValue The value returned if an error occurs
@@ -376,11 +314,7 @@ export interface Features {
   ): EvaluationDetails<T>;
 }
 
-export interface Client
-  extends EvaluationLifeCycle<Client>,
-    Features,
-    ManageLogger<Client>,
-    Eventing {
+export interface Client extends EvaluationLifeCycle<Client>, Features, ManageLogger<Client>, Eventing {
   readonly metadata: ClientMetadata;
 }
 
@@ -394,7 +328,6 @@ export interface GlobalApi
    * A factory function for creating new OpenFeature clients. Clients can contain
    * their own state (e.g. logger, hook, context). Multiple clients can be used
    * to segment feature flag configuration.
-   *
    * @param {string} name The name of the client
    * @param {string} version The version of the client
    * @param {EvaluationContext} context Evaluation context that should be set on the client to used during flag evaluations
@@ -405,7 +338,6 @@ export interface GlobalApi
   /**
    * Sets the provider that OpenFeature will use for flag evaluations. Setting
    * a provider supersedes the current provider used in new and existing clients.
-   *
    * @param {Provider} provider The provider responsible for flag evaluations.
    * @returns {GlobalApi} OpenFeature API
    */

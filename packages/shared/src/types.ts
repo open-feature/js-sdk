@@ -34,11 +34,13 @@ export type FlagValue = boolean | string | number | JsonValue;
 
 export type FlagValueType = 'boolean' | 'string' | 'number' | 'object';
 
-
 export interface Logger {
   error(...args: unknown[]): void;
+
   warn(...args: unknown[]): void;
+
   info(...args: unknown[]): void;
+
   debug(...args: unknown[]): void;
 }
 
@@ -59,7 +61,7 @@ export const StandardResolutionReasons = {
   DISABLED: 'DISABLED',
 
   /**
-   * 	The resolved value was configured statically, or otherwise fell back to a pre-configured value.
+   *  The resolved value was configured statically, or otherwise fell back to a pre-configured value.
    */
   DEFAULT: 'DEFAULT',
 
@@ -67,12 +69,12 @@ export const StandardResolutionReasons = {
    * The reason for the resolved value could not be determined.
    */
   UNKNOWN: 'UNKNOWN',
-  
+
   /**
    * The resolved value is static (no dynamic evaluation).
    */
   STATIC: 'STATIC',
-  
+
   /**
    * The resolved value was retrieved from cache.
    */
@@ -149,7 +151,6 @@ export type EvaluationDetails<T extends FlagValue> = {
 export interface ManageContext<T> {
   /**
    * Access the evaluation context set on the receiver.
-   *
    * @returns {EvaluationContext} Evaluation context
    */
   getContext(): EvaluationContext;
@@ -157,7 +158,6 @@ export interface ManageContext<T> {
   /**
    * Sets evaluation context that will be used during flag evaluations
    * on this receiver.
-   *
    * @template T The type of the receiver
    * @param {EvaluationContext} context Evaluation context
    * @returns {T} The receiver (this object)
@@ -171,7 +171,6 @@ export interface ManageLogger<T> {
    * and is passed to various components in the SDK.
    * The logger configured on the global API object will be used for all evaluations,
    * unless overridden in a particular client.
-   *
    * @template T The type of the receiver
    * @param {Logger} logger The logger to be used
    * @returns {T} The receiver (this object)
@@ -187,6 +186,7 @@ interface Metadata {}
 export interface ClientMetadata extends Metadata {
   readonly version?: string;
   readonly name?: string;
+  readonly providerMetadata: ProviderMetadata;
 }
 
 export interface ProviderMetadata extends Metadata {
@@ -222,7 +222,6 @@ export interface ManageTransactionContextPropagator<T> extends TransactionContex
    * Sets a transaction context propagator on this receiver. The transaction context
    * propagator is responsible for persisting context for the duration of a single
    * transaction.
-   *
    * @experimental
    * @template T The type of the receiver
    * @param {TransactionContextPropagator} transactionContextPropagator The context propagator to be used
@@ -238,7 +237,6 @@ export interface TransactionContextPropagator {
    *
    * Returns the currently defined transaction context using the registered transaction
    * context propagator.
-   *
    * @experimental
    * @returns {TransactionContext} The current transaction context
    */
@@ -249,7 +247,6 @@ export interface TransactionContextPropagator {
    * The OpenFeature Enhancement Proposal regarding transaction context can be found [here](https://github.com/open-feature/ofep/pull/32).
    *
    * Sets the transaction context using the registered transaction context propagator.
-   *
    * @experimental
    * @template R The return value of the callback
    * @param {TransactionContext} transactionContext The transaction specific context
@@ -263,7 +260,14 @@ export interface TransactionContextPropagator {
   ): void;
 }
 
+export enum ProviderStatus {
+  NOT_READY = 'NOT_READY',
+  READY = 'READY',
+  ERROR = 'ERROR',
+}
+
 export interface CommonProvider {
   readonly metadata: ProviderMetadata;
+  readonly status?: ProviderStatus;
   // TODO: move close from client Provider here once we want it in server
 }

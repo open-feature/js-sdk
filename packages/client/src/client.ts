@@ -1,19 +1,29 @@
-import { EvaluationContext, OpenFeatureError } from '@openfeature/shared';
-import { SafeLogger } from '@openfeature/shared';
 import {
   ClientMetadata,
   ErrorCode,
+  EvaluationContext,
   EvaluationDetails,
   FlagValue,
   FlagValueType,
   HookContext,
   JsonValue,
   Logger,
+  OpenFeatureError,
+  ProviderStatus,
   ResolutionDetails,
-  StandardResolutionReasons
+  SafeLogger,
+  StandardResolutionReasons,
 } from '@openfeature/shared';
 import { OpenFeature } from './open-feature';
-import { Client, FlagEvaluationOptions, Handler, Hook, OpenFeatureEventEmitter, Provider, ProviderEvents } from './types';
+import {
+  Client,
+  FlagEvaluationOptions,
+  Handler,
+  Hook,
+  OpenFeatureEventEmitter,
+  Provider,
+  ProviderEvents,
+} from './types';
 
 type OpenFeatureClientOptions = {
   name?: string;
@@ -21,28 +31,31 @@ type OpenFeatureClientOptions = {
 };
 
 export class OpenFeatureClient implements Client {
-  readonly metadata: ClientMetadata;
   private _hooks: Hook[] = [];
   private _clientLogger?: Logger;
 
   constructor(
     // functions are passed here to make sure that these values are always up to date,
-    // and so we don't have to make these public properties on the API class. 
+    // and so we don't have to make these public properties on the API class.
     private readonly providerAccessor: () => Provider,
-    private readonly providerReady: () => boolean,
     private readonly events: () => OpenFeatureEventEmitter,
     private readonly globalLogger: () => Logger,
-    options: OpenFeatureClientOptions,
-  ) {
-    this.metadata = {
-      name: options.name,
-      version: options.version,
-    } as const;
+    private readonly options: OpenFeatureClientOptions
+  ) {}
+
+  get metadata(): ClientMetadata {
+    return {
+      name: this.options.name,
+      version: this.options.version,
+      providerMetadata: this.providerAccessor().metadata,
+    };
   }
 
   addHandler(eventType: ProviderEvents, handler: Handler): void {
     this.events().on(eventType, handler);
-    if (eventType === ProviderEvents.Ready && this.providerReady()) {
+    const providerReady = !this._provider.status || this._provider.status === ProviderStatus.READY;
+
+    if (eventType === ProviderEvents.Ready && providerReady) {
       // run immediately, we're ready.
       handler();
     }
@@ -67,11 +80,7 @@ export class OpenFeatureClient implements Client {
     return this;
   }
 
-  getBooleanValue(
-    flagKey: string,
-    defaultValue: boolean,
-    options?: FlagEvaluationOptions
-  ): boolean {
+  getBooleanValue(flagKey: string, defaultValue: boolean, options?: FlagEvaluationOptions): boolean {
     return this.getBooleanDetails(flagKey, defaultValue, options).value;
   }
 
@@ -80,20 +89,10 @@ export class OpenFeatureClient implements Client {
     defaultValue: boolean,
     options?: FlagEvaluationOptions
   ): EvaluationDetails<boolean> {
-    return this.evaluate<boolean>(
-      flagKey,
-      this._provider.resolveBooleanEvaluation,
-      defaultValue,
-      'boolean',
-      options
-    );
+    return this.evaluate<boolean>(flagKey, this._provider.resolveBooleanEvaluation, defaultValue, 'boolean', options);
   }
 
-  getStringValue<T extends string = string>(
-    flagKey: string,
-    defaultValue: T,
-    options?: FlagEvaluationOptions
-  ): T {
+  getStringValue<T extends string = string>(flagKey: string, defaultValue: T, options?: FlagEvaluationOptions): T {
     return this.getStringDetails<T>(flagKey, defaultValue, options).value;
   }
 
@@ -112,11 +111,7 @@ export class OpenFeatureClient implements Client {
     );
   }
 
-  getNumberValue<T extends number = number>(
-    flagKey: string,
-    defaultValue: T,
-    options?: FlagEvaluationOptions
-  ): T {
+  getNumberValue<T extends number = number>(flagKey: string, defaultValue: T, options?: FlagEvaluationOptions): T {
     return this.getNumberDetails(flagKey, defaultValue, options).value;
   }
 
@@ -153,12 +148,7 @@ export class OpenFeatureClient implements Client {
 
   private evaluate<T extends FlagValue>(
     flagKey: string,
-    resolver: (
-      flagKey: string,
-      defaultValue: T,
-      context: EvaluationContext,
-      logger: Logger
-    ) => ResolutionDetails<T>,
+    resolver: (flagKey: string, defaultValue: T, context: EvaluationContext, logger: Logger) => ResolutionDetails<T>,
     defaultValue: T,
     flagType: FlagValueType,
     options: FlagEvaluationOptions = {}
