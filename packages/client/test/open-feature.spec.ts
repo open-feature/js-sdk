@@ -113,7 +113,7 @@ describe('OpenFeature', () => {
     });
 
     it('should return a client with the provider bound to the name', () => {
-      const name = 'my-client';
+      const name = 'my-named-client';
       const fakeProvider = { metadata: { name: 'test' } } as unknown as Provider;
       OpenFeature.setProvider(name, fakeProvider);
 
