@@ -76,7 +76,6 @@ export interface Hook<T extends FlagValue = FlagValue> {
   /**
    * Runs before flag values are resolved from the provider.
    * If an EvaluationContext is returned, it will be merged with the pre-existing EvaluationContext.
-   *
    * @param hookContext
    * @param hookHints
    */
@@ -87,7 +86,6 @@ export interface Hook<T extends FlagValue = FlagValue> {
 
   /**
    * Runs after flag values are successfully resolved from the provider.
-   *
    * @param hookContext
    * @param evaluationDetails
    * @param hookHints
@@ -100,7 +98,6 @@ export interface Hook<T extends FlagValue = FlagValue> {
 
   /**
    * Runs in the event of an unhandled error or promise rejection during flag resolution, or any attached hooks.
-   *
    * @param hookContext
    * @param error
    * @param hookHints
@@ -110,7 +107,6 @@ export interface Hook<T extends FlagValue = FlagValue> {
   /**
    * Runs after all other hook stages, regardless of success or error.
    * Errors thrown here are unhandled by the client and will surface in application code.
-   *
    * @param hookContext
    * @param hookHints
    */
@@ -124,7 +120,6 @@ interface EvaluationLifeCycle<T> {
    * will not remove existing hooks.
    * Hooks registered on the global API object run with all evaluations.
    * Hooks registered on the client run with all evaluations on that client.
-   *
    * @template T The type of the receiver
    * @param {Hook<FlagValue>[]} hooks A list of hooks that should always run
    * @returns {T} The receiver (this object)
@@ -133,14 +128,12 @@ interface EvaluationLifeCycle<T> {
 
   /**
    * Access all the hooks that are registered on this receiver.
-   *
    * @returns {Hook<FlagValue>[]} A list of the client hooks
    */
   getHooks(): Hook[];
 
   /**
    * Clears all the hooks that are registered on this receiver.
-   *
    * @template T The type of the receiver
    * @returns {T} The receiver (this object)
    */
@@ -155,7 +148,6 @@ export interface FlagEvaluationOptions {
 export interface Features {
   /**
    * Performs a flag evaluation that returns a boolean.
-   *
    * @param {string} flagKey The flag key uniquely identifies a particular flag
    * @param {boolean} defaultValue The value returned if an error occurs
    * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
@@ -171,7 +163,6 @@ export interface Features {
 
   /**
    * Performs a flag evaluation that a returns an evaluation details object.
-   *
    * @param {string} flagKey The flag key uniquely identifies a particular flag
    * @param {boolean} defaultValue The value returned if an error occurs
    * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
@@ -187,7 +178,6 @@ export interface Features {
 
   /**
    * Performs a flag evaluation that returns a string.
-   *
    * @param {string} flagKey The flag key uniquely identifies a particular flag
    * @template {string} T A optional generic argument constraining the string
    * @param {T} defaultValue The value returned if an error occurs
@@ -211,7 +201,6 @@ export interface Features {
 
   /**
    * Performs a flag evaluation that a returns an evaluation details object.
-   *
    * @param {string} flagKey The flag key uniquely identifies a particular flag
    * @template {string} T A optional generic argument constraining the string
    * @param {T} defaultValue The value returned if an error occurs
@@ -235,7 +224,6 @@ export interface Features {
 
   /**
    * Performs a flag evaluation that returns a number.
-   *
    * @param {string} flagKey The flag key uniquely identifies a particular flag
    * @template {number} T A optional generic argument constraining the number
    * @param {T} defaultValue The value returned if an error occurs
@@ -259,7 +247,6 @@ export interface Features {
 
   /**
    * Performs a flag evaluation that a returns an evaluation details object.
-   *
    * @param {string} flagKey The flag key uniquely identifies a particular flag
    * @template {number} T A optional generic argument constraining the number
    * @param {T} defaultValue The value returned if an error occurs
@@ -283,7 +270,6 @@ export interface Features {
 
   /**
    * Performs a flag evaluation that returns an object.
-   *
    * @param {string} flagKey The flag key uniquely identifies a particular flag
    * @template {JsonValue} T A optional generic argument describing the structure
    * @param {T} defaultValue The value returned if an error occurs
@@ -307,7 +293,6 @@ export interface Features {
 
   /**
    * Performs a flag evaluation that a returns an evaluation details object.
-   *
    * @param {string} flagKey The flag key uniquely identifies a particular flag
    * @template {JsonValue} T A optional generic argument describing the structure
    * @param {T} defaultValue The value returned if an error occurs
@@ -347,7 +332,6 @@ export interface GlobalApi
    * to segment feature flag configuration.
    *
    * All unnamed clients use the same provider set via {@link this.setProvider setProvider}.
-   *
    * @param {string} name The name of the client
    * @param {string} version The version of the client (only used for metadata)
    * @param {EvaluationContext} context Evaluation context that should be set on the client to used during flag evaluations
@@ -362,7 +346,6 @@ export interface GlobalApi
    *
    * If there is already a provider bound to this name via {@link this.setProvider setProvider}, this provider will be used.
    * Otherwise, the default provider is used until a provider is assigned to that name.
-   *
    * @param {string} name The name of the client
    * @param {EvaluationContext} context Evaluation context that should be set on the client to used during flag evaluations
    * @returns {Client} OpenFeature Client
@@ -376,7 +359,6 @@ export interface GlobalApi
    *
    * If there is already a provider bound to this name via {@link this.setProvider setProvider}, this provider will be used.
    * Otherwise, the default provider is used until a provider is assigned to that name.
-   *
    * @param {string} name The name of the client
    * @param {string} version The version of the client (only used for metadata)
    * @param {EvaluationContext} context Evaluation context that should be set on the client to used during flag evaluations
@@ -396,7 +378,6 @@ export interface GlobalApi
    * Sets the default provider for flag evaluations.
    * This provider will be used by unnamed clients and named clients to which no provider is bound.
    * Setting a provider supersedes the current provider used in new and existing clients without a name.
-   *
    * @param {Provider} provider The provider responsible for flag evaluations.
    * @returns {GlobalApi} OpenFeature API
    */
@@ -405,7 +386,6 @@ export interface GlobalApi
   /**
    * Sets the provider that OpenFeature will use for flag evaluations of clients with the given name.
    * Setting a provider supersedes the current provider used in new and existing clients with that name.
-   *
    * @param {string} clientName The name to identify the client
    * @param {Provider} provider The provider responsible for flag evaluations.
    * @returns {GlobalApi} OpenFeature API

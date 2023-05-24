@@ -30,7 +30,6 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
 
   /**
    * Gets a singleton instance of the OpenFeature API.
-   *
    * @ignore
    * @returns {OpenFeatureAPI} OpenFeature API
    */
@@ -47,7 +46,6 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
 
   /**
    * Get metadata about registered provider.
-   *
    * @returns {ProviderMetadata} Provider Metadata
    */
   get providerMetadata(): ProviderMetadata {
@@ -77,18 +75,16 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
    * Sets the default provider for flag evaluations.
    * This provider will be used by unnamed clients and named clients to which no provider is bound.
    * Setting a provider supersedes the current provider used in new and existing clients without a name.
-   *
    * @param {Provider} provider The provider responsible for flag evaluations.
-   * @returns {GlobalApi} OpenFeature API
+   * @returns {OpenFeatureAPI} OpenFeature API
    */
   setProvider(provider: Provider): this;
   /**
    * Sets the provider that OpenFeature will use for flag evaluations of clients with the given name.
    * Setting a provider supersedes the current provider used in new and existing clients with that name.
-   *
    * @param {string} clientName The name to identify the client
    * @param {Provider} provider The provider responsible for flag evaluations.
-   * @returns {GlobalApi} OpenFeature API
+   * @returns {OpenFeatureAPI} OpenFeature API
    */
   setProvider(clientName: string, provider: Provider): this;
   setProvider(clientOrProvider?: string | Provider, providerOrUndefined?: Provider): this {
@@ -114,7 +110,6 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
    * to segment feature flag configuration.
    *
    * All unnamed clients use the same provider set via {@link this.setProvider setProvider}.
-   *
    * @param {string} name The name of the client
    * @param {string} version The version of the client (only used for metadata)
    * @param {EvaluationContext} context Evaluation context that should be set on the client to used during flag evaluations
@@ -128,7 +123,6 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
    *
    * If there is already a provider bound to this name via {@link this.setProvider setProvider}, this provider will be used.
    * Otherwise, the default provider is used until a provider is assigned to that name.
-   *
    * @param {string} name The name of the client
    * @param {EvaluationContext} context Evaluation context that should be set on the client to used during flag evaluations
    * @returns {Client} OpenFeature Client
@@ -141,7 +135,6 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
    *
    * If there is already a provider bound to this name via {@link this.setProvider setProvider}, this provider will be used.
    * Otherwise, the default provider is used until a provider is assigned to that name.
-   *
    * @param {string} name The name of the client
    * @param {string} version The version of the client (only used for metadata)
    * @param {EvaluationContext} context Evaluation context that should be set on the client to used during flag evaluations
@@ -179,7 +172,6 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
 
 /**
  * A singleton instance of the OpenFeature API.
- *
  * @returns {OpenFeatureAPI} OpenFeature API
  */
 export const OpenFeature = OpenFeatureAPI.getInstance();

@@ -151,7 +151,6 @@ export type EvaluationDetails<T extends FlagValue> = {
 export interface ManageContext<T> {
   /**
    * Access the evaluation context set on the receiver.
-   *
    * @returns {EvaluationContext} Evaluation context
    */
   getContext(): EvaluationContext;
@@ -159,7 +158,6 @@ export interface ManageContext<T> {
   /**
    * Sets evaluation context that will be used during flag evaluations
    * on this receiver.
-   *
    * @template T The type of the receiver
    * @param {EvaluationContext} context Evaluation context
    * @returns {T} The receiver (this object)
@@ -173,7 +171,6 @@ export interface ManageLogger<T> {
    * and is passed to various components in the SDK.
    * The logger configured on the global API object will be used for all evaluations,
    * unless overridden in a particular client.
-   *
    * @template T The type of the receiver
    * @param {Logger} logger The logger to be used
    * @returns {T} The receiver (this object)
@@ -225,7 +222,6 @@ export interface ManageTransactionContextPropagator<T> extends TransactionContex
    * Sets a transaction context propagator on this receiver. The transaction context
    * propagator is responsible for persisting context for the duration of a single
    * transaction.
-   *
    * @experimental
    * @template T The type of the receiver
    * @param {TransactionContextPropagator} transactionContextPropagator The context propagator to be used
@@ -241,7 +237,6 @@ export interface TransactionContextPropagator {
    *
    * Returns the currently defined transaction context using the registered transaction
    * context propagator.
-   *
    * @experimental
    * @returns {TransactionContext} The current transaction context
    */
@@ -252,7 +247,6 @@ export interface TransactionContextPropagator {
    * The OpenFeature Enhancement Proposal regarding transaction context can be found [here](https://github.com/open-feature/ofep/pull/32).
    *
    * Sets the transaction context using the registered transaction context propagator.
-   *
    * @experimental
    * @template R The return value of the callback
    * @param {TransactionContext} transactionContext The transaction specific context
