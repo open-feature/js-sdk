@@ -21,9 +21,10 @@ const _globalThis = globalThis as OpenFeatureGlobal;
 
 export class OpenFeatureAPI extends OpenFeatureCommonAPI {
   protected _hooks: Hook[] = [];
-  protected _provider: Provider = NOOP_PROVIDER;
-  protected _providers: Map<string, Provider> = new Map();
   private readonly _events = new OpenFeatureEventEmitter();
+  protected _provider: Provider = NOOP_PROVIDER;
+  protected _clientProviders: Map<string, Provider> = new Map();
+  protected _clientEvents: Map<string | undefined, OpenFeatureEventEmitter> = new Map();
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor() {
@@ -114,24 +115,27 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
     }
 
     if (client) {
-      this._providers.set(client, provider);
+      this._clientProviders.set(client, provider);
     } else {
       this._provider = provider;
     }
 
-    this.removeListeners(oldProvider);
-    this.attachListeners(provider);
+    const clientEmitter = this.getEventEmitterForClient(client);
+    this.transferListeners(oldProvider, provider, clientEmitter);
 
     if (typeof provider.initialize === 'function') {
       provider
         .initialize?.(this._context)
         ?.then(() => {
+          clientEmitter.emit(ProviderEvents.Ready);
           this._events?.emit(ProviderEvents.Ready);
         })
         ?.catch(() => {
+          clientEmitter.emit(ProviderEvents.Error);
           this._events?.emit(ProviderEvents.Error);
         });
     } else {
+      clientEmitter.emit(ProviderEvents.Ready);
       this._events?.emit(ProviderEvents.Ready);
     }
 
@@ -160,7 +164,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
       // functions are passed here to make sure that these values are always up to date,
       // and so we don't have to make these public properties on the API class.
       () => this.getProviderForClient(name),
-      () => this._events,
+      () => this.getEventEmitterForClient(name),
       () => this._logger,
       { name, version }
     );
@@ -171,21 +175,32 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
       return this._provider;
     }
 
-    return this._providers.get(name) ?? this._provider;
+    return this._clientProviders.get(name) ?? this._provider;
   }
 
-  private attachListeners(newProvider: Provider) {
+  private getEventEmitterForClient(name?: string): OpenFeatureEventEmitter {
+    const emitter = this._clientEvents.get(name);
+
+    if (emitter) {
+      return emitter;
+    }
+
+    const newEmitter = new OpenFeatureEventEmitter({});
+    this._clientEvents.set(name, newEmitter);
+    return newEmitter;
+  }
+
+  private transferListeners(oldProvider: Provider, newProvider: Provider, clientEmitter: OpenFeatureEventEmitter) {
+    oldProvider.events?.removeAllListeners();
+
     // iterate over the event types
     Object.values(ProviderEvents).forEach((eventType) =>
       newProvider.events?.on(eventType, () => {
         // on each event type, fire the associated handlers
+        clientEmitter.emit(eventType);
         this._events.emit(eventType);
       })
     );
-  }
-
-  private removeListeners(oldProvider: Provider) {
-    oldProvider.events?.removeAllListeners();
   }
 }
 

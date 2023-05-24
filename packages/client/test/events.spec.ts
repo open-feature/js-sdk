@@ -80,7 +80,7 @@ describe('Events', () => {
   let clientId = uuid();
 
   afterEach(() => {
-    // jest.clearAllMocks();
+    jest.clearAllMocks();
     clientId = uuid();
   });
 
