@@ -8,6 +8,12 @@ const MOCK_PROVIDER: Provider = {
   metadata: {
     name: 'mock',
   },
+  initialize: jest.fn(() => {
+    return Promise.resolve('started');
+  }),
+  onClose: jest.fn(() => {
+    return Promise.resolve('closed');
+  }),
 } as unknown as Provider;
 
 describe('OpenFeature', () => {
@@ -26,6 +32,23 @@ describe('OpenFeature', () => {
       const fakeProvider = { metadata: { name: 'test' } } as unknown as Provider;
       OpenFeature.setProvider(fakeProvider);
       expect(OpenFeature.providerMetadata === fakeProvider.metadata).toBeTruthy();
+    });
+
+    describe('Requirement 1.1.2.2', () => {
+      it('MUST invoke the `initialize` function on the newly registered provider before using it to resolve flag values', () => {
+        OpenFeature.setProvider(MOCK_PROVIDER);
+        expect(OpenFeature.providerMetadata.name).toBe(MOCK_PROVIDER.metadata.name);
+        expect(MOCK_PROVIDER.initialize).toHaveBeenCalled();
+      });
+    });
+
+    describe('Requirement 1.1.2.3', () => {
+      it("MUST invoke the `shutdown` function on the previously registered provider once it's no longer being used to resolve flag values.", () => {
+        const fakeProvider = { metadata: { name: 'test' } } as unknown as Provider;
+        OpenFeature.setProvider(MOCK_PROVIDER);
+        OpenFeature.setProvider(fakeProvider);
+        expect(MOCK_PROVIDER.onClose).toHaveBeenCalled();
+      });
     });
   });
 

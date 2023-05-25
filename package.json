@@ -72,8 +72,5 @@
     "packages/server",
     "packages/client",
     "packages/shared"
-  ],
-  "dependencies": {
-
-  }
+  ]
 }

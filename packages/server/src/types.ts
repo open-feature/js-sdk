@@ -4,6 +4,7 @@ import {
   CommonProvider,
   EvaluationContext,
   EvaluationDetails,
+  Eventing,
   FlagValue,
   HookContext,
   HookHints,
@@ -315,7 +316,12 @@ export interface Features {
   ): Promise<EvaluationDetails<T>>;
 }
 
-export interface Client extends EvaluationLifeCycle<Client>, Features, ManageContext<Client>, ManageLogger<Client> {
+export interface Client
+  extends EvaluationLifeCycle<Client>,
+    Features,
+    ManageContext<Client>,
+    ManageLogger<Client>,
+    Eventing {
   readonly metadata: ClientMetadata;
 }
 

@@ -1,5 +1,13 @@
 import { defineFeature, loadFeature } from 'jest-cucumber';
-import { JsonValue, JsonObject, EvaluationDetails, EvaluationContext, ResolutionDetails, StandardResolutionReasons } from '@openfeature/shared';
+import {
+  JsonValue,
+  JsonObject,
+  EvaluationDetails,
+  EvaluationContext,
+  ResolutionDetails,
+  StandardResolutionReasons,
+  ProviderEvents,
+} from '@openfeature/shared';
 import { OpenFeature } from './../../src';
 // load the feature file.
 const feature = loadFeature('packages/server/e2e/features/evaluation.feature');
@@ -7,12 +15,25 @@ const feature = loadFeature('packages/server/e2e/features/evaluation.feature');
 // get a client (flagd provider registered in setup)
 const client = OpenFeature.getClient();
 
-const givenAnOpenfeatureClientIsRegisteredWithCacheDisabled = (given: (stepMatcher: string, stepDefinitionCallback: () => void) => void) => {
+const givenAnOpenfeatureClientIsRegisteredWithCacheDisabled = (
+  given: (stepMatcher: string, stepDefinitionCallback: () => void) => void
+) => {
   // TODO: when the FlagdProvider is updated to support caching, we may need to disable it here for this test to work as expected.
   given('a provider is registered with cache disabled', () => undefined);
 };
 
 defineFeature(feature, (test) => {
+  beforeAll((done) => {
+    client.addHandler(ProviderEvents.Ready, async () => {
+      setTimeout(() => {
+        done(); // TODO remove this once flagd provider properly implements readiness (for now, we add a 2s wait).
+      }, 2000);
+    });
+  });
+
+  afterAll(async () => {
+    await OpenFeature.close();
+  });
 
   test('Resolves boolean value', ({ given, when, then }) => {
     let value: boolean;
@@ -265,10 +286,13 @@ defineFeature(feature, (test) => {
       }
     );
 
-    and(/^a flag with key "(.*)" is evaluated with default value "(.*)"$/, async (key: string, defaultValue: string) => {
-      flagKey = key;
-      value = await client.getStringValue(flagKey, defaultValue, context);
-    });
+    and(
+      /^a flag with key "(.*)" is evaluated with default value "(.*)"$/,
+      async (key: string, defaultValue: string) => {
+        flagKey = key;
+        value = await client.getStringValue(flagKey, defaultValue, context);
+      }
+    );
 
     then(/^the resolved string response should be "(.*)"$/, (expectedValue: string) => {
       expect(value).toEqual(expectedValue);

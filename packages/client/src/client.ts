@@ -3,27 +3,22 @@ import {
   ErrorCode,
   EvaluationContext,
   EvaluationDetails,
+  EventHandler,
   FlagValue,
   FlagValueType,
   HookContext,
   JsonValue,
   Logger,
   OpenFeatureError,
+  OpenFeatureEventEmitter,
+  ProviderEvents,
   ProviderStatus,
   ResolutionDetails,
   SafeLogger,
   StandardResolutionReasons,
 } from '@openfeature/shared';
 import { OpenFeature } from './open-feature';
-import {
-  Client,
-  FlagEvaluationOptions,
-  Handler,
-  Hook,
-  OpenFeatureEventEmitter,
-  Provider,
-  ProviderEvents,
-} from './types';
+import { Client, FlagEvaluationOptions, Hook, Provider } from './types';
 
 type OpenFeatureClientOptions = {
   name?: string;
@@ -51,14 +46,22 @@ export class OpenFeatureClient implements Client {
     };
   }
 
-  addHandler(eventType: ProviderEvents, handler: Handler): void {
-    this.events().on(eventType, handler);
+  addHandler(eventType: ProviderEvents, handler: EventHandler): void {
+    this.events().addHandler(eventType, handler);
     const providerReady = !this._provider.status || this._provider.status === ProviderStatus.READY;
 
     if (eventType === ProviderEvents.Ready && providerReady) {
       // run immediately, we're ready.
-      handler();
+      handler({ clientName: this.metadata.name });
     }
+  }
+
+  removeHandler(notificationType: ProviderEvents, handler: EventHandler) {
+    this.events().removeHandler(notificationType, handler);
+  }
+
+  getHandlers(eventType: ProviderEvents) {
+    return this.events().getHandlers(eventType);
   }
 
   setLogger(logger: Logger): OpenFeatureClient {
