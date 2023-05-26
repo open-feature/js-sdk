@@ -196,10 +196,6 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
 
   private handleShutdownError(provider: P, err: unknown) {
     this._logger.error(`Error during shutdown of provider ${provider.metadata.name}: ${err}`);
-
-    if (err instanceof Error) {
-      this._logger.error(err.stack);
-    }
     this._logger.error((err as Error)?.stack);
   }
 
