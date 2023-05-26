@@ -84,7 +84,7 @@ describe('Events', () => {
       it('The provider defines a mechanism for signalling the occurrence of an event`PROVIDER_READY`', (done) => {
         const provider = new MockProvider();
         const client = OpenFeature.getClient(clientId);
-        client.addHandler(ProviderEvents.Ready, async () => {
+        client.addHandler(ProviderEvents.Ready, () => {
           try {
             expect(client.metadata.providerMetadata.name).toBe(provider.metadata.name);
             expect(provider.initialize).toHaveBeenCalled();
@@ -101,7 +101,7 @@ describe('Events', () => {
         const provider = new MockProvider({ failOnInit: true });
         const client = OpenFeature.getClient(clientId);
 
-        client.addHandler(ProviderEvents.Error, async () => {
+        client.addHandler(ProviderEvents.Error, () => {
           try {
             expect(client.metadata.providerMetadata.name).toBe(provider.metadata.name);
             expect(provider.initialize).toHaveBeenCalled();
@@ -120,7 +120,7 @@ describe('Events', () => {
         const provider = new MockProvider({ enableEvents: false });
         const client = OpenFeature.getClient(clientId);
 
-        client.addHandler(ProviderEvents.Ready, async () => {
+        client.addHandler(ProviderEvents.Ready, () => {
           try {
             expect(client.metadata.providerMetadata.name).toBe(provider.metadata.name);
             done();
@@ -136,7 +136,7 @@ describe('Events', () => {
         const provider = new MockProvider({ enableEvents: false, failOnInit: true });
         const client = OpenFeature.getClient(clientId);
 
-        client.addHandler(ProviderEvents.Error, async () => {
+        client.addHandler(ProviderEvents.Error, () => {
           try {
             expect(client.metadata.providerMetadata.name).toBe(provider.metadata.name);
             expect(provider.initialize).toHaveBeenCalled();
@@ -159,14 +159,14 @@ describe('Events', () => {
       let clientHandlerRan = false;
       let apiHandlerRan = false;
 
-      client.addHandler(ProviderEvents.Ready, async () => {
+      client.addHandler(ProviderEvents.Ready, () => {
         clientHandlerRan = true;
         if (clientHandlerRan && apiHandlerRan) {
           done();
         }
       });
 
-      OpenFeature.addHandler(ProviderEvents.Ready, async () => {
+      OpenFeature.addHandler(ProviderEvents.Ready, () => {
         apiHandlerRan = true;
         if (clientHandlerRan && apiHandlerRan) {
           done();
@@ -184,7 +184,7 @@ describe('Events', () => {
       const client1 = OpenFeature.getClient(clientId + '1');
 
       const client1Handler = jest.fn();
-      const client0Handler = async () => {
+      const client0Handler = () => {
         expect(client1Handler).not.toHaveBeenCalled();
         done();
       };
@@ -201,7 +201,7 @@ describe('Events', () => {
       const provider = new MockProvider({ failOnInit: true });
       const client = OpenFeature.getClient(clientId);
 
-      client.addHandler(ProviderEvents.Error, async (details?: EventDetails) => {
+      client.addHandler(ProviderEvents.Error, (details?: EventDetails) => {
         expect(details?.message).toBeDefined();
         done();
       });
@@ -228,7 +228,7 @@ describe('Events', () => {
       const provider = new MockProvider();
       const client = OpenFeature.getClient(clientId);
 
-      client.addHandler(ProviderEvents.Ready, async (details?: EventDetails) => {
+      client.addHandler(ProviderEvents.Ready, (details?: EventDetails) => {
         expect(details?.clientName).toEqual(clientId);
         done();
       });
@@ -240,7 +240,7 @@ describe('Events', () => {
       const provider = new MockProvider();
       const client = OpenFeature.getClient(clientId);
 
-      client.addHandler(ProviderEvents.Ready, async (details?: EventDetails) => {
+      client.addHandler(ProviderEvents.Ready, (details?: EventDetails) => {
         expect(details?.clientName).toEqual(clientId);
         done();
       });
@@ -255,7 +255,7 @@ describe('Events', () => {
       const provider = new MockProvider();
       const client = OpenFeature.getClient(clientId);
 
-      client.addHandler(ProviderEvents.Stale, async (givenDetails?: EventDetails) => {
+      client.addHandler(ProviderEvents.Stale, (givenDetails?: EventDetails) => {
         expect(givenDetails?.message).toEqual(details.message);
         done();
       });
@@ -270,11 +270,11 @@ describe('Events', () => {
       const provider = new MockProvider();
       const client = OpenFeature.getClient(clientId);
 
-      const handler0 = jest.fn(async () => {
+      const handler0 = jest.fn(() => {
         throw new Error('Error during initialization');
       });
 
-      const handler1 = async () => {
+      const handler1 = () => {
         expect(handler0).toHaveBeenCalled();
         done();
       };
@@ -293,7 +293,7 @@ describe('Events', () => {
       const client = OpenFeature.getClient(clientId);
 
       let counter = 0;
-      client.addHandler(ProviderEvents.Ready, async () => {
+      client.addHandler(ProviderEvents.Ready, () => {
         if (client.metadata.providerMetadata.name === provider1.metadata.name) {
           OpenFeature.setProvider(clientId, provider2);
           counter++;
@@ -338,7 +338,7 @@ describe('Events', () => {
       const provider = new MockProvider();
       const client = OpenFeature.getClient(clientId);
 
-      client.addHandler(ProviderEvents.Ready, async () => {
+      client.addHandler(ProviderEvents.Ready, () => {
         done();
       });
 
@@ -351,7 +351,7 @@ describe('Events', () => {
       const provider = new MockProvider({ failOnInit: true });
       const client = OpenFeature.getClient(clientId);
 
-      client.addHandler(ProviderEvents.Error, async () => {
+      client.addHandler(ProviderEvents.Error, () => {
         done();
       });
 
@@ -362,7 +362,7 @@ describe('Events', () => {
       const provider = new MockProvider();
       const client = OpenFeature.getClient(clientId);
 
-      client.addHandler(ProviderEvents.ConfigurationChanged, async () => {
+      client.addHandler(ProviderEvents.ConfigurationChanged, () => {
         done();
       });
 
@@ -381,7 +381,7 @@ describe('Events', () => {
       expect(provider.initialize).toHaveBeenCalled();
 
       let handlerCalled = false;
-      client.addHandler(ProviderEvents.Ready, async () => {
+      client.addHandler(ProviderEvents.Ready, () => {
         if (!handlerCalled) {
           handlerCalled = true;
           done();

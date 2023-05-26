@@ -12,7 +12,7 @@ export type EventDetails = {
   metadata?: EventMetadata;
 };
 
-export type EventHandler = (eventDetails?: EventDetails) => Promise<unknown>;
+export type EventHandler = (eventDetails?: EventDetails) => Promise<unknown> | unknown;
 
 export interface Eventing {
   /**
@@ -61,8 +61,9 @@ export enum ProviderEvents {
 }
 
 export class OpenFeatureEventEmitter implements ManageLogger<OpenFeatureEventEmitter> {
+  private readonly _handlers = new WeakMap<EventHandler, EventHandler>();
+  private readonly eventEmitter = new EventEmitter({ captureRejections: true });
   private _eventLogger?: Logger;
-  private eventEmitter = new EventEmitter({ captureRejections: true });
 
   constructor(private readonly globalLogger?: () => Logger) {
     this.eventEmitter.on('error', (err) => {
@@ -75,11 +76,25 @@ export class OpenFeatureEventEmitter implements ManageLogger<OpenFeatureEventEmi
   }
 
   addHandler(eventType: ProviderEvents, handler: EventHandler): void {
-    this.eventEmitter.on(eventType, handler);
+    // The handlers have to be wrapped with an async function because if a synchronous functions throws an error,
+    // the other handlers will not run.
+    const asyncHandler = async (context?: EventDetails) => {
+      await handler(context);
+    };
+    // The async handler has to be written to the map, because we need to get the wrapper function when deleting a listener
+    this._handlers.set(handler, asyncHandler);
+    this.eventEmitter.on(eventType, asyncHandler);
   }
 
   removeHandler(eventType: ProviderEvents, handler: EventHandler): void {
-    this.eventEmitter.removeListener(eventType, handler);
+    // Get the wrapper function for this handler, to delete it from the event emitter
+    const asyncHandler = this._handlers.get(handler);
+
+    if (!asyncHandler) {
+      return;
+    }
+
+    this.eventEmitter.removeListener(eventType, asyncHandler);
   }
 
   removeAllHandlers(eventType?: ProviderEvents): void {
