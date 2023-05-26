@@ -103,14 +103,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
       return this;
     }
 
-    if (clientName) {
-      this._clientProviders.set(clientName, provider);
-    } else {
-      this._defaultProvider = provider;
-    }
-
     const clientEmitter = this.getEventEmitterForClient(clientName);
-    this.transferListeners(oldProvider, provider, clientName, clientEmitter);
 
     if (typeof provider.initialize === 'function') {
       provider
@@ -127,6 +120,14 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
       clientEmitter.emit(ProviderEvents.Ready, { clientName });
       this._events?.emit(ProviderEvents.Ready, { clientName });
     }
+
+    if (clientName) {
+      this._clientProviders.set(clientName, provider);
+    } else {
+      this._defaultProvider = provider;
+    }
+
+    this.transferListeners(oldProvider, provider, clientName, clientEmitter);
 
     // Do not close the default provider if a named client used the default provider
     if (!clientName || (clientName && oldProvider !== this._defaultProvider)) {
