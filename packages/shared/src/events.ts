@@ -55,7 +55,7 @@ export enum ProviderEvents {
   ConfigurationChanged = 'PROVIDER_CONFIGURATION_CHANGED',
 
   /**
-   * The provider's cached state is not longer valid and may not be up-to-date with the source of truth.
+   * The provider's cached state is no longer valid and may not be up-to-date with the source of truth.
    */
   Stale = 'PROVIDER_STALE',
 }
