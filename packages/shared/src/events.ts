@@ -1,5 +1,6 @@
 import { Logger, ManageLogger } from './types';
 import EventEmitter from 'events';
+import { SafeLogger } from './logger';
 
 export type EventMetadata = {
   [key: string]: string | boolean | number;
@@ -111,7 +112,7 @@ export class OpenFeatureEventEmitter implements ManageLogger<OpenFeatureEventEmi
   }
 
   setLogger(logger: Logger): this {
-    this._eventLogger = logger;
+    this._eventLogger = new SafeLogger(logger);
     return this;
   }
 

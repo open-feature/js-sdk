@@ -34,8 +34,11 @@ describe('OpenFeatureEventEmitter', () => {
   describe('emit should', () => {
     it('call logger on error in event handler', function (done) {
       const logger: Logger = {
+        info: () => done(),
+        warn: () => done(),
         error: () => done(),
-      } as Logger;
+        debug: () => done(),
+      };
 
       const emitter = new OpenFeatureEventEmitter();
       emitter.setLogger(logger);
