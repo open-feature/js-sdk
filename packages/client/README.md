@@ -199,6 +199,10 @@ const client2 = OpenFeature.getClient("client-2")
 Events provide a way to react to state changes in the provider or underlying flag management system.
 You can listen to events of either the OpenFeature API or individual clients.
 
+Providers do not have to dispatch events, so they may not dispatch any or only some kinds of events.
+The events after initialization, `PROVIDER_READY` on success, `PROVIDER_ERROR` on failure during initialization,
+are dispatched for every provider.
+
 ```typescript
 import { OpenFeature, ProviderEvents } from '@openfeature/web-sdk';
 
