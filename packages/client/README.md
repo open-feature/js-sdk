@@ -196,7 +196,7 @@ const client2 = OpenFeature.getClient("client-2")
 
 ### Events:
 
-Events allow to react to state changes in the provider or underlying flag management system.
+Events provide a way to react to state changes in the provider or underlying flag management system.
 You can listen to events of either the OpenFeature API or individual clients.
 
 ```typescript
