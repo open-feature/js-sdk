@@ -161,6 +161,58 @@ class MyLogger implements Logger {
 OpenFeature.setLogger(new MyLogger());
 ```
 
+### Named clients:
+
+You can have several clients, that can be referenced by a name.
+Every client can have a different provider assigned. If no provider is assigned to a named client, the global default
+provider is used.
+
+```typescript
+import { OpenFeature, ProviderEvents } from '@openfeature/web-sdk';
+
+OpenFeature.setProvider(new YourProviderOfChoice())
+OpenFeature.setProvider("client-1", new YourOtherProviderOfChoice())
+
+// Uses YourProviderOfChoice (the default)
+const unnamedClient = OpenFeature.getClient()
+
+// Uses YourOtherProviderOfChoice as it is set explicitly
+const client1 = OpenFeature.getClient("client-1")
+
+// Uses YourProviderOfChoice as no provider is set
+const client2 = OpenFeature.getClient("client-2")
+```
+
+### Events:
+
+Events allow to react to state changes in the provider or underlying flag management system.
+You can listen to events of either the OpenFeature API or individual clients.
+
+```typescript
+import { OpenFeature, ProviderEvents } from '@openfeature/web-sdk';
+
+// OpenFeature API
+OpenFeature.addHandler(ProviderEvents.Ready, (eventDetails) => {
+  console.log(`Ready event from: ${eventDetails.clientName}:`, eventDetails);
+});
+
+// Specific client
+const client = OpenFeature.getClient();
+client.addHandler(ProviderEvents.Error, async (eventDetails) => {
+  console.log(`Error event from: ${eventDetails.clientName}:`, eventDetails);
+});
+```
+
+### Shutdown:
+
+The OpenFeature API provides a close function to perform a cleanup of all providers attached to any client.
+
+```typescript
+import { OpenFeature, ProviderEvents } from '@openfeature/web-sdk';
+
+await OpenFeature.close()
+```
+
 ### Complete API documentation:
 
 See [here](https://open-feature.github.io/js-sdk/modules/OpenFeature_JS_SDK.html) for the complete API documentation.

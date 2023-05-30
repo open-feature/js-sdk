@@ -22,11 +22,14 @@ For more information, see this [issue](https://github.com/open-feature/spec/issu
 
 ### What is OpenFeature?
 
-[OpenFeature][openfeature-website] is an open standard that provides a vendor-agnostic, community-driven API for feature flagging that works with your favorite feature flag management tool.
+[OpenFeature][openfeature-website] is an open standard that provides a vendor-agnostic, community-driven API for feature
+flagging that works with your favorite feature flag management tool.
 
 ### Why standardize feature flags?
 
-Standardizing feature flags unifies tools and vendors behind a common interface which avoids vendor lock-in at the code level. Additionally, it offers a framework for building extensions and integrations and allows providers to focus on their unique value proposition.
+Standardizing feature flags unifies tools and vendors behind a common interface which avoids vendor lock-in at the code
+level. Additionally, it offers a framework for building extensions and integrations and allows providers to focus on
+their unique value proposition.
 
 ## 🔍 Requirements:
 
@@ -72,7 +75,8 @@ const boolValue = client.getBooleanValue('boolFlag', false);
 
 ### Context-aware evaluation:
 
-Sometimes the value of a flag must take into account some dynamic criteria about the application or user, such as the user location, IP, email address, or the location of the server.
+Sometimes the value of a flag must take into account some dynamic criteria about the application or user, such as the
+user location, IP, email address, or the location of the server.
 In OpenFeature, we refer to this as [`targeting`](https://openfeature.dev/specification/glossary#targeting).
 If the flag system you're using supports targeting, you can provide the input data using the `EvaluationContext`.
 
@@ -86,7 +90,10 @@ const boolValue = client.getBooleanValue('some-flag', false);
 
 ### Providers:
 
-To develop a provider, you need to create a new project and include the OpenFeature SDK as a dependency. This can be a new repository or included in an existing contrib repository available under the OpenFeature organization. Finally, you’ll then need to write the provider itself. In most languages, this can be accomplished by implementing the provider interface exported by the OpenFeature SDK.
+To develop a provider, you need to create a new project and include the OpenFeature SDK as a dependency. This can be a
+new repository or included in an existing contrib repository available under the OpenFeature organization. Finally,
+you’ll then need to write the provider itself. In most languages, this can be accomplished by implementing the provider
+interface exported by the OpenFeature SDK.
 
 ```typescript
 import { JsonValue, Provider, ResolutionDetails } from '@openfeature/web-sdk';
@@ -94,7 +101,7 @@ import { JsonValue, Provider, ResolutionDetails } from '@openfeature/web-sdk';
 // implement the provider interface
 class MyProvider implements Provider {
   readonly metadata = {
-    name: 'My Provider',
+    name: 'My Provider'
   } as const;
 
   resolveBooleanEvaluation(flagKey: string, defaultValue: boolean): ResolutionDetails<boolean> {
@@ -118,7 +125,9 @@ See [here](https://openfeature.dev/docs/reference/technologies/server/javascript
 
 ### Hooks:
 
-Hooks are a mechanism that allow for the addition of arbitrary behavior at well-defined points of the flag evaluation life-cycle. Use cases include validation of the resolved flag value, modifying or adding data to the evaluation context, logging, telemetry, and tracking.
+Hooks are a mechanism that allow for the addition of arbitrary behavior at well-defined points of the flag evaluation
+life-cycle. Use cases include validation of the resolved flag value, modifying or adding data to the evaluation context,
+logging, telemetry, and tracking.
 
 ```typescript
 import { OpenFeature, Hook, HookContext } from '@openfeature/web-sdk';
@@ -136,7 +145,8 @@ See [here](https://openfeature.dev/docs/reference/technologies/server/javascript
 
 ### Logging:
 
-You can implement the `Logger` interface (compatible with the `console` object, and implementations from common logging libraries such as [winston](https://www.npmjs.com/package/winston)) and set it on the global API object.
+You can implement the `Logger` interface (compatible with the `console` object, and implementations from common logging
+libraries such as [winston](https://www.npmjs.com/package/winston)) and set it on the global API object.
 
 ```typescript
 // implement logger
@@ -144,12 +154,15 @@ class MyLogger implements Logger {
   error(...args: unknown[]): void {
     // implement me
   }
+
   warn(...args: unknown[]): void {
     // implement me
   }
+
   info(...args: unknown[]): void {
     // implement me
   }
+
   debug(...args: unknown[]): void {
     // implement me
   }
@@ -157,6 +170,58 @@ class MyLogger implements Logger {
 
 // set the logger
 OpenFeature.setLogger(new MyLogger());
+```
+
+### Named clients:
+
+You can have several clients, that can be referenced by a name.
+Every client can have a different provider assigned. If no provider is assigned to a named client, the global default
+provider is used.
+
+```typescript
+import { OpenFeature, ProviderEvents } from '@openfeature/web-sdk';
+
+OpenFeature.setProvider(new YourProviderOfChoice())
+OpenFeature.setProvider("client-1", new YourOtherProviderOfChoice())
+
+// Uses YourProviderOfChoice (the default)
+const unnamedClient = OpenFeature.getClient()
+
+// Uses YourOtherProviderOfChoice as it is set explicitly
+const client1 = OpenFeature.getClient("client-1")
+
+// Uses YourProviderOfChoice as no provider is set
+const client2 = OpenFeature.getClient("client-2")
+```
+
+### Events:
+
+Events allow to react to state changes in the provider or underlying flag management system.
+You can listen to events of either the OpenFeature API or individual clients.
+
+```typescript
+import { OpenFeature, ProviderEvents } from '@openfeature/web-sdk';
+
+// OpenFeature API
+OpenFeature.addHandler(ProviderEvents.Ready, (eventDetails) => {
+  console.log(`Ready event from: ${eventDetails.clientName}:`, eventDetails);
+});
+
+// Specific client
+const client = OpenFeature.getClient();
+client.addHandler(ProviderEvents.Error, async (eventDetails) => {
+  console.log(`Error event from: ${eventDetails.clientName}:`, eventDetails);
+});
+```
+
+### Shutdown:
+
+The OpenFeature API provides a close function to perform a cleanup of all providers attached to any client.
+
+```typescript
+import { OpenFeature, ProviderEvents } from '@openfeature/web-sdk';
+
+await OpenFeature.close()
 ```
 
 ### Complete API documentation:
