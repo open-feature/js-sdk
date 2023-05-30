@@ -1,6 +1,6 @@
 import { NOOP_PROVIDER } from './no-op-provider';
-import { Logger, OpenFeatureCommonAPI, SafeLogger } from '@openfeature/shared';
-import { EvaluationContext, FlagValue, ProviderMetadata } from '@openfeature/shared';
+import { OpenFeatureCommonAPI } from '@openfeature/shared';
+import { EvaluationContext, FlagValue } from '@openfeature/shared';
 import { OpenFeatureClient } from './client';
 import { Client, Hook, Provider } from './types';
 import { objectOrUndefined, stringOrUndefined } from '@openfeature/shared/src/type-guards';
@@ -13,19 +13,13 @@ type OpenFeatureGlobal = {
 };
 const _globalThis = globalThis as OpenFeatureGlobal;
 
-export class OpenFeatureAPI extends OpenFeatureCommonAPI {
+export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider> {
   protected _hooks: Hook[] = [];
   protected _defaultProvider: Provider = NOOP_PROVIDER;
-  protected _providers: Map<string, Provider> = new Map();
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor() {
     super();
-  }
-
-  setLogger(logger: Logger): this {
-    this._logger = new SafeLogger(logger);
-    return this;
   }
 
   /**
@@ -42,14 +36,6 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
     const instance = new OpenFeatureAPI();
     _globalThis[GLOBAL_OPENFEATURE_API_KEY] = instance;
     return instance;
-  }
-
-  /**
-   * Get metadata about registered provider.
-   * @returns {ProviderMetadata} Provider Metadata
-   */
-  get providerMetadata(): ProviderMetadata {
-    return this._defaultProvider.metadata;
   }
 
   addHooks(...hooks: Hook<FlagValue>[]): this {
@@ -72,46 +58,11 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
   }
 
   /**
-   * Sets the default provider for flag evaluations.
-   * This provider will be used by unnamed clients and named clients to which no provider is bound.
-   * Setting a provider supersedes the current provider used in new and existing clients without a name.
-   * @param {Provider} provider The provider responsible for flag evaluations.
-   * @returns {OpenFeatureAPI} OpenFeature API
-   */
-  setProvider(provider: Provider): this;
-  /**
-   * Sets the provider that OpenFeature will use for flag evaluations of clients with the given name.
-   * Setting a provider supersedes the current provider used in new and existing clients with that name.
-   * @param {string} clientName The name to identify the client
-   * @param {Provider} provider The provider responsible for flag evaluations.
-   * @returns {OpenFeatureAPI} OpenFeature API
-   */
-  setProvider(clientName: string, provider: Provider): this;
-  setProvider(clientOrProvider?: string | Provider, providerOrUndefined?: Provider): this {
-    const clientName = stringOrUndefined(clientOrProvider);
-    const provider = objectOrUndefined<Provider>(clientOrProvider) ?? objectOrUndefined<Provider>(providerOrUndefined);
-
-    if (!provider) {
-      return this;
-    }
-
-    if (clientName) {
-      this._providers.set(clientName, provider);
-    } else {
-      this._defaultProvider = provider;
-    }
-
-    return this;
-  }
-
-  /**
    * A factory function for creating new unnamed OpenFeature clients. Clients can contain
    * their own state (e.g. logger, hook, context). Multiple clients can be used
    * to segment feature flag configuration.
    *
    * All unnamed clients use the same provider set via {@link this.setProvider setProvider}.
-   * @param {string} name The name of the client
-   * @param {string} version The version of the client (only used for metadata)
    * @param {EvaluationContext} context Evaluation context that should be set on the client to used during flag evaluations
    * @returns {Client} OpenFeature Client
    */
@@ -155,18 +106,11 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI {
 
     return new OpenFeatureClient(
       () => this.getProviderForClient.bind(this)(name),
+      () => this.getEventEmitterForClient(name),
       () => this._logger,
       { name, version },
       context
     );
-  }
-
-  private getProviderForClient(name?: string): Provider {
-    if (!name) {
-      return this._defaultProvider;
-    }
-
-    return this._providers.get(name) ?? this._defaultProvider;
   }
 }
 

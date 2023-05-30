@@ -1,6 +1,6 @@
-import { OpenFeatureClient } from '../src/client';
-import { OpenFeature, OpenFeatureAPI } from '../src/open-feature';
-import { Provider } from '../src/types';
+import { OpenFeatureClient } from '../src';
+import { OpenFeature, OpenFeatureAPI } from '../src';
+import { Provider } from '../src';
 
 const MOCK_PROVIDER: Provider = {
   metadata: {
@@ -129,13 +129,38 @@ describe('OpenFeature', () => {
   });
 
   describe('Requirement 1.6.1', () => {
-    it('MUST define a `shutdown` function, which, when called, must call the respective `shutdown` function on the active provider', (done) => {
+    it('MUST define a `shutdown` function, which, when called, must call the respective `shutdown` function on the active provider', async () => {
       OpenFeature.setProvider(MOCK_PROVIDER);
       expect(OpenFeature.providerMetadata.name).toBe('mock-events-success');
-      OpenFeature.close().then(() => {
-        expect(MOCK_PROVIDER.onClose).toHaveBeenCalled();
-        done();
+      await OpenFeature.close();
+      expect(MOCK_PROVIDER.onClose).toHaveBeenCalled();
+    });
+
+    it('runs the shutdown function on all providers for all clients', async () => {
+      OpenFeature.setProvider(MOCK_PROVIDER);
+      OpenFeature.setProvider('client1', { ...MOCK_PROVIDER });
+      OpenFeature.setProvider('client2', { ...MOCK_PROVIDER });
+
+      expect(OpenFeature.providerMetadata.name).toBe(MOCK_PROVIDER.metadata.name);
+      await OpenFeature.close();
+      expect(MOCK_PROVIDER.onClose).toHaveBeenCalledTimes(3);
+    });
+
+    it('runs the shutdown function on all providers for all clients even if some fail', async () => {
+      const failingClose = () => {
+        throw Error();
+      };
+
+      OpenFeature.setProvider({
+        ...MOCK_PROVIDER,
+        onClose: failingClose,
       });
+      OpenFeature.setProvider('client1', { ...MOCK_PROVIDER, onClose: failingClose });
+      OpenFeature.setProvider('client2', { ...MOCK_PROVIDER, onClose: jest.fn() });
+
+      expect(OpenFeature.providerMetadata.name).toBe(MOCK_PROVIDER.metadata.name);
+      await OpenFeature.close();
+      expect(MOCK_PROVIDER.onClose).toHaveBeenCalledTimes(3);
     });
   });
 });

@@ -1,3 +1,5 @@
+import { OpenFeatureEventEmitter } from './events';
+
 export type PrimitiveValue = null | boolean | string | number;
 
 export type JsonObject = { [key: string]: JsonValue };
@@ -129,7 +131,7 @@ export type ResolutionReason = keyof typeof StandardResolutionReasons | (string 
 
 /**
  * A structure which supports definition of arbitrary properties, with keys of type string, and values of type boolean, string, or number.
- * 
+ *
  * This structure is populated by a provider for use by an Application Author (via the Evaluation API) or an Application Integrator (via hooks).
  */
 export type FlagMetadata = Record<string, string | number | boolean>;
@@ -269,5 +271,22 @@ export enum ProviderStatus {
 export interface CommonProvider {
   readonly metadata: ProviderMetadata;
   readonly status?: ProviderStatus;
-  // TODO: move close from client Provider here once we want it in server
+
+  /**
+   * An event emitter for ProviderEvents.
+   * @see ProviderEvents
+   */
+  events?: OpenFeatureEventEmitter;
+
+  onClose?(): Promise<void>;
+
+  /**
+   * A handler function used to setup the provider.
+   * Called by the SDK after the provider is set.
+   * When the returned promise resolves, the SDK fires the ProviderEvents.Ready event.
+   * If the returned promise rejects, the SDK fires the ProviderEvents.Error event.
+   * Use this function to perform any context-dependent setup within the provider.
+   * @param context
+   */
+  initialize?(context?: EvaluationContext): Promise<void>;
 }

@@ -49,19 +49,22 @@ class MockProvider implements Provider {
 
   initialize: jest.Mock<Promise<void>, []> | undefined;
 
-  resolveBooleanEvaluation(): ResolutionDetails<boolean> {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  async onClose(): Promise<void> {}
+
+  resolveBooleanEvaluation(): Promise<ResolutionDetails<boolean>> {
     throw new Error('Not implemented');
   }
 
-  resolveNumberEvaluation(): ResolutionDetails<number> {
+  resolveNumberEvaluation(): Promise<ResolutionDetails<number>> {
     throw new Error('Not implemented');
   }
 
-  resolveObjectEvaluation<T extends JsonValue>(): ResolutionDetails<T> {
+  resolveObjectEvaluation<T extends JsonValue>(): Promise<ResolutionDetails<T>> {
     throw new Error('Not implemented');
   }
 
-  resolveStringEvaluation(): ResolutionDetails<string> {
+  resolveStringEvaluation(): Promise<ResolutionDetails<string>> {
     throw new Error('Not implemented');
   }
 }

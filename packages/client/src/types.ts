@@ -4,6 +4,7 @@ import {
   CommonProvider,
   EvaluationContext,
   EvaluationDetails,
+  Eventing,
   FlagValue,
   HookContext,
   HookHints,
@@ -15,48 +16,6 @@ import {
   ProviderMetadata,
   ResolutionDetails,
 } from '@openfeature/shared';
-import { EventEmitter as OpenFeatureEventEmitter } from 'events';
-export { OpenFeatureEventEmitter };
-
-export enum ProviderEvents {
-  /**
-   * The provider is ready to evaluate flags.
-   */
-  Ready = 'PROVIDER_READY',
-
-  /**
-   * The provider is in an error state.
-   */
-  Error = 'PROVIDER_ERROR',
-
-  /**
-   * The flag configuration in the source-of-truth has changed.
-   */
-  ConfigurationChanged = 'PROVIDER_CONFIGURATION_CHANGED',
-
-  /**
-   * The provider's cached state is not longer valid and may not be up-to-date with the source of truth.
-   */
-  Stale = 'PROVIDER_STALE',
-}
-
-export interface EventData {
-  flagKeysChanged?: string[];
-  changeMetadata?: { [key: string]: boolean | string }; // similar to flag metadata
-}
-
-export interface Eventing {
-  addHandler(notificationType: string, handler: Handler): void;
-}
-
-export type EventContext = {
-  notificationType: string;
-  [key: string]: unknown;
-};
-
-export type Handler = (eventContext?: EventContext) => void;
-
-export type EventCallbackMessage = (eventContext: EventContext) => void;
 
 /**
  * Interface that providers must implement to resolve flag values for their particular
@@ -74,32 +33,12 @@ export interface Provider extends CommonProvider {
   readonly hooks?: Hook[];
 
   /**
-   * An event emitter for ProviderEvents.
-   * @see ProviderEvents
-   */
-  events?: OpenFeatureEventEmitter;
-
-  /**
    * A handler function to reconcile changes when the static context.
    * Called by the SDK when the context is changed.
    * @param oldContext
    * @param newContext
    */
   onContextChange?(oldContext: EvaluationContext, newContext: EvaluationContext): Promise<void>;
-
-  // TODO: move to common Provider type when we want close in server
-  onClose?(): Promise<void>;
-
-  // TODO: move to common Provider type when we want close in server
-  /**
-   * A handler function used to setup the provider.
-   * Called by the SDK after the provider is set.
-   * When the returned promise resolves, the SDK fires the ProviderEvents.Ready event.
-   * If the returned promise rejects, the SDK fires the ProviderEvents.Error event.
-   * Use this function to perform any context-dependent setup within the provider.
-   * @param context
-   */
-  initialize?(context: EvaluationContext): Promise<void>;
 
   /**
    * Resolve a boolean flag and its evaluation details.

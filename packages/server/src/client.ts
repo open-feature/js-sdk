@@ -3,12 +3,16 @@ import {
   ErrorCode,
   EvaluationContext,
   EvaluationDetails,
+  EventHandler,
   FlagValue,
   FlagValueType,
   HookContext,
   JsonValue,
   Logger,
   OpenFeatureError,
+  OpenFeatureEventEmitter,
+  ProviderEvents,
+  ProviderStatus,
   ResolutionDetails,
   SafeLogger,
   StandardResolutionReasons,
@@ -22,7 +26,6 @@ type OpenFeatureClientOptions = {
 };
 
 export class OpenFeatureClient implements Client {
-  readonly metadata: ClientMetadata;
   private _context: EvaluationContext;
   private _hooks: Hook[] = [];
   private _clientLogger?: Logger;
@@ -31,16 +34,38 @@ export class OpenFeatureClient implements Client {
     // we always want the client to use the current provider,
     // so pass a function to always access the currently registered one.
     private readonly providerAccessor: () => Provider,
+    private readonly events: () => OpenFeatureEventEmitter,
     private readonly globalLogger: () => Logger,
-    options: OpenFeatureClientOptions,
+    private readonly options: OpenFeatureClientOptions,
     context: EvaluationContext = {}
   ) {
-    this.metadata = {
-      name: options.name,
-      version: options.version,
+    this._context = context;
+  }
+
+  get metadata(): ClientMetadata {
+    return {
+      name: this.options.name,
+      version: this.options.version,
       providerMetadata: this.providerAccessor().metadata,
     };
-    this._context = context;
+  }
+
+  addHandler(eventType: ProviderEvents, handler: EventHandler): void {
+    this.events().addHandler(eventType, handler);
+    const providerReady = !this._provider.status || this._provider.status === ProviderStatus.READY;
+
+    if (eventType === ProviderEvents.Ready && providerReady) {
+      // run immediately, we're ready.
+      handler({ clientName: this.metadata.name });
+    }
+  }
+
+  removeHandler(eventType: ProviderEvents, handler: EventHandler) {
+    this.events().removeHandler(eventType, handler);
+  }
+
+  getHandlers(eventType: ProviderEvents) {
+    return this.events().getHandlers(eventType);
   }
 
   setLogger(logger: Logger): OpenFeatureClient {

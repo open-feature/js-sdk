@@ -109,6 +109,12 @@ export default {
   // Run tests from one or more projects
   projects: [
     {
+      displayName: 'shared',
+      testEnvironment: 'node',
+      preset: 'ts-jest',
+      testMatch: ['<rootDir>/packages/shared/test/**/*.spec.ts'],
+    },
+    {
       displayName: 'server',
       testEnvironment: 'node',
       preset: 'ts-jest',
@@ -137,7 +143,7 @@ export default {
       setupFiles: ['<rootDir>/packages/client/e2e/step-definitions/setup.ts'],
       moduleNameMapper: {
         '^uuid$': require.resolve('uuid'),
-        '^(.*)\\.js$': ['$1', '$1.js']
+        '^(.*)\\.js$': ['$1', '$1.js'],
       },
     },
   ],
