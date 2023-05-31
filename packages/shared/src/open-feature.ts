@@ -129,7 +129,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
 
     this.transferListeners(oldProvider, provider, clientName, clientEmitter);
 
-    // Do not close a provider, that is bound to any client
+    // Do not close a provider that is bound to any client
     if (![...this._clientProviders.values(), this._defaultProvider].includes(oldProvider)) {
       oldProvider?.onClose?.();
     }
