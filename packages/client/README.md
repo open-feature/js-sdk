@@ -11,7 +11,7 @@
 
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 [![npm version](https://badge.fury.io/js/@openfeature%2Fweb-sdk.svg)](https://www.npmjs.com/package/@openfeature/web-sdk)
-[![Specification](https://img.shields.io/static/v1?label=Specification&message=v0.5.2&color=yellow)](https://github.com/open-feature/spec/tree/v0.5.2)
+[![Specification](https://img.shields.io/static/v1?label=Specification&message=v0.6.0&color=yellow)](https://github.com/open-feature/spec/tree/v0.6.0)
 
 ## 🧪 This SDK is experimental
 
