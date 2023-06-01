@@ -11,7 +11,7 @@
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![npm version](https://badge.fury.io/js/@openfeature%2Fjs-sdk.svg)](https://www.npmjs.com/package/@openfeature/js-sdk)
-[![Specification](https://img.shields.io/static/v1?label=Specification&message=v0.5.2&color=yellow)](https://github.com/open-feature/spec/tree/v0.5.2)
+[![Specification](https://img.shields.io/static/v1?label=Specification&message=v0.6.0&color=yellow)](https://github.com/open-feature/spec/tree/v0.6.0)
 
 ## 👋 Hey there! Thanks for checking out the OpenFeature Server SDK
 
