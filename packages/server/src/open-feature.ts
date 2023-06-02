@@ -6,7 +6,7 @@ import { Client, Hook, Provider } from './types';
 import { objectOrUndefined, stringOrUndefined } from '@openfeature/shared/src/type-guards';
 
 // use a symbol as a key for the global singleton
-const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/js.api');
+const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/js-sdk/api');
 
 type OpenFeatureGlobal = {
   [GLOBAL_OPENFEATURE_API_KEY]?: OpenFeatureAPI;
