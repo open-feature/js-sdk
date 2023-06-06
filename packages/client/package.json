@@ -1,6 +1,6 @@
 {
   "name": "@openfeature/web-sdk",
-  "version": "0.3.2-experimental",
+  "version": "0.3.3-experimental",
   "description": "OpenFeature SDK for Web",
   "main": "./dist/cjs/index.js",
   "files": [

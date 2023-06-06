@@ -80,6 +80,29 @@ describe('OpenFeature', () => {
 
       expect(namedClient.metadata.providerMetadata.name).toEqual(fakeProvider.metadata.name);
     });
+
+    it('should close a provider if it is replaced and no other client uses it', async () => {
+      const provider1 = { ...MOCK_PROVIDER, onClose: jest.fn() };
+      const provider2 = { ...MOCK_PROVIDER, onClose: jest.fn() };
+
+      OpenFeature.setProvider('client1', provider1);
+      expect(provider1.onClose).not.toHaveBeenCalled();
+      OpenFeature.setProvider('client1', provider2);
+      expect(provider1.onClose).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not close provider if it is used by another client', async () => {
+      const provider1 = { ...MOCK_PROVIDER, onClose: jest.fn() };
+
+      OpenFeature.setProvider('client1', provider1);
+      OpenFeature.setProvider('client2', provider1);
+
+      OpenFeature.setProvider('client1', { ...provider1 });
+      expect(provider1.onClose).not.toHaveBeenCalled();
+
+      OpenFeature.setProvider('client2', { ...provider1 });
+      expect(provider1.onClose).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('Requirement 1.1.4', () => {
