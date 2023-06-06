@@ -4,7 +4,7 @@ import { NOOP_PROVIDER } from './no-op-provider';
 import { Client, Hook, Provider } from './types';
 
 // use a symbol as a key for the global singleton
-const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/js.api');
+const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/web-sdk/api');
 
 type OpenFeatureGlobal = {
   [GLOBAL_OPENFEATURE_API_KEY]?: OpenFeatureAPI;
