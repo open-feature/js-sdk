@@ -210,7 +210,8 @@ client.addHandler(ProviderEvents.Error, async (eventDetails) => {
 
 ### Shutdown:
 
-The OpenFeature API provides a close function to perform a cleanup of all providers attached to any client.
+The OpenFeature API provides a close function to perform a cleanup of all registered providers.
+This should only be called when your application is in the process of shutting down.
 
 ```typescript
 import { OpenFeature, ProviderEvents } from '@openfeature/web-sdk';
