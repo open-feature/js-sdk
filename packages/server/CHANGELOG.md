@@ -6,6 +6,13 @@
   * devDependencies
     * @openfeature/shared bumped from 0.0.1 to 0.0.2
 
+## [1.3.1](https://github.com/open-feature/js-sdk/compare/js-sdk-v1.3.0...js-sdk-v1.3.1) (2023-06-08)
+
+
+### Bug Fixes
+
+* updated typedoc config to support monorepos ([#447](https://github.com/open-feature/js-sdk/issues/447)) ([05b100d](https://github.com/open-feature/js-sdk/commit/05b100dca540dfa6317a01cb238af6d9a1c1c2ef))
+
 ## [1.3.0](https://github.com/open-feature/js-sdk/compare/js-sdk-v1.2.0...js-sdk-v1.3.0) (2023-06-06)
 
 
