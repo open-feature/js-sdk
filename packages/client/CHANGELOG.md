@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.4-experimental](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.3.3-experimental...web-sdk-v0.3.4-experimental) (2023-06-08)
+
+
+### Bug Fixes
+
+* updated typedoc config to support monorepos ([#447](https://github.com/open-feature/js-sdk/issues/447)) ([05b100d](https://github.com/open-feature/js-sdk/commit/05b100dca540dfa6317a01cb238af6d9a1c1c2ef))
+
 ## [0.3.3-experimental](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.3.2-experimental...web-sdk-v0.3.3-experimental) (2023-06-06)
 
 
