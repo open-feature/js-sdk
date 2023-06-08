@@ -1,7 +1,7 @@
 {
-    "entryPointStrategy": "packages",
+    "$schema": "https://typedoc.org/schema.json",
+    "entryPointStrategy": "legacy-packages",
     "entryPoints": [
-        "packages/shared",
         "packages/server",
         "packages/client"
     ],
