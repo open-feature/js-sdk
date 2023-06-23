@@ -56,6 +56,7 @@ export class OpenFeatureClient implements Client {
 
     if (eventType === ProviderEvents.Ready && providerReady) {
       // run immediately, we're ready.
+      // TODO: we have to wrap this in the async wrapper as we do in events.ts
       handler({ clientName: this.metadata.name });
     }
   }

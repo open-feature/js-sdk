@@ -122,6 +122,8 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     }
 
     if (clientName) {
+      // TODO: this is potentially a problem. We are infinitely adding to this map with every new client.
+      // TODO: we should either do this lazily when we actually add handlers, or else use a weakmap somehow.
       this._clientProviders.set(clientName, provider);
     } else {
       this._defaultProvider = provider;
@@ -163,6 +165,8 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     clientName: string | undefined,
     clientEmitter: OpenFeatureEventEmitter
   ) {
+
+    // TODO: we don't want to remove them all - there could be other clients listing to this provider still
     oldProvider.events?.removeAllHandlers();
 
     // iterate over the event types

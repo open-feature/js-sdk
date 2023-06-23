@@ -194,6 +194,33 @@ describe('Events', () => {
 
       OpenFeature.setProvider(clientId, provider);
     });
+
+    // TODO: make this test pass
+    it('un-bound client event handlers still run after new provider set', (done) => {
+      const defaultProvider = new MockProvider();
+      const namedProvider = new MockProvider();
+      const unboundName = 'unboundName';
+      const boundName = 'boundName';
+
+      // set the default provider
+      OpenFeature.setProvider(defaultProvider);
+      // set a named provider
+      OpenFeature.setProvider(boundName, namedProvider);
+
+
+      // set a client for each - one will be using the default because it has not other mapping
+      const boundClient = OpenFeature.getClient(unboundName);
+      const unBoundClient = OpenFeature.getClient(boundName);
+
+      const client0Handler = () => {
+        // this will never run because we remove ALL handlers from the default provider
+        done();
+      };
+      
+      // fire events
+      boundClient.addHandler(ProviderEvents.ConfigurationChanged, client0Handler);
+      defaultProvider.events?.emit(ProviderEvents.ConfigurationChanged);
+    });
   });
 
   describe('Requirement 5.1.3', () => {
@@ -266,6 +293,7 @@ describe('Events', () => {
   });
 
   describe('Requirement 5.2.5', () => {
+    // TODO: make this test pass.
     it('If a handler function terminates abnormally, other handler functions run', (done) => {
       const provider = new MockProvider();
       const client = OpenFeature.getClient(clientId);
