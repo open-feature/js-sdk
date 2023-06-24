@@ -19,6 +19,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
   protected abstract _defaultProvider: P;
 
   private readonly _events = new OpenFeatureEventEmitter(() => this._logger);
+  private readonly _clientEventHandlers: Map<string | undefined, [ProviderEvents, EventHandler][]> = new Map();
   protected _clientProviders: Map<string, P> = new Map();
   protected _clientEvents: Map<string | undefined, OpenFeatureEventEmitter> = new Map();
 
@@ -165,18 +166,25 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     clientName: string | undefined,
     clientEmitter: OpenFeatureEventEmitter
   ) {
-
-    // TODO: we don't want to remove them all - there could be other clients listing to this provider still
-    oldProvider.events?.removeAllHandlers();
+    this._clientEventHandlers
+      .get(clientName)
+      ?.forEach((eventHandler) => oldProvider.events?.removeHandler(...eventHandler));
 
     // iterate over the event types
-    Object.values<ProviderEvents>(ProviderEvents).forEach((eventType) =>
-      newProvider.events?.addHandler(eventType, async (details?: EventDetails) => {
-        // on each event type, fire the associated handlers
-        clientEmitter.emit(eventType, { ...details, clientName });
-        this._events.emit(eventType, { ...details, clientName });
-      })
+    const newClientHandlers = Object.values<ProviderEvents>(ProviderEvents).map<[ProviderEvents, EventHandler]>(
+      (eventType) => {
+        const handler = async (details?: EventDetails) => {
+          // on each event type, fire the associated handlers
+          clientEmitter.emit(eventType, { ...details, clientName });
+          this._events.emit(eventType, { ...details, clientName });
+        };
+
+        return [eventType, handler];
+      }
     );
+
+    this._clientEventHandlers.set(clientName, newClientHandlers);
+    newClientHandlers.forEach((eventHandler) => newProvider.events?.addHandler(...eventHandler));
   }
 
   async close(): Promise<void> {

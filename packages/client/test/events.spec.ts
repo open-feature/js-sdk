@@ -191,9 +191,30 @@ describe('Events', () => {
 
       OpenFeature.setProvider(clientId, provider);
     });
-  });
 
-  describe('Requirement 5.1.3', () => {
+    it('un-bound client event handlers still run after new provider set', (done) => {
+      const defaultProvider = new MockProvider({ name: 'default' });
+      const namedProvider = new MockProvider();
+      const unboundName = 'unboundName';
+      const boundName = 'boundName';
+
+      // set the default provider
+      OpenFeature.setProvider(defaultProvider);
+
+      // get a client using the default because it has not other mapping
+      const unBoundClient = OpenFeature.getClient(unboundName);
+      unBoundClient.addHandler(ProviderEvents.ConfigurationChanged, () => {
+        done();
+      });
+
+      // get a client and assign a provider to it
+      OpenFeature.setProvider(boundName, namedProvider);
+      OpenFeature.getClient(boundName);
+
+      // fire events
+      defaultProvider.events?.emit(ProviderEvents.ConfigurationChanged);
+    });
+
     it('PROVIDER_ERROR events populates the message field', (done) => {
       const provider = new MockProvider({ failOnInit: true });
       const client = OpenFeature.getClient(clientId);

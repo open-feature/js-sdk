@@ -3,6 +3,7 @@ import {
   ErrorCode,
   EvaluationContext,
   EvaluationDetails,
+  EventDetails,
   EventHandler,
   FlagValue,
   FlagValueType,
@@ -36,7 +37,16 @@ export class OpenFeatureClient implements Client {
     private readonly events: () => OpenFeatureEventEmitter,
     private readonly globalLogger: () => Logger,
     private readonly options: OpenFeatureClientOptions
-  ) {}
+  ) {
+    const provider = providerAccessor();
+    const eventEmitter = events();
+
+    Object.values<ProviderEvents>(ProviderEvents).forEach((eventType) =>
+      provider.events?.addHandler(eventType, async (details?: EventDetails) => {
+        eventEmitter.emit(eventType, { ...details, clientName: this.metadata.name });
+      })
+    );
+  }
 
   get metadata(): ClientMetadata {
     return {
@@ -52,8 +62,11 @@ export class OpenFeatureClient implements Client {
 
     if (eventType === ProviderEvents.Ready && providerReady) {
       // run immediately, we're ready.
-      // TODO: we have to wrap this in the async wrapper as we do in events.ts
-      handler({ clientName: this.metadata.name });
+      try {
+        handler({ clientName: this.metadata.name });
+      } catch (err) {
+        this._logger?.error('Error running event handler:', err);
+      }
     }
   }
 
