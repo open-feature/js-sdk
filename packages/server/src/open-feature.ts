@@ -106,7 +106,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider> {
 
     return new OpenFeatureClient(
       () => this.getProviderForClient.bind(this)(name),
-      () => this.getEventEmitterForClient(name),
+      () => this.getEventEmitterForClient.bind(this)(name),
       () => this._logger,
       { name, version },
       context

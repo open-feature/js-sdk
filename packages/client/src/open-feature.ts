@@ -76,8 +76,8 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider> {
     return new OpenFeatureClient(
       // functions are passed here to make sure that these values are always up to date,
       // and so we don't have to make these public properties on the API class.
-      () => this.getProviderForClient(name),
-      () => this.getEventEmitterForClient(name),
+      () => this.getProviderForClient.bind(this)(name),
+      () => this.getEventEmitterForClient.bind(this)(name),
       () => this._logger,
       { name, version }
     );

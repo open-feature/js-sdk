@@ -155,6 +155,14 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
 
     const newEmitter = new OpenFeatureEventEmitter(() => this._logger);
     this._clientEvents.set(name, newEmitter);
+
+    const clientProvider = this.getProviderForClient(name);
+    Object.values<ProviderEvents>(ProviderEvents).forEach((eventType) =>
+      clientProvider.events?.addHandler(eventType, async (details?: EventDetails) => {
+        newEmitter.emit(eventType, { ...details, clientName: name });
+      })
+    );
+
     return newEmitter;
   }
 
