@@ -304,8 +304,6 @@ describe('Events', () => {
       client.addHandler(ProviderEvents.Ready, handler1);
 
       OpenFeature.setProvider(clientId, provider);
-
-      console.log('test');
     });
   });
 
