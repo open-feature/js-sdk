@@ -3,7 +3,6 @@ import {
   ErrorCode,
   EvaluationContext,
   EvaluationDetails,
-  EventDetails,
   EventHandler,
   FlagValue,
   FlagValueType,
