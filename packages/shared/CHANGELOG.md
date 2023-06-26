@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.5](https://github.com/open-feature/js-sdk/compare/shared-v0.0.4...shared-v0.0.5) (2023-06-26)
+
+
+### Bug Fixes
+
+* various event handler issues ([1dd1e17](https://github.com/open-feature/js-sdk/commit/1dd1e17361ef85e89f858d00475830bffec4173b))
+
 ## [0.0.4](https://github.com/open-feature/js-sdk/compare/shared-v0.0.3...shared-v0.0.4) (2023-06-06)
 
 
