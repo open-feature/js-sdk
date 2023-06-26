@@ -104,7 +104,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
       return this;
     }
 
-    const clientEmitter = this.getEventEmitterForClient(clientName);
+    const clientEmitter = this.getAndCacheEventEmitterForClient(clientName);
 
     if (typeof provider.initialize === 'function') {
       provider
@@ -146,13 +146,14 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     return this._clientProviders.get(name) ?? this._defaultProvider;
   }
 
-  protected getEventEmitterForClient(name?: string): OpenFeatureEventEmitter {
+  protected getAndCacheEventEmitterForClient(name?: string): OpenFeatureEventEmitter {
     const emitter = this._clientEvents.get(name);
 
     if (emitter) {
       return emitter;
     }
 
+    // lazily add the event emitters
     const newEmitter = new OpenFeatureEventEmitter(() => this._logger);
     this._clientEvents.set(name, newEmitter);
 

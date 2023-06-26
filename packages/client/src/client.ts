@@ -33,7 +33,7 @@ export class OpenFeatureClient implements Client {
     // functions are passed here to make sure that these values are always up to date,
     // and so we don't have to make these public properties on the API class.
     private readonly providerAccessor: () => Provider,
-    private readonly events: () => OpenFeatureEventEmitter,
+    private readonly emitterAccessor: () => OpenFeatureEventEmitter,
     private readonly globalLogger: () => Logger,
     private readonly options: OpenFeatureClientOptions
   ) {}
@@ -47,7 +47,7 @@ export class OpenFeatureClient implements Client {
   }
 
   addHandler(eventType: ProviderEvents, handler: EventHandler): void {
-    this.events().addHandler(eventType, handler);
+    this.emitterAccessor().addHandler(eventType, handler);
     const providerReady = !this._provider.status || this._provider.status === ProviderStatus.READY;
 
     if (eventType === ProviderEvents.Ready && providerReady) {
@@ -60,12 +60,12 @@ export class OpenFeatureClient implements Client {
     }
   }
 
-  removeHandler(notificationType: ProviderEvents, handler: EventHandler) {
-    this.events().removeHandler(notificationType, handler);
+  removeHandler(notificationType: ProviderEvents, handler: EventHandler): void {
+    this.emitterAccessor().removeHandler(notificationType, handler);
   }
 
   getHandlers(eventType: ProviderEvents) {
-    return this.events().getHandlers(eventType);
+    return this.emitterAccessor().getHandlers(eventType);
   }
 
   setLogger(logger: Logger): OpenFeatureClient {
