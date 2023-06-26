@@ -34,7 +34,7 @@ export class OpenFeatureClient implements Client {
     // we always want the client to use the current provider,
     // so pass a function to always access the currently registered one.
     private readonly providerAccessor: () => Provider,
-    private readonly events: () => OpenFeatureEventEmitter,
+    private readonly emitterAccessor: () => OpenFeatureEventEmitter,
     private readonly globalLogger: () => Logger,
     private readonly options: OpenFeatureClientOptions,
     context: EvaluationContext = {}
@@ -51,21 +51,25 @@ export class OpenFeatureClient implements Client {
   }
 
   addHandler(eventType: ProviderEvents, handler: EventHandler): void {
-    this.events().addHandler(eventType, handler);
+    this.emitterAccessor().addHandler(eventType, handler);
     const providerReady = !this._provider.status || this._provider.status === ProviderStatus.READY;
 
     if (eventType === ProviderEvents.Ready && providerReady) {
       // run immediately, we're ready.
-      handler({ clientName: this.metadata.name });
+      try {
+        handler({ clientName: this.metadata.name });
+      } catch (err) {
+        this._logger?.error('Error running event handler:', err);
+      }
     }
   }
 
   removeHandler(eventType: ProviderEvents, handler: EventHandler) {
-    this.events().removeHandler(eventType, handler);
+    this.emitterAccessor().removeHandler(eventType, handler);
   }
 
   getHandlers(eventType: ProviderEvents) {
-    return this.events().getHandlers(eventType);
+    return this.emitterAccessor().getHandlers(eventType);
   }
 
   setLogger(logger: Logger): OpenFeatureClient {
