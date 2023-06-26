@@ -39,7 +39,7 @@ export class OpenFeatureClient implements Client {
     private readonly options: OpenFeatureClientOptions
   ) {
     const provider = providerAccessor();
-    const eventEmitter = events();
+    const eventEmitter = events(); // calling this in the constructor ends up creating a new event handler map entry with every newly named client.
 
     Object.values<ProviderEvents>(ProviderEvents).forEach((eventType) =>
       provider.events?.addHandler(eventType, async (details?: EventDetails) => {

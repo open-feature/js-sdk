@@ -123,8 +123,6 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     }
 
     if (clientName) {
-      // TODO: this is potentially a problem. We are infinitely adding to this map with every new client.
-      // TODO: we should either do this lazily when we actually add handlers, or else use a weakmap somehow.
       this._clientProviders.set(clientName, provider);
     } else {
       this._defaultProvider = provider;
