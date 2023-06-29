@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.5-experimental](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.3.4-experimental...web-sdk-v0.3.5-experimental) (2023-06-29)
+
+
+### Bug Fixes
+
+* various event handler issues ([1dd1e17](https://github.com/open-feature/js-sdk/commit/1dd1e17361ef85e89f858d00475830bffec4173b))
+
 ## [0.3.4-experimental](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.3.3-experimental...web-sdk-v0.3.4-experimental) (2023-06-08)
 
 
