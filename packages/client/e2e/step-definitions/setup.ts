@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { OpenFeature } from '../../';
+import { OpenFeature } from '../..';
 import { FlagdWebProvider } from '@openfeature/flagd-web-provider';
 
 const FLAGD_NAME = 'flagd-web';
