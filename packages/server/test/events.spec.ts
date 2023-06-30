@@ -10,6 +10,7 @@ import {
   ResolutionDetails,
 } from '../src';
 import { v4 as uuid } from 'uuid';
+import { NOOP_PROVIDER } from '../src';
 
 class MockProvider implements Provider {
   readonly metadata: ProviderMetadata;
@@ -77,6 +78,10 @@ describe('Events', () => {
   afterEach(() => {
     jest.clearAllMocks();
     clientId = uuid();
+  });
+
+  beforeEach(() => {
+    OpenFeature.setProvider(NOOP_PROVIDER);
   });
 
   describe('Requirement 5.1.1', () => {
@@ -193,6 +198,45 @@ describe('Events', () => {
       client1.addHandler(ProviderEvents.Ready, client1Handler);
 
       OpenFeature.setProvider(clientId, provider);
+    });
+
+    it('anonymous provider with named client should run', (done) => {
+      const defaultProvider = new MockProvider({
+        failOnInit: false,
+        initialStatus: ProviderStatus.NOT_READY,
+        name: 'default',
+      });
+      const unboundName = 'some-new-unbound-name';
+
+      // get a client using the default because it has not other mapping
+      const unBoundClient = OpenFeature.getClient(unboundName);
+      unBoundClient.addHandler(ProviderEvents.ConfigurationChanged, () => {
+        done();
+      });
+
+      // set the default provider
+      OpenFeature.setProvider(defaultProvider);
+
+      // fire events
+      defaultProvider.events?.emit(ProviderEvents.ConfigurationChanged);
+    });
+
+    it('anonymous provider with named client should run init events', (done) => {
+      const defaultProvider = new MockProvider({
+        failOnInit: false,
+        initialStatus: ProviderStatus.NOT_READY,
+        name: 'default',
+      });
+      const unboundName = 'some-other-unbound-name';
+
+      // get a client using the default because it has not other mapping
+      const unBoundClient = OpenFeature.getClient(unboundName);
+      unBoundClient.addHandler(ProviderEvents.Ready, () => {
+        done();
+      });
+
+      // set the default provider
+      OpenFeature.setProvider(defaultProvider);
     });
 
     it('un-bound client event handlers still run after new provider set', (done) => {

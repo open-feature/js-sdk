@@ -10,6 +10,7 @@ import {
 } from './types';
 import { EventDetails, EventHandler, Eventing, OpenFeatureEventEmitter, ProviderEvents } from './events';
 import { objectOrUndefined, stringOrUndefined } from './type-guards';
+import { isDefined } from './filter';
 
 export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProvider> implements Eventing {
   protected _transactionContextPropagator: TransactionContextPropagator = NOOP_TRANSACTION_CONTEXT_PROPAGATOR;
@@ -105,7 +106,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     }
 
     // get the named emitter, or if this is the default provider, get all event emitters not associated with a provider
-    const emitters = clientName ? [this._clientEvents.get(clientName)] : this.getUnboundEmitters();
+    const emitters = clientName ? [this.getAndCacheEventEmitterForClient(clientName)] : this.getUnboundEmitters();
 
     if (typeof provider.initialize === 'function') {
       provider
@@ -176,9 +177,9 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
 
   private getUnboundEmitters(): OpenFeatureEventEmitter[] {
     const namedProviders = [...this._clientProviders.keys()];
-    const eventEmitterNames = [...this._clientEvents.keys()].filter(key => key) as string[];
-    const unboundEmitterNames = eventEmitterNames.filter(name => !namedProviders.includes(name));
-    return unboundEmitterNames.map(name => this._clientEvents.get(name)!);
+    const eventEmitterNames = [...this._clientEvents.keys()].filter(isDefined);
+    const unboundEmitterNames = eventEmitterNames.filter((name) => !namedProviders.includes(name));
+    return unboundEmitterNames.map((name) => this._clientEvents.get(name)).filter(isDefined);
   }
 
   private transferListeners(
@@ -196,7 +197,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
       (eventType) => {
         const handler = async (details?: EventDetails) => {
           // on each event type, fire the associated handlers
-          emitters.forEach(emitter => {
+          emitters.forEach((emitter) => {
             emitter?.emit(eventType, { ...details, clientName });
           });
           this._events.emit(eventType, { ...details, clientName });

@@ -198,7 +198,11 @@ describe('Events', () => {
     });
 
     it('anonymous provider with named client should run', (done) => {
-      const defaultProvider = new MockProvider({ failOnInit: false, initialStatus: ProviderStatus.NOT_READY, name: 'defauwlt' });
+      const defaultProvider = new MockProvider({
+        failOnInit: false,
+        initialStatus: ProviderStatus.NOT_READY,
+        name: 'default',
+      });
       const unboundName = 'some-new-unbound-name';
 
       // get a client using the default because it has not other mapping
@@ -215,7 +219,11 @@ describe('Events', () => {
     });
 
     it('anonymous provider with named client should run init events', (done) => {
-      const defaultProvider = new MockProvider({ failOnInit: false, initialStatus: ProviderStatus.NOT_READY, name: 'defauwlt' });
+      const defaultProvider = new MockProvider({
+        failOnInit: false,
+        initialStatus: ProviderStatus.NOT_READY,
+        name: 'default',
+      });
       const unboundName = 'some-other-unbound-name';
 
       // get a client using the default because it has not other mapping
