@@ -6,6 +6,14 @@
   * devDependencies
     * @openfeature/shared bumped from 0.0.1 to 0.0.2
 
+## [1.3.2](https://github.com/open-feature/js-sdk/compare/js-sdk-v1.3.1...js-sdk-v1.3.2) (2023-07-04)
+
+
+### Bug Fixes
+
+* named client events ([#472](https://github.com/open-feature/js-sdk/issues/472)) ([fb69b9d](https://github.com/open-feature/js-sdk/commit/fb69b9d665172de7d79c84b36adbbcf0c315b701))
+* various event handler issues ([1dd1e17](https://github.com/open-feature/js-sdk/commit/1dd1e17361ef85e89f858d00475830bffec4173b))
+
 ## [1.3.1](https://github.com/open-feature/js-sdk/compare/js-sdk-v1.3.0...js-sdk-v1.3.1) (2023-06-08)
 
 
