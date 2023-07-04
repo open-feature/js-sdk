@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.6-experimental](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.3.5-experimental...web-sdk-v0.3.6-experimental) (2023-07-04)
+
+
+### Bug Fixes
+
+* named client events ([#472](https://github.com/open-feature/js-sdk/issues/472)) ([fb69b9d](https://github.com/open-feature/js-sdk/commit/fb69b9d665172de7d79c84b36adbbcf0c315b701))
+
 ## [0.3.5-experimental](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.3.4-experimental...web-sdk-v0.3.5-experimental) (2023-06-29)
 
 
