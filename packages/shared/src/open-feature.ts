@@ -10,6 +10,7 @@ import {
 } from './types';
 import { EventDetails, EventHandler, Eventing, OpenFeatureEventEmitter, ProviderEvents } from './events';
 import { objectOrUndefined, stringOrUndefined } from './type-guards';
+import { isDefined } from './filter';
 
 export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProvider> implements Eventing {
   protected _transactionContextPropagator: TransactionContextPropagator = NOOP_TRANSACTION_CONTEXT_PROPAGATOR;
@@ -104,21 +105,28 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
       return this;
     }
 
-    const clientEmitter = this.getAndCacheEventEmitterForClient(clientName);
+    // get the named emitter, or if this is the default provider, get all event emitters not associated with a provider
+    const emitters = clientName ? [this.getAndCacheEventEmitterForClient(clientName)] : this.getUnboundEmitters();
 
     if (typeof provider.initialize === 'function') {
       provider
         .initialize?.(this._context)
         ?.then(() => {
-          clientEmitter.emit(ProviderEvents.Ready, { clientName });
+          emitters.forEach((emitter) => {
+            emitter?.emit(ProviderEvents.Ready, { clientName });
+          });
           this._events?.emit(ProviderEvents.Ready, { clientName });
         })
         ?.catch((error) => {
-          clientEmitter.emit(ProviderEvents.Error, { clientName, message: error.message });
+          emitters.forEach((emitter) => {
+            emitter?.emit(ProviderEvents.Error, { clientName, message: error.message });
+          });
           this._events?.emit(ProviderEvents.Error, { clientName, message: error.message });
         });
     } else {
-      clientEmitter.emit(ProviderEvents.Ready, { clientName });
+      emitters.forEach((emitter) => {
+        emitter?.emit(ProviderEvents.Ready, { clientName });
+      });
       this._events?.emit(ProviderEvents.Ready, { clientName });
     }
 
@@ -128,7 +136,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
       this._defaultProvider = provider;
     }
 
-    this.transferListeners(oldProvider, provider, clientName, clientEmitter);
+    this.transferListeners(oldProvider, provider, clientName, emitters);
 
     // Do not close a provider that is bound to any client
     if (![...this._clientProviders.values(), this._defaultProvider].includes(oldProvider)) {
@@ -167,11 +175,18 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     return newEmitter;
   }
 
+  private getUnboundEmitters(): OpenFeatureEventEmitter[] {
+    const namedProviders = [...this._clientProviders.keys()];
+    const eventEmitterNames = [...this._clientEvents.keys()].filter(isDefined);
+    const unboundEmitterNames = eventEmitterNames.filter((name) => !namedProviders.includes(name));
+    return unboundEmitterNames.map((name) => this._clientEvents.get(name)).filter(isDefined);
+  }
+
   private transferListeners(
     oldProvider: P,
     newProvider: P,
     clientName: string | undefined,
-    clientEmitter: OpenFeatureEventEmitter
+    emitters: (OpenFeatureEventEmitter | undefined)[]
   ) {
     this._clientEventHandlers
       .get(clientName)
@@ -182,7 +197,9 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
       (eventType) => {
         const handler = async (details?: EventDetails) => {
           // on each event type, fire the associated handlers
-          clientEmitter.emit(eventType, { ...details, clientName });
+          emitters.forEach((emitter) => {
+            emitter?.emit(eventType, { ...details, clientName });
+          });
           this._events.emit(eventType, { ...details, clientName });
         };
 
