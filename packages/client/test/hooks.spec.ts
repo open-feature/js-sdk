@@ -1,5 +1,13 @@
-import { Provider, ResolutionDetails, Client, FlagValueType, EvaluationContext, Hook, GeneralError } from '../src';
-import { OpenFeature } from '../src/open-feature';
+import {
+  Provider,
+  ResolutionDetails,
+  Client,
+  FlagValueType,
+  EvaluationContext,
+  Hook,
+  GeneralError,
+  OpenFeature,
+} from '../src';
 
 const BOOLEAN_VALUE = true;
 
@@ -75,7 +83,7 @@ describe('Hooks', () => {
 
   describe('Requirement 4.1.3', () => {
     it('flagKey, flagType, defaultValue must be immutable', (done) => {
-      client.getBooleanValue(FLAG_KEY, false,  {
+      client.getBooleanValue(FLAG_KEY, false, {
         hooks: [
           {
             before: (hookContext) => {
@@ -103,7 +111,7 @@ describe('Hooks', () => {
   describe('Requirement 4.1.4', () => {
     describe('before', () => {
       it('evaluationContext must be mutable', (done) => {
-        client.getBooleanValue(FLAG_KEY, false,{
+        client.getBooleanValue(FLAG_KEY, false, {
           hooks: [
             {
               before: (hookContext) => {
@@ -826,5 +834,4 @@ describe('Hooks', () => {
       });
     });
   });
-
 });

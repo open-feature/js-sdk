@@ -1,10 +1,20 @@
-import { ErrorCode, EvaluationContext, EvaluationDetails, FlagNotFoundError, JsonArray, JsonObject, JsonValue, ResolutionDetails, StandardResolutionReasons, TransactionContext, TransactionContextPropagator } from '../src';
-import { OpenFeatureClient } from '../src/client';
-import { OpenFeature } from '../src/open-feature';
 import {
-  Client, Provider,
-
-} from '../src/types';
+  Client,
+  ErrorCode,
+  EvaluationContext,
+  EvaluationDetails,
+  FlagNotFoundError,
+  JsonArray,
+  JsonObject,
+  JsonValue,
+  ResolutionDetails,
+  StandardResolutionReasons,
+  Provider,
+  OpenFeature,
+  OpenFeatureClient,
+  TransactionContext,
+  TransactionContextPropagator,
+} from '../src';
 
 const BOOLEAN_VALUE = true;
 const STRING_VALUE = 'val';
@@ -557,14 +567,17 @@ describe('OpenFeatureClient', () => {
         // Set Transaction Context
         class LocalTransactionContextPropagator implements TransactionContextPropagator {
           private context: TransactionContext = {};
+
           getTransactionContext(): EvaluationContext {
             return this.context;
           }
+
           setTransactionContext(transactionContext: EvaluationContext, callback: () => void): void {
             this.context = transactionContext;
             callback();
           }
         }
+
         OpenFeature.setTransactionContextPropagator(new LocalTransactionContextPropagator());
         OpenFeature.setTransactionContext(transactionContext, jest.fn());
 

@@ -1,4 +1,5 @@
-import { EvaluationContext, TransactionContextPropagator } from './types';
+import { EvaluationContext } from '../evaluation';
+import { TransactionContextPropagator } from './transaction-context';
 
 class NoopTransactionContextPropagator implements TransactionContextPropagator {
   getTransactionContext(): EvaluationContext {

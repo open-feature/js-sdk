@@ -1,17 +1,7 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
-import { Logger } from './types';
+import { Logger } from './logger';
+import { DefaultLogger } from './default-logger';
 
-const LOG_LEVELS: Array<keyof Logger> = ['error', 'warn', 'info', 'debug'];
-export class DefaultLogger implements Logger {
-  error(...args: unknown[]): void {
-    console.error(...args);
-  }
-  warn(...args: unknown[]): void {
-    console.warn(...args);
-  }
-  info(): void {}
-  debug(): void {}
-}
+export const LOG_LEVELS: Array<keyof Logger> = ['error', 'warn', 'info', 'debug'];
 
 export class SafeLogger implements Logger {
   private readonly logger: Logger;
@@ -35,12 +25,15 @@ export class SafeLogger implements Logger {
   error(...args: unknown[]): void {
     this.log('error', ...args);
   }
+
   warn(...args: unknown[]): void {
     this.log('warn', ...args);
   }
+
   info(...args: unknown[]): void {
     this.log('info', ...args);
   }
+
   debug(...args: unknown[]): void {
     this.log('debug', ...args);
   }

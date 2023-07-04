@@ -1,8 +1,5 @@
 import { NOOP_TRANSACTION_CONTEXT_PROPAGATOR, TransactionContextPropagator } from '@openfeature/shared';
-import { OpenFeatureClient } from '../src/client';
-import { NOOP_PROVIDER } from '../src/no-op-provider';
-import { OpenFeature, OpenFeatureAPI } from '../src/open-feature';
-import { Provider } from '../src/types';
+import { OpenFeature, OpenFeatureAPI, NOOP_PROVIDER, OpenFeatureClient, Provider } from '../src';
 
 const MOCK_PROVIDER: Provider = {
   metadata: {
