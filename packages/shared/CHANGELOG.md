@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.6](https://github.com/open-feature/js-sdk/compare/shared-v0.0.5...shared-v0.0.6) (2023-07-04)
+
+
+### Bug Fixes
+
+* named client events ([#472](https://github.com/open-feature/js-sdk/issues/472)) ([fb69b9d](https://github.com/open-feature/js-sdk/commit/fb69b9d665172de7d79c84b36adbbcf0c315b701))
+
 ## [0.0.5](https://github.com/open-feature/js-sdk/compare/shared-v0.0.4...shared-v0.0.5) (2023-06-26)
 
 
