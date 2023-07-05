@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.7](https://github.com/open-feature/js-sdk/compare/shared-v0.0.6...shared-v0.0.7) (2023-07-05)
+
+
+### Bug Fixes
+
+* events on anon provider/client ([#480](https://github.com/open-feature/js-sdk/issues/480)) ([c44b18e](https://github.com/open-feature/js-sdk/commit/c44b18eb9eb6d6e828af61767b9f3e39f2cef1af))
+
 ## [0.0.6](https://github.com/open-feature/js-sdk/compare/shared-v0.0.5...shared-v0.0.6) (2023-07-04)
 
 
