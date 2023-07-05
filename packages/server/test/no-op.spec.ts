@@ -1,4 +1,4 @@
-import { OpenFeature } from '../src/open-feature';
+import { OpenFeature } from '../src';
 
 const BOOLEAN_VALUE = true;
 const STRING_VALUE = 'val';

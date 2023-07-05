@@ -1,5 +1,5 @@
-import { ErrorCode } from '../types';
 import { OpenFeatureError } from './open-feature-error-abstract';
+import { ErrorCode } from '../evaluation';
 
 export class GeneralError extends OpenFeatureError {
   code: ErrorCode;

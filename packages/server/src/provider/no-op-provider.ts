@@ -1,5 +1,5 @@
-import { JsonValue, ProviderStatus, ResolutionDetails } from '@openfeature/shared';
-import { Provider } from './types';
+import { ResolutionDetails, JsonValue, ProviderStatus } from '@openfeature/shared';
+import { Provider } from './provider';
 
 const REASON_NO_OP = 'No-op';
 
@@ -21,27 +21,27 @@ class NoopFeatureProvider implements Provider {
     return ProviderStatus.NOT_READY;
   }
 
-  resolveBooleanEvaluation(_: string, defaultValue: boolean): ResolutionDetails<boolean> {
+  resolveBooleanEvaluation(_: string, defaultValue: boolean): Promise<ResolutionDetails<boolean>> {
     return this.noOp(defaultValue);
   }
 
-  resolveStringEvaluation(_: string, defaultValue: string): ResolutionDetails<string> {
+  resolveStringEvaluation(_: string, defaultValue: string): Promise<ResolutionDetails<string>> {
     return this.noOp(defaultValue);
   }
 
-  resolveNumberEvaluation(_: string, defaultValue: number): ResolutionDetails<number> {
+  resolveNumberEvaluation(_: string, defaultValue: number): Promise<ResolutionDetails<number>> {
     return this.noOp(defaultValue);
   }
 
-  resolveObjectEvaluation<T extends JsonValue>(_: string, defaultValue: T): ResolutionDetails<T> {
+  resolveObjectEvaluation<T extends JsonValue>(_: string, defaultValue: T): Promise<ResolutionDetails<T>> {
     return this.noOp<T>(defaultValue);
   }
 
   private noOp<T>(defaultValue: T) {
-    return {
+    return Promise.resolve({
       value: defaultValue,
       reason: REASON_NO_OP,
-    };
+    });
   }
 }
 

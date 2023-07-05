@@ -1,7 +1,6 @@
-import { EvaluationContext, FlagValue, Logger, OpenFeatureCommonAPI, SafeLogger } from '@openfeature/shared';
-import { OpenFeatureClient } from './client';
-import { NOOP_PROVIDER } from './no-op-provider';
-import { Client, Hook, Provider } from './types';
+import { EvaluationContext, ManageContext, OpenFeatureCommonAPI } from '@openfeature/shared';
+import { Client, OpenFeatureClient } from './client';
+import { NOOP_PROVIDER, Provider } from './provider';
 
 // use a symbol as a key for the global singleton
 const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/web-sdk/api');
@@ -11,8 +10,7 @@ type OpenFeatureGlobal = {
 };
 const _globalThis = globalThis as OpenFeatureGlobal;
 
-export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider> {
-  protected _hooks: Hook[] = [];
+export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider> implements ManageContext<Promise<void>> {
   protected _defaultProvider: Provider = NOOP_PROVIDER;
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -36,29 +34,14 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider> {
     return instance;
   }
 
-  setLogger(logger: Logger): this {
-    this._logger = new SafeLogger(logger);
-    return this;
-  }
-
-  addHooks(...hooks: Hook<FlagValue>[]): this {
-    this._hooks = [...this._hooks, ...hooks];
-    return this;
-  }
-
-  getHooks(): Hook<FlagValue>[] {
-    return this._hooks;
-  }
-
-  clearHooks(): this {
-    this._hooks = [];
-    return this;
-  }
-
   async setContext(context: EvaluationContext): Promise<void> {
     const oldContext = this._context;
     this._context = context;
     await this._defaultProvider?.onContextChange?.(oldContext, context);
+  }
+
+  getContext(): EvaluationContext {
+    return this._context;
   }
 
   /**

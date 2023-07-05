@@ -1,4 +1,6 @@
 import {
+  Client,
+  Provider,
   ErrorCode,
   EvaluationDetails,
   JsonValue,
@@ -7,10 +9,9 @@ import {
   ResolutionDetails,
   StandardResolutionReasons,
   FlagNotFoundError,
+  OpenFeatureClient,
+  OpenFeature,
 } from '../src';
-import { OpenFeatureClient } from '../src/client';
-import { OpenFeature } from '../src/open-feature';
-import { Client, Provider } from '../src/types';
 
 const BOOLEAN_VALUE = true;
 const STRING_VALUE = 'val';

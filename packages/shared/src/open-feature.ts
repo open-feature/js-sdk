@@ -1,18 +1,22 @@
-import { DefaultLogger, SafeLogger } from './logger';
-import { NOOP_TRANSACTION_CONTEXT_PROPAGATOR } from './no-op-transaction-context-propagator';
-import {
-  CommonProvider,
-  EvaluationContext,
-  Logger,
-  ProviderMetadata,
-  TransactionContext,
-  TransactionContextPropagator,
-} from './types';
-import { EventDetails, EventHandler, Eventing, OpenFeatureEventEmitter, ProviderEvents } from './events';
+import { ManageTransactionContextPropagator, NOOP_TRANSACTION_CONTEXT_PROPAGATOR } from './transaction-context';
 import { objectOrUndefined, stringOrUndefined } from './type-guards';
 import { isDefined } from './filter';
+import { DefaultLogger, ManageLogger, SafeLogger } from './logger';
+import { CommonProvider, ProviderMetadata } from './provider';
+import { EventDetails, EventHandler, Eventing, OpenFeatureEventEmitter, ProviderEvents } from './events';
+import { TransactionContext, TransactionContextPropagator } from './transaction-context';
+import { EvaluationContext, FlagValue } from './evaluation';
+import { Logger } from './logger';
+import { EvaluationLifeCycle, Hook } from './hooks';
 
-export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProvider> implements Eventing {
+export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProvider>
+  implements
+    Eventing,
+    EvaluationLifeCycle<OpenFeatureCommonAPI<P>>,
+    ManageLogger<OpenFeatureCommonAPI<P>>,
+    ManageTransactionContextPropagator<OpenFeatureCommonAPI<P>>
+{
+  protected _hooks: Hook[] = [];
   protected _transactionContextPropagator: TransactionContextPropagator = NOOP_TRANSACTION_CONTEXT_PROPAGATOR;
   protected _context: EvaluationContext = {};
   protected _logger: Logger = new DefaultLogger();
@@ -24,7 +28,19 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
   protected _clientProviders: Map<string, P> = new Map();
   protected _clientEvents: Map<string | undefined, OpenFeatureEventEmitter> = new Map();
 
-  abstract clearHooks(): this;
+  addHooks(...hooks: Hook<FlagValue>[]): this {
+    this._hooks = [...this._hooks, ...hooks];
+    return this;
+  }
+
+  getHooks(): Hook<FlagValue>[] {
+    return this._hooks;
+  }
+
+  clearHooks(): this {
+    this._hooks = [];
+    return this;
+  }
 
   setLogger(logger: Logger): this {
     this._logger = new SafeLogger(logger);
@@ -37,10 +53,6 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
    */
   get providerMetadata(): ProviderMetadata {
     return this._defaultProvider.metadata;
-  }
-
-  getContext(): EvaluationContext {
-    return this._context;
   }
 
   /**
