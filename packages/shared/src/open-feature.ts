@@ -191,7 +191,12 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     const namedProviders = [...this._clientProviders.keys()];
     const eventEmitterNames = [...this._clientEvents.keys()].filter(isDefined);
     const unboundEmitterNames = eventEmitterNames.filter((name) => !namedProviders.includes(name));
-    return unboundEmitterNames.map((name) => this._clientEvents.get(name)).filter(isDefined);
+    return [
+      // all unbound, named emitters
+      ...unboundEmitterNames.map((name) => this._clientEvents.get(name)),
+      // the default emitter
+      this._clientEvents.get(undefined)
+    ].filter(isDefined);
   }
 
   private transferListeners(
