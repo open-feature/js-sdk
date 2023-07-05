@@ -197,7 +197,44 @@ describe('Events', () => {
       OpenFeature.setProvider(clientId, provider);
     });
 
-    it('anonymous provider with named client should run', (done) => {
+    it('anonymous provider with anonymous client should run non-init events', (done) => {
+      const defaultProvider = new MockProvider({
+        failOnInit: false,
+        initialStatus: ProviderStatus.NOT_READY,
+        name: 'default',
+      });
+
+      // get a anon client
+      const anonClient = OpenFeature.getClient();
+      anonClient.addHandler(ProviderEvents.ConfigurationChanged, () => {
+        done();
+      });
+
+      // set the default provider
+      OpenFeature.setProvider(defaultProvider);
+
+      // fire events
+      defaultProvider.events?.emit(ProviderEvents.ConfigurationChanged);
+    });
+
+    it('anonymous provider with anonymous client should run init events', (done) => {
+      const defaultProvider = new MockProvider({
+        failOnInit: false,
+        initialStatus: ProviderStatus.NOT_READY,
+        name: 'default',
+      });
+
+      // get a anon client
+      const anonClient = OpenFeature.getClient();
+      anonClient.addHandler(ProviderEvents.Ready, () => {
+        done();
+      });
+
+      // set the default provider
+      OpenFeature.setProvider(defaultProvider);
+    });
+
+    it('anonymous provider with named client should run non-init events', (done) => {
       const defaultProvider = new MockProvider({
         failOnInit: false,
         initialStatus: ProviderStatus.NOT_READY,
