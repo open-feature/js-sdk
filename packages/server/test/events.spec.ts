@@ -207,7 +207,7 @@ describe('Events', () => {
         name: 'default',
       });
 
-      // get a client using the default because it has not other mapping
+      // get a anon client
       const anonClient = OpenFeature.getClient();
       anonClient.addHandler(ProviderEvents.ConfigurationChanged, () => {
         done();
@@ -227,7 +227,7 @@ describe('Events', () => {
         name: 'default',
       });
 
-      // get a client using the default because it has not other mapping
+      // get a anon client
       const anonClient = OpenFeature.getClient();
       anonClient.addHandler(ProviderEvents.Ready, () => {
         done();
