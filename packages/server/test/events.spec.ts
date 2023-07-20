@@ -1,5 +1,4 @@
 import {
-  EventDetails,
   JsonValue,
   OpenFeature,
   OpenFeatureEventEmitter,
@@ -9,6 +8,7 @@ import {
   ProviderStatus,
   ResolutionDetails,
   NOOP_PROVIDER,
+  StaleEvent,
 } from '../src';
 import { v4 as uuid } from 'uuid';
 
@@ -353,7 +353,7 @@ describe('Events', () => {
 
   describe('Requirement 5.2.4', () => {
     it('The handler function accepts a event details parameter.', (done) => {
-      const details: EventDetails<ProviderEvents.Stale> = { message: 'message' };
+      const details: StaleEvent = { message: 'message' };
       const provider = new MockProvider();
       const client = OpenFeature.getClient(clientId);
 
