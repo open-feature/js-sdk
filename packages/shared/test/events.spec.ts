@@ -1,4 +1,4 @@
-import { EventDetails, OpenFeatureEventEmitter, ProviderEvents, Logger } from '../src';
+import { EventDetails, OpenFeatureEventEmitter, ProviderEvents, Logger, ReadyEvent } from '../src';
 
 describe('OpenFeatureEventEmitter', () => {
   describe('addHandler should', function () {
@@ -60,7 +60,7 @@ describe('OpenFeatureEventEmitter', () => {
     });
 
     it('trigger handler for event type with event data', function () {
-      const event: EventDetails<ProviderEvents.Ready> = { message: 'message' };
+      const event: ReadyEvent = { message: 'message' };
       const emitter = new OpenFeatureEventEmitter();
 
       const handler1 = jest.fn();
