@@ -4,14 +4,34 @@ export type EventMetadata = {
   [key: string]: string | boolean | number;
 };
 
-export type EventDetails = {
+export type CommonEventDetails = {
   clientName?: string;
+};
+
+type CommonEventProps = {
   message?: string;
-  flagsChanged?: string[];
   metadata?: EventMetadata;
 };
 
-export type EventHandler = (eventDetails?: EventDetails) => Promise<unknown> | unknown;
+export type ReadyEvent = CommonEventProps;
+export type ErrorEvent = CommonEventProps;
+export type StaleEvent = CommonEventProps;
+export type ConfigChangeEvent = CommonEventProps & { flagsChanged?: string[] };
+
+type EventMap = {
+  [ProviderEvents.Ready]: ReadyEvent;
+  [ProviderEvents.Error]: ErrorEvent;
+  [ProviderEvents.Stale]: StaleEvent;
+  [ProviderEvents.ConfigurationChanged]: ConfigChangeEvent;
+};
+
+export type EventContext<
+  T extends ProviderEvents,
+  U extends Record<string, unknown> = Record<string, unknown>
+> = EventMap[T] & U;
+
+export type EventDetails<T extends ProviderEvents> = EventContext<T> & CommonEventDetails;
+export type EventHandler<T extends ProviderEvents> = (eventDetails?: EventDetails<T>) => Promise<unknown> | unknown;
 
 export interface Eventing {
   /**
@@ -20,19 +40,19 @@ export interface Eventing {
    * @param {ProviderEvents} eventType The provider event type to listen to
    * @param {EventHandler} handler The handler to run on occurrence of the event type
    */
-  addHandler(eventType: ProviderEvents, handler: EventHandler): void;
+  addHandler<T extends ProviderEvents>(eventType: T, handler: EventHandler<T>): void;
 
   /**
    * Removes a handler for the given provider event type.
    * @param {ProviderEvents} eventType The provider event type to remove the listener for
    * @param {EventHandler} handler The handler to remove for the provider event type
    */
-  removeHandler(eventType: ProviderEvents, handler: EventHandler): void;
+  removeHandler<T extends ProviderEvents>(eventType: T, handler: EventHandler<T>): void;
 
   /**
    * Gets the current handlers for the given provider event type.
    * @param {ProviderEvents} eventType The provider event type to get the current handlers for
    * @returns {EventHandler[]} The handlers currently attached to the given provider event type
    */
-  getHandlers(eventType: ProviderEvents): EventHandler[];
+  getHandlers<T extends ProviderEvents>(eventType: T): EventHandler<T>[];
 }

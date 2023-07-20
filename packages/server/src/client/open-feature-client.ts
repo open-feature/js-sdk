@@ -10,7 +10,7 @@ import {
   JsonValue,
   Logger,
   OpenFeatureError,
-  OpenFeatureEventEmitter,
+  InternalEventEmitter,
   ProviderEvents,
   ProviderStatus,
   ResolutionDetails,
@@ -38,7 +38,7 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
     // we always want the client to use the current provider,
     // so pass a function to always access the currently registered one.
     private readonly providerAccessor: () => Provider,
-    private readonly emitterAccessor: () => OpenFeatureEventEmitter,
+    private readonly emitterAccessor: () => InternalEventEmitter,
     private readonly globalLogger: () => Logger,
     private readonly options: OpenFeatureClientOptions,
     context: EvaluationContext = {}
@@ -54,7 +54,7 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
     };
   }
 
-  addHandler(eventType: ProviderEvents, handler: EventHandler): void {
+  addHandler<T extends ProviderEvents>(eventType: T, handler: EventHandler<T>): void {
     this.emitterAccessor().addHandler(eventType, handler);
     const providerReady = !this._provider.status || this._provider.status === ProviderStatus.READY;
 
@@ -68,7 +68,7 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
     }
   }
 
-  removeHandler(eventType: ProviderEvents, handler: EventHandler) {
+  removeHandler<T extends ProviderEvents>(eventType: T, handler: EventHandler<T>) {
     this.emitterAccessor().removeHandler(eventType, handler);
   }
 

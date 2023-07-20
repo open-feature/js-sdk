@@ -60,7 +60,7 @@ describe('OpenFeatureEventEmitter', () => {
     });
 
     it('trigger handler for event type with event data', function () {
-      const event: EventDetails = { message: 'message' };
+      const event: EventDetails<ProviderEvents.Ready> = { message: 'message' };
       const emitter = new OpenFeatureEventEmitter();
 
       const handler1 = jest.fn();
