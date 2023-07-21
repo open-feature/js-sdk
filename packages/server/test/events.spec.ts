@@ -1,5 +1,4 @@
 import {
-  EventDetails,
   JsonValue,
   OpenFeature,
   OpenFeatureEventEmitter,
@@ -8,9 +7,10 @@ import {
   ProviderMetadata,
   ProviderStatus,
   ResolutionDetails,
+  NOOP_PROVIDER,
+  StaleEvent,
 } from '../src';
 import { v4 as uuid } from 'uuid';
-import { NOOP_PROVIDER } from '../src';
 
 class MockProvider implements Provider {
   readonly metadata: ProviderMetadata;
@@ -303,7 +303,7 @@ describe('Events', () => {
       const provider = new MockProvider({ failOnInit: true });
       const client = OpenFeature.getClient(clientId);
 
-      client.addHandler(ProviderEvents.Error, (details?: EventDetails) => {
+      client.addHandler(ProviderEvents.Error, (details) => {
         expect(details?.message).toBeDefined();
         done();
       });
@@ -330,7 +330,7 @@ describe('Events', () => {
       const provider = new MockProvider();
       const client = OpenFeature.getClient(clientId);
 
-      client.addHandler(ProviderEvents.Ready, (details?: EventDetails) => {
+      client.addHandler(ProviderEvents.Ready, (details) => {
         expect(details?.clientName).toEqual(clientId);
         done();
       });
@@ -342,7 +342,7 @@ describe('Events', () => {
       const provider = new MockProvider();
       const client = OpenFeature.getClient(clientId);
 
-      client.addHandler(ProviderEvents.Ready, (details?: EventDetails) => {
+      client.addHandler(ProviderEvents.Ready, (details) => {
         expect(details?.clientName).toEqual(clientId);
         done();
       });
@@ -353,11 +353,11 @@ describe('Events', () => {
 
   describe('Requirement 5.2.4', () => {
     it('The handler function accepts a event details parameter.', (done) => {
-      const details: EventDetails = { message: 'message' };
+      const details: StaleEvent = { message: 'message' };
       const provider = new MockProvider();
       const client = OpenFeature.getClient(clientId);
 
-      client.addHandler(ProviderEvents.Stale, (givenDetails?: EventDetails) => {
+      client.addHandler(ProviderEvents.Stale, (givenDetails) => {
         expect(givenDetails?.message).toEqual(details.message);
         done();
       });

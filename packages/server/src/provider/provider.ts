@@ -1,12 +1,4 @@
-import {
-  CommonProvider,
-  EvaluationContext,
-  HookHints,
-  JsonValue,
-  Logger,
-  ResolutionDetails,
-} from '@openfeature/shared';
-import { Hook } from '@openfeature/shared';
+import { CommonProvider, EvaluationContext, Hook, JsonValue, Logger, ResolutionDetails } from '@openfeature/shared';
 
 /**
  * Interface that providers must implement to resolve flag values for their particular

@@ -49,7 +49,7 @@ export class OpenFeatureClient implements Client {
     };
   }
 
-  addHandler(eventType: ProviderEvents, handler: EventHandler): void {
+  addHandler<T extends ProviderEvents>(eventType: T, handler: EventHandler<T>): void {
     this.emitterAccessor().addHandler(eventType, handler);
     const providerReady = !this._provider.status || this._provider.status === ProviderStatus.READY;
 
@@ -63,7 +63,7 @@ export class OpenFeatureClient implements Client {
     }
   }
 
-  removeHandler(notificationType: ProviderEvents, handler: EventHandler): void {
+  removeHandler<T extends ProviderEvents>(notificationType: T, handler: EventHandler<T>): void {
     this.emitterAccessor().removeHandler(notificationType, handler);
   }
 
@@ -71,12 +71,12 @@ export class OpenFeatureClient implements Client {
     return this.emitterAccessor().getHandlers(eventType);
   }
 
-  setLogger(logger: Logger): OpenFeatureClient {
+  setLogger(logger: Logger): this {
     this._clientLogger = new SafeLogger(logger);
     return this;
   }
 
-  addHooks(...hooks: Hook<FlagValue>[]): OpenFeatureClient {
+  addHooks(...hooks: Hook<FlagValue>[]): this {
     this._hooks = [...this._hooks, ...hooks];
     return this;
   }
@@ -85,7 +85,7 @@ export class OpenFeatureClient implements Client {
     return this._hooks;
   }
 
-  clearHooks(): OpenFeatureClient {
+  clearHooks(): this {
     this._hooks = [];
     return this;
   }

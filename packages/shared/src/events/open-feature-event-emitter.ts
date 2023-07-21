@@ -1,10 +1,13 @@
 import { Logger, ManageLogger, SafeLogger } from '../logger';
 import EventEmitter from 'events';
 import { ProviderEvents } from './events';
-import { EventDetails, EventHandler } from './eventing';
+import { EventContext, EventDetails, EventHandler, CommonEventDetails } from './eventing';
 
-export class OpenFeatureEventEmitter implements ManageLogger<OpenFeatureEventEmitter> {
-  private readonly _handlers = new WeakMap<EventHandler, EventHandler>();
+abstract class GenericEventEmitter<AdditionalContext extends Record<string, unknown> = Record<string, unknown>>
+  implements ManageLogger<GenericEventEmitter<AdditionalContext>>
+{
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private readonly _handlers = new WeakMap<EventHandler<any>, EventHandler<any>>();
   private readonly eventEmitter = new EventEmitter({ captureRejections: true });
   private _eventLogger?: Logger;
 
@@ -14,14 +17,14 @@ export class OpenFeatureEventEmitter implements ManageLogger<OpenFeatureEventEmi
     });
   }
 
-  emit(eventType: ProviderEvents, context?: EventDetails): void {
+  emit<T extends ProviderEvents>(eventType: T, context?: EventContext<T, AdditionalContext>): void {
     this.eventEmitter.emit(eventType, context);
   }
 
-  addHandler(eventType: ProviderEvents, handler: EventHandler): void {
+  addHandler<T extends ProviderEvents>(eventType: T, handler: EventHandler<T>): void {
     // The handlers have to be wrapped with an async function because if a synchronous functions throws an error,
     // the other handlers will not run.
-    const asyncHandler = async (context?: EventDetails) => {
+    const asyncHandler = async (context?: EventDetails<T>) => {
       await handler(context);
     };
     // The async handler has to be written to the map, because we need to get the wrapper function when deleting a listener
@@ -29,9 +32,9 @@ export class OpenFeatureEventEmitter implements ManageLogger<OpenFeatureEventEmi
     this.eventEmitter.on(eventType, asyncHandler);
   }
 
-  removeHandler(eventType: ProviderEvents, handler: EventHandler): void {
+  removeHandler<T extends ProviderEvents>(eventType: T, handler: EventHandler<T>): void {
     // Get the wrapper function for this handler, to delete it from the event emitter
-    const asyncHandler = this._handlers.get(handler);
+    const asyncHandler = this._handlers.get(handler) as EventHandler<T> | undefined;
 
     if (!asyncHandler) {
       return;
@@ -49,8 +52,8 @@ export class OpenFeatureEventEmitter implements ManageLogger<OpenFeatureEventEmi
     }
   }
 
-  getHandlers(eventType: ProviderEvents): EventHandler[] {
-    return this.eventEmitter.listeners(eventType) as EventHandler[];
+  getHandlers<T extends ProviderEvents>(eventType: T): EventHandler<T>[] {
+    return this.eventEmitter.listeners(eventType) as EventHandler<T>[];
   }
 
   setLogger(logger: Logger): this {
@@ -59,6 +62,22 @@ export class OpenFeatureEventEmitter implements ManageLogger<OpenFeatureEventEmi
   }
 
   private get _logger() {
-    return this._eventLogger || this.globalLogger?.();
+    return this._eventLogger ?? this.globalLogger?.();
   }
 }
+
+/**
+ * The OpenFeatureEventEmitter can be used by provider developers to emit
+ * events at various parts of the provider lifecycle.
+ * 
+ * NOTE: Ready and error events are automatically emitted by the SDK based on
+ * the result of the initialize method.
+ */
+export class OpenFeatureEventEmitter extends GenericEventEmitter {};
+
+/**
+ * The InternalEventEmitter should only be used within the SDK. It extends the
+ * OpenFeatureEventEmitter to include additional properties that can be included
+ * in the event details.
+ */
+export class InternalEventEmitter extends GenericEventEmitter<CommonEventDetails> {};
