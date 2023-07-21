@@ -6,6 +6,7 @@ import { EventContext, EventDetails, EventHandler, CommonEventDetails } from './
 abstract class GenericEventEmitter<AdditionalContext extends Record<string, unknown> = Record<string, unknown>>
   implements ManageLogger<GenericEventEmitter<AdditionalContext>>
 {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private readonly _handlers = new WeakMap<EventHandler<any>, EventHandler<any>>();
   private readonly eventEmitter = new EventEmitter({ captureRejections: true });
   private _eventLogger?: Logger;
@@ -65,6 +66,18 @@ abstract class GenericEventEmitter<AdditionalContext extends Record<string, unkn
   }
 }
 
-
+/**
+ * The OpenFeatureEventEmitter can be used by provider developers to emit
+ * events at various parts of the provider lifecycle.
+ * 
+ * NOTE: Ready and error events are automatically emitted by the SDK based on
+ * the result of the initialize method.
+ */
 export class OpenFeatureEventEmitter extends GenericEventEmitter {};
+
+/**
+ * The InternalEventEmitter should only be used within the SDK. It extends the
+ * OpenFeatureEventEmitter to include additional properties that can be included
+ * in the event details.
+ */
 export class InternalEventEmitter extends GenericEventEmitter<CommonEventDetails> {};

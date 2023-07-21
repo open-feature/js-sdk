@@ -28,7 +28,8 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
   protected abstract _defaultProvider: P;
 
   private readonly _events = new InternalEventEmitter(() => this._logger);
-  private readonly _clientEventHandlers: Map<string | undefined, [ProviderEvents, EventHandler<any>][]> = new Map();
+  private readonly _clientEventHandlers: Map<string | undefined, [ProviderEvents, EventHandler<ProviderEvents>][]> =
+    new Map();
   protected _clientProviders: Map<string, P> = new Map();
   protected _clientEvents: Map<string | undefined, InternalEventEmitter> = new Map();
 

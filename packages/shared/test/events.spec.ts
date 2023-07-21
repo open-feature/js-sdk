@@ -1,4 +1,4 @@
-import { EventDetails, OpenFeatureEventEmitter, ProviderEvents, Logger, ReadyEvent } from '../src';
+import { OpenFeatureEventEmitter, ProviderEvents, Logger, ReadyEvent } from '../src';
 
 describe('OpenFeatureEventEmitter', () => {
   describe('addHandler should', function () {
