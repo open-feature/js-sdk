@@ -122,20 +122,20 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
       return this;
     }
 
-    // get the named emitter, or if this is the default provider, get all event emitters not associated with a provider
-    const emitters = clientName ? [this.getAndCacheEventEmitterForClient(clientName)] : this.getUnboundEmitters();
+    const emitters = this.getAssociatedEventEmitters(clientName);
 
     if (typeof provider.initialize === 'function') {
       provider
         .initialize?.(this._context)
         ?.then(() => {
-          emitters.forEach((emitter) => {
+          // fetch the most recent event emitters, some may have been added during init
+          this.getAssociatedEventEmitters(clientName).forEach((emitter) => {
             emitter?.emit(ProviderEvents.Ready, { clientName });
           });
           this._events?.emit(ProviderEvents.Ready, { clientName });
         })
         ?.catch((error) => {
-          emitters.forEach((emitter) => {
+          this.getAssociatedEventEmitters(clientName).forEach((emitter) => {
             emitter?.emit(ProviderEvents.Error, { clientName, message: error.message });
           });
           this._events?.emit(ProviderEvents.Error, { clientName, message: error.message });
@@ -171,7 +171,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     return this._clientProviders.get(name) ?? this._defaultProvider;
   }
 
-  protected getAndCacheEventEmitterForClient(name?: string): InternalEventEmitter {
+  protected buildAndCacheEventEmitterForClient(name?: string): InternalEventEmitter {
     const emitter = this._clientEvents.get(name);
 
     if (emitter) {
@@ -202,6 +202,10 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
       // the default emitter
       this._clientEvents.get(undefined),
     ].filter(isDefined);
+  }
+
+  private getAssociatedEventEmitters(clientName: string | undefined) {
+    return clientName ? [this.buildAndCacheEventEmitterForClient(clientName)] : this.getUnboundEmitters();
   }
 
   private transferListeners(

@@ -98,7 +98,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider> implements Ma
 
     return new OpenFeatureClient(
       () => this.getProviderForClient(name),
-      () => this.getAndCacheEventEmitterForClient(name),
+      () => this.buildAndCacheEventEmitterForClient(name),
       () => this._logger,
       { name, version },
       context
