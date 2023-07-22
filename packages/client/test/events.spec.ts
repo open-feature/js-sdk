@@ -12,17 +12,21 @@ import {
 } from '../src';
 import { v4 as uuid } from 'uuid';
 
+const TIMEOUT = 1000;
+
 class MockProvider implements Provider {
   readonly metadata: ProviderMetadata;
   readonly events?: OpenFeatureEventEmitter;
   private hasInitialize: boolean;
   private failOnInit: boolean;
+  private initDelay?: number;
   private enableEvents: boolean;
   status?: ProviderStatus = undefined;
 
   constructor(options?: {
     hasInitialize?: boolean;
     initialStatus?: ProviderStatus;
+    initDelay?: number;
     enableEvents?: boolean;
     failOnInit?: boolean;
     name?: string;
@@ -30,6 +34,7 @@ class MockProvider implements Provider {
     this.metadata = { name: options?.name ?? 'mock-provider' };
     this.hasInitialize = options?.hasInitialize ?? true;
     this.status = options?.initialStatus ?? ProviderStatus.NOT_READY;
+    this.initDelay = options?.initDelay ?? 0;
     this.enableEvents = options?.enableEvents ?? true;
     this.failOnInit = options?.failOnInit ?? false;
 
@@ -39,6 +44,7 @@ class MockProvider implements Provider {
 
     if (this.hasInitialize) {
       this.initialize = jest.fn(async () => {
+        await new Promise((resolve) => setTimeout(resolve, this.initDelay));
         if (this.failOnInit) {
           throw new Error('Provider initialization failed');
         }
@@ -69,13 +75,15 @@ class MockProvider implements Provider {
 
 describe('Events', () => {
   // set timeouts short for this suite.
-  jest.setTimeout(1000);
+  jest.setTimeout(TIMEOUT);
   let clientId = uuid();
 
   afterEach(() => {
     jest.clearAllMocks();
     clientId = uuid();
-  });
+    // hacky, but it's helpful to clear the handlers between tests
+    (OpenFeature as any)._clientEventHandlers = new Map();
+    (OpenFeature as any)._clientEvents = new Map();  });
 
   beforeEach(() => {
     OpenFeature.setProvider(NOOP_PROVIDER);
@@ -294,6 +302,19 @@ describe('Events', () => {
 
       // fire events
       defaultProvider.events?.emit(ProviderEvents.ConfigurationChanged);
+    });
+
+    it('handler added while while provider initializing runs', (done) => {
+      const provider = new MockProvider({ name: 'race', initialStatus: ProviderStatus.NOT_READY, initDelay: TIMEOUT / 2 });
+
+      // set the default provider
+      OpenFeature.setProvider(provider);
+      const client = OpenFeature.getClient();
+
+      // add a handler while the provider is starting
+      client.addHandler(ProviderEvents.Ready, () => {
+        done();
+      });
     });
 
     it('PROVIDER_ERROR events populates the message field', (done) => {
