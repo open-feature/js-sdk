@@ -1,5 +1,4 @@
 import {
-  EventDetails,
   JsonValue,
   OpenFeature,
   OpenFeatureEventEmitter,
@@ -8,21 +7,26 @@ import {
   ProviderMetadata,
   ProviderStatus,
   ResolutionDetails,
+  NOOP_PROVIDER,
+  StaleEvent,
 } from '../src';
 import { v4 as uuid } from 'uuid';
-import { NOOP_PROVIDER } from '../src';
+
+const TIMEOUT = 1000;
 
 class MockProvider implements Provider {
   readonly metadata: ProviderMetadata;
   readonly events?: OpenFeatureEventEmitter;
   private hasInitialize: boolean;
   private failOnInit: boolean;
+  private initDelay?: number;
   private enableEvents: boolean;
   status?: ProviderStatus = undefined;
 
   constructor(options?: {
     hasInitialize?: boolean;
     initialStatus?: ProviderStatus;
+    initDelay?: number;
     enableEvents?: boolean;
     failOnInit?: boolean;
     name?: string;
@@ -30,6 +34,7 @@ class MockProvider implements Provider {
     this.metadata = { name: options?.name ?? 'mock-provider' };
     this.hasInitialize = options?.hasInitialize ?? true;
     this.status = options?.initialStatus ?? ProviderStatus.NOT_READY;
+    this.initDelay = options?.initDelay ?? 0;
     this.enableEvents = options?.enableEvents ?? true;
     this.failOnInit = options?.failOnInit ?? false;
 
@@ -39,6 +44,7 @@ class MockProvider implements Provider {
 
     if (this.hasInitialize) {
       this.initialize = jest.fn(async () => {
+        await new Promise((resolve) => setTimeout(resolve, this.initDelay));
         if (this.failOnInit) {
           throw new Error('Provider initialization failed');
         }
@@ -72,12 +78,15 @@ class MockProvider implements Provider {
 
 describe('Events', () => {
   // set timeouts short for this suite.
-  jest.setTimeout(1000);
+  jest.setTimeout(TIMEOUT);
   let clientId = uuid();
 
   afterEach(() => {
     jest.clearAllMocks();
     clientId = uuid();
+    // hacky, but it's helpful to clear the handlers between tests
+    (OpenFeature as any)._clientEventHandlers = new Map();
+    (OpenFeature as any)._clientEvents = new Map();
   });
 
   beforeEach(() => {
@@ -299,11 +308,24 @@ describe('Events', () => {
       defaultProvider.events?.emit(ProviderEvents.ConfigurationChanged);
     });
 
+    it('handler added while while provider initializing runs', (done) => {
+      const provider = new MockProvider({ name: 'race', initialStatus: ProviderStatus.NOT_READY, initDelay: TIMEOUT / 2 });
+
+      // set the default provider
+      OpenFeature.setProvider(provider);
+      const client = OpenFeature.getClient();
+
+      // add a handler while the provider is starting
+      client.addHandler(ProviderEvents.Ready, () => {
+        done();
+      });
+    });
+
     it('PROVIDER_ERROR events populates the message field', (done) => {
       const provider = new MockProvider({ failOnInit: true });
       const client = OpenFeature.getClient(clientId);
 
-      client.addHandler(ProviderEvents.Error, (details?: EventDetails) => {
+      client.addHandler(ProviderEvents.Error, (details) => {
         expect(details?.message).toBeDefined();
         done();
       });
@@ -330,7 +352,7 @@ describe('Events', () => {
       const provider = new MockProvider();
       const client = OpenFeature.getClient(clientId);
 
-      client.addHandler(ProviderEvents.Ready, (details?: EventDetails) => {
+      client.addHandler(ProviderEvents.Ready, (details) => {
         expect(details?.clientName).toEqual(clientId);
         done();
       });
@@ -342,7 +364,7 @@ describe('Events', () => {
       const provider = new MockProvider();
       const client = OpenFeature.getClient(clientId);
 
-      client.addHandler(ProviderEvents.Ready, (details?: EventDetails) => {
+      client.addHandler(ProviderEvents.Ready, (details) => {
         expect(details?.clientName).toEqual(clientId);
         done();
       });
@@ -353,11 +375,11 @@ describe('Events', () => {
 
   describe('Requirement 5.2.4', () => {
     it('The handler function accepts a event details parameter.', (done) => {
-      const details: EventDetails = { message: 'message' };
+      const details: StaleEvent = { message: 'message' };
       const provider = new MockProvider();
       const client = OpenFeature.getClient(clientId);
 
-      client.addHandler(ProviderEvents.Stale, (givenDetails?: EventDetails) => {
+      client.addHandler(ProviderEvents.Stale, (givenDetails) => {
         expect(givenDetails?.message).toEqual(details.message);
         done();
       });

@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.8](https://github.com/open-feature/js-sdk/compare/shared-v0.0.7...shared-v0.0.8) (2023-07-22)
+
+
+### Features
+
+* typesafe event emitter ([#490](https://github.com/open-feature/js-sdk/issues/490)) ([92e3a72](https://github.com/open-feature/js-sdk/commit/92e3a724bf4e53721644c2155060b2bd44a43c39))
+
+
+### Bug Fixes
+
+* race adding handler during init ([#501](https://github.com/open-feature/js-sdk/issues/501)) ([0be9c5d](https://github.com/open-feature/js-sdk/commit/0be9c5dcd9c7f8bc76d28e94b2e80617836323e5))
+
 ## [0.0.7](https://github.com/open-feature/js-sdk/compare/shared-v0.0.6...shared-v0.0.7) (2023-07-05)
 
 

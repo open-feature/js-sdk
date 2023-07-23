@@ -1,13 +1,17 @@
-import { ManageTransactionContextPropagator, NOOP_TRANSACTION_CONTEXT_PROPAGATOR } from './transaction-context';
-import { objectOrUndefined, stringOrUndefined } from './type-guards';
-import { isDefined } from './filter';
-import { DefaultLogger, ManageLogger, SafeLogger } from './logger';
-import { CommonProvider, ProviderMetadata } from './provider';
-import { EventDetails, EventHandler, Eventing, OpenFeatureEventEmitter, ProviderEvents } from './events';
-import { TransactionContext, TransactionContextPropagator } from './transaction-context';
 import { EvaluationContext, FlagValue } from './evaluation';
-import { Logger } from './logger';
+import { EventDetails, EventHandler, Eventing, ProviderEvents } from './events';
+import { InternalEventEmitter } from './events/open-feature-event-emitter';
+import { isDefined } from './filter';
 import { EvaluationLifeCycle, Hook } from './hooks';
+import { DefaultLogger, Logger, ManageLogger, SafeLogger } from './logger';
+import { CommonProvider, ProviderMetadata } from './provider';
+import {
+  ManageTransactionContextPropagator,
+  NOOP_TRANSACTION_CONTEXT_PROPAGATOR,
+  TransactionContext,
+  TransactionContextPropagator,
+} from './transaction-context';
+import { objectOrUndefined, stringOrUndefined } from './type-guards';
 
 export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProvider>
   implements
@@ -23,10 +27,11 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
 
   protected abstract _defaultProvider: P;
 
-  private readonly _events = new OpenFeatureEventEmitter(() => this._logger);
-  private readonly _clientEventHandlers: Map<string | undefined, [ProviderEvents, EventHandler][]> = new Map();
+  private readonly _events = new InternalEventEmitter(() => this._logger);
+  private readonly _clientEventHandlers: Map<string | undefined, [ProviderEvents, EventHandler<ProviderEvents>][]> =
+    new Map();
   protected _clientProviders: Map<string, P> = new Map();
-  protected _clientEvents: Map<string | undefined, OpenFeatureEventEmitter> = new Map();
+  protected _clientEvents: Map<string | undefined, InternalEventEmitter> = new Map();
 
   addHooks(...hooks: Hook<FlagValue>[]): this {
     this._hooks = [...this._hooks, ...hooks];
@@ -62,7 +67,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
    * @param {ProviderEvents} eventType The provider event type to listen to
    * @param {EventHandler} handler The handler to run on occurrence of the event type
    */
-  addHandler(eventType: ProviderEvents, handler: EventHandler): void {
+  addHandler<T extends ProviderEvents>(eventType: T, handler: EventHandler<T>): void {
     this._events.addHandler(eventType, handler);
   }
 
@@ -71,7 +76,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
    * @param {ProviderEvents} eventType The provider event type to remove the listener for
    * @param {EventHandler} handler The handler to remove for the provider event type
    */
-  removeHandler(eventType: ProviderEvents, handler: EventHandler): void {
+  removeHandler<T extends ProviderEvents>(eventType: T, handler: EventHandler<T>): void {
     this._events.removeHandler(eventType, handler);
   }
 
@@ -80,7 +85,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
    * @param {ProviderEvents} eventType The provider event type to get the current handlers for
    * @returns {EventHandler[]} The handlers currently attached to the given provider event type
    */
-  getHandlers(eventType: ProviderEvents): EventHandler[] {
+  getHandlers<T extends ProviderEvents>(eventType: T): EventHandler<T>[] {
     return this._events.getHandlers(eventType);
   }
 
@@ -117,20 +122,20 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
       return this;
     }
 
-    // get the named emitter, or if this is the default provider, get all event emitters not associated with a provider
-    const emitters = clientName ? [this.getAndCacheEventEmitterForClient(clientName)] : this.getUnboundEmitters();
+    const emitters = this.getAssociatedEventEmitters(clientName);
 
     if (typeof provider.initialize === 'function') {
       provider
         .initialize?.(this._context)
         ?.then(() => {
-          emitters.forEach((emitter) => {
+          // fetch the most recent event emitters, some may have been added during init
+          this.getAssociatedEventEmitters(clientName).forEach((emitter) => {
             emitter?.emit(ProviderEvents.Ready, { clientName });
           });
           this._events?.emit(ProviderEvents.Ready, { clientName });
         })
         ?.catch((error) => {
-          emitters.forEach((emitter) => {
+          this.getAssociatedEventEmitters(clientName).forEach((emitter) => {
             emitter?.emit(ProviderEvents.Error, { clientName, message: error.message });
           });
           this._events?.emit(ProviderEvents.Error, { clientName, message: error.message });
@@ -166,7 +171,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     return this._clientProviders.get(name) ?? this._defaultProvider;
   }
 
-  protected getAndCacheEventEmitterForClient(name?: string): OpenFeatureEventEmitter {
+  protected buildAndCacheEventEmitterForClient(name?: string): InternalEventEmitter {
     const emitter = this._clientEvents.get(name);
 
     if (emitter) {
@@ -174,12 +179,12 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     }
 
     // lazily add the event emitters
-    const newEmitter = new OpenFeatureEventEmitter(() => this._logger);
+    const newEmitter = new InternalEventEmitter(() => this._logger);
     this._clientEvents.set(name, newEmitter);
 
     const clientProvider = this.getProviderForClient(name);
     Object.values<ProviderEvents>(ProviderEvents).forEach((eventType) =>
-      clientProvider.events?.addHandler(eventType, async (details?: EventDetails) => {
+      clientProvider.events?.addHandler(eventType, async (details) => {
         newEmitter.emit(eventType, { ...details, clientName: name });
       })
     );
@@ -187,7 +192,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     return newEmitter;
   }
 
-  private getUnboundEmitters(): OpenFeatureEventEmitter[] {
+  private getUnboundEmitters(): InternalEventEmitter[] {
     const namedProviders = [...this._clientProviders.keys()];
     const eventEmitterNames = [...this._clientEvents.keys()].filter(isDefined);
     const unboundEmitterNames = eventEmitterNames.filter((name) => !namedProviders.includes(name));
@@ -195,34 +200,38 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
       // all unbound, named emitters
       ...unboundEmitterNames.map((name) => this._clientEvents.get(name)),
       // the default emitter
-      this._clientEvents.get(undefined)
+      this._clientEvents.get(undefined),
     ].filter(isDefined);
+  }
+
+  private getAssociatedEventEmitters(clientName: string | undefined) {
+    return clientName ? [this.buildAndCacheEventEmitterForClient(clientName)] : this.getUnboundEmitters();
   }
 
   private transferListeners(
     oldProvider: P,
     newProvider: P,
     clientName: string | undefined,
-    emitters: (OpenFeatureEventEmitter | undefined)[]
+    emitters: (InternalEventEmitter | undefined)[]
   ) {
     this._clientEventHandlers
       .get(clientName)
       ?.forEach((eventHandler) => oldProvider.events?.removeHandler(...eventHandler));
 
     // iterate over the event types
-    const newClientHandlers = Object.values<ProviderEvents>(ProviderEvents).map<[ProviderEvents, EventHandler]>(
-      (eventType) => {
-        const handler = async (details?: EventDetails) => {
-          // on each event type, fire the associated handlers
-          emitters.forEach((emitter) => {
-            emitter?.emit(eventType, { ...details, clientName });
-          });
-          this._events.emit(eventType, { ...details, clientName });
-        };
+    const newClientHandlers = Object.values<ProviderEvents>(ProviderEvents).map<
+      [ProviderEvents, EventHandler<ProviderEvents>]
+    >((eventType) => {
+      const handler = async (details?: EventDetails<ProviderEvents>) => {
+        // on each event type, fire the associated handlers
+        emitters.forEach((emitter) => {
+          emitter?.emit(eventType, { ...details, clientName });
+        });
+        this._events.emit(eventType, { ...details, clientName });
+      };
 
-        return [eventType, handler];
-      }
-    );
+      return [eventType, handler];
+    });
 
     this._clientEventHandlers.set(clientName, newClientHandlers);
     newClientHandlers.forEach((eventHandler) => newProvider.events?.addHandler(...eventHandler));

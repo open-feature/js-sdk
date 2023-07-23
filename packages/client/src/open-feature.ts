@@ -70,7 +70,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider> implements Ma
       // functions are passed here to make sure that these values are always up to date,
       // and so we don't have to make these public properties on the API class.
       () => this.getProviderForClient(name),
-      () => this.getAndCacheEventEmitterForClient(name),
+      () => this.buildAndCacheEventEmitterForClient(name),
       () => this._logger,
       { name, version }
     );
