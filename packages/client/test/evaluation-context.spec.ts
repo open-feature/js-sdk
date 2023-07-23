@@ -65,6 +65,35 @@ describe('Evaluation Context', () => {
 
         contextChangedSpys.forEach((spy) => expect(spy).toHaveBeenCalledWith(context, newContext));
       });
+
+      it('on all registered providers even if one fails', async () => {
+        // Set initial context
+        const context: EvaluationContext = { property1: false };
+        await OpenFeature.setContext(context);
+
+        // Set some providers
+        const defaultProvider = new MockProvider();
+        const provider1 = new MockProvider();
+        const provider2 = new MockProvider();
+
+        OpenFeature.setProvider(defaultProvider);
+        OpenFeature.setProvider('client1', provider1);
+        OpenFeature.setProvider('client2', provider2);
+
+        // Spy on context changed handlers of all providers
+        const contextChangedSpys = [defaultProvider, provider1, provider2].map((provider) =>
+          jest.spyOn(provider, 'onContextChange')
+        );
+
+        // Let first handler fail
+        contextChangedSpys[0].mockImplementation(() => Promise.reject(new Error('Error')));
+
+        // Change context
+        const newContext: EvaluationContext = { property1: true, property2: 'prop2' };
+        await OpenFeature.setContext(newContext);
+
+        contextChangedSpys.forEach((spy) => expect(spy).toHaveBeenCalledWith(context, newContext));
+      });
     });
   });
 });
