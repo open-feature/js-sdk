@@ -37,7 +37,17 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider> implements Ma
   async setContext(context: EvaluationContext): Promise<void> {
     const oldContext = this._context;
     this._context = context;
-    await this._defaultProvider?.onContextChange?.(oldContext, context);
+
+    const allProviders = [this._defaultProvider, ...this._clientProviders.values()];
+    await Promise.all(
+      allProviders.map(async (provider) => {
+        try {
+          return await provider.onContextChange?.(oldContext, context);
+        } catch (err) {
+          this._logger?.error(`Error running context change handler of provider ${provider.metadata.name}:`, err);
+        }
+      })
+    );
   }
 
   getContext(): EvaluationContext {
