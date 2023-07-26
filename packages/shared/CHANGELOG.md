@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.9](https://github.com/open-feature/js-sdk/compare/shared-v0.0.8...shared-v0.0.9) (2023-07-26)
+
+
+### Bug Fixes
+
+* provider js-doc improvments  ([#506](https://github.com/open-feature/js-sdk/issues/506)) ([c815bc8](https://github.com/open-feature/js-sdk/commit/c815bc83cf7999e01baa361a0bbf1f3a579e2174))
+
 ## [0.0.8](https://github.com/open-feature/js-sdk/compare/shared-v0.0.7...shared-v0.0.8) (2023-07-22)
 
 
