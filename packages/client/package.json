@@ -46,7 +46,7 @@
   },
   "homepage": "https://github.com/open-feature/js-sdk#readme",
   "devDependencies": {
-    "@openfeature/shared": "0.0.9"
+    "@openfeature/shared": "*"
   },
   "typedoc": {
     "displayName": "OpenFeature Web SDK",
