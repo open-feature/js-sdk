@@ -1,5 +1,11 @@
 # Changelog
 
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/shared bumped from * to 0.0.9
+
 ## [0.3.8-experimental](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.3.7-experimental...web-sdk-v0.3.8-experimental) (2023-07-24)
 
 
