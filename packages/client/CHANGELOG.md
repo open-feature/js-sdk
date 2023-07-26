@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.3.10-experimental](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.3.9-experimental...web-sdk-v0.3.10-experimental) (2023-07-26)
+
+
+### Bug Fixes
+
+* re-release web-sdk ([15491ba](https://github.com/open-feature/js-sdk/commit/15491bada9a62cfa27b028074716c414d364ad96))
+
 ## [0.3.8-experimental](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.3.7-experimental...web-sdk-v0.3.8-experimental) (2023-07-24)
 
 
