@@ -124,6 +124,14 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
 
     const emitters = this.getAssociatedEventEmitters(clientName);
 
+    // TODO: this can be removed after 1.0
+    if (typeof provider.initialize === 'function' && provider.status === undefined) {
+      const activeLogger = this._logger || console;
+      activeLogger.warn(
+        `Provider ${provider?.metadata?.name} implements 'initialize' but not 'status'. Please implement 'status'.`
+      );
+    }
+
     if (provider?.status === ProviderStatus.NOT_READY && typeof provider.initialize === 'function') {
       provider
         .initialize?.(this._context)
