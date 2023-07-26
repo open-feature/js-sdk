@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.3.9-experimental](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.3.8-experimental...web-sdk-v0.3.9-experimental) (2023-07-26)
+
+
+### Bug Fixes
+
+* test ([eb7b780](https://github.com/open-feature/js-sdk/commit/eb7b7805ff1632ca6e92ff50506db09506e7f855))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/shared bumped from * to 0.0.9
+
 ## [0.3.8-experimental](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.3.7-experimental...web-sdk-v0.3.8-experimental) (2023-07-24)
 
 

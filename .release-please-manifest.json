@@ -1,5 +1,5 @@
 {
-  "packages/client": "0.3.8-experimental",
+  "packages/client": "0.3.9-experimental",
   "packages/server": "1.4.0",
   "packages/shared": "0.0.8"
 }

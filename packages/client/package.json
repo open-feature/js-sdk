@@ -1,6 +1,6 @@
 {
   "name": "@openfeature/web-sdk",
-  "version": "0.3.8-experimental",
+  "version": "0.3.9-experimental",
   "description": "OpenFeature SDK for Web",
   "main": "./dist/cjs/index.js",
   "files": [
@@ -46,7 +46,7 @@
   },
   "homepage": "https://github.com/open-feature/js-sdk#readme",
   "devDependencies": {
-    "@openfeature/shared": "*"
+    "@openfeature/shared": "0.0.9"
   },
   "typedoc": {
     "displayName": "OpenFeature Web SDK",
