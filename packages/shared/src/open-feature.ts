@@ -4,7 +4,7 @@ import { InternalEventEmitter } from './events/open-feature-event-emitter';
 import { isDefined } from './filter';
 import { EvaluationLifeCycle, Hook } from './hooks';
 import { DefaultLogger, Logger, ManageLogger, SafeLogger } from './logger';
-import { CommonProvider, ProviderMetadata } from './provider';
+import { CommonProvider, ProviderMetadata, ProviderStatus } from './provider';
 import {
   ManageTransactionContextPropagator,
   NOOP_TRANSACTION_CONTEXT_PROPAGATOR,
@@ -124,7 +124,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
 
     const emitters = this.getAssociatedEventEmitters(clientName);
 
-    if (typeof provider.initialize === 'function') {
+    if (provider?.status === ProviderStatus.NOT_READY && typeof provider.initialize === 'function') {
       provider
         .initialize?.(this._context)
         ?.then(() => {

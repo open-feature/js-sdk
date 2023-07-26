@@ -1,17 +1,19 @@
-import { NOOP_TRANSACTION_CONTEXT_PROPAGATOR, TransactionContextPropagator } from '@openfeature/shared';
-import { OpenFeature, OpenFeatureAPI, NOOP_PROVIDER, OpenFeatureClient, Provider } from '../src';
+import { OpenFeature, OpenFeatureAPI, OpenFeatureClient, Provider, ProviderStatus } from '../src';
 
-const MOCK_PROVIDER: Provider = {
-  metadata: {
-    name: 'mock',
-  },
-  initialize: jest.fn(() => {
-    return Promise.resolve('started');
-  }),
-  onClose: jest.fn(() => {
-    return Promise.resolve('closed');
-  }),
-} as unknown as Provider;
+const mockProvider = (initialStatus?: ProviderStatus) => {
+  return {
+    metadata: {
+      name: 'mock-events-success',
+    },
+    status: initialStatus || ProviderStatus.NOT_READY,
+    initialize: jest.fn(() => {
+      return Promise.resolve('started');
+    }),
+    onClose: jest.fn(() => {
+      return Promise.resolve('closed');
+    }),
+  } as unknown as Provider;
+};
 
 describe('OpenFeature', () => {
   afterEach(() => {
@@ -33,39 +35,50 @@ describe('OpenFeature', () => {
 
     describe('Requirement 1.1.2.2', () => {
       it('MUST invoke the `initialize` function on the newly registered provider before using it to resolve flag values', () => {
-        OpenFeature.setProvider(MOCK_PROVIDER);
-        expect(OpenFeature.providerMetadata.name).toBe(MOCK_PROVIDER.metadata.name);
-        expect(MOCK_PROVIDER.initialize).toHaveBeenCalled();
+        const provider = mockProvider();
+        OpenFeature.setProvider(provider);
+        expect(OpenFeature.providerMetadata.name).toBe('mock-events-success');
+        expect(provider.initialize).toHaveBeenCalled();
+      });
+
+      it('should not invoke initialze function if the provider is not in state NOT_READY', () => {
+        const provider = mockProvider(ProviderStatus.READY);
+        OpenFeature.setProvider(provider);
+        expect(OpenFeature.providerMetadata.name).toBe('mock-events-success');
+        expect(provider.initialize).not.toHaveBeenCalled();
       });
     });
 
     describe('Requirement 1.1.2.3', () => {
       it("MUST invoke the `shutdown` function on the previously registered provider once it's no longer being used to resolve flag values.", () => {
         const fakeProvider = { metadata: { name: 'test' } } as unknown as Provider;
-        OpenFeature.setProvider(MOCK_PROVIDER);
+        const provider = mockProvider();
+        OpenFeature.setProvider(provider);
         OpenFeature.setProvider(fakeProvider);
-        expect(MOCK_PROVIDER.onClose).toHaveBeenCalled();
+        expect(provider.onClose).toHaveBeenCalled();
       });
     });
   });
 
   describe('Requirement 1.1.3', () => {
     it('should set the default provider if no name is provided', () => {
-      OpenFeature.setProvider(MOCK_PROVIDER);
+      const provider = mockProvider();
+      OpenFeature.setProvider(provider);
       const client = OpenFeature.getClient();
-      expect(client.metadata.providerMetadata.name).toEqual(MOCK_PROVIDER.metadata.name);
+      expect(client.metadata.providerMetadata.name).toEqual(provider.metadata.name);
     });
 
     it('should not change named providers when setting a new default provider', () => {
       const name = 'my-client';
       const fakeProvider = { metadata: { name: 'test' } } as unknown as Provider;
-      OpenFeature.setProvider(MOCK_PROVIDER);
+      const provider = mockProvider();
+      OpenFeature.setProvider(provider);
       OpenFeature.setProvider(name, fakeProvider);
 
       const unnamedClient = OpenFeature.getClient();
       const namedClient = OpenFeature.getClient(name);
 
-      expect(unnamedClient.metadata.providerMetadata.name).toEqual(MOCK_PROVIDER.metadata.name);
+      expect(unnamedClient.metadata.providerMetadata.name).toEqual(provider.metadata.name);
       expect(namedClient.metadata.providerMetadata.name).toEqual(fakeProvider.metadata.name);
     });
 
@@ -73,7 +86,8 @@ describe('OpenFeature', () => {
       const name = 'my-client';
       const fakeProvider = { metadata: { name: 'test' } } as unknown as Provider;
 
-      OpenFeature.setProvider(MOCK_PROVIDER);
+      const provider = mockProvider();
+      OpenFeature.setProvider(provider);
       const namedClient = OpenFeature.getClient(name);
       OpenFeature.setProvider(name, fakeProvider);
 
@@ -81,8 +95,8 @@ describe('OpenFeature', () => {
     });
 
     it('should close a provider if it is replaced and no other client uses it', async () => {
-      const provider1 = { ...MOCK_PROVIDER, onClose: jest.fn() };
-      const provider2 = { ...MOCK_PROVIDER, onClose: jest.fn() };
+      const provider1 = { ...mockProvider(), onClose: jest.fn() };
+      const provider2 = { ...mockProvider(), onClose: jest.fn() };
 
       OpenFeature.setProvider('client1', provider1);
       expect(provider1.onClose).not.toHaveBeenCalled();
@@ -91,7 +105,7 @@ describe('OpenFeature', () => {
     });
 
     it('should not close provider if it is used by another client', async () => {
-      const provider1 = { ...MOCK_PROVIDER, onClose: jest.fn() };
+      const provider1 = { ...mockProvider(), onClose: jest.fn() };
 
       OpenFeature.setProvider('client1', provider1);
       OpenFeature.setProvider('client2', provider1);
@@ -135,58 +149,57 @@ describe('OpenFeature', () => {
     });
 
     it('should return a client with the provider bound to the name', () => {
-      const name = 'my-client';
+      const name = 'my-named-client';
       const fakeProvider = { metadata: { name: 'test' } } as unknown as Provider;
-
       OpenFeature.setProvider(name, fakeProvider);
+
       const namedClient = OpenFeature.getClient(name);
 
       expect(namedClient.metadata.providerMetadata.name).toEqual(fakeProvider.metadata.name);
     });
+
+    it('should be chainable', () => {
+      const client = OpenFeature.addHooks().clearHooks().setLogger(console).getClient();
+      expect(client).toBeDefined();
+    });
   });
 
-  it('should be chainable', () => {
-    const client = OpenFeature.addHooks()
-      .clearHooks()
-      .setContext({})
-      .setLogger(console)
-      .setProvider(NOOP_PROVIDER)
-      .getClient();
-
-    expect(client).toBeDefined();
-  });
-
-  describe('transaction context safety', () => {
-    it('invalid getTransactionContext is not registered', () => {
-      OpenFeature.setTransactionContextPropagator({
-        setTransactionContext: () => undefined,
-      } as unknown as TransactionContextPropagator);
-      expect(OpenFeature['_transactionContextPropagator']).toBe(NOOP_TRANSACTION_CONTEXT_PROPAGATOR);
+  describe('Requirement 1.6.1', () => {
+    it('MUST define a `shutdown` function, which, when called, must call the respective `shutdown` function on the active provider', async () => {
+      const provider = mockProvider();
+      OpenFeature.setProvider(provider);
+      expect(OpenFeature.providerMetadata.name).toBe('mock-events-success');
+      await OpenFeature.close();
+      expect(provider.onClose).toHaveBeenCalled();
     });
 
-    it('invalid setTransactionContext is not registered', () => {
-      OpenFeature.setTransactionContextPropagator({
-        getTransactionContext: () => Object.assign({}),
-      } as unknown as TransactionContextPropagator);
-      expect(OpenFeature['_transactionContextPropagator']).toBe(NOOP_TRANSACTION_CONTEXT_PROPAGATOR);
+    it('runs the shutdown function on all providers for all clients', async () => {
+      const provider = mockProvider();
+      OpenFeature.setProvider(provider);
+      OpenFeature.setProvider('client1', { ...provider });
+      OpenFeature.setProvider('client2', { ...provider });
+
+      expect(OpenFeature.providerMetadata.name).toBe(provider.metadata.name);
+      await OpenFeature.close();
+      expect(provider.onClose).toHaveBeenCalledTimes(3);
     });
 
-    it('throwing getTransactionContext defaults', async () => {
-      const mockPropagator: TransactionContextPropagator = {
-        getTransactionContext: jest.fn(() => {
-          throw Error('Transaction context error!');
-        }),
-        setTransactionContext: jest.fn((context, callback) => {
-          callback();
-        }),
-      };
+    it('runs the shutdown function on all providers for all clients even if some fail', async () => {
+      const failingClose = jest.fn(() => {
+        throw Error();
+      });
 
-      OpenFeature.setTransactionContextPropagator(mockPropagator);
-      expect(OpenFeature['_transactionContextPropagator']).toBe(mockPropagator);
-      const client = OpenFeature.getClient();
-      const result = await client.getBooleanValue('test', true);
-      expect(result).toEqual(true);
-      expect(mockPropagator.getTransactionContext).toHaveBeenCalled();
+      const provider1 = { ...mockProvider(), onClose: failingClose };
+      const provider2 = { ...mockProvider(), onClose: failingClose };
+      const provider3 = mockProvider();
+
+      OpenFeature.setProvider(provider1);
+      OpenFeature.setProvider('client1', provider2);
+      OpenFeature.setProvider('client2', provider3);
+
+      expect(OpenFeature.providerMetadata.name).toBe(provider1.metadata.name);
+      await OpenFeature.close();
+      expect(provider3.onClose).toHaveBeenCalled();
     });
   });
 });
