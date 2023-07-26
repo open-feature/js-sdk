@@ -24,7 +24,7 @@
 <li><a href="OpenFeature_JS_SDK.Provider.html" class="tsd-signature-type tsd-kind-interface">Provider</a></li>
 <li><a href="OpenFeature_Web_SDK.Provider.html" class="tsd-signature-type tsd-kind-interface">Provider</a></li></ul></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/9aca1cd/packages/shared/src/provider/provider.ts#L15">packages/shared/src/provider/provider.ts:15</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/b3c0099/packages/shared/src/provider/provider.ts#L32">packages/shared/src/provider/provider.ts:32</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -52,17 +52,24 @@
 <h4>See</h4><p>ProviderEvents</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/9aca1cd/packages/shared/src/provider/provider.ts#L23">packages/shared/src/provider/provider.ts:23</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/b3c0099/packages/shared/src/provider/provider.ts#L49">packages/shared/src/provider/provider.ts:49</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="metadata" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagReadonly">Readonly</code> <span>metadata</span><a href="#metadata" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">metadata</span><span class="tsd-signature-symbol">:</span> <a href="OpenFeature_JS_SDK.ProviderMetadata.html" class="tsd-signature-type tsd-kind-interface">ProviderMetadata</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/9aca1cd/packages/shared/src/provider/provider.ts#L16">packages/shared/src/provider/provider.ts:16</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/b3c0099/packages/shared/src/provider/provider.ts#L33">packages/shared/src/provider/provider.ts:33</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="status" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagOptional">Optional</code> <code class="tsd-tag ts-flagReadonly">Readonly</code> <span>status</span><a href="#status" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">status</span><span class="tsd-signature-symbol">?:</span> <a href="../enums/OpenFeature_JS_SDK.ProviderStatus.html" class="tsd-signature-type tsd-kind-enum">ProviderStatus</a></div><aside class="tsd-sources">
+<div class="tsd-signature"><span class="tsd-kind-property">status</span><span class="tsd-signature-symbol">?:</span> <a href="../enums/OpenFeature_JS_SDK.ProviderStatus.html" class="tsd-signature-type tsd-kind-enum">ProviderStatus</a></div>
+<div class="tsd-comment tsd-typography"><p>Returns a representation of the current readiness of the provider.
+If the provider needs to be initialized, it should return <a href="../enums/OpenFeature_JS_SDK.ProviderStatus.html#READY" class="tsd-kind-enum-member">READY</a>.
+If the provider is in an error state, it should return <a href="../enums/OpenFeature_JS_SDK.ProviderStatus.html#ERROR" class="tsd-kind-enum-member">ERROR</a>.
+If the provider is functioning normally, it should return <a href="../enums/OpenFeature_JS_SDK.ProviderStatus.html#NOT_READY" class="tsd-kind-enum-member">NOT_READY</a>.</p>
+<p><em>Providers which do not implement this method are assumed to be ready immediately.</em></p>
+</div>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/9aca1cd/packages/shared/src/provider/provider.ts#L17">packages/shared/src/provider/provider.ts:17</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/b3c0099/packages/shared/src/provider/provider.ts#L43">packages/shared/src/provider/provider.ts:43</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member"><a id="initialize" class="tsd-anchor"></a>
@@ -70,8 +77,8 @@
 <ul class="tsd-signatures">
 <li class="tsd-signature tsd-anchor-link" id="initialize.initialize-1"><span class="tsd-kind-call-signature">initialize</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">context</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#initialize.initialize-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>A handler function used to setup the provider.
-Called by the SDK after the provider is set.
+<div class="tsd-comment tsd-typography"><p>A function used to setup the provider.
+Called by the SDK after the provider is set if the provider&#39;s status is <a href="../enums/OpenFeature_JS_SDK.ProviderStatus.html#NOT_READY" class="tsd-kind-enum-member">NOT_READY</a>.
 When the returned promise resolves, the SDK fires the ProviderEvents.Ready event.
 If the returned promise rejects, the SDK fires the ProviderEvents.Error event.
 Use this function to perform any context-dependent setup within the provider.</p>
@@ -85,15 +92,19 @@ Use this function to perform any context-dependent setup within the provider.</p
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/9aca1cd/packages/shared/src/provider/provider.ts#L35">packages/shared/src/provider/provider.ts:35</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/b3c0099/packages/shared/src/provider/provider.ts#L65">packages/shared/src/provider/provider.ts:65</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="onClose" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagOptional">Optional</code> <span>on<wbr/>Close</span><a href="#onClose" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="tsd-signature tsd-anchor-link" id="onClose.onClose-1"><span class="tsd-kind-call-signature">on<wbr/>Close</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#onClose.onClose-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<div class="tsd-comment tsd-typography"><p>A function used to shut down the provider.
+Called when this provider is replaced with a new one, or when the OpenFeature is shut down.</p>
+</div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/9aca1cd/packages/shared/src/provider/provider.ts#L25">packages/shared/src/provider/provider.ts:25</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/b3c0099/packages/shared/src/provider/provider.ts#L55">packages/shared/src/provider/provider.ts:55</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
