@@ -6,6 +6,12 @@
   * devDependencies
     * @openfeature/shared bumped from 0.0.1 to 0.0.2
 
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/shared bumped from * to 0.0.9
+
 ## [1.4.0](https://github.com/open-feature/js-sdk/compare/js-sdk-v1.3.3...js-sdk-v1.4.0) (2023-07-22)
 
 
