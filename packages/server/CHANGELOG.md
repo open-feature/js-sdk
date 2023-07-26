@@ -1,16 +1,11 @@
 # Changelog
 
-### Dependencies
+## [1.4.1](https://github.com/open-feature/js-sdk/compare/js-sdk-v1.4.0...js-sdk-v1.4.1) (2023-07-26)
 
-* The following workspace dependencies were updated
-  * devDependencies
-    * @openfeature/shared bumped from 0.0.1 to 0.0.2
 
-### Dependencies
+### Bug Fixes
 
-* The following workspace dependencies were updated
-  * devDependencies
-    * @openfeature/shared bumped from * to 0.0.9
+* provider js-doc improvments  ([#506](https://github.com/open-feature/js-sdk/issues/506)) ([c815bc8](https://github.com/open-feature/js-sdk/commit/c815bc83cf7999e01baa361a0bbf1f3a579e2174))
 
 ## [1.4.0](https://github.com/open-feature/js-sdk/compare/js-sdk-v1.3.3...js-sdk-v1.4.0) (2023-07-22)
 
