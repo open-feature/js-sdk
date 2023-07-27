@@ -124,7 +124,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
 
     const emitters = this.getAssociatedEventEmitters(clientName);
 
-    // TODO: this can be removed after 1.0
+    // warn of improper implementations
     if (typeof provider.initialize === 'function' && provider.status === undefined) {
       const activeLogger = this._logger || console;
       activeLogger.warn(
