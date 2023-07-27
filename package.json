@@ -34,7 +34,7 @@
     "node": ">=16"
   },
   "devDependencies": {
-    "@openfeature/flagd-provider": "^0.7.6",
+    "@openfeature/flagd-provider": "^0.8.0",
     "@openfeature/flagd-web-provider": "^0.3.4",
     "@rollup/plugin-alias": "^5.0.0",
     "@rollup/plugin-typescript": "^11.0.0",
