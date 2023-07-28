@@ -17,16 +17,13 @@ const client = OpenFeature.getClient();
 const givenAnOpenfeatureClientIsRegisteredWithCacheDisabled = (
   given: (stepMatcher: string, stepDefinitionCallback: () => void) => void
 ) => {
-  // TODO: when the FlagdProvider is updated to support caching, we may need to disable it here for this test to work as expected.
   given('a provider is registered with cache disabled', () => undefined);
 };
 
 defineFeature(feature, (test) => {
   beforeAll((done) => {
     client.addHandler(ProviderEvents.Ready, async () => {
-      setTimeout(() => {
-        done(); // TODO remove this once flagd provider properly implements readiness (for now, we add a 2s wait).
-      }, 2000);
+      done();
     });
   });
 
