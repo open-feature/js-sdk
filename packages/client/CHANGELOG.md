@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.3.11](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.3.10-experimental...web-sdk-v0.3.11) (2023-07-31)
+
+
+### Bug Fixes
+
+* only initialize NOT_READY providers ([#507](https://github.com/open-feature/js-sdk/issues/507)) ([5e320ae](https://github.com/open-feature/js-sdk/commit/5e320ae3811e270985e867c1c85a301eacd99a49))
+
 ## [0.3.10-experimental](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.3.9-experimental...web-sdk-v0.3.10-experimental) (2023-07-26)
 
 
