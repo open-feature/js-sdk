@@ -1,7 +1,7 @@
 # Changelog
 
 
-## [0.3.11-experimental](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.3.10-experimental...web-sdk-v0.3.11-experimental) (2023-07-31)
+## [0.3.11](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.3.10-experimental...web-sdk-v0.3.11) (2023-07-31)
 
 
 ### Bug Fixes
