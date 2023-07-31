@@ -1,7 +1,7 @@
 # Changelog
 
 
-## [0.3.12](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.3.11...web-sdk-v0.3.12) (2023-07-31)
+## [0.4.0](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.3.11...web-sdk-v0.4.0) (2023-07-31)
 
 
 ### Features
