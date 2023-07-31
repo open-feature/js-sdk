@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.4.0](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.3.11...web-sdk-v0.4.0) (2023-07-31)
+
+
+### Features
+
+* release first non-experimental version ([#528](https://github.com/open-feature/js-sdk/issues/528)) ([a4ba064](https://github.com/open-feature/js-sdk/commit/a4ba0645500ae82e4052362345e964c7ee226bb2))
+
 ## [0.3.11](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.3.10-experimental...web-sdk-v0.3.11) (2023-07-31)
 
 
