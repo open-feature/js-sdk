@@ -25,9 +25,7 @@ const givenAnOpenfeatureClientIsRegisteredWithCacheDisabled = (
 defineFeature(feature, (test) => {
   beforeAll((done) => {
     client.addHandler(ProviderEvents.Ready, async () => {
-      setTimeout(() => {
-        done(); // TODO remove this once flagd provider properly implements readiness (for now, we add a 2s wait).
-      }, 2000);
+        done();
     });
   });
 
