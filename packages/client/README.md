@@ -13,11 +13,6 @@
 [![npm version](https://badge.fury.io/js/@openfeature%2Fweb-sdk.svg)](https://www.npmjs.com/package/@openfeature/web-sdk)
 [![Specification](https://img.shields.io/static/v1?label=Specification&message=v0.6.0&color=yellow)](https://github.com/open-feature/spec/tree/v0.6.0)
 
-## 🧪 This SDK is experimental
-
-The Web SDK is under development and based on a experimental client concepts.
-For more information, see this [issue](https://github.com/open-feature/spec/issues/167).
-
 ## 👋 Hey there! Thanks for checking out the OpenFeature Web SDK
 
 ### What is OpenFeature?
