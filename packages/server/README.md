@@ -108,7 +108,7 @@ If the provider you're looking for hasn't been created yet, see the [develop a p
 Once you've added a provider as a dependency, it can be registered with OpenFeature like this:
 
 ```ts
-OpenFeature.SetProvider(new MyProvider())
+OpenFeature.setProvider(new MyProvider())
 ```
 
 In some situations, it may be beneficial to register multiple providers in the same application.
