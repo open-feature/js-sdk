@@ -275,7 +275,7 @@ class MyProvider implements Provider {
   events?: OpenFeatureEventEmitter | undefined;
 
   initialize?(context?: EvaluationContext | undefined): Promise<void> {
-    throw new Error('Method not implemented.');
+    // code to initialize your provider
   }
 
   onClose?(): Promise<void> {
