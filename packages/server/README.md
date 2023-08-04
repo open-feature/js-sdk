@@ -25,8 +25,8 @@
   <a href="https://open-feature.github.io/js-sdk/modules/OpenFeature_JS_SDK.html">
     <img alt="API Reference" src="https://img.shields.io/badge/reference-teal?logo=javascript&logoColor=white" />
   </a>
-  <a href="https://img.shields.io/npm/dm/%40openfeature%2Fjs-sdk">
-    <img alt="NPM Download" src="https://www.npmjs.com/package/@openfeature/js-sdk" />
+  <a href="https://www.npmjs.com/package/@openfeature/js-sdk">
+    <img alt="NPM Download" src="https://img.shields.io/npm/dm/%40openfeature%2Fjs-sdk" />
   </a>
   <a href="https://codecov.io/gh/open-feature/js-sdk">
     <img alt="codecov" src="https://codecov.io/gh/open-feature/js-sdk/branch/main/graph/badge.svg?token=3DC5XOEHMY" />
