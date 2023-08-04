@@ -163,7 +163,7 @@ const boolValue = await client.getBooleanValue("bool-flag", false, { hooks: [new
 ### Logging
 
 The JS SDK will log warning and errors to the console by default.
-This can be behavior can be overridden by passing a custom logger either globally or per client.
+This behavior can be overridden by passing a custom logger either globally or per client.
 A custom logger must implement the [Logger interface](../shared/src/logger/logger.ts).
 
 ```ts
@@ -279,7 +279,7 @@ class MyProvider implements Provider {
   }
 
   onClose?(): Promise<void> {
-    // code to shutdown your provider
+    // code to shut down your provider
   }
 }
 ```
