@@ -181,9 +181,9 @@ If a name has no associated provider, the global provider is used.
 import { OpenFeature } from "@openfeature/web-sdk";
 
 // Registering the default provider
-await OpenFeature.setProvider(NewLocalProvider());
+OpenFeature.setProvider(NewLocalProvider());
 // Registering a named provider
-await OpenFeature.setProvider("clientForCache", new NewCachedProvider());
+OpenFeature.setProvider("clientForCache", new NewCachedProvider());
 
 // A Client backed by default provider
 const clientWithDefault = OpenFeature.getClient();
