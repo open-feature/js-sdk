@@ -70,7 +70,7 @@ yarn add @openfeature/web-sdk
 import { OpenFeature } from '@openfeature/web-sdk';
 
 // Register your feature flag provider
-await OpenFeature.setProvider(new YourProviderOfChoice());
+OpenFeature.setProvider(new YourProviderOfChoice());
 
 // create a new client
 const client = OpenFeature.getClient();
