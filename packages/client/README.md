@@ -258,7 +258,7 @@ class MyProvider implements Provider {
     // code to evaluate a number
   }
 
-  resolveObjectEvaluation<T extends JsonValue>(flagKey: string, defaultValue: T, context: EvaluationContext, logger: Logger):<ResolutionDetails<T> {
+  resolveObjectEvaluation<T extends JsonValue>(flagKey: string, defaultValue: T, context: EvaluationContext, logger: Logger): ResolutionDetails<T> {
     // code to evaluate an object
   }
 
