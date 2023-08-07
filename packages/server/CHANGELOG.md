@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.2](https://github.com/open-feature/js-sdk/compare/js-sdk-v1.4.1...js-sdk-v1.4.2) (2023-08-07)
+
+
+### Bug Fixes
+
+* only initialize NOT_READY providers ([#507](https://github.com/open-feature/js-sdk/issues/507)) ([5e320ae](https://github.com/open-feature/js-sdk/commit/5e320ae3811e270985e867c1c85a301eacd99a49))
+
 ## [1.4.1](https://github.com/open-feature/js-sdk/compare/js-sdk-v1.4.0...js-sdk-v1.4.1) (2023-07-26)
 
 
