@@ -102,6 +102,8 @@ See [here](https://open-feature.github.io/js-sdk/modules/OpenFeature_Web_SDK.htm
 
 <sub>Implemented: ✅ | In-progress: ⚠️ | Not implemented yet: ❌</sub>
 
+### Providers
+
 [Providers](https://openfeature.dev/docs/reference/concepts/provider) are an abstraction between a flag management system and the OpenFeature SDK.
 Look [here](https://openfeature.dev/ecosystem/?instant_search%5BrefinementList%5D%5Btype%5D%5B0%5D=Provider&instant_search%5BrefinementList%5D%5Bcategory%5D%5B0%5D=Client-side&instant_search%5BrefinementList%5D%5Btechnology%5D%5B0%5D=JavaScript) for a complete list of available providers.
 If the provider you're looking for hasn't been created yet, see the [develop a provider](#develop-a-provider) section to learn how to build it yourself.
@@ -109,14 +111,11 @@ If the provider you're looking for hasn't been created yet, see the [develop a p
 Once you've added a provider as a dependency, it can be registered with OpenFeature like this:
 
 ```ts
-// TODO the current docs show this returning a promise
 OpenFeature.setProvider(new MyProvider())
-
-
 ```
 
 In some situations, it may be beneficial to register multiple providers in the same application.
-This is possible using [named clients](#named-clients), which is covered in more details below.
+This is possible using [named clients](#named-clients), which is covered in more detail below.
 
 ### Targeting
 
@@ -125,7 +124,7 @@ In OpenFeature, we refer to this as [targeting](https://openfeature.dev/specific
 If the flag management system you're using supports targeting, you can provide the input data using the [evaluation context](https://openfeature.dev/docs/reference/concepts/evaluation-context).
 
 ```ts
-// set a value to the global context
+// Set a value to the global context
 await OpenFeature.setContext({ origin: document.location.host });
 ```
 
@@ -153,7 +152,7 @@ const boolValue = client.getBooleanValue("bool-flag", false, { hooks: [new Examp
 
 ### Logging
 
-The JS SDK will log warning and errors to the console by default.
+The JS SDK will log warnings and errors to the console by default.
 This behavior can be overridden by passing a custom logger either globally or per client.
 A custom logger must implement the [Logger interface](../shared/src/logger/logger.ts).
 
@@ -174,7 +173,7 @@ client.setLogger(logger);
 ### Named clients
 
 Clients can be given a name.
-A name is a logical identifier which can be used to associate clients with a particular provider.
+A name is a logical identifier that can be used to associate clients with a particular provider.
 If a name has no associated provider, the global provider is used.
 
 ```ts
