@@ -8,7 +8,7 @@
   </picture>
 </p>
 
-<h2 align="center">OpenFeature JS Web SDK</h2>
+<h2 align="center">OpenFeature Web SDK</h2>
 
 <!-- x-hide-in-docs-end -->
 <!-- The 'github-badges' class is used in the docs -->
