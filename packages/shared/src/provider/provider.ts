@@ -1,6 +1,7 @@
 import { OpenFeatureEventEmitter } from '../events';
 import { Metadata } from '../types';
 import { EvaluationContext } from '../evaluation';
+import { Category } from '../types/category';
 
 /**
  * The state of the provider.
@@ -31,6 +32,12 @@ export interface ProviderMetadata extends Metadata {
 
 export interface CommonProvider {
   readonly metadata: ProviderMetadata;
+
+  /**
+   * The category represents the intended use of the provider.
+   *
+  */
+  readonly category?: Category;
 
   /**
    * Returns a representation of the current readiness of the provider.
