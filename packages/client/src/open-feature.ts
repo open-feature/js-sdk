@@ -15,7 +15,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider> implements Ma
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor() {
-    super("client");
+    super('client');
   }
 
   /**

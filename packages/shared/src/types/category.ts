@@ -1,1 +1,1 @@
-export type Category = "server" | "client";
+export type Category = 'server' | 'client';

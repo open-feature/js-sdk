@@ -35,8 +35,7 @@ export interface CommonProvider {
 
   /**
    * The category represents the intended use of the provider.
-   *
-  */
+   */
   readonly category?: Category;
 
   /**
