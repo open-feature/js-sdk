@@ -1,5 +1,3 @@
-import { Client } from './client';
-import { Provider } from '../provider';
 import {
   ClientMetadata,
   ErrorCode,
@@ -20,8 +18,10 @@ import {
   SafeLogger,
   StandardResolutionReasons,
 } from '@openfeature/shared';
-import { OpenFeature } from '../open-feature';
 import { FlagEvaluationOptions } from '../evaluation';
+import { OpenFeature } from '../open-feature';
+import { Provider } from '../provider';
+import { Client } from './client';
 
 type OpenFeatureClientOptions = {
   name?: string;
@@ -56,7 +56,7 @@ export class OpenFeatureClient implements Client {
     if (eventType === ProviderEvents.Ready && providerReady) {
       // run immediately, we're ready.
       try {
-        handler({ clientName: this.metadata.name });
+        handler({ clientName: this.metadata.name, providerName: this._provider.metadata.name });
       } catch (err) {
         this._logger?.error('Error running event handler:', err);
       }

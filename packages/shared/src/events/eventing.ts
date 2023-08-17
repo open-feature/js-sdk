@@ -5,6 +5,7 @@ export type EventMetadata = {
 };
 
 export type CommonEventDetails = {
+  providerName: string;
   clientName?: string;
 };
 
