@@ -140,7 +140,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     }
 
     const oldProvider = this.getProviderForClient(clientName);
-    const providerName = provider.metadata.name
+    const providerName = provider.metadata.name;
 
     // ignore no-ops
     if (oldProvider === provider) {

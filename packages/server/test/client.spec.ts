@@ -348,10 +348,6 @@ describe('OpenFeatureClient', () => {
         metadata: {
           name: 'error-mock',
         },
-<<<<<<< HEAD
-
-=======
->>>>>>> 68aec64 (feat: STALE state, minor event changes)
         resolveNumberEvaluation: jest.fn((): Promise<ResolutionDetails<number>> => {
           throw new Error(NON_OPEN_FEATURE_ERROR_MESSAGE); // throw a non-open-feature error
         }),

@@ -1,5 +1,5 @@
-import { ProviderStatus } from "../provider";
-import { ProviderEvents } from "./events";
+import { ProviderStatus } from '../provider';
+import { ProviderEvents } from './events';
 
 const eventStatusMap = {
     [ProviderStatus.READY]: ProviderEvents.Ready,
@@ -9,12 +9,12 @@ const eventStatusMap = {
 };
 
 /**
- * Returns true if the provider's status matches the event.
+ * Returns true if the provider's status corresponds to the event.
  * If the provider's status is not defined, it matches READY.
  * 
- * @param event 
- * @param status 
- * @returns boolean indicating if the provider status matches the event.
+ * @param event event to match
+ * @param status status of provider
+ * @returns boolean indicating if the provider status corresponds to the event.
  */
 export const statusMatchesEvent = (event: ProviderEvents, status?: ProviderStatus): boolean => {
     return (!status && event === ProviderEvents.Ready) || eventStatusMap[status!] === event;
