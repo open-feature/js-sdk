@@ -34,7 +34,7 @@ export interface CommonProvider {
   readonly metadata: ProviderMetadata;
 
   /**
-   * The category represents the intended use of the provider.
+   * The category represents the intended use of the provider (server vs client).
    */
   readonly category?: Category;
 
