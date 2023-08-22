@@ -14,12 +14,14 @@ export default {
     // function indicating which deps should be considered external: non-external deps will have their types bundled
     (id) => {
       // bundle 'events' types
-      return id !== 'events'
+      return id !== 'events';
     }
   ],
   plugins: [
     alias({
-      entries: [{ find: '@openfeature/shared', replacement: '../shared/dist/types.d.ts' }],
+      entries: [
+        { find: '@openfeature/shared', replacement: '../shared/dist/types.d.ts' },
+      ],
     }),
     dts({tsconfig: './tsconfig.json', respectExternal: true}),
   ],
