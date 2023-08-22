@@ -9,13 +9,17 @@ export function useFeatureFlag<T extends FlagValue>(flagKey: string, defaultValu
 
   useEffect(() => {
     getFlag(client, flagKey, defaultValue, setFlagEvaluationDetails);
-    // adding handlers here mean that changes are immediately reflected in the UI when flags change
-    client.addHandler(ProviderEvents.Ready, () => {
+    const handler = () => {
       getFlag(client, flagKey, defaultValue, setFlagEvaluationDetails);
-    });
-    client.addHandler(ProviderEvents.ConfigurationChanged, () => {
-      getFlag(client, flagKey, defaultValue, setFlagEvaluationDetails);
-    });
+    }
+    // adding handlers here means that changes are immediately reflected in the UI when flags change
+    client.addHandler(ProviderEvents.Ready, handler);
+    client.addHandler(ProviderEvents.ConfigurationChanged, handler);
+    return () => {
+      // be sure to cleanup the handlers
+      client.removeHandler(ProviderEvents.Ready, handler)
+      client.removeHandler(ProviderEvents.ConfigurationChanged, handler)
+    };
   }, [flagKey, defaultValue, client]);
 
   if (flagEvaluationDetails) {
