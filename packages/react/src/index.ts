@@ -1,2 +1,2 @@
-export * from './use-feature-flag'
-export * from './provider'
+export * from './use-feature-flag';
+export * from './provider';

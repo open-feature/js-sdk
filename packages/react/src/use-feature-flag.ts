@@ -1,21 +1,11 @@
-import {
-  Client,
-  EvaluationDetails,
-  FlagValue,
-  ProviderEvents,
-  ResolutionDetails,
-} from '@openfeature/web-sdk'
-import { useEffect, useState } from 'react'
-import { useOpenFeatureClient } from './provider'
+import { Client, EvaluationDetails, FlagValue, ProviderEvents, ResolutionDetails } from '@openfeature/web-sdk';
+import { useEffect, useState } from 'react';
+import { useOpenFeatureClient } from './provider';
 
-export function useFeatureFlag<T extends FlagValue>(
-  flagKey: string,
-  defaultValue: T
-): T {
-  const [flagEvaluationDetails, setFlagEvaluationDetails] =
-    useState<ResolutionDetails<T> | null>(null)
+export function useFeatureFlag<T extends FlagValue>(flagKey: string, defaultValue: T): T {
+  const [flagEvaluationDetails, setFlagEvaluationDetails] = useState<ResolutionDetails<T> | null>(null);
 
-  const client = useOpenFeatureClient()
+  const client = useOpenFeatureClient();
 
   useEffect(() => {
     getFlag(client, flagKey, defaultValue, setFlagEvaluationDetails);
@@ -26,12 +16,12 @@ export function useFeatureFlag<T extends FlagValue>(
     client.addHandler(ProviderEvents.ConfigurationChanged, () => {
       getFlag(client, flagKey, defaultValue, setFlagEvaluationDetails);
     });
-  }, [flagKey, defaultValue, client])
+  }, [flagKey, defaultValue, client]);
 
   if (flagEvaluationDetails) {
-    return flagEvaluationDetails.value
+    return flagEvaluationDetails.value;
   } else {
-    return defaultValue
+    return defaultValue;
   }
 }
 
@@ -42,16 +32,16 @@ async function getFlag<T extends FlagValue>(
   setFlagDetails: (details: EvaluationDetails<T>) => void
 ): Promise<void> {
   if (typeof defaultValue === 'boolean') {
-    const flagDetails = await client.getBooleanDetails(flagKey, defaultValue)
-    setFlagDetails(flagDetails as EvaluationDetails<T>)
+    const flagDetails = await client.getBooleanDetails(flagKey, defaultValue);
+    setFlagDetails(flagDetails as EvaluationDetails<T>);
   } else if (typeof defaultValue === 'string') {
-    const flagDetails = await client.getStringDetails(flagKey, defaultValue)
-    setFlagDetails(flagDetails as EvaluationDetails<T>)
+    const flagDetails = await client.getStringDetails(flagKey, defaultValue);
+    setFlagDetails(flagDetails as EvaluationDetails<T>);
   } else if (typeof defaultValue === 'number') {
-    const flagDetails = await client.getNumberDetails(flagKey, defaultValue)
-    setFlagDetails(flagDetails as EvaluationDetails<T>)
+    const flagDetails = await client.getNumberDetails(flagKey, defaultValue);
+    setFlagDetails(flagDetails as EvaluationDetails<T>);
   } else {
-    const flagDetails = await client.getObjectDetails(flagKey, defaultValue)
-    setFlagDetails(flagDetails as EvaluationDetails<T>)
+    const flagDetails = await client.getObjectDetails(flagKey, defaultValue);
+    setFlagDetails(flagDetails as EvaluationDetails<T>);
   }
 }
