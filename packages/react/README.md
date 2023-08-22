@@ -26,3 +26,43 @@
 [OpenFeature](https://openfeature.dev) is an open standard that provides a vendor-agnostic, community-driven API for feature flagging that works with your favorite feature flag management tool.
 
 🧪 This is SDK is experimental.
+
+
+Here's a basic example of how ot use the current API with flagd:
+
+```js
+import logo from './logo.svg';
+import './App.css';
+import { OpenFeatureProvider, OpenFeature, useFeatureFlag,  } from '@openfeature/react-sdk';
+import { FlagdWebProvider } from '@openfeature/flagd-web-provider';
+
+const provider = new FlagdWebProvider({
+  host: 'localhost',
+  port: 8013,
+  tls: false,
+  maxRetries: 0,
+});
+OpenFeature.setProvider(provider)
+
+function App() {
+  return (
+    <OpenFeatureProvider>
+      <Page></Page>
+    </OpenFeatureProvider>
+  );
+}
+
+function Page() {
+  const booleanFlag = useFeatureFlag('new-welcome-message', false);
+  return (
+    <div className="App">
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        {booleanFlag ? <p>Welcome to this OpenFeature-enabled React app!</p> : <p>Welcome to this React app.</p>}
+      </header>
+    </div>
+  )
+}
+
+export default App;
+```
