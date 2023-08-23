@@ -19,6 +19,14 @@
       "extra-files": ["README.md"],
       "versioning": "default"
     },
+    "packages/react": {
+      "release-type": "node",
+      "prerelease": true,
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": true,
+      "extra-files": ["README.md"],
+      "versioning": "default"
+    },
     "packages/shared": {
       "release-type": "node",
       "prerelease": true,
