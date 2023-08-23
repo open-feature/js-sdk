@@ -8,10 +8,10 @@
     "e2e-server": "git submodule update --init --recursive && shx cp test-harness/features/evaluation.feature packages/server/e2e/features && jest --selectProjects=server-e2e --verbose",
     "e2e-client": "git submodule update --init --recursive && shx cp test-harness/features/evaluation.feature packages/client/e2e/features && jest --selectProjects=client-e2e --verbose",
     "e2e": "npm run e2e-server && npm run e2e-client",
-    "lint": "npm run lint --workspace=packages/shared --workspace=packages/client --workspace=packages/server",
+    "lint": "npm run lint --workspace=packages/shared --workspace=packages/server --workspace=packages/client --workspace=packages/react",
     "clean": "shx rm -rf ./dist",
-    "build": "npm run build --workspace=packages/shared --workspace=packages/client --workspace=packages/server",
-    "publish-all": "npm run publish-if-not-exists --workspace=packages/client --workspace=packages/server",
+    "build": "npm run build --workspace=packages/shared --workspace=packages/server --workspace=packages/client --workspace=packages/react",
+    "publish-all": "npm run publish-if-not-exists --workspace=packages/server --workspace=packages/client --workspace=packages/react",
     "docs": "typedoc"
   },
   "repository": {
@@ -41,6 +41,7 @@
     "@types/events": "^3.0.0",
     "@types/jest": "^29.0.0",
     "@types/node": "^18.0.3",
+    "@types/react": "^18.2.20",
     "@typescript-eslint/eslint-plugin": "^5.23.0",
     "@typescript-eslint/parser": "^5.23.0",
     "esbuild": "^0.17.0",
@@ -59,6 +60,7 @@
     "jest-environment-node": "^29.4.3",
     "jest-junit": "^16.0.0",
     "prettier": "^2.6.2",
+    "react": "^18.2.0",
     "rollup": "^3.18.0",
     "rollup-plugin-dts": "^5.2.0",
     "shx": "^0.3.4",
@@ -69,8 +71,9 @@
     "uuid": "^9.0.0"
   },
   "workspaces": [
+    "packages/shared",
     "packages/server",
     "packages/client",
-    "packages/shared"
+    "packages/react"
   ]
 }
