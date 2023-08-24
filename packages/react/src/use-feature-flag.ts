@@ -1,51 +1,36 @@
-import { Client, EvaluationDetails, FlagValue, ProviderEvents, ResolutionDetails } from '@openfeature/web-sdk';
+import { Client, EvaluationDetails, FlagValue, ProviderEvents } from '@openfeature/web-sdk';
 import { useEffect, useState } from 'react';
 import { useOpenFeatureClient } from './provider';
 
 export function useFeatureFlag<T extends FlagValue>(flagKey: string, defaultValue: T): T {
-  const [flagEvaluationDetails, setFlagEvaluationDetails] = useState<ResolutionDetails<T> | null>(null);
+  const [, setForceUpdateState] = useState({});
 
   const client = useOpenFeatureClient();
 
   useEffect(() => {
-    getFlag(client, flagKey, defaultValue, setFlagEvaluationDetails);
-    const handler = () => {
-      getFlag(client, flagKey, defaultValue, setFlagEvaluationDetails);
-    };
-    // adding handlers here means that changes are immediately reflected in the UI when flags change
-    client.addHandler(ProviderEvents.Ready, handler);
-    client.addHandler(ProviderEvents.ConfigurationChanged, handler);
+    const forceUpdate = () => setForceUpdateState({});
+
+    // adding handlers here means that an update is triggered, which leads to the change directly reflecting in the UI
+    client.addHandler(ProviderEvents.Ready, forceUpdate);
+    client.addHandler(ProviderEvents.ConfigurationChanged, forceUpdate);
     return () => {
       // be sure to cleanup the handlers
-      client.removeHandler(ProviderEvents.Ready, handler);
-      client.removeHandler(ProviderEvents.ConfigurationChanged, handler);
+      client.removeHandler(ProviderEvents.Ready, forceUpdate);
+      client.removeHandler(ProviderEvents.ConfigurationChanged, forceUpdate);
     };
-  }, [flagKey, defaultValue, client]);
+  }, [client]);
 
-  if (flagEvaluationDetails) {
-    return flagEvaluationDetails.value;
-  } else {
-    return defaultValue;
-  }
+  return getFlag(client, flagKey, defaultValue).value;
 }
 
-async function getFlag<T extends FlagValue>(
-  client: Client,
-  flagKey: string,
-  defaultValue: T,
-  setFlagDetails: (details: EvaluationDetails<T>) => void
-): Promise<void> {
+function getFlag<T extends FlagValue>(client: Client, flagKey: string, defaultValue: T): EvaluationDetails<T> {
   if (typeof defaultValue === 'boolean') {
-    const flagDetails = await client.getBooleanDetails(flagKey, defaultValue);
-    setFlagDetails(flagDetails as EvaluationDetails<T>);
+    return client.getBooleanDetails(flagKey, defaultValue) as EvaluationDetails<T>;
   } else if (typeof defaultValue === 'string') {
-    const flagDetails = await client.getStringDetails(flagKey, defaultValue);
-    setFlagDetails(flagDetails as EvaluationDetails<T>);
+    return client.getStringDetails(flagKey, defaultValue) as EvaluationDetails<T>;
   } else if (typeof defaultValue === 'number') {
-    const flagDetails = await client.getNumberDetails(flagKey, defaultValue);
-    setFlagDetails(flagDetails as EvaluationDetails<T>);
+    return client.getNumberDetails(flagKey, defaultValue) as EvaluationDetails<T>;
   } else {
-    const flagDetails = await client.getObjectDetails(flagKey, defaultValue);
-    setFlagDetails(flagDetails as EvaluationDetails<T>);
+    return client.getObjectDetails(flagKey, defaultValue) as EvaluationDetails<T>;
   }
 }
