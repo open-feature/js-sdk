@@ -13,7 +13,7 @@ import {
   TransactionContextPropagator,
 } from './transaction-context';
 import { objectOrUndefined, stringOrUndefined } from './type-guards';
-import { Category } from './types/category';
+import { Paradigm } from './types';
 
 export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProvider>
   implements
@@ -34,10 +34,10 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     new Map();
   protected _clientProviders: Map<string, P> = new Map();
   protected _clientEvents: Map<string | undefined, InternalEventEmitter> = new Map();
-  protected _category: Category;
+  protected _runsOn: Paradigm;
 
-  constructor(category: Category) {
-    this._category = category;
+  constructor(category: Paradigm) {
+    this._runsOn = category;
   }
 
   addHooks(...hooks: Hook<FlagValue>[]): this {
@@ -131,10 +131,10 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
       return this;
     }
 
-    if (!provider.category) {
-      this._logger.debug('Provider has no category, unable to verify compatibility');
-    } else if (provider.category !== this._category){
-      throw new GeneralError(`Provider '${provider.metadata.name}' is intended for use on the ${provider.category}.`);
+    if (!provider.runsOn) {
+      this._logger.debug(`Provider '${provider.metadata.name}' has not defined its intended use.`);
+    } else if (provider.runsOn !== this._runsOn){
+      throw new GeneralError(`Provider '${provider.metadata.name}' is intended for use on the ${provider.runsOn}.`);
     }
 
     const emitters = this.getAssociatedEventEmitters(clientName);

@@ -1,15 +1,15 @@
-import { Category } from '@openfeature/shared/src/types/category';
+import { Paradigm } from '@openfeature/shared';
 import { OpenFeature, OpenFeatureAPI, OpenFeatureClient, Provider, ProviderStatus } from '../src';
 
 const mockProvider = (config?: {
   initialStatus?: ProviderStatus,
-  category?: Category,
+  runsOn?: Paradigm,
 }) => {
   return {
     metadata: {
       name: 'mock-events-success',
     },
-    category: config?.category,
+    runsOn: config?.runsOn,
     status: config?.initialStatus || ProviderStatus.NOT_READY,
     initialize: jest.fn(() => {
       return Promise.resolve('started');
@@ -40,13 +40,13 @@ describe('OpenFeature', () => {
 
     describe('Requirement 1.1.2.1', () => {
       it('should throw because the provider is not intended for the client', () => {
-        const provider = mockProvider({ category: 'server'});
+        const provider = mockProvider({ runsOn: 'server'});
         expect(() => OpenFeature.setProvider(provider)).toThrowError(
           "Provider 'mock-events-success' is intended for use on the server."
         );
       });
       it('should succeed because the provider is intended for the client', () => {
-        const provider = mockProvider({ category: 'client'});
+        const provider = mockProvider({ runsOn: 'client'});
         expect(() => OpenFeature.setProvider(provider)).not.toThrowError();
       });
     });
