@@ -345,7 +345,9 @@ describe('OpenFeatureClient', () => {
       let openFeatureErrorDetails: EvaluationDetails<string>;
       let client: Client;
       const errorProvider = {
-        name: 'error-mock',
+        metadata: {
+          name: 'error-mock',
+        },
 
         resolveNumberEvaluation: jest.fn((): Promise<ResolutionDetails<number>> => {
           throw new Error(NON_OPEN_FEATURE_ERROR_MESSAGE); // throw a non-open-feature error
@@ -420,7 +422,9 @@ describe('OpenFeatureClient', () => {
       };
 
       const flagMetadataProvider = {
-        name: 'flag-metadata',
+        metadata: {
+          name: 'flag-metadata',
+        },
         resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
           return Promise.resolve({
             value: true,
@@ -448,7 +452,9 @@ describe('OpenFeatureClient', () => {
   describe('Requirement 1.6.1', () => {
     describe('Provider', () => {
       const nonTransformingProvider = {
-        name: 'non-transforming',
+        metadata: {
+          name: 'non-transforming',
+        },
         resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
           return Promise.resolve({
             value: true,
@@ -476,7 +482,9 @@ describe('OpenFeatureClient', () => {
 
   describe('Evaluation Context', () => {
     const provider = {
-      name: 'evaluation-context',
+      metadata: {
+        name: 'evaluation-context',
+      },
       resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
         return Promise.resolve({
           value: true,

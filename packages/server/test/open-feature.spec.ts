@@ -1,11 +1,16 @@
+import { Paradigm } from '@openfeature/shared';
 import { OpenFeature, OpenFeatureAPI, OpenFeatureClient, Provider, ProviderStatus } from '../src';
 
-const mockProvider = (initialStatus?: ProviderStatus) => {
+const mockProvider = (config?: {
+  initialStatus?: ProviderStatus,
+  runsOn?: Paradigm,
+}) => {
   return {
     metadata: {
       name: 'mock-events-success',
     },
-    status: initialStatus || ProviderStatus.NOT_READY,
+    runsOn: config?.runsOn,
+    status: config?.initialStatus || ProviderStatus.NOT_READY,
     initialize: jest.fn(() => {
       return Promise.resolve('started');
     }),
@@ -33,6 +38,19 @@ describe('OpenFeature', () => {
       expect(OpenFeature.providerMetadata === fakeProvider.metadata).toBeTruthy();
     });
 
+    describe('Requirement 1.1.2.1', () => {
+      it('should throw because the provider is not intended for the server', () => {
+        const provider = mockProvider({ runsOn: 'client'});
+        expect(() => OpenFeature.setProvider(provider)).toThrowError(
+          "Provider 'mock-events-success' is intended for use on the client."
+        );
+      });
+      it('should succeed because the provider is intended for the server', () => {
+        const provider = mockProvider({ runsOn: 'server'});
+        expect(() => OpenFeature.setProvider(provider)).not.toThrowError();
+      });
+    });
+
     describe('Requirement 1.1.2.2', () => {
       it('MUST invoke the `initialize` function on the newly registered provider before using it to resolve flag values', () => {
         const provider = mockProvider();
@@ -42,7 +60,7 @@ describe('OpenFeature', () => {
       });
 
       it('should not invoke initialze function if the provider is not in state NOT_READY', () => {
-        const provider = mockProvider(ProviderStatus.READY);
+        const provider = mockProvider({ initialStatus: ProviderStatus.READY });
         OpenFeature.setProvider(provider);
         expect(OpenFeature.providerMetadata.name).toBe('mock-events-success');
         expect(provider.initialize).not.toHaveBeenCalled();
