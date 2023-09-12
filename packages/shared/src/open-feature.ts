@@ -71,7 +71,6 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
    * Adds a handler for the given provider event type.
    * The handlers are called in the order they have been added.
    * API (global) events run for all providers.
-   * 
    * @param {ProviderEvents} eventType The provider event type to listen to
    * @param {EventHandler} handler The handler to run on occurrence of the event type
    */

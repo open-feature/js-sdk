@@ -82,7 +82,9 @@ describe('Events', () => {
     jest.clearAllMocks();
     clientId = uuid();
     // hacky, but it's helpful to clear the handlers between tests
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     (OpenFeature as any)._clientEventHandlers = new Map();
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     (OpenFeature as any)._clientEvents = new Map();  });
 
   beforeEach(() => {
@@ -173,7 +175,7 @@ describe('Events', () => {
           });
         }),
         new Promise<void>((resolve) => {
-          OpenFeature.addHandler(ProviderEvents.Error, (details) => {
+          OpenFeature.addHandler(ProviderEvents.Error, () => {
             resolve();
           });
         })
@@ -497,13 +499,11 @@ describe('Events', () => {
     describe('API', () => {
       it('Handlers attached after the provider is already in the associated state, MUST run immediately.', (done) => {
         const provider = new MockProvider({ initialStatus: ProviderStatus.ERROR });
-        const client = OpenFeature.getClient(clientId);
   
         OpenFeature.setProvider(clientId, provider);
         expect(provider.initialize).not.toHaveBeenCalled();
   
         OpenFeature.addHandler(ProviderEvents.Error, () => {
-
             done();
         });
       });
