@@ -2,7 +2,7 @@ import { Client, EvaluationDetails, FlagValue, ProviderEvents } from '@openfeatu
 import { useEffect, useState } from 'react';
 import { useOpenFeatureClient } from './provider';
 
-export function useFeatureFlag<T extends FlagValue>(flagKey: string, defaultValue: T): T {
+export function useFeatureFlag<T extends FlagValue>(flagKey: string, defaultValue: T): EvaluationDetails<T> {
   const [, setForceUpdateState] = useState({});
 
   const client = useOpenFeatureClient();
@@ -20,7 +20,7 @@ export function useFeatureFlag<T extends FlagValue>(flagKey: string, defaultValu
     };
   }, [client]);
 
-  return getFlag(client, flagKey, defaultValue).value;
+  return getFlag(client, flagKey, defaultValue);
 }
 
 function getFlag<T extends FlagValue>(client: Client, flagKey: string, defaultValue: T): EvaluationDetails<T> {
