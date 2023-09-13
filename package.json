@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@openfeature/flagd-provider": "^0.8.1",
-    "@openfeature/flagd-web-provider": "^0.3.5",
+    "@openfeature/flagd-web-provider": "^0.4.0",
     "@rollup/plugin-alias": "^5.0.0",
     "@rollup/plugin-typescript": "^11.0.0",
     "@types/events": "^3.0.0",
