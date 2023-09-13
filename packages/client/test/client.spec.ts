@@ -367,7 +367,9 @@ describe('Evaluation details structure', () => {
     let openFeatureErrorDetails: EvaluationDetails<string>;
     let client: Client;
     const errorProvider = {
-      name: 'error-mock',
+      metadata: {
+        name: 'error-mock',
+      },
 
       resolveNumberEvaluation: jest.fn((): Promise<ResolutionDetails<number>> => {
         throw new Error(NON_OPEN_FEATURE_ERROR_MESSAGE); // throw a non-open-feature error
@@ -441,7 +443,9 @@ describe('Evaluation details structure', () => {
       };
 
       const flagMetadataProvider = {
-        name: 'flag-metadata',
+        metadata: {
+          name: 'flag-metadata',
+        },
         resolveBooleanEvaluation: jest.fn((): ResolutionDetails<boolean> => {
           return {
             value: true,

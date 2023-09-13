@@ -1,6 +1,7 @@
 import { OpenFeatureEventEmitter } from '../events';
 import { Metadata } from '../types';
 import { EvaluationContext } from '../evaluation';
+import { Paradigm } from '../types';
 
 /**
  * The state of the provider.
@@ -31,6 +32,12 @@ export interface ProviderMetadata extends Metadata {
 
 export interface CommonProvider {
   readonly metadata: ProviderMetadata;
+
+  /**
+   * Represents where the provider is intended to be run. If defined,
+   * the SDK will enforce that the defined paradigm at runtime.
+   */
+  readonly runsOn?: Paradigm;
 
   /**
    * Returns a representation of the current readiness of the provider.

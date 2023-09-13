@@ -1,3 +1,4 @@
+import { GeneralError } from './errors';
 import { EvaluationContext, FlagValue } from './evaluation';
 import { EventDetails, EventHandler, Eventing, ProviderEvents } from './events';
 import { InternalEventEmitter } from './events/open-feature-event-emitter';
@@ -12,6 +13,7 @@ import {
   TransactionContextPropagator,
 } from './transaction-context';
 import { objectOrUndefined, stringOrUndefined } from './type-guards';
+import { Paradigm } from './types';
 
 export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProvider>
   implements
@@ -32,6 +34,11 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     new Map();
   protected _clientProviders: Map<string, P> = new Map();
   protected _clientEvents: Map<string | undefined, InternalEventEmitter> = new Map();
+  protected _runsOn: Paradigm;
+
+  constructor(category: Paradigm) {
+    this._runsOn = category;
+  }
 
   addHooks(...hooks: Hook<FlagValue>[]): this {
     this._hooks = [...this._hooks, ...hooks];
@@ -112,6 +119,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     const provider = objectOrUndefined<P>(clientOrProvider) ?? objectOrUndefined<P>(providerOrUndefined);
 
     if (!provider) {
+      this._logger.debug('No provider defined, ignoring setProvider call');
       return this;
     }
 
@@ -119,7 +127,14 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
 
     // ignore no-ops
     if (oldProvider === provider) {
+      this._logger.debug('Provider is already set, ignoring setProvider call');
       return this;
+    }
+
+    if (!provider.runsOn) {
+      this._logger.debug(`Provider '${provider.metadata.name}' has not defined its intended use.`);
+    } else if (provider.runsOn !== this._runsOn){
+      throw new GeneralError(`Provider '${provider.metadata.name}' is intended for use on the ${provider.runsOn}.`);
     }
 
     const emitters = this.getAssociatedEventEmitters(clientName);
