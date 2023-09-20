@@ -1,3 +1,4 @@
+import { v4 as uuid } from 'uuid';
 import {
   JsonValue,
   NOOP_PROVIDER,
@@ -10,7 +11,6 @@ import {
   ResolutionDetails,
   StaleEvent,
 } from '../src';
-import { v4 as uuid } from 'uuid';
 
 const TIMEOUT = 1000;
 
@@ -82,7 +82,9 @@ describe('Events', () => {
     jest.clearAllMocks();
     clientId = uuid();
     // hacky, but it's helpful to clear the handlers between tests
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     (OpenFeature as any)._clientEventHandlers = new Map();
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     (OpenFeature as any)._clientEvents = new Map();  });
 
   beforeEach(() => {
@@ -166,24 +168,23 @@ describe('Events', () => {
       const provider = new MockProvider();
       const client = OpenFeature.getClient(clientId);
 
-      let clientHandlerRan = false;
-      let apiHandlerRan = false;
-
-      client.addHandler(ProviderEvents.Ready, () => {
-        clientHandlerRan = true;
-        if (clientHandlerRan && apiHandlerRan) {
-          done();
-        }
-      });
-
-      OpenFeature.addHandler(ProviderEvents.Ready, () => {
-        apiHandlerRan = true;
-        if (clientHandlerRan && apiHandlerRan) {
-          done();
-        }
+      Promise.all([
+        new Promise<void>((resolve) => {
+          client.addHandler(ProviderEvents.Error, () => {
+            resolve();
+          });
+        }),
+        new Promise<void>((resolve) => {
+          OpenFeature.addHandler(ProviderEvents.Error, () => {
+            resolve();
+          });
+        })
+      ]).then(() => {
+        done();
       });
 
       OpenFeature.setProvider(clientId, provider);
+      provider.events?.emit(ProviderEvents.Error);
     });
   });
 
@@ -344,11 +345,13 @@ describe('Events', () => {
   });
 
   describe('Requirement 5.2.3,', () => {
-    it('The event details contain the client name associated with the event in the API', (done) => {
-      const provider = new MockProvider();
+    it('The event details MUST contain the provider name associated with the event.', (done) => {
+      const providerName = '5.2.3';
+      const provider = new MockProvider({ name: providerName });
       const client = OpenFeature.getClient(clientId);
 
       client.addHandler(ProviderEvents.Ready, (details) => {
+        expect(details?.providerName).toEqual(providerName);
         expect(details?.clientName).toEqual(clientId);
         done();
       });
@@ -493,20 +496,31 @@ describe('Events', () => {
   });
 
   describe('Requirement 5.3.3', () => {
-    it('`PROVIDER_READY` handlers added after the provider is already in a ready state MUST run immediately.', (done) => {
-      const provider = new MockProvider();
-      const client = OpenFeature.getClient(clientId);
-
-      OpenFeature.setProvider(clientId, provider);
-      expect(provider.initialize).toHaveBeenCalled();
-
-      let handlerCalled = false;
-      client.addHandler(ProviderEvents.Ready, () => {
-        if (!handlerCalled) {
-          handlerCalled = true;
-          done();
-        }
+    describe('API', () => {
+      it('Handlers attached after the provider is already in the associated state, MUST run immediately.', (done) => {
+        const provider = new MockProvider({ initialStatus: ProviderStatus.ERROR });
+  
+        OpenFeature.setProvider(clientId, provider);
+        expect(provider.initialize).not.toHaveBeenCalled();
+  
+        OpenFeature.addHandler(ProviderEvents.Error, () => {
+            done();
+        });
       });
     });
+
+    describe('client', () => {
+      it('Handlers attached after the provider is already in the associated state, MUST run immediately.', (done) => {
+        const provider = new MockProvider({ initialStatus: ProviderStatus.READY });
+        const client = OpenFeature.getClient(clientId);
+  
+        OpenFeature.setProvider(clientId, provider);
+        expect(provider.initialize).not.toHaveBeenCalled();
+  
+        client.addHandler(ProviderEvents.Ready, () => {
+            done();
+        });
+      });
+    });    
   });
 });

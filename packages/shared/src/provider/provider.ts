@@ -1,7 +1,6 @@
-import { OpenFeatureEventEmitter } from '../events';
-import { Metadata } from '../types';
 import { EvaluationContext } from '../evaluation';
-import { Paradigm } from '../types';
+import { OpenFeatureEventEmitter } from '../events';
+import { Metadata, Paradigm } from '../types';
 
 /**
  * The state of the provider.
@@ -21,6 +20,11 @@ export enum ProviderStatus {
    * The provider is in an error state and unable to evaluate flags.
    */
   ERROR = 'ERROR',
+
+  /**
+   * The provider's cached state is no longer valid and may not be up-to-date with the source of truth.
+   */
+  STALE = 'STALE',
 }
 
 /**

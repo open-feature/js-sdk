@@ -1,7 +1,7 @@
-import { Logger, ManageLogger, SafeLogger } from '../logger';
 import EventEmitter from 'events';
+import { Logger, ManageLogger, SafeLogger } from '../logger';
+import { CommonEventDetails, EventContext, EventDetails, EventHandler } from './eventing';
 import { ProviderEvents } from './events';
-import { EventContext, EventDetails, EventHandler, CommonEventDetails } from './eventing';
 
 abstract class GenericEventEmitter<AdditionalContext extends Record<string, unknown> = Record<string, unknown>>
   implements ManageLogger<GenericEventEmitter<AdditionalContext>>
@@ -24,8 +24,8 @@ abstract class GenericEventEmitter<AdditionalContext extends Record<string, unkn
   addHandler<T extends ProviderEvents>(eventType: T, handler: EventHandler<T>): void {
     // The handlers have to be wrapped with an async function because if a synchronous functions throws an error,
     // the other handlers will not run.
-    const asyncHandler = async (context?: EventDetails<T>) => {
-      await handler(context);
+    const asyncHandler = async (details?: EventDetails<T>) => {
+      await handler(details);
     };
     // The async handler has to be written to the map, because we need to get the wrapper function when deleting a listener
     this._handlers.set(handler, asyncHandler);

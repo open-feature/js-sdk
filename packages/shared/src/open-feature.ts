@@ -1,6 +1,6 @@
 import { GeneralError } from './errors';
 import { EvaluationContext, FlagValue } from './evaluation';
-import { EventDetails, EventHandler, Eventing, ProviderEvents } from './events';
+import { EventDetails, EventHandler, Eventing, ProviderEvents, statusMatchesEvent } from './events';
 import { InternalEventEmitter } from './events/open-feature-event-emitter';
 import { isDefined } from './filter';
 import { EvaluationLifeCycle, Hook } from './hooks';
@@ -70,11 +70,26 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
   /**
    * Adds a handler for the given provider event type.
    * The handlers are called in the order they have been added.
-   * When changing the provider, the currently attached handlers will listen to the events of the new provider.
+   * API (global) events run for all providers.
    * @param {ProviderEvents} eventType The provider event type to listen to
    * @param {EventHandler} handler The handler to run on occurrence of the event type
    */
   addHandler<T extends ProviderEvents>(eventType: T, handler: EventHandler<T>): void {
+    [...new Map([[undefined, this._defaultProvider]]), ...this._clientProviders].forEach((keyProviderTuple) => {
+      const clientName = keyProviderTuple[0];
+      const provider = keyProviderTuple[1];
+      const shouldRunNow = statusMatchesEvent(eventType, keyProviderTuple[1].status);
+
+      if (shouldRunNow) {
+        // run immediately, we're in the matching state
+        try {
+          handler({ clientName, providerName: provider.metadata.name });
+        } catch (err) {
+          this._logger?.error('Error running event handler:', err);
+        }
+      }
+    });
+    
     this._events.addHandler(eventType, handler);
   }
 
@@ -124,6 +139,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     }
 
     const oldProvider = this.getProviderForClient(clientName);
+    const providerName = provider.metadata.name;
 
     // ignore no-ops
     if (oldProvider === provider) {
@@ -143,7 +159,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     if (typeof provider.initialize === 'function' && provider.status === undefined) {
       const activeLogger = this._logger || console;
       activeLogger.warn(
-        `Provider ${provider?.metadata?.name} implements 'initialize' but not 'status'. Please implement 'status'.`
+        `Provider ${providerName} implements 'initialize' but not 'status'. Please implement 'status'.`
       );
     }
 
@@ -153,21 +169,21 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
         ?.then(() => {
           // fetch the most recent event emitters, some may have been added during init
           this.getAssociatedEventEmitters(clientName).forEach((emitter) => {
-            emitter?.emit(ProviderEvents.Ready, { clientName });
+            emitter?.emit(ProviderEvents.Ready, { clientName, providerName });
           });
-          this._events?.emit(ProviderEvents.Ready, { clientName });
+          this._events?.emit(ProviderEvents.Ready, { clientName, providerName });
         })
         ?.catch((error) => {
           this.getAssociatedEventEmitters(clientName).forEach((emitter) => {
-            emitter?.emit(ProviderEvents.Error, { clientName, message: error.message });
+            emitter?.emit(ProviderEvents.Error, { clientName, providerName,  message: error.message });
           });
-          this._events?.emit(ProviderEvents.Error, { clientName, message: error.message });
+          this._events?.emit(ProviderEvents.Error, { clientName, providerName, message: error.message });
         });
     } else {
       emitters.forEach((emitter) => {
-        emitter?.emit(ProviderEvents.Ready, { clientName });
+        emitter?.emit(ProviderEvents.Ready, { clientName, providerName });
       });
-      this._events?.emit(ProviderEvents.Ready, { clientName });
+      this._events?.emit(ProviderEvents.Ready, { clientName, providerName });
     }
 
     if (clientName) {
@@ -208,7 +224,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     const clientProvider = this.getProviderForClient(name);
     Object.values<ProviderEvents>(ProviderEvents).forEach((eventType) =>
       clientProvider.events?.addHandler(eventType, async (details) => {
-        newEmitter.emit(eventType, { ...details, clientName: name });
+        newEmitter.emit(eventType, { ...details, clientName: name, providerName: clientProvider.metadata.name });
       })
     );
 
@@ -248,9 +264,9 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
       const handler = async (details?: EventDetails<ProviderEvents>) => {
         // on each event type, fire the associated handlers
         emitters.forEach((emitter) => {
-          emitter?.emit(eventType, { ...details, clientName });
+          emitter?.emit(eventType, { ...details, clientName, providerName: newProvider.metadata.name });
         });
-        this._events.emit(eventType, { ...details, clientName });
+        this._events.emit(eventType, { ...details, clientName, providerName: newProvider.metadata.name });
       };
 
       return [eventType, handler];

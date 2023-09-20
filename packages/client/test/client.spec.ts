@@ -1,16 +1,16 @@
 import {
   Client,
-  Provider,
   ErrorCode,
   EvaluationDetails,
-  JsonValue,
+  FlagNotFoundError,
   JsonArray,
   JsonObject,
+  JsonValue,
+  OpenFeature,
+  OpenFeatureClient,
+  Provider,
   ResolutionDetails,
   StandardResolutionReasons,
-  FlagNotFoundError,
-  OpenFeatureClient,
-  OpenFeature,
 } from '../src';
 
 const BOOLEAN_VALUE = true;
@@ -46,7 +46,6 @@ const MOCK_PROVIDER: Provider = {
   metadata: {
     name: 'mock',
   },
-
   events: undefined,
   hooks: [],
   initialize(): Promise<void> {
@@ -370,7 +369,6 @@ describe('Evaluation details structure', () => {
       metadata: {
         name: 'error-mock',
       },
-
       resolveNumberEvaluation: jest.fn((): Promise<ResolutionDetails<number>> => {
         throw new Error(NON_OPEN_FEATURE_ERROR_MESSAGE); // throw a non-open-feature error
       }),
