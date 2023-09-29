@@ -27,7 +27,7 @@
 <ul class="tsd-hierarchy">
 <li><a href="../interfaces/OpenFeature_JS_SDK.ManageContext.html" class="tsd-signature-type tsd-kind-interface">ManageContext</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/client/src/open-feature.ts#L13">packages/client/src/open-feature.ts:13</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/client/src/open-feature.ts#L13">packages/client/src/open-feature.ts:13</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -45,6 +45,7 @@
 <a href="OpenFeature_Web_SDK.OpenFeatureAPI.html#_defaultProvider" class="tsd-index-link tsd-is-protected"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_default<wbr/>Provider</span></a>
 <a href="OpenFeature_Web_SDK.OpenFeatureAPI.html#_hooks" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_hooks</span></a>
 <a href="OpenFeature_Web_SDK.OpenFeatureAPI.html#_logger" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_logger</span></a>
+<a href="OpenFeature_Web_SDK.OpenFeatureAPI.html#_runsOn" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_runs<wbr/>On</span></a>
 <a href="OpenFeature_Web_SDK.OpenFeatureAPI.html#_transactionContextPropagator" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_transaction<wbr/>Context<wbr/>Propagator</span></a>
 </div></section>
 <section class="tsd-index-section">
@@ -81,7 +82,7 @@
 <h4 class="tsd-returns-title">Returns <a href="OpenFeature_Web_SDK.OpenFeatureAPI.html" class="tsd-signature-type tsd-kind-class">OpenFeatureAPI</a></h4><aside class="tsd-sources">
 <p>Overrides <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html">OpenFeatureCommonAPI</a>.<a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#constructor">constructor</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/client/src/open-feature.ts#L17">packages/client/src/open-feature.ts:17</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/client/src/open-feature.ts#L17">packages/client/src/open-feature.ts:17</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_clientEvents" class="tsd-anchor"></a>
@@ -89,43 +90,49 @@
 <div class="tsd-signature"><span class="tsd-kind-property">_client<wbr/>Events</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="OpenFeature_JS_SDK.InternalEventEmitter.html" class="tsd-signature-type tsd-kind-class">InternalEventEmitter</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
 <p>Inherited from <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html">OpenFeatureCommonAPI</a>.<a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#_clientEvents">_clientEvents</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L34">packages/shared/src/open-feature.ts:34</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L36">packages/shared/src/open-feature.ts:36</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_clientProviders" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_client<wbr/>Providers</span><a href="#_clientProviders" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_client<wbr/>Providers</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/OpenFeature_Web_SDK.Provider.html" class="tsd-signature-type tsd-kind-interface">Provider</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
 <p>Inherited from <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html">OpenFeatureCommonAPI</a>.<a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#_clientProviders">_clientProviders</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L33">packages/shared/src/open-feature.ts:33</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L35">packages/shared/src/open-feature.ts:35</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_context" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_context</span><a href="#_context" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_context</span><span class="tsd-signature-symbol">:</span> <a href="../types/OpenFeature_JS_SDK.EvaluationContext.html" class="tsd-signature-type tsd-kind-type-alias">EvaluationContext</a><span class="tsd-signature-symbol"> = {}</span></div><aside class="tsd-sources">
 <p>Inherited from <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html">OpenFeatureCommonAPI</a>.<a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#_context">_context</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L25">packages/shared/src/open-feature.ts:25</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L27">packages/shared/src/open-feature.ts:27</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-protected"><a id="_defaultProvider" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_default<wbr/>Provider</span><a href="#_defaultProvider" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_default<wbr/>Provider</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/OpenFeature_Web_SDK.Provider.html" class="tsd-signature-type tsd-kind-interface">Provider</a><span class="tsd-signature-symbol"> = NOOP_PROVIDER</span></div><aside class="tsd-sources">
 <p>Overrides <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html">OpenFeatureCommonAPI</a>.<a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#_defaultProvider">_defaultProvider</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/client/src/open-feature.ts#L14">packages/client/src/open-feature.ts:14</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/client/src/open-feature.ts#L14">packages/client/src/open-feature.ts:14</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_hooks" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_hooks</span><a href="#_hooks" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_hooks</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/OpenFeature_JS_SDK.Hook.html" class="tsd-signature-type tsd-kind-interface">Hook</a><span class="tsd-signature-symbol">&lt;</span><a href="../types/OpenFeature_JS_SDK.FlagValue.html" class="tsd-signature-type tsd-kind-type-alias">FlagValue</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div><aside class="tsd-sources">
 <p>Inherited from <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html">OpenFeatureCommonAPI</a>.<a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#_hooks">_hooks</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L23">packages/shared/src/open-feature.ts:23</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L25">packages/shared/src/open-feature.ts:25</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_logger" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_logger</span><a href="#_logger" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_logger</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/OpenFeature_JS_SDK.Logger.html" class="tsd-signature-type tsd-kind-interface">Logger</a><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
 <p>Inherited from <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html">OpenFeatureCommonAPI</a>.<a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#_logger">_logger</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L26">packages/shared/src/open-feature.ts:26</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L28">packages/shared/src/open-feature.ts:28</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_runsOn" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_runs<wbr/>On</span><a href="#_runsOn" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">_runs<wbr/>On</span><span class="tsd-signature-symbol">:</span> <a href="../types/OpenFeature_JS_SDK.Paradigm.html" class="tsd-signature-type tsd-kind-type-alias">Paradigm</a></div><aside class="tsd-sources">
+<p>Inherited from <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html">OpenFeatureCommonAPI</a>.<a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#_runsOn">_runsOn</a></p>
+<ul>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L37">packages/shared/src/open-feature.ts:37</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="_transactionContextPropagator" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_transaction<wbr/>Context<wbr/>Propagator</span><a href="#_transactionContextPropagator" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_transaction<wbr/>Context<wbr/>Propagator</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/OpenFeature_JS_SDK.TransactionContextPropagator.html" class="tsd-signature-type tsd-kind-interface">TransactionContextPropagator</a><span class="tsd-signature-symbol"> = NOOP_TRANSACTION_CONTEXT_PROPAGATOR</span></div><aside class="tsd-sources">
 <p>Inherited from <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html">OpenFeatureCommonAPI</a>.<a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#_transactionContextPropagator">_transactionContextPropagator</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L24">packages/shared/src/open-feature.ts:24</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L26">packages/shared/src/open-feature.ts:26</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Accessors</h2>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="providerMetadata" class="tsd-anchor"></a>
@@ -140,7 +147,7 @@
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from OpenFeatureCommonAPI.providerMetadata</p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L59">packages/shared/src/open-feature.ts:59</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L66">packages/shared/src/open-feature.ts:66</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="addHandler" class="tsd-anchor"></a>
@@ -150,7 +157,7 @@
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Adds a handler for the given provider event type.
 The handlers are called in the order they have been added.
-When changing the provider, the currently attached handlers will listen to the events of the new provider.</p>
+API (global) events run for all providers.</p>
 </div>
 <section class="tsd-panel">
 <h4>Type Parameters</h4>
@@ -174,7 +181,7 @@ When changing the provider, the currently attached handlers will listen to the e
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html">OpenFeatureCommonAPI</a>.<a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#addHandler">addHandler</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L70">packages/shared/src/open-feature.ts:70</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L77">packages/shared/src/open-feature.ts:77</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="addHooks" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>add<wbr/>Hooks</span><a href="#addHooks" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -199,7 +206,7 @@ Hooks registered on the client run with all evaluations on that client.</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html">OpenFeatureCommonAPI</a>.<a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#addHooks">addHooks</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L36">packages/shared/src/open-feature.ts:36</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L43">packages/shared/src/open-feature.ts:43</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="buildAndCacheEventEmitterForClient" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>build<wbr/>And<wbr/>Cache<wbr/>Event<wbr/>Emitter<wbr/>For<wbr/>Client</span><a href="#buildAndCacheEventEmitterForClient" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-protected tsd-is-inherited">
@@ -213,7 +220,7 @@ Hooks registered on the client run with all evaluations on that client.</p>
 <h4 class="tsd-returns-title">Returns <a href="OpenFeature_JS_SDK.InternalEventEmitter.html" class="tsd-signature-type tsd-kind-class">InternalEventEmitter</a></h4><aside class="tsd-sources">
 <p>Inherited from <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html">OpenFeatureCommonAPI</a>.<a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#buildAndCacheEventEmitterForClient">buildAndCacheEventEmitterForClient</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L182">packages/shared/src/open-feature.ts:182</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L213">packages/shared/src/open-feature.ts:213</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="clearHooks" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>clear<wbr/>Hooks</span><a href="#clearHooks" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -226,7 +233,7 @@ Hooks registered on the client run with all evaluations on that client.</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html">OpenFeatureCommonAPI</a>.<a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#clearHooks">clearHooks</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L45">packages/shared/src/open-feature.ts:45</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L52">packages/shared/src/open-feature.ts:52</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="close" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>close</span><a href="#close" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -235,7 +242,7 @@ Hooks registered on the client run with all evaluations on that client.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Inherited from <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html">OpenFeatureCommonAPI</a>.<a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#close">close</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L248">packages/shared/src/open-feature.ts:248</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L279">packages/shared/src/open-feature.ts:279</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="getClient" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Client</span><a href="#getClient" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -264,7 +271,7 @@ Otherwise, the default provider is used until a provider is assigned to that nam
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/client/src/open-feature.ts#L68">packages/client/src/open-feature.ts:68</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/client/src/open-feature.ts#L68">packages/client/src/open-feature.ts:68</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="getContext" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Context</span><a href="#getContext" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -277,7 +284,7 @@ Otherwise, the default provider is used until a provider is assigned to that nam
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/OpenFeature_JS_SDK.ManageContext.html">ManageContext</a>.<a href="../interfaces/OpenFeature_JS_SDK.ManageContext.html#getContext">getContext</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/client/src/open-feature.ts#L53">packages/client/src/open-feature.ts:53</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/client/src/open-feature.ts#L53">packages/client/src/open-feature.ts:53</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="getHandlers" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Handlers</span><a href="#getHandlers" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -303,7 +310,7 @@ Otherwise, the default provider is used until a provider is assigned to that nam
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html">OpenFeatureCommonAPI</a>.<a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#getHandlers">getHandlers</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L88">packages/shared/src/open-feature.ts:88</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L110">packages/shared/src/open-feature.ts:110</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="getHooks" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Hooks</span><a href="#getHooks" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -316,7 +323,7 @@ Otherwise, the default provider is used until a provider is assigned to that nam
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html">OpenFeatureCommonAPI</a>.<a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#getHooks">getHooks</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L41">packages/shared/src/open-feature.ts:41</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L48">packages/shared/src/open-feature.ts:48</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="getProviderForClient" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>get<wbr/>Provider<wbr/>For<wbr/>Client</span><a href="#getProviderForClient" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-protected tsd-is-inherited">
@@ -330,7 +337,7 @@ Otherwise, the default provider is used until a provider is assigned to that nam
 <h4 class="tsd-returns-title">Returns <a href="../interfaces/OpenFeature_Web_SDK.Provider.html" class="tsd-signature-type tsd-kind-interface">Provider</a></h4><aside class="tsd-sources">
 <p>Inherited from <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html">OpenFeatureCommonAPI</a>.<a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#getProviderForClient">getProviderForClient</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L174">packages/shared/src/open-feature.ts:174</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L205">packages/shared/src/open-feature.ts:205</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="getTransactionContext" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Transaction<wbr/>Context</span><a href="#getTransactionContext" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -346,7 +353,7 @@ context propagator.</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html">OpenFeatureCommonAPI</a>.<a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#getTransactionContext">getTransactionContext</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L293">packages/shared/src/open-feature.ts:293</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L324">packages/shared/src/open-feature.ts:324</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="removeHandler" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>remove<wbr/>Handler</span><a href="#removeHandler" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -376,7 +383,7 @@ context propagator.</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html">OpenFeatureCommonAPI</a>.<a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#removeHandler">removeHandler</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L79">packages/shared/src/open-feature.ts:79</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L101">packages/shared/src/open-feature.ts:101</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="setContext" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>set<wbr/>Context</span><a href="#setContext" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -398,7 +405,7 @@ on this receiver.</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/OpenFeature_JS_SDK.ManageContext.html">ManageContext</a>.<a href="../interfaces/OpenFeature_JS_SDK.ManageContext.html#setContext">setContext</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/client/src/open-feature.ts#L37">packages/client/src/open-feature.ts:37</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/client/src/open-feature.ts#L37">packages/client/src/open-feature.ts:37</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="setLogger" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>set<wbr/>Logger</span><a href="#setLogger" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -422,7 +429,7 @@ unless overridden in a particular client.</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html">OpenFeatureCommonAPI</a>.<a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#setLogger">setLogger</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L50">packages/shared/src/open-feature.ts:50</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L57">packages/shared/src/open-feature.ts:57</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="setProvider" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>set<wbr/>Provider</span><a href="#setProvider" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -445,7 +452,7 @@ Setting a provider supersedes the current provider used in new and existing clie
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html">OpenFeatureCommonAPI</a>.<a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#setProvider">setProvider</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L100">packages/shared/src/open-feature.ts:100</a></li></ul></aside></li>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L122">packages/shared/src/open-feature.ts:122</a></li></ul></aside></li>
 <li class="tsd-signature tsd-anchor-link" id="setProvider.setProvider-2"><span class="tsd-kind-call-signature">set<wbr/>Provider</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">clientName</span>, <span class="tsd-kind-parameter">provider</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="OpenFeature_Web_SDK.OpenFeatureAPI.html" class="tsd-signature-type tsd-kind-class">OpenFeatureAPI</a><a href="#setProvider.setProvider-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Sets the provider that OpenFeature will use for flag evaluations of providers with the given name.
@@ -469,7 +476,7 @@ Setting a provider supersedes the current provider used in new and existing clie
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html">OpenFeatureCommonAPI</a>.<a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#setProvider">setProvider</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L109">packages/shared/src/open-feature.ts:109</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L131">packages/shared/src/open-feature.ts:131</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="setTransactionContext" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>set<wbr/>Transaction<wbr/>Context</span><a href="#setTransactionContext" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -520,7 +527,7 @@ The OpenFeature Enhancement Proposal regarding transaction context can be found 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html">OpenFeatureCommonAPI</a>.<a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#setTransactionContext">setTransactionContext</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L285">packages/shared/src/open-feature.ts:285</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L316">packages/shared/src/open-feature.ts:316</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="setTransactionContextPropagator" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>set<wbr/>Transaction<wbr/>Context<wbr/>Propagator</span><a href="#setTransactionContextPropagator" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -545,7 +552,7 @@ transaction.</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html">OpenFeatureCommonAPI</a>.<a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#setTransactionContextPropagator">setTransactionContextPropagator</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L273">packages/shared/src/open-feature.ts:273</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L304">packages/shared/src/open-feature.ts:304</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -572,6 +579,7 @@ transaction.</p>
 <li><a href="#_defaultProvider" class="tsd-is-protected"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_default<wbr/>Provider</span></a></li>
 <li><a href="#_hooks" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_hooks</span></a></li>
 <li><a href="#_logger" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_logger</span></a></li>
+<li><a href="#_runsOn" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_runs<wbr/>On</span></a></li>
 <li><a href="#_transactionContextPropagator" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_transaction<wbr/>Context<wbr/>Propagator</span></a></li>
 <li><a href="#providerMetadata" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>provider<wbr/>Metadata</span></a></li>
 <li><a href="#addHandler" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>add<wbr/>Handler</span></a></li>
@@ -639,6 +647,7 @@ transaction.</p>
 <li><a href="../modules/OpenFeature_Web_SDK.html#OpenFeatureCommonAPI"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8388608"></use></svg><span>Open<wbr/>Feature<wbr/>CommonAPI</span></a></li>
 <li><a href="../modules/OpenFeature_Web_SDK.html#OpenFeatureError"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8388608"></use></svg><span>Open<wbr/>Feature<wbr/>Error</span></a></li>
 <li><a href="../modules/OpenFeature_Web_SDK.html#OpenFeatureEventEmitter"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8388608"></use></svg><span>Open<wbr/>Feature<wbr/>Event<wbr/>Emitter</span></a></li>
+<li><a href="../modules/OpenFeature_Web_SDK.html#Paradigm"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8388608"></use></svg><span>Paradigm</span></a></li>
 <li><a href="../modules/OpenFeature_Web_SDK.html#ParseError"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8388608"></use></svg><span>Parse<wbr/>Error</span></a></li>
 <li><a href="../modules/OpenFeature_Web_SDK.html#PrimitiveValue"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8388608"></use></svg><span>Primitive<wbr/>Value</span></a></li>
 <li><a href="../modules/OpenFeature_Web_SDK.html#ProviderEvents"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8388608"></use></svg><span>Provider<wbr/>Events</span></a></li>
@@ -657,6 +666,7 @@ transaction.</p>
 <li><a href="../modules/OpenFeature_Web_SDK.html#isObject"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8388608"></use></svg><span>is<wbr/>Object</span></a></li>
 <li><a href="../modules/OpenFeature_Web_SDK.html#isString"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8388608"></use></svg><span>is<wbr/>String</span></a></li>
 <li><a href="../modules/OpenFeature_Web_SDK.html#objectOrUndefined"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8388608"></use></svg><span>object<wbr/>Or<wbr/>Undefined</span></a></li>
+<li><a href="../modules/OpenFeature_Web_SDK.html#statusMatchesEvent"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8388608"></use></svg><span>status<wbr/>Matches<wbr/>Event</span></a></li>
 <li><a href="../modules/OpenFeature_Web_SDK.html#stringOrUndefined"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8388608"></use></svg><span>string<wbr/>Or<wbr/>Undefined</span></a></li>
 <li><a href="OpenFeature_Web_SDK.OpenFeatureAPI.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-128"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-class)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M11.898 16.1201C11.098 16.1201 10.466 15.8961 10.002 15.4481C9.53803 15.0001 9.30603 14.3841 9.30603 13.6001V9.64012C9.30603 8.85612 9.53803 8.24012 10.002 7.79212C10.466 7.34412 11.098 7.12012 11.898 7.12012C12.682 7.12012 13.306 7.34812 13.77 7.80412C14.234 8.25212 14.466 8.86412 14.466 9.64012H13.386C13.386 9.14412 13.254 8.76412 12.99 8.50012C12.734 8.22812 12.37 8.09212 11.898 8.09212C11.426 8.09212 11.054 8.22412 10.782 8.48812C10.518 8.75212 10.386 9.13212 10.386 9.62812V13.6001C10.386 14.0961 10.518 14.4801 10.782 14.7521C11.054 15.0161 11.426 15.1481 11.898 15.1481C12.37 15.1481 12.734 15.0161 12.99 14.7521C13.254 14.4801 13.386 14.0961 13.386 13.6001H14.466C14.466 14.3761 14.234 14.9921 13.77 15.4481C13.306 15.8961 12.682 16.1201 11.898 16.1201Z" fill="var(--color-text)"></path></g></svg><span>Open<wbr/>FeatureAPI</span></a></li>
 <li><a href="OpenFeature_Web_SDK.OpenFeatureClient.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Open<wbr/>Feature<wbr/>Client</span></a></li>

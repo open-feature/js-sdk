@@ -36,7 +36,7 @@
 <li><a href="../interfaces/OpenFeature_JS_SDK.ManageLogger.html" class="tsd-signature-type tsd-kind-interface">ManageLogger</a><span class="tsd-signature-symbol">&lt;</span><a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html" class="tsd-signature-type tsd-kind-class">OpenFeatureCommonAPI</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">P</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
 <li><a href="../interfaces/OpenFeature_JS_SDK.ManageTransactionContextPropagator.html" class="tsd-signature-type tsd-kind-interface">ManageTransactionContextPropagator</a><span class="tsd-signature-symbol">&lt;</span><a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html" class="tsd-signature-type tsd-kind-class">OpenFeatureCommonAPI</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">P</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L16">packages/shared/src/open-feature.ts:16</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L18">packages/shared/src/open-feature.ts:18</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -56,6 +56,7 @@
 <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#_events" class="tsd-index-link tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_events</span></a>
 <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#_hooks" class="tsd-index-link tsd-is-protected"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_hooks</span></a>
 <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#_logger" class="tsd-index-link tsd-is-protected"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_logger</span></a>
+<a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#_runsOn" class="tsd-index-link tsd-is-protected"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_runs<wbr/>On</span></a>
 <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html#_transactionContextPropagator" class="tsd-index-link tsd-is-protected"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_transaction<wbr/>Context<wbr/>Propagator</span></a>
 </div></section>
 <section class="tsd-index-section">
@@ -88,61 +89,73 @@
 <section class="tsd-panel tsd-member"><a id="constructor" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>constructor</span><a href="#constructor" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><g stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" id="icon-anchor"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></g></svg></a></h3>
 <ul class="tsd-signatures">
-<li class="tsd-signature tsd-anchor-link" id="constructor.new_OpenFeatureCommonAPI"><span class="tsd-kind-constructor-signature">new <wbr/>Open<wbr/>Feature<wbr/>CommonAPI</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">P</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html" class="tsd-signature-type tsd-kind-class">OpenFeatureCommonAPI</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">P</span><span class="tsd-signature-symbol">&gt;</span><a href="#constructor.new_OpenFeatureCommonAPI" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="constructor.new_OpenFeatureCommonAPI"><span class="tsd-kind-constructor-signature">new <wbr/>Open<wbr/>Feature<wbr/>CommonAPI</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">P</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">category</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html" class="tsd-signature-type tsd-kind-class">OpenFeatureCommonAPI</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">P</span><span class="tsd-signature-symbol">&gt;</span><a href="#constructor.new_OpenFeatureCommonAPI" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
 <section class="tsd-panel">
 <h4>Type Parameters</h4>
 <ul class="tsd-type-parameter-list">
 <li>
 <h4><span class="tsd-kind-type-parameter">P</span><span class="tsd-signature-symbol"> extends </span><a href="../interfaces/OpenFeature_JS_SDK.CommonProvider.html" class="tsd-signature-type tsd-kind-interface">CommonProvider</a> = <a href="../interfaces/OpenFeature_JS_SDK.CommonProvider.html" class="tsd-signature-type tsd-kind-interface">CommonProvider</a></h4></li></ul></section>
-<h4 class="tsd-returns-title">Returns <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html" class="tsd-signature-type tsd-kind-class">OpenFeatureCommonAPI</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">P</span><span class="tsd-signature-symbol">&gt;</span></h4></li></ul></section></section>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">category</span>: <a href="../types/OpenFeature_JS_SDK.Paradigm.html" class="tsd-signature-type tsd-kind-type-alias">Paradigm</a></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html" class="tsd-signature-type tsd-kind-class">OpenFeatureCommonAPI</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">P</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L39">packages/shared/src/open-feature.ts:39</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="_clientEventHandlers" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <code class="tsd-tag ts-flagReadonly">Readonly</code> <span>_client<wbr/>Event<wbr/>Handlers</span><a href="#_clientEventHandlers" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_client<wbr/>Event<wbr/>Handlers</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">[</span><a href="../enums/OpenFeature_JS_SDK.ProviderEvents.html" class="tsd-signature-type tsd-kind-enum">ProviderEvents</a><span class="tsd-signature-symbol">, </span><a href="../types/OpenFeature_JS_SDK.EventHandler.html" class="tsd-signature-type tsd-kind-type-alias">EventHandler</a><span class="tsd-signature-symbol">&lt;</span><a href="../enums/OpenFeature_JS_SDK.ProviderEvents.html" class="tsd-signature-type tsd-kind-enum">ProviderEvents</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L31">packages/shared/src/open-feature.ts:31</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L33">packages/shared/src/open-feature.ts:33</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-protected"><a id="_clientEvents" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_client<wbr/>Events</span><a href="#_clientEvents" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_client<wbr/>Events</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="OpenFeature_JS_SDK.InternalEventEmitter.html" class="tsd-signature-type tsd-kind-class">InternalEventEmitter</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L34">packages/shared/src/open-feature.ts:34</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L36">packages/shared/src/open-feature.ts:36</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-protected"><a id="_clientProviders" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_client<wbr/>Providers</span><a href="#_clientProviders" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_client<wbr/>Providers</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type tsd-kind-type-parameter">P</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L33">packages/shared/src/open-feature.ts:33</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L35">packages/shared/src/open-feature.ts:35</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-protected"><a id="_context" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_context</span><a href="#_context" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_context</span><span class="tsd-signature-symbol">:</span> <a href="../types/OpenFeature_JS_SDK.EvaluationContext.html" class="tsd-signature-type tsd-kind-type-alias">EvaluationContext</a><span class="tsd-signature-symbol"> = {}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L25">packages/shared/src/open-feature.ts:25</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L27">packages/shared/src/open-feature.ts:27</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-protected"><a id="_defaultProvider" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <code class="tsd-tag ts-flagAbstract">Abstract</code> <span>_default<wbr/>Provider</span><a href="#_defaultProvider" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_default<wbr/>Provider</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type tsd-kind-type-parameter">P</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L28">packages/shared/src/open-feature.ts:28</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L30">packages/shared/src/open-feature.ts:30</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="_events" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <code class="tsd-tag ts-flagReadonly">Readonly</code> <span>_events</span><a href="#_events" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_events</span><span class="tsd-signature-symbol">:</span> <a href="OpenFeature_JS_SDK.InternalEventEmitter.html" class="tsd-signature-type tsd-kind-class">InternalEventEmitter</a><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L30">packages/shared/src/open-feature.ts:30</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L32">packages/shared/src/open-feature.ts:32</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-protected"><a id="_hooks" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_hooks</span><a href="#_hooks" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_hooks</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/OpenFeature_JS_SDK.Hook.html" class="tsd-signature-type tsd-kind-interface">Hook</a><span class="tsd-signature-symbol">&lt;</span><a href="../types/OpenFeature_JS_SDK.FlagValue.html" class="tsd-signature-type tsd-kind-type-alias">FlagValue</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L23">packages/shared/src/open-feature.ts:23</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L25">packages/shared/src/open-feature.ts:25</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-protected"><a id="_logger" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_logger</span><a href="#_logger" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_logger</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/OpenFeature_JS_SDK.Logger.html" class="tsd-signature-type tsd-kind-interface">Logger</a><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L26">packages/shared/src/open-feature.ts:26</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L28">packages/shared/src/open-feature.ts:28</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-protected"><a id="_runsOn" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_runs<wbr/>On</span><a href="#_runsOn" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">_runs<wbr/>On</span><span class="tsd-signature-symbol">:</span> <a href="../types/OpenFeature_JS_SDK.Paradigm.html" class="tsd-signature-type tsd-kind-type-alias">Paradigm</a></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L37">packages/shared/src/open-feature.ts:37</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-protected"><a id="_transactionContextPropagator" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>_transaction<wbr/>Context<wbr/>Propagator</span><a href="#_transactionContextPropagator" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">_transaction<wbr/>Context<wbr/>Propagator</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/OpenFeature_JS_SDK.TransactionContextPropagator.html" class="tsd-signature-type tsd-kind-interface">TransactionContextPropagator</a><span class="tsd-signature-symbol"> = NOOP_TRANSACTION_CONTEXT_PROPAGATOR</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L24">packages/shared/src/open-feature.ts:24</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L26">packages/shared/src/open-feature.ts:26</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Accessors</h2>
 <section class="tsd-panel tsd-member"><a id="providerMetadata" class="tsd-anchor"></a>
@@ -156,7 +169,7 @@
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L59">packages/shared/src/open-feature.ts:59</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L66">packages/shared/src/open-feature.ts:66</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member"><a id="addHandler" class="tsd-anchor"></a>
@@ -166,7 +179,7 @@
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Adds a handler for the given provider event type.
 The handlers are called in the order they have been added.
-When changing the provider, the currently attached handlers will listen to the events of the new provider.</p>
+API (global) events run for all providers.</p>
 </div>
 <section class="tsd-panel">
 <h4>Type Parameters</h4>
@@ -190,7 +203,7 @@ When changing the provider, the currently attached handlers will listen to the e
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/OpenFeature_JS_SDK.Eventing.html">Eventing</a>.<a href="../interfaces/OpenFeature_JS_SDK.Eventing.html#addHandler">addHandler</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L70">packages/shared/src/open-feature.ts:70</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L77">packages/shared/src/open-feature.ts:77</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="addHooks" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>add<wbr/>Hooks</span><a href="#addHooks" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -215,7 +228,7 @@ Hooks registered on the client run with all evaluations on that client.</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/OpenFeature_JS_SDK.EvaluationLifeCycle.html">EvaluationLifeCycle</a>.<a href="../interfaces/OpenFeature_JS_SDK.EvaluationLifeCycle.html#addHooks">addHooks</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L36">packages/shared/src/open-feature.ts:36</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L43">packages/shared/src/open-feature.ts:43</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-protected"><a id="buildAndCacheEventEmitterForClient" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>build<wbr/>And<wbr/>Cache<wbr/>Event<wbr/>Emitter<wbr/>For<wbr/>Client</span><a href="#buildAndCacheEventEmitterForClient" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-protected">
@@ -228,7 +241,7 @@ Hooks registered on the client run with all evaluations on that client.</p>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">name</span>: <span class="tsd-signature-type">string</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="OpenFeature_JS_SDK.InternalEventEmitter.html" class="tsd-signature-type tsd-kind-class">InternalEventEmitter</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L182">packages/shared/src/open-feature.ts:182</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L213">packages/shared/src/open-feature.ts:213</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="clearHooks" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>clear<wbr/>Hooks</span><a href="#clearHooks" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -241,7 +254,7 @@ Hooks registered on the client run with all evaluations on that client.</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/OpenFeature_JS_SDK.EvaluationLifeCycle.html">EvaluationLifeCycle</a>.<a href="../interfaces/OpenFeature_JS_SDK.EvaluationLifeCycle.html#clearHooks">clearHooks</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L45">packages/shared/src/open-feature.ts:45</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L52">packages/shared/src/open-feature.ts:52</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="close" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>close</span><a href="#close" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -249,7 +262,7 @@ Hooks registered on the client run with all evaluations on that client.</p>
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L248">packages/shared/src/open-feature.ts:248</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L279">packages/shared/src/open-feature.ts:279</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="getAssociatedEventEmitters" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>get<wbr/>Associated<wbr/>Event<wbr/>Emitters</span><a href="#getAssociatedEventEmitters" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-private">
@@ -262,7 +275,7 @@ Hooks registered on the client run with all evaluations on that client.</p>
 <h5><span class="tsd-kind-parameter">clientName</span>: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="OpenFeature_JS_SDK.InternalEventEmitter.html" class="tsd-signature-type tsd-kind-class">InternalEventEmitter</a><span class="tsd-signature-symbol">[]</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L215">packages/shared/src/open-feature.ts:215</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L246">packages/shared/src/open-feature.ts:246</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="getHandlers" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Handlers</span><a href="#getHandlers" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -288,7 +301,7 @@ Hooks registered on the client run with all evaluations on that client.</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/OpenFeature_JS_SDK.Eventing.html">Eventing</a>.<a href="../interfaces/OpenFeature_JS_SDK.Eventing.html#getHandlers">getHandlers</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L88">packages/shared/src/open-feature.ts:88</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L110">packages/shared/src/open-feature.ts:110</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="getHooks" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Hooks</span><a href="#getHooks" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -301,7 +314,7 @@ Hooks registered on the client run with all evaluations on that client.</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/OpenFeature_JS_SDK.EvaluationLifeCycle.html">EvaluationLifeCycle</a>.<a href="../interfaces/OpenFeature_JS_SDK.EvaluationLifeCycle.html#getHooks">getHooks</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L41">packages/shared/src/open-feature.ts:41</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L48">packages/shared/src/open-feature.ts:48</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-protected"><a id="getProviderForClient" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>get<wbr/>Provider<wbr/>For<wbr/>Client</span><a href="#getProviderForClient" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-protected">
@@ -314,7 +327,7 @@ Hooks registered on the client run with all evaluations on that client.</p>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">name</span>: <span class="tsd-signature-type">string</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type tsd-kind-type-parameter">P</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L174">packages/shared/src/open-feature.ts:174</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L205">packages/shared/src/open-feature.ts:205</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="getTransactionContext" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Transaction<wbr/>Context</span><a href="#getTransactionContext" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -330,7 +343,7 @@ context propagator.</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/OpenFeature_JS_SDK.ManageTransactionContextPropagator.html">ManageTransactionContextPropagator</a>.<a href="../interfaces/OpenFeature_JS_SDK.ManageTransactionContextPropagator.html#getTransactionContext">getTransactionContext</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L293">packages/shared/src/open-feature.ts:293</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L324">packages/shared/src/open-feature.ts:324</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="getUnboundEmitters" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>get<wbr/>Unbound<wbr/>Emitters</span><a href="#getUnboundEmitters" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-private">
@@ -338,7 +351,7 @@ context propagator.</p>
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <a href="OpenFeature_JS_SDK.InternalEventEmitter.html" class="tsd-signature-type tsd-kind-class">InternalEventEmitter</a><span class="tsd-signature-symbol">[]</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L203">packages/shared/src/open-feature.ts:203</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L234">packages/shared/src/open-feature.ts:234</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="handleShutdownError" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>handle<wbr/>Shutdown<wbr/>Error</span><a href="#handleShutdownError" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-private">
@@ -353,7 +366,7 @@ context propagator.</p>
 <h5><span class="tsd-kind-parameter">err</span>: <span class="tsd-signature-type">unknown</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L268">packages/shared/src/open-feature.ts:268</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L299">packages/shared/src/open-feature.ts:299</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="removeHandler" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>remove<wbr/>Handler</span><a href="#removeHandler" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -383,7 +396,7 @@ context propagator.</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/OpenFeature_JS_SDK.Eventing.html">Eventing</a>.<a href="../interfaces/OpenFeature_JS_SDK.Eventing.html#removeHandler">removeHandler</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L79">packages/shared/src/open-feature.ts:79</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L101">packages/shared/src/open-feature.ts:101</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="setLogger" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>set<wbr/>Logger</span><a href="#setLogger" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -407,7 +420,7 @@ unless overridden in a particular client.</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/OpenFeature_JS_SDK.ManageLogger.html">ManageLogger</a>.<a href="../interfaces/OpenFeature_JS_SDK.ManageLogger.html#setLogger">setLogger</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L50">packages/shared/src/open-feature.ts:50</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L57">packages/shared/src/open-feature.ts:57</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="setProvider" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>set<wbr/>Provider</span><a href="#setProvider" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -429,7 +442,7 @@ Setting a provider supersedes the current provider used in new and existing clie
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L100">packages/shared/src/open-feature.ts:100</a></li></ul></aside></li>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L122">packages/shared/src/open-feature.ts:122</a></li></ul></aside></li>
 <li class="tsd-signature tsd-anchor-link" id="setProvider.setProvider-2"><span class="tsd-kind-call-signature">set<wbr/>Provider</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">clientName</span>, <span class="tsd-kind-parameter">provider</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="OpenFeature_JS_SDK.OpenFeatureCommonAPI.html" class="tsd-signature-type tsd-kind-class">OpenFeatureCommonAPI</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">P</span><span class="tsd-signature-symbol">&gt;</span><a href="#setProvider.setProvider-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Sets the provider that OpenFeature will use for flag evaluations of providers with the given name.
@@ -452,7 +465,7 @@ Setting a provider supersedes the current provider used in new and existing clie
 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L109">packages/shared/src/open-feature.ts:109</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L131">packages/shared/src/open-feature.ts:131</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="setTransactionContext" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>set<wbr/>Transaction<wbr/>Context</span><a href="#setTransactionContext" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -503,7 +516,7 @@ The OpenFeature Enhancement Proposal regarding transaction context can be found 
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/OpenFeature_JS_SDK.ManageTransactionContextPropagator.html">ManageTransactionContextPropagator</a>.<a href="../interfaces/OpenFeature_JS_SDK.ManageTransactionContextPropagator.html#setTransactionContext">setTransactionContext</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L285">packages/shared/src/open-feature.ts:285</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L316">packages/shared/src/open-feature.ts:316</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="setTransactionContextPropagator" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>set<wbr/>Transaction<wbr/>Context<wbr/>Propagator</span><a href="#setTransactionContextPropagator" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -528,7 +541,7 @@ transaction.</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/OpenFeature_JS_SDK.ManageTransactionContextPropagator.html">ManageTransactionContextPropagator</a>.<a href="../interfaces/OpenFeature_JS_SDK.ManageTransactionContextPropagator.html#setTransactionContextPropagator">setTransactionContextPropagator</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L273">packages/shared/src/open-feature.ts:273</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L304">packages/shared/src/open-feature.ts:304</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-private"><a id="transferListeners" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>transfer<wbr/>Listeners</span><a href="#transferListeners" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-private">
@@ -547,7 +560,7 @@ transaction.</p>
 <h5><span class="tsd-kind-parameter">emitters</span>: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="OpenFeature_JS_SDK.InternalEventEmitter.html" class="tsd-signature-type tsd-kind-class">InternalEventEmitter</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/279e634/packages/shared/src/open-feature.ts#L219">packages/shared/src/open-feature.ts:219</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/shared/src/open-feature.ts#L250">packages/shared/src/open-feature.ts:250</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -576,6 +589,7 @@ transaction.</p>
 <li><a href="#_events" class="tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_events</span></a></li>
 <li><a href="#_hooks" class="tsd-is-protected"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_hooks</span></a></li>
 <li><a href="#_logger" class="tsd-is-protected"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_logger</span></a></li>
+<li><a href="#_runsOn" class="tsd-is-protected"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_runs<wbr/>On</span></a></li>
 <li><a href="#_transactionContextPropagator" class="tsd-is-protected"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>_transaction<wbr/>Context<wbr/>Propagator</span></a></li>
 <li><a href="#providerMetadata" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-262144"></use></svg><span>provider<wbr/>Metadata</span></a></li>
 <li><a href="#addHandler" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>add<wbr/>Handler</span></a></li>
@@ -655,6 +669,7 @@ transaction.</p>
 <li><a href="../types/OpenFeature_JS_SDK.JsonArray.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Json<wbr/>Array</span></a></li>
 <li><a href="../types/OpenFeature_JS_SDK.JsonObject.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Json<wbr/>Object</span></a></li>
 <li><a href="../types/OpenFeature_JS_SDK.JsonValue.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Json<wbr/>Value</span></a></li>
+<li><a href="../types/OpenFeature_JS_SDK.Paradigm.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Paradigm</span></a></li>
 <li><a href="../types/OpenFeature_JS_SDK.PrimitiveValue.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Primitive<wbr/>Value</span></a></li>
 <li><a href="../types/OpenFeature_JS_SDK.ReadyEvent.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Ready<wbr/>Event</span></a></li>
 <li><a href="../types/OpenFeature_JS_SDK.ResolutionDetails.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Resolution<wbr/>Details</span></a></li>
@@ -669,6 +684,7 @@ transaction.</p>
 <li><a href="../functions/OpenFeature_JS_SDK.isObject.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-64"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-function)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M9.39 16V7.24H14.55V8.224H10.446V11.128H14.238V12.112H10.47V16H9.39Z" fill="var(--color-text)"></path></g></svg><span>is<wbr/>Object</span></a></li>
 <li><a href="../functions/OpenFeature_JS_SDK.isString.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>is<wbr/>String</span></a></li>
 <li><a href="../functions/OpenFeature_JS_SDK.objectOrUndefined.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>object<wbr/>Or<wbr/>Undefined</span></a></li>
+<li><a href="../functions/OpenFeature_JS_SDK.statusMatchesEvent.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>status<wbr/>Matches<wbr/>Event</span></a></li>
 <li><a href="../functions/OpenFeature_JS_SDK.stringOrUndefined.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>string<wbr/>Or<wbr/>Undefined</span></a></li></ul></div></details></li>
 <li><a href="../modules/OpenFeature_Web_SDK.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>Open<wbr/>Feature <wbr/>Web SDK</span></a></li></ul></nav></div></div></div>
 <div class="tsd-generator">
