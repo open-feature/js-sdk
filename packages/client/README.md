@@ -127,7 +127,7 @@ sequenceDiagram
     Feature Flag Provider-->-Client: Flags values
 ```
 
-In 1 the Client sends a request to the provider backend in order to get all values from all feature flags that it has.
+In (1) the Client sends a request to the provider backend in order to get all values from all feature flags that it has.
 Once the provider backend replies (2) the client holds all flag values and therefore the flag evaluation process is synchronous.
 
 In order to prevent flag evaluation to the default value while flags are still being fetched, it is highly recommended to only look for flag value after the provider has emitted the `Ready` event.
