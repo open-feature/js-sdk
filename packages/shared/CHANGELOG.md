@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.11](https://github.com/open-feature/js-sdk/compare/shared-v0.0.10...shared-v0.0.11) (2023-09-22)
+
+
+### Features
+
+* add provider compatibility check ([#537](https://github.com/open-feature/js-sdk/issues/537)) ([2bc5d63](https://github.com/open-feature/js-sdk/commit/2bc5d63266424a900da523f001f425b95da29ccc))
+* STALE state, minor event changes ([#541](https://github.com/open-feature/js-sdk/issues/541)) ([0b5355b](https://github.com/open-feature/js-sdk/commit/0b5355b3cf7e606f9364a110a18e1c6aeca5c230))
+
 ## [0.0.10](https://github.com/open-feature/js-sdk/compare/shared-v0.0.9...shared-v0.0.10) (2023-07-31)
 
 
