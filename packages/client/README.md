@@ -91,7 +91,7 @@ See [here](https://open-feature.github.io/js-sdk/modules/OpenFeature_Web_SDK.htm
 | Status | Features                        | Description                                                                                                                        |
 | ------ | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | ✅      | [Providers](#providers)         | Integrate with a commercial, open source, or in-house feature management tool.                                                     |
-| ✅      | [Targeting](#targeting)         | Contextually-aware flag evaluation using [evaluation context](https://openfeature.dev/docs/reference/concepts/evaluation-context). |
+| ✅      | [Targeting](#targeting-and-context)         | Contextually-aware flag evaluation using [evaluation context](https://openfeature.dev/docs/reference/concepts/evaluation-context). |
 | ✅      | [Hooks](#hooks)                 | Add functionality to various stages of the flag evaluation life-cycle.                                                             |
 | ✅      | [Logging](#logging)             | Integrate with popular logging packages.                                                                                           |
 | ✅      | [Named clients](#named-clients) | Utilize multiple providers in a single application.                                                                                |
@@ -116,7 +116,38 @@ OpenFeature.setProvider(new MyProvider())
 In some situations, it may be beneficial to register multiple providers in the same application.
 This is possible using [named clients](#named-clients), which is covered in more detail below.
 
-### Targeting
+### Flag evaluation flow
+
+When a new provider is added to OpenFeature client the following process happens:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    Client-->+Feature Flag Provider: ResolveAll (context)
+    Feature Flag Provider-->-Client: Flags values
+```
+
+In (1) the Client sends a request to the provider backend in order to get all values from all feature flags that it has.
+Once the provider backend replies (2) the client holds all flag values and therefore the flag evaluation process is synchronous.
+
+In order to prevent flag evaluation to the default value while flags are still being fetched, it is highly recommended to only look for flag value after the provider has emitted the `Ready` event.
+The following code snippet provides an example.
+
+```ts
+import { OpenFeature, ProviderEvents } from '@openfeature/web-sdk';
+
+OpenFeature.setProvider( /*set a provider*/ );
+
+// OpenFeature API
+OpenFeature.addHandler(ProviderEvents.Ready, () => {
+  const client = OpenFeature.getClient();
+  const stringFlag = client.getStringValue('string-flag', "default value"))
+
+  //use stringFlag from this point
+});
+```
+
+### Targeting and Context
 
 Sometimes, the value of a flag must consider some dynamic criteria about the application or user, such as the user's location, IP, email address, or the server's location.
 In OpenFeature, we refer to this as [targeting](https://openfeature.dev/specification/glossary#targeting).
@@ -126,6 +157,10 @@ If the flag management system you're using supports targeting, you can provide t
 // Set a value to the global context
 await OpenFeature.setContext({ origin: document.location.host });
 ```
+
+Context is global and setting it is `async`.
+Providers may implement an `onContextChanged` method that receives the old context and the newer one.
+This method is used internally by the provider to detect if, given the context change, the flags values cached on client side are invalid. If needed a request will be made to the provider with the new context in order to get the correct flags values.
 
 ### Hooks
 
@@ -161,7 +196,7 @@ import type { Logger } from "@openfeature/web-sdk";
 // The logger can be anything that conforms with the Logger interface
 const logger: Logger = console;
 
-// Sets a global logger 
+// Sets a global logger
 OpenFeature.setLogger(logger);
 
 // Sets a client logger
