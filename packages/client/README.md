@@ -91,7 +91,7 @@ See [here](https://open-feature.github.io/js-sdk/modules/OpenFeature_Web_SDK.htm
 | Status | Features                        | Description                                                                                                                        |
 | ------ | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | ✅      | [Providers](#providers)         | Integrate with a commercial, open source, or in-house feature management tool.                                                     |
-| ✅      | [Targeting](#targeting)         | Contextually-aware flag evaluation using [evaluation context](https://openfeature.dev/docs/reference/concepts/evaluation-context). |
+| ✅      | [Targeting](#targeting-and-context)         | Contextually-aware flag evaluation using [evaluation context](https://openfeature.dev/docs/reference/concepts/evaluation-context). |
 | ✅      | [Hooks](#hooks)                 | Add functionality to various stages of the flag evaluation life-cycle.                                                             |
 | ✅      | [Logging](#logging)             | Integrate with popular logging packages.                                                                                           |
 | ✅      | [Named clients](#named-clients) | Utilize multiple providers in a single application.                                                                                |
@@ -160,7 +160,7 @@ await OpenFeature.setContext({ origin: document.location.host });
 
 Context is global and setting it is `async`.
 Providers may implement an `onContextChanged` method that receives the old context and the newer one.
-This method identifies if an update is needed in flag values, which might result in a request from the client to the provider to get all flag values given the new context.
+This method is used internally by the provider to detect if, given the context change, the flags values cached on client side are invalid. If needed a request will be made to the provider with the new context in order to get the correct flags values.
 
 ### Hooks
 
