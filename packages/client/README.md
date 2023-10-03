@@ -158,7 +158,9 @@ If the flag management system you're using supports targeting, you can provide t
 await OpenFeature.setContext({ origin: document.location.host });
 ```
 
-Context is global and setting it is `async`. Providers may implement a `onContextChanged` method that receives the old context and the newer one. This method identifies if an update is needed in flags values, which might result in a request from the cliente to the provider to get all flag values given the new context.
+Context is global and setting it is `async`.
+Providers may implement an `onContextChanged` method that receives the old context and the newer one.
+This method identifies if an update is needed in flag values, which might result in a request from the client to the provider to get all flag values given the new context.
 
 ### Hooks
 
