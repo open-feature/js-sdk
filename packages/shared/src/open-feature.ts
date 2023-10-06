@@ -89,7 +89,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
         }
       }
     });
-    
+
     this._events.addHandler(eventType, handler);
   }
 
@@ -112,12 +112,37 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
   }
 
   /**
+   * Sets the default provider for flag evaluations and returns a promise that resolves when the provider is ready.
+   * This provider will be used by unnamed clients and named clients to which no provider is bound.
+   * Setting a provider supersedes the current provider used in new and existing clients without a name.
+   * @template P
+   * @param {P} provider The provider responsible for flag evaluations.
+   * @returns {Promise<void>}
+   * @throws Uncaught exceptions thrown by the provider during initialization.
+   */
+  async setProviderAndWait(provider: P): Promise<void>;
+  /**
+   * Sets the provider that OpenFeature will use for flag evaluations of providers with the given name.
+   * A promise is returned that resolves when the provider is ready.
+   * Setting a provider supersedes the current provider used in new and existing clients with that name.
+   * @template P
+   * @param {string} clientName The name to identify the client
+   * @param {P} provider The provider responsible for flag evaluations.
+   * @returns {Promise<void>}
+   * @throws Uncaught exceptions thrown by the provider during initialization.
+   */
+  async setProviderAndWait(clientName: string, provider: P): Promise<void>;
+  async setProviderAndWait(clientOrProvider?: string | P, providerOrUndefined?: P): Promise<void> {
+    await this.setAwaitableProvider(clientOrProvider, providerOrUndefined);
+  }
+
+  /**
    * Sets the default provider for flag evaluations.
    * This provider will be used by unnamed clients and named clients to which no provider is bound.
    * Setting a provider supersedes the current provider used in new and existing clients without a name.
    * @template P
    * @param {P} provider The provider responsible for flag evaluations.
-   * @returns {OpenFeatureCommonAPI} OpenFeature API
+   * @returns {this} OpenFeature API
    */
   setProvider(provider: P): this;
   /**
@@ -130,12 +155,22 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
    */
   setProvider(clientName: string, provider: P): this;
   setProvider(clientOrProvider?: string | P, providerOrUndefined?: P): this {
+    const output = this.setAwaitableProvider(clientOrProvider, providerOrUndefined);
+    if (output) {
+      output.catch(() => {
+        /* ignore, errors are emitted via the event emitter */
+      });
+    }
+    return this;
+  }
+
+  private setAwaitableProvider(clientOrProvider?: string | P, providerOrUndefined?: P): Promise<void> | void {
     const clientName = stringOrUndefined(clientOrProvider);
     const provider = objectOrUndefined<P>(clientOrProvider) ?? objectOrUndefined<P>(providerOrUndefined);
 
     if (!provider) {
       this._logger.debug('No provider defined, ignoring setProvider call');
-      return this;
+      return;
     }
 
     const oldProvider = this.getProviderForClient(clientName);
@@ -144,12 +179,12 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     // ignore no-ops
     if (oldProvider === provider) {
       this._logger.debug('Provider is already set, ignoring setProvider call');
-      return this;
+      return;
     }
 
     if (!provider.runsOn) {
       this._logger.debug(`Provider '${provider.metadata.name}' has not defined its intended use.`);
-    } else if (provider.runsOn !== this._runsOn){
+    } else if (provider.runsOn !== this._runsOn) {
       throw new GeneralError(`Provider '${provider.metadata.name}' is intended for use on the ${provider.runsOn}.`);
     }
 
@@ -163,8 +198,10 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
       );
     }
 
+    let initializationPromise: Promise<void> | void = undefined;
+
     if (provider?.status === ProviderStatus.NOT_READY && typeof provider.initialize === 'function') {
-      provider
+      initializationPromise = provider
         .initialize?.(this._context)
         ?.then(() => {
           // fetch the most recent event emitters, some may have been added during init
@@ -175,9 +212,11 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
         })
         ?.catch((error) => {
           this.getAssociatedEventEmitters(clientName).forEach((emitter) => {
-            emitter?.emit(ProviderEvents.Error, { clientName, providerName,  message: error.message });
+            emitter?.emit(ProviderEvents.Error, { clientName, providerName, message: error.message });
           });
           this._events?.emit(ProviderEvents.Error, { clientName, providerName, message: error.message });
+          // Rethrow after emitting error events.
+          throw error;
         });
     } else {
       emitters.forEach((emitter) => {
@@ -199,7 +238,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
       oldProvider?.onClose?.();
     }
 
-    return this;
+    return initializationPromise;
   }
 
   protected getProviderForClient(name?: string): P {
