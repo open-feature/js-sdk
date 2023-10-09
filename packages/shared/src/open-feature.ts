@@ -155,9 +155,9 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
    */
   setProvider(clientName: string, provider: P): this;
   setProvider(clientOrProvider?: string | P, providerOrUndefined?: P): this {
-    const output = this.setAwaitableProvider(clientOrProvider, providerOrUndefined);
-    if (output) {
-      output.catch(() => {
+    const maybePromise = this.setAwaitableProvider(clientOrProvider, providerOrUndefined);
+    if (maybePromise) {
+      maybePromise.catch(() => {
         /* ignore, errors are emitted via the event emitter */
       });
     }
