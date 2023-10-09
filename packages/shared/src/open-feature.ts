@@ -17,10 +17,10 @@ import { Paradigm } from './types';
 
 export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProvider>
   implements
-    Eventing,
-    EvaluationLifeCycle<OpenFeatureCommonAPI<P>>,
-    ManageLogger<OpenFeatureCommonAPI<P>>,
-    ManageTransactionContextPropagator<OpenFeatureCommonAPI<P>>
+  Eventing,
+  EvaluationLifeCycle<OpenFeatureCommonAPI<P>>,
+  ManageLogger<OpenFeatureCommonAPI<P>>,
+  ManageTransactionContextPropagator<OpenFeatureCommonAPI<P>>
 {
   protected _hooks: Hook[] = [];
   protected _transactionContextPropagator: TransactionContextPropagator = NOOP_TRANSACTION_CONTEXT_PROPAGATOR;
@@ -89,7 +89,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
         }
       }
     });
-    
+
     this._events.addHandler(eventType, handler);
   }
 
@@ -149,7 +149,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
 
     if (!provider.runsOn) {
       this._logger.debug(`Provider '${provider.metadata.name}' has not defined its intended use.`);
-    } else if (provider.runsOn !== this._runsOn){
+    } else if (provider.runsOn !== this._runsOn) {
       throw new GeneralError(`Provider '${provider.metadata.name}' is intended for use on the ${provider.runsOn}.`);
     }
 
@@ -175,7 +175,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
         })
         ?.catch((error) => {
           this.getAssociatedEventEmitters(clientName).forEach((emitter) => {
-            emitter?.emit(ProviderEvents.Error, { clientName, providerName,  message: error.message });
+            emitter?.emit(ProviderEvents.Error, { clientName, providerName, message: error.message });
           });
           this._events?.emit(ProviderEvents.Error, { clientName, providerName, message: error.message });
         });
@@ -298,12 +298,15 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
 
   /**
    * Clears all registered providers and resets the default provider.
+   * @template P
+   * @param {P} defaultProvider The provider that should be set as the default.
+   * @returns {this} OpenFeature API
    */
   protected async clearProviders(defaultProvider: P) {
     try {
-      await this.close()
+      await this.close();
     } catch (err) {
-      this._logger.error("Unable to cleanly close providers. Resetting to the default configuration.")
+      this._logger.error('Unable to cleanly close providers. Resetting to the default configuration.');
     } finally {
       this._clientProviders.clear();
       this._defaultProvider = defaultProvider;
