@@ -84,7 +84,7 @@
 </tr>
 <tr>
 <td>✅</td>
-<td><a href="#targeting">Targeting</a></td>
+<td><a href="#targeting-and-context">Targeting</a></td>
 <td>Contextually-aware flag evaluation using <a href="https://openfeature.dev/docs/reference/concepts/evaluation-context">evaluation context</a>.</td>
 </tr>
 <tr>
@@ -127,11 +127,23 @@ If the provider you&#39;re looking for hasn&#39;t been created yet, see the <a h
 </code><button>Copy</button></pre>
 <p>In some situations, it may be beneficial to register multiple providers in the same application.
 This is possible using <a href="#named-clients">named clients</a>, which is covered in more detail below.</p>
-<a id="md:targeting" class="tsd-anchor"></a><h3><a href="#md:targeting">Targeting</a></h3><p>Sometimes, the value of a flag must consider some dynamic criteria about the application or user, such as the user&#39;s location, IP, email address, or the server&#39;s location.
+<a id="md:flag-evaluation-flow" class="tsd-anchor"></a><h3><a href="#md:flag-evaluation-flow">Flag evaluation flow</a></h3><p>When a new provider is added to OpenFeature client the following process happens:</p>
+<pre><code class="language-mermaid"><span class="hl-4">sequenceDiagram</span><br/><span class="hl-1">    </span><span class="hl-4">autonumber</span><br/><span class="hl-1">    </span><span class="hl-5">Client</span><span class="hl-4">--&gt;+</span><span class="hl-5">Feature Flag Provider</span><span class="hl-4">:</span><span class="hl-1"> </span><span class="hl-2">ResolveAll (context)</span><br/><span class="hl-1">    </span><span class="hl-5">Feature Flag Provider</span><span class="hl-4">--&gt;-</span><span class="hl-5">Client</span><span class="hl-4">:</span><span class="hl-1"> </span><span class="hl-2">Flags values</span>
+</code><button>Copy</button></pre>
+<p>In (1) the Client sends a request to the provider backend in order to get all values from all feature flags that it has.
+Once the provider backend replies (2) the client holds all flag values and therefore the flag evaluation process is synchronous.</p>
+<p>In order to prevent flag evaluation to the default value while flags are still being fetched, it is highly recommended to only look for flag value after the provider has emitted the <code>Ready</code> event.
+The following code snippet provides an example.</p>
+<pre><code class="language-ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-5">OpenFeature</span><span class="hl-1">, </span><span class="hl-5">ProviderEvents</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;@openfeature/web-sdk&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-5">OpenFeature</span><span class="hl-1">.</span><span class="hl-0">setProvider</span><span class="hl-1">( </span><span class="hl-6">/*set a provider*/</span><span class="hl-1"> );</span><br/><br/><span class="hl-6">// OpenFeature API</span><br/><span class="hl-5">OpenFeature</span><span class="hl-1">.</span><span class="hl-0">addHandler</span><span class="hl-1">(</span><span class="hl-5">ProviderEvents</span><span class="hl-1">.</span><span class="hl-5">Ready</span><span class="hl-1">, () </span><span class="hl-3">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-7">client</span><span class="hl-1"> = </span><span class="hl-5">OpenFeature</span><span class="hl-1">.</span><span class="hl-0">getClient</span><span class="hl-1">();</span><br/><span class="hl-1">  </span><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-7">stringFlag</span><span class="hl-1"> = </span><span class="hl-5">client</span><span class="hl-1">.</span><span class="hl-0">getStringValue</span><span class="hl-1">(</span><span class="hl-2">&#39;string-flag&#39;</span><span class="hl-1">, </span><span class="hl-2">&quot;default value&quot;</span><span class="hl-1">))</span><br/><br/><span class="hl-1">  </span><span class="hl-6">//use stringFlag from this point</span><br/><span class="hl-1">});</span>
+</code><button>Copy</button></pre>
+<a id="md:targeting-and-context" class="tsd-anchor"></a><h3><a href="#md:targeting-and-context">Targeting and Context</a></h3><p>Sometimes, the value of a flag must consider some dynamic criteria about the application or user, such as the user&#39;s location, IP, email address, or the server&#39;s location.
 In OpenFeature, we refer to this as <a href="https://openfeature.dev/specification/glossary#targeting">targeting</a>.
 If the flag management system you&#39;re using supports targeting, you can provide the input data using the <a href="https://openfeature.dev/docs/reference/concepts/evaluation-context">evaluation context</a>.</p>
 <pre><code class="language-ts"><span class="hl-6">// Set a value to the global context</span><br/><span class="hl-4">await</span><span class="hl-1"> </span><span class="hl-5">OpenFeature</span><span class="hl-1">.</span><span class="hl-0">setContext</span><span class="hl-1">({ </span><span class="hl-5">origin:</span><span class="hl-1"> </span><span class="hl-5">document</span><span class="hl-1">.</span><span class="hl-5">location</span><span class="hl-1">.</span><span class="hl-5">host</span><span class="hl-1"> });</span>
 </code><button>Copy</button></pre>
+<p>Context is global and setting it is <code>async</code>.
+Providers may implement an <code>onContextChanged</code> method that receives the old context and the newer one.
+This method is used internally by the provider to detect if, given the context change, the flags values cached on client side are invalid. If needed a request will be made to the provider with the new context in order to get the correct flags values.</p>
 <a id="md:hooks" class="tsd-anchor"></a><h3><a href="#md:hooks">Hooks</a></h3><p><a href="https://openfeature.dev/docs/reference/concepts/hooks">Hooks</a> allow for custom logic to be added at well-defined points of the flag evaluation life-cycle
 Look <a href="https://openfeature.dev/ecosystem/?instant_search%5BrefinementList%5D%5Btype%5D%5B0%5D=Hook&instant_search%5BrefinementList%5D%5Bcategory%5D%5B0%5D=Client-side&instant_search%5BrefinementList%5D%5Btechnology%5D%5B0%5D=JavaScript">here</a> for a complete list of available hooks.
 If the hook you&#39;re looking for hasn&#39;t been created yet, see the <a href="#develop-a-hook">develop a hook</a> section to learn how to build it yourself.</p>
@@ -141,7 +153,7 @@ If the hook you&#39;re looking for hasn&#39;t been created yet, see the <a href=
 <a id="md:logging" class="tsd-anchor"></a><h3><a href="#md:logging">Logging</a></h3><p>The JS SDK will log warnings and errors to the console by default.
 This behavior can be overridden by passing a custom logger either globally or per client.
 A custom logger must implement the <a href="../shared/src/logger/logger.ts">Logger interface</a>.</p>
-<pre><code class="language-ts"><span class="hl-4">import</span><span class="hl-1"> </span><span class="hl-4">type</span><span class="hl-1"> { </span><span class="hl-5">Logger</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&quot;@openfeature/web-sdk&quot;</span><span class="hl-1">;</span><br/><br/><span class="hl-6">// The logger can be anything that conforms with the Logger interface</span><br/><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-7">logger</span><span class="hl-1">: </span><span class="hl-8">Logger</span><span class="hl-1"> = </span><span class="hl-5">console</span><span class="hl-1">;</span><br/><br/><span class="hl-6">// Sets a global logger </span><br/><span class="hl-5">OpenFeature</span><span class="hl-1">.</span><span class="hl-0">setLogger</span><span class="hl-1">(</span><span class="hl-5">logger</span><span class="hl-1">);</span><br/><br/><span class="hl-6">// Sets a client logger</span><br/><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-7">client</span><span class="hl-1"> = </span><span class="hl-5">OpenFeature</span><span class="hl-1">.</span><span class="hl-0">getClient</span><span class="hl-1">();</span><br/><span class="hl-5">client</span><span class="hl-1">.</span><span class="hl-0">setLogger</span><span class="hl-1">(</span><span class="hl-5">logger</span><span class="hl-1">);</span>
+<pre><code class="language-ts"><span class="hl-4">import</span><span class="hl-1"> </span><span class="hl-4">type</span><span class="hl-1"> { </span><span class="hl-5">Logger</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&quot;@openfeature/web-sdk&quot;</span><span class="hl-1">;</span><br/><br/><span class="hl-6">// The logger can be anything that conforms with the Logger interface</span><br/><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-7">logger</span><span class="hl-1">: </span><span class="hl-8">Logger</span><span class="hl-1"> = </span><span class="hl-5">console</span><span class="hl-1">;</span><br/><br/><span class="hl-6">// Sets a global logger</span><br/><span class="hl-5">OpenFeature</span><span class="hl-1">.</span><span class="hl-0">setLogger</span><span class="hl-1">(</span><span class="hl-5">logger</span><span class="hl-1">);</span><br/><br/><span class="hl-6">// Sets a client logger</span><br/><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-7">client</span><span class="hl-1"> = </span><span class="hl-5">OpenFeature</span><span class="hl-1">.</span><span class="hl-0">getClient</span><span class="hl-1">();</span><br/><span class="hl-5">client</span><span class="hl-1">.</span><span class="hl-0">setLogger</span><span class="hl-1">(</span><span class="hl-5">logger</span><span class="hl-1">);</span>
 </code><button>Copy</button></pre>
 <a id="md:named-clients" class="tsd-anchor"></a><h3><a href="#md:named-clients">Named clients</a></h3><p>Clients can be given a name.
 A name is a logical identifier that can be used to associate clients with a particular provider.
@@ -176,7 +188,7 @@ Implement your own hook by conforming to the <a href="../shared/src/hooks/hook.t
 </blockquote>
 </section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ad8e6c5/packages/client/src/index.ts#L1">packages/client/src/index.ts:1</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/adc6ccc/packages/client/src/index.ts#L1">packages/client/src/index.ts:1</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -425,7 +437,8 @@ Implement your own hook by conforming to the <a href="../shared/src/hooks/hook.t
 <li>
 <ul>
 <li><a href="#md:providers"><span>Providers</span></a></li>
-<li><a href="#md:targeting"><span>Targeting</span></a></li>
+<li><a href="#md:flag-evaluation-flow"><span>Flag evaluation flow</span></a></li>
+<li><a href="#md:targeting-and-context"><span>Targeting and <wbr/>Context</span></a></li>
 <li><a href="#md:hooks"><span>Hooks</span></a></li>
 <li><a href="#md:logging"><span>Logging</span></a></li>
 <li><a href="#md:named-clients"><span>Named clients</span></a></li>
