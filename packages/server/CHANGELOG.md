@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.5.0](https://github.com/open-feature/js-sdk/compare/js-sdk-v1.4.2...js-sdk-v1.5.0) (2023-10-09)
+
+
+### Features
+
+* add provider compatibility check ([#537](https://github.com/open-feature/js-sdk/issues/537)) ([2bc5d63](https://github.com/open-feature/js-sdk/commit/2bc5d63266424a900da523f001f425b95da29ccc))
+* add support for a blocking setProvider ([#577](https://github.com/open-feature/js-sdk/issues/577)) ([d1f5049](https://github.com/open-feature/js-sdk/commit/d1f50490650da78ff7936641425b1a0614833c63))
+* STALE state, minor event changes ([#541](https://github.com/open-feature/js-sdk/issues/541)) ([0b5355b](https://github.com/open-feature/js-sdk/commit/0b5355b3cf7e606f9364a110a18e1c6aeca5c230))
+
 ## [1.4.2](https://github.com/open-feature/js-sdk/compare/js-sdk-v1.4.1...js-sdk-v1.4.2) (2023-08-07)
 
 
