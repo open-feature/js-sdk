@@ -21,7 +21,8 @@ const mockProvider = (config?: {
 };
 
 describe('OpenFeature', () => {
-  afterEach(() => {
+  afterEach(async () => {
+    await OpenFeature.clearProviders();
     jest.clearAllMocks();
   });
 

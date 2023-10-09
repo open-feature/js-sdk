@@ -75,6 +75,10 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider> implements Ma
       { name, version }
     );
   }
+
+  clearProviders() {
+    return super.clearProviders(NOOP_PROVIDER);
+  }
 }
 
 /**

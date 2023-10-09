@@ -45,15 +45,13 @@ describe('Hooks', () => {
   let client: Client;
   const FLAG_KEY = 'my-flag';
 
-  afterEach(() => {
+  afterEach(async () => {
+    await OpenFeature.clearProviders();
     jest.clearAllMocks();
   });
 
-  beforeAll(() => {
+  beforeEach(async () => {
     OpenFeature.setProvider(MOCK_PROVIDER);
-  });
-
-  beforeEach(() => {
     client = OpenFeature.getClient();
   });
 
@@ -226,7 +224,7 @@ describe('Hooks', () => {
   });
 
   describe('"error" stage', () => {
-    beforeAll(() => {
+    beforeEach(() => {
       OpenFeature.setProvider(MOCK_ERROR_PROVIDER);
     });
 

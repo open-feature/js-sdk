@@ -290,10 +290,24 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
         try {
           await provider.onClose?.();
         } catch (err) {
-          this.handleShutdownError(this._defaultProvider, err);
+          this.handleShutdownError(provider, err);
         }
       })
     );
+  }
+
+  /**
+   * Clears all registered providers and resets the default provider.
+   */
+  protected async clearProviders(defaultProvider: P) {
+    try {
+      await this.close()
+    } catch (err) {
+      this._logger.error("Unable to cleanly close providers. Resetting to the default configuration.")
+    } finally {
+      this._clientProviders.clear();
+      this._defaultProvider = defaultProvider;
+    }
   }
 
   private handleShutdownError(provider: P, err: unknown) {

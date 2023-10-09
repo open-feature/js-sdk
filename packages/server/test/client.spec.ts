@@ -82,11 +82,12 @@ const MOCK_PROVIDER: Provider = {
 };
 
 describe('OpenFeatureClient', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     OpenFeature.setProvider(MOCK_PROVIDER);
   });
 
-  afterEach(() => {
+  afterEach(async () => {
+    await OpenFeature.clearProviders();
     jest.clearAllMocks();
   });
 
@@ -306,7 +307,7 @@ describe('OpenFeatureClient', () => {
     let details: EvaluationDetails<number>;
 
     describe('Normal execution', () => {
-      beforeAll(async () => {
+      beforeEach(async () => {
         const client = OpenFeature.getClient();
         details = await client.getNumberDetails(flagKey, defaultValue);
 
@@ -358,7 +359,7 @@ describe('OpenFeatureClient', () => {
       const defaultNumberValue = 123;
       const defaultStringValue = 'hey!';
 
-      beforeAll(async () => {
+      beforeEach(async () => {
         OpenFeature.setProvider(errorProvider);
         client = OpenFeature.getClient();
         nonOpenFeatureErrorDetails = await client.getNumberDetails('some-flag', defaultNumberValue);

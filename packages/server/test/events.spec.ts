@@ -81,7 +81,8 @@ describe('Events', () => {
   jest.setTimeout(TIMEOUT);
   let clientId = uuid();
 
-  afterEach(() => {
+  afterEach(async () => {
+    await OpenFeature.clearProviders();
     jest.clearAllMocks();
     clientId = uuid();
     // hacky, but it's helpful to clear the handlers between tests
