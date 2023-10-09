@@ -215,7 +215,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
             emitter?.emit(ProviderEvents.Error, { clientName, providerName, message: error.message });
           });
           this._events?.emit(ProviderEvents.Error, { clientName, providerName, message: error.message });
-          // Rethrow after emitting error events.
+          // rethrow after emitting error events, so that public methods can control error handling
           throw error;
         });
     } else {
