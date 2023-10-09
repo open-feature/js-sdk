@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.12](https://github.com/open-feature/js-sdk/compare/shared-v0.0.11...shared-v0.0.12) (2023-10-09)
+
+
+### Features
+
+* add support for a blocking setProvider ([#577](https://github.com/open-feature/js-sdk/issues/577)) ([d1f5049](https://github.com/open-feature/js-sdk/commit/d1f50490650da78ff7936641425b1a0614833c63))
+
 ## [0.0.11](https://github.com/open-feature/js-sdk/compare/shared-v0.0.10...shared-v0.0.11) (2023-09-22)
 
 
