@@ -16,7 +16,7 @@ import { FlagConfiguration, Flag } from './flag-configuration';
 import { Provider } from '../provider';
 
 /**
- * A simple OpenFeature provider, intended for simple demos and as a test stub.
+ * A simple OpenFeature provider intended for demos and as a test stub.
  */
 export class InMemoryProvider implements Provider {
   public readonly events = new OpenFeatureEventEmitter();
