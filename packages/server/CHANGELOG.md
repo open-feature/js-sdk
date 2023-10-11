@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.2](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.6.1...server-sdk-v1.6.2) (2023-10-11)
+
+
+### Bug Fixes
+
+* publish as @openfeature/server-sdk ([#593](https://github.com/open-feature/js-sdk/issues/593)) ([1fdebc4](https://github.com/open-feature/js-sdk/commit/1fdebc4777916e81e4b5feac286941c7d4b5bf13))
+
 ## [1.6.1](https://github.com/open-feature/js-sdk/compare/js-sdk-v1.6.0...js-sdk-v1.6.1) (2023-10-11)
 
 
