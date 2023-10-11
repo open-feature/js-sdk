@@ -186,17 +186,28 @@ A name is a logical identifier which can be used to associate clients with a par
 If a name has no associated provider, the global provider is used.
 
 ```ts
-import { OpenFeature } from "@openfeature/js-sdk";
+import { OpenFeature, InMemoryProvider } from "@openfeature/js-sdk";
+
+const myFlags = {
+  'v2_enabled': {
+    variants: {
+      on: true,
+      off: false
+    },
+    disabled: false,
+    defaultVariant: "on"
+  }
+};
 
 // Registering the default provider
-OpenFeature.setProvider(NewLocalProvider());
+OpenFeature.setProvider(InMemoryProvider(myFlags));
 // Registering a named provider
-OpenFeature.setProvider("clientForCache", new NewCachedProvider());
+OpenFeature.setProvider("otherClient", new InMemoryProvider(someOtherFlags));
 
 // A Client backed by default provider
 const clientWithDefault = OpenFeature.getClient();
 // A Client backed by NewCachedProvider
-const clientForCache = OpenFeature.getClient("clientForCache");
+const clientForCache = OpenFeature.getClient("otherClient");
 ```
 
 ### Eventing
