@@ -7,4 +7,4 @@
   </picture>
 </p>
 
-<h2 align="center">This package has been deprecated. It's been renamed (moved without changes) to <a>https://www.npmjs.com/package/@openfeature/server-sdk</a>.</h2>https://www.npmjs.com/package/@openfeature/js-sdk
+<h2 align="center">This package has been deprecated. It's been renamed (moved without changes) to <a>https://www.npmjs.com/package/@openfeature/server-sdk</a>.</h2>
