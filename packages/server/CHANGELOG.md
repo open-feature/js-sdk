@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.3](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.6.2...server-sdk-v1.6.3) (2023-10-11)
+
+
+### Bug Fixes
+
+* package in readme installs/examples ([#595](https://github.com/open-feature/js-sdk/issues/595)) ([3a15cb2](https://github.com/open-feature/js-sdk/commit/3a15cb21dc60cd9ac0c0c57839532b6ee7ea1c15))
+
 ## [1.6.2](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.6.1...server-sdk-v1.6.2) (2023-10-11)
 
 
