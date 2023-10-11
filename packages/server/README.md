@@ -21,7 +21,7 @@
   </a>
   <!-- x-release-please-end -->
   <br/>
-  <a href="https://open-feature.github.io/js-sdk/modules/OpenFeature_JS_SDK.html">
+  <a href="https://open-feature.github.io/js-sdk/modules/OpenFeature_Server_SDK.html">
     <img alt="API Reference" src="https://img.shields.io/badge/reference-teal?logo=javascript&logoColor=white" />
   </a>
   <a href="https://www.npmjs.com/package/@openfeature/server-sdk">
