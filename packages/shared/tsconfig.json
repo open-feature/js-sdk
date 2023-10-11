@@ -98,7 +98,9 @@
   },
   "include": [
     "./src/**/*"
-  ],
+,
+"../server/src/transaction-context"
+],
   "exclude": [
     "node_modules",
     "**/*.test.js"

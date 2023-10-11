@@ -5,11 +5,13 @@ import {
   EvaluationContext,
   objectOrUndefined,
   stringOrUndefined,
+} from '@openfeature/shared';
+import {
   ManageTransactionContextPropagator,
   NOOP_TRANSACTION_CONTEXT_PROPAGATOR,
-  TransactionContextPropagator,
   TransactionContext,
-} from '@openfeature/shared';
+  TransactionContextPropagator,
+} from './transaction-context';
 import { Client, OpenFeatureClient } from './client';
 
 // use a symbol as a key for the global singleton

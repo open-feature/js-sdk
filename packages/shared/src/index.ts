@@ -6,6 +6,5 @@ export * from './events';
 export * from './logger';
 export * from './provider';
 export * from './evaluation';
-export * from './transaction-context';
 export * from './type-guards';
 export * from './open-feature';
