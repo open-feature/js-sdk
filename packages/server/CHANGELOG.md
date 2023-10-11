@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.1](https://github.com/open-feature/js-sdk/compare/js-sdk-v1.6.0...js-sdk-v1.6.1) (2023-10-11)
+
+
+### Deprecation Notice
+
+* rename, deprecate js-sdk ([#589](https://github.com/open-feature/js-sdk/issues/589)) ([a361393](https://github.com/open-feature/js-sdk/commit/a36139342101265733ec3ae2d11773530dd19210))
+
 ## [1.6.0](https://github.com/open-feature/js-sdk/compare/js-sdk-v1.5.0...js-sdk-v1.6.0) (2023-10-11)
 
 
