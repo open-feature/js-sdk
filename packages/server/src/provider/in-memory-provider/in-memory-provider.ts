@@ -1,19 +1,20 @@
 import {
-  ErrorCode,
   EvaluationContext,
   FlagNotFoundError,
   FlagValueType,
   GeneralError,
   JsonValue,
   Logger,
+  OpenFeatureError,
   OpenFeatureEventEmitter,
   ProviderEvents,
   ResolutionDetails,
   StandardResolutionReasons,
-  TypeMismatchError,
+  TypeMismatchError
 } from '@openfeature/shared';
-import { FlagConfiguration, Flag } from './flag-configuration';
 import { Provider } from '../provider';
+import { Flag, FlagConfiguration } from './flag-configuration';
+import { VariantFoundError } from './variant-not-found-error';
 
 /**
  * A simple OpenFeature provider intended for demos and as a test stub.
@@ -49,7 +50,7 @@ export class InMemoryProvider implements Provider {
     context?: EvaluationContext,
     logger?: Logger,
   ): Promise<ResolutionDetails<boolean>> {
-    return Promise.resolve(this.resolveFlagWithReason<boolean>(flagKey, defaultValue, context, logger));
+    return this.resolveFlagWithReason<boolean>(flagKey, defaultValue, context, logger);
   }
 
   resolveNumberEvaluation(
@@ -58,7 +59,7 @@ export class InMemoryProvider implements Provider {
     context?: EvaluationContext,
     logger?: Logger,
   ): Promise<ResolutionDetails<number>> {
-    return Promise.resolve(this.resolveFlagWithReason<number>(flagKey, defaultValue, context, logger));
+    return this.resolveFlagWithReason<number>(flagKey, defaultValue, context, logger);
   }
 
   async resolveStringEvaluation(
@@ -67,7 +68,7 @@ export class InMemoryProvider implements Provider {
     context?: EvaluationContext,
     logger?: Logger,
   ): Promise<ResolutionDetails<string>> {
-    return Promise.resolve(this.resolveFlagWithReason<string>(flagKey, defaultValue, context, logger));
+    return this.resolveFlagWithReason<string>(flagKey, defaultValue, context, logger);
   }
 
   async resolveObjectEvaluation<T extends JsonValue>(
@@ -76,15 +77,15 @@ export class InMemoryProvider implements Provider {
     context?: EvaluationContext,
     logger?: Logger,
   ): Promise<ResolutionDetails<T>> {
-    return Promise.resolve(this.resolveFlagWithReason<T>(flagKey, defaultValue, context, logger));
+    return this.resolveFlagWithReason<T>(flagKey, defaultValue, context, logger);
   }
 
-  private resolveFlagWithReason<T extends JsonValue | FlagValueType>(
+  private async resolveFlagWithReason<T extends JsonValue | FlagValueType>(
     flagKey: string,
     defaultValue: T,
     ctx?: EvaluationContext,
     logger?: Logger,
-  ): ResolutionDetails<T> {
+  ): Promise<ResolutionDetails<T>> {
     try {
       const resolutionResult = this.lookupFlagValue(flagKey, defaultValue, ctx, logger);
 
@@ -94,33 +95,19 @@ export class InMemoryProvider implements Provider {
 
       return resolutionResult;
     } catch (error: unknown) {
-      let errorCode;
-      switch (true) {
-        case error instanceof TypeMismatchError:
-          errorCode = ErrorCode.TYPE_MISMATCH;
-          break;
-        case error instanceof FlagNotFoundError:
-          errorCode = ErrorCode.FLAG_NOT_FOUND;
-          break;
-        case error instanceof GeneralError:
-          errorCode = ErrorCode.PARSE_ERROR;
-          break;
+      if (!(error instanceof OpenFeatureError)) {
+        throw new GeneralError((error as Error)?.message || 'unknown error'); 
       }
-
-      return {
-        value: defaultValue,
-        reason: StandardResolutionReasons.ERROR,
-        errorCode,
-      };
+      throw error;
     }
   }
 
-  private lookupFlagValue<T>(
+  private lookupFlagValue<T extends JsonValue | FlagValueType>(
     flagKey: string,
     defaultValue: T,
     ctx?: EvaluationContext,
     logger?: Logger,
-  ): ResolutionDetails<any> {
+  ): ResolutionDetails<T> {
     if (!(flagKey in this._flagConfiguration)) {
       const message = `no flag found with key ${flagKey}`;
       logger?.debug(message);
@@ -140,11 +127,11 @@ export class InMemoryProvider implements Provider {
     if (value === undefined) {
       const message = `no value associated with variant ${variant}`;
       logger?.error(message);
-      throw new GeneralError(message);
+      throw new VariantFoundError(message);
     }
 
     return {
-      value,
+      value: value as T,
       ...(variant && { variant }),
       reason: isContextEval ? StandardResolutionReasons.TARGETING_MATCH : StandardResolutionReasons.STATIC,
     };

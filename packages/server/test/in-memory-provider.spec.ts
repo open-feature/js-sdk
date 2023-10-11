@@ -1,5 +1,6 @@
-import { ErrorCode, ProviderEvents, StandardResolutionReasons } from '@openfeature/shared';
+import { ErrorCode, FlagNotFoundError, ProviderEvents, StandardResolutionReasons, TypeMismatchError } from '@openfeature/shared';
 import { InMemoryProvider } from '../src';
+import { VariantFoundError } from '../src/provider/in-memory-provider/variant-not-found-error';
 
 describe(InMemoryProvider, () => {
   describe('boolean flags', () => {
@@ -22,7 +23,7 @@ describe(InMemoryProvider, () => {
       expect(resolution).toEqual({ value: true, reason: StandardResolutionReasons.STATIC, variant: 'on' });
     });
 
-    it('resolves to default value with reason error if flag does not exist', async () => {
+    it('throws FlagNotFound if flag does not exist', async () => {
       const booleanFlagSpec = {
         'a-boolean-flag': {
           variants: {
@@ -35,13 +36,7 @@ describe(InMemoryProvider, () => {
       };
       provider.putConfiguration(booleanFlagSpec);
 
-      const resolution = await provider.resolveBooleanEvaluation('another-boolean-flag', false);
-
-      expect(resolution).toEqual({
-        value: false,
-        reason: StandardResolutionReasons.ERROR,
-        errorCode: ErrorCode.FLAG_NOT_FOUND,
-      });
+      await expect(provider.resolveBooleanEvaluation('another-boolean-flag', false)).rejects.toThrow();
     });
 
     it('resolves to default value with reason disabled if flag is disabled', async () => {
@@ -62,7 +57,7 @@ describe(InMemoryProvider, () => {
       expect(resolution).toEqual({ value: false, reason: StandardResolutionReasons.DISABLED });
     });
 
-    it('resolves to default value with reason error if variant does not exist', async () => {
+    it('throws VariantFoundError if variant does not exist', async () => {
       const booleanFlagDisabledSpec = {
         'a-boolean-flag': {
           variants: {
@@ -75,16 +70,10 @@ describe(InMemoryProvider, () => {
       };
       provider.putConfiguration(booleanFlagDisabledSpec);
 
-      const resolution = await provider.resolveBooleanEvaluation('a-boolean-flag', false);
-
-      expect(resolution).toEqual({
-        value: false,
-        reason: StandardResolutionReasons.ERROR,
-        errorCode: ErrorCode.PARSE_ERROR,
-      });
+      await expect(provider.resolveBooleanEvaluation('a-boolean-flag', false)).rejects.toThrow(VariantFoundError);
     });
 
-    it('resolves to default value with reason error if variant type does not match with accessors', async () => {
+    it('throws TypeMismatchError if variant type does not match with accessors', async () => {
       const booleanFlagSpec = {
         'a-boolean-flag': {
           variants: {
@@ -97,13 +86,7 @@ describe(InMemoryProvider, () => {
       };
       provider.putConfiguration(booleanFlagSpec);
 
-      const resolution = await provider.resolveBooleanEvaluation('a-boolean-flag', false);
-
-      expect(resolution).toEqual({
-        value: false,
-        reason: StandardResolutionReasons.ERROR,
-        errorCode: ErrorCode.TYPE_MISMATCH,
-      });
+      await expect(provider.resolveBooleanEvaluation('a-boolean-flag', false)).rejects.toThrow(TypeMismatchError);
     });
 
     it('resolves to variant value with reason target match if context is provided and flag spec has context evaluator', async () => {
@@ -150,7 +133,7 @@ describe(InMemoryProvider, () => {
       expect(resolution).toEqual({ value: itsOn, reason: StandardResolutionReasons.STATIC, variant: 'on' });
     });
 
-    it('resolves to default value with reason error if flag does not exist', async () => {
+    it('throws FlagNotFound if flag does not exist', async () => {
       const StringFlagSpec = {
         'a-string-flag': {
           variants: {
@@ -164,13 +147,7 @@ describe(InMemoryProvider, () => {
 
       provider.putConfiguration(StringFlagSpec);
 
-      const resolution = await provider.resolveStringEvaluation('another-string-flag', itsDefault);
-
-      expect(resolution).toEqual({
-        value: itsDefault,
-        reason: StandardResolutionReasons.ERROR,
-        errorCode: ErrorCode.FLAG_NOT_FOUND,
-      });
+      await expect(provider.resolveStringEvaluation('another-string-flag', itsDefault)).rejects.toThrow(FlagNotFoundError);
     });
 
     it('resolves to default value with reason disabled if flag is disabled', async () => {
@@ -191,7 +168,7 @@ describe(InMemoryProvider, () => {
       expect(resolution).toEqual({ value: itsDefault, reason: StandardResolutionReasons.DISABLED });
     });
 
-    it('resolves to default value with reason default if variant does not exist', async () => {
+    it('throws VariantFoundError if variant does not exist', async () => {
       const StringFlagSpec = {
         'a-string-flag': {
           variants: {
@@ -204,16 +181,10 @@ describe(InMemoryProvider, () => {
       };
       provider.putConfiguration(StringFlagSpec);
 
-      const resolution = await provider.resolveStringEvaluation('a-string-flag', itsDefault);
-
-      expect(resolution).toEqual({
-        value: itsDefault,
-        reason: StandardResolutionReasons.ERROR,
-        errorCode: ErrorCode.PARSE_ERROR,
-      });
+      await expect(provider.resolveStringEvaluation('a-string-flag', itsDefault)).rejects.toThrow(VariantFoundError);
     });
 
-    it('resolves to default value with reason error if variant does not match with accessor method type', async () => {
+    it('throws TypeMismatchError if variant does not match with accessor method type', async () => {
       const StringFlagSpec = {
         'a-string-flag': {
           variants: {
@@ -227,13 +198,7 @@ describe(InMemoryProvider, () => {
 
       provider.putConfiguration(StringFlagSpec);
 
-      const resolution = await provider.resolveStringEvaluation('a-string-flag', itsDefault);
-
-      expect(resolution).toEqual({
-        value: itsDefault,
-        reason: StandardResolutionReasons.ERROR,
-        errorCode: ErrorCode.TYPE_MISMATCH,
-      });
+      await expect(provider.resolveStringEvaluation('a-string-flag', itsDefault)).rejects.toThrow(TypeMismatchError);
     });
 
     it('resolves to variant value with reason target match if context is provided and flag spec has context evaluator', async () => {
@@ -280,7 +245,7 @@ describe(InMemoryProvider, () => {
       expect(resolution).toEqual({ value: onNumber, reason: StandardResolutionReasons.STATIC, variant: 'on' });
     });
 
-    it('resolves to default value with reason error if flag does not exist', async () => {
+    it('throws FlagNotFound if flag does not exist', async () => {
       const numberFlagSpec = {
         'a-number-flag': {
           variants: {
@@ -293,13 +258,7 @@ describe(InMemoryProvider, () => {
       };
       provider.putConfiguration(numberFlagSpec);
 
-      const resolution = await provider.resolveNumberEvaluation('another-number-flag', defaultNumber);
-
-      expect(resolution).toEqual({
-        value: defaultNumber,
-        reason: StandardResolutionReasons.ERROR,
-        errorCode: ErrorCode.FLAG_NOT_FOUND,
-      });
+      await expect(provider.resolveNumberEvaluation('another-number-flag', defaultNumber)).rejects.toThrow(FlagNotFoundError);
     });
 
     it('resolves to default value with reason disabled if flag is disabled', async () => {
@@ -320,7 +279,7 @@ describe(InMemoryProvider, () => {
       expect(resolution).toEqual({ value: defaultNumber, reason: StandardResolutionReasons.DISABLED });
     });
 
-    it('resolves to default value with reason error if variant does not exist', async () => {
+    it('throws VariantNotFoundError if variant does not exist', async () => {
       const numberFlagSpec = {
         'a-number-flag': {
           variants: {
@@ -333,16 +292,10 @@ describe(InMemoryProvider, () => {
       };
       provider.putConfiguration(numberFlagSpec);
 
-      const resolution = await provider.resolveNumberEvaluation('a-number-flag', defaultNumber);
-
-      expect(resolution).toEqual({
-        value: defaultNumber,
-        reason: StandardResolutionReasons.ERROR,
-        errorCode: ErrorCode.PARSE_ERROR,
-      });
+      await expect(provider.resolveNumberEvaluation('a-number-flag', defaultNumber)).rejects.toThrow(VariantFoundError);
     });
 
-    it('resolves to default value with reason error if variant does not match with accessor method type', async () => {
+    it('throws TypeMismatchError if variant does not match with accessor method type', async () => {
       const numberFlagSpec = {
         'a-number-flag': {
           variants: {
@@ -356,13 +309,7 @@ describe(InMemoryProvider, () => {
 
       provider.putConfiguration(numberFlagSpec);
 
-      const resolution = await provider.resolveNumberEvaluation('a-number-flag', defaultNumber);
-
-      expect(resolution).toEqual({
-        value: defaultNumber,
-        reason: StandardResolutionReasons.ERROR,
-        errorCode: ErrorCode.TYPE_MISMATCH,
-      });
+      await expect(provider.resolveNumberEvaluation('a-number-flag', defaultNumber)).rejects.toThrow(TypeMismatchError);
     });
 
     it('resolves to variant value with reason target match if context is provided and flag spec has context evaluator', async () => {
@@ -413,7 +360,7 @@ describe(InMemoryProvider, () => {
       expect(resolution).toEqual({ value: onObject, reason: StandardResolutionReasons.STATIC, variant: 'on' });
     });
 
-    it('resolves to default value with reason error if flag does not exist', async () => {
+    it('throws FlagNotFound if flag does not exist', async () => {
       const ObjectFlagSpec = {
         'a-Object-flag': {
           variants: {
@@ -426,13 +373,7 @@ describe(InMemoryProvider, () => {
       };
       provider.putConfiguration(ObjectFlagSpec);
 
-      const resolution = await provider.resolveObjectEvaluation('another-Object-flag', defaultObject);
-
-      expect(resolution).toEqual({
-        value: defaultObject,
-        reason: StandardResolutionReasons.ERROR,
-        errorCode: ErrorCode.FLAG_NOT_FOUND,
-      });
+      await expect(provider.resolveObjectEvaluation('another-number-flag', defaultObject)).rejects.toThrow(FlagNotFoundError);
     });
 
     it('resolves to default value with reason disabled if flag is disabled', async () => {
@@ -453,7 +394,7 @@ describe(InMemoryProvider, () => {
       expect(resolution).toEqual({ value: defaultObject, reason: StandardResolutionReasons.DISABLED });
     });
 
-    it('resolves to default value with reason error if variant does not exist', async () => {
+    it('throws VariantFoundError if variant does not exist', async () => {
       const ObjectFlagSpec = {
         'a-Object-flag': {
           variants: {
@@ -466,16 +407,10 @@ describe(InMemoryProvider, () => {
       };
       provider.putConfiguration(ObjectFlagSpec);
 
-      const resolution = await provider.resolveObjectEvaluation('a-Object-flag', defaultObject);
-
-      expect(resolution).toEqual({
-        value: defaultObject,
-        reason: StandardResolutionReasons.ERROR,
-        errorCode: ErrorCode.PARSE_ERROR,
-      });
+      await expect(provider.resolveObjectEvaluation('a-Object-flag', defaultObject)).rejects.toThrow(VariantFoundError);
     });
 
-    it('resolves to default value with reason error if variant does not match with accessor method type', async () => {
+    it('throws TypeMismatchError if variant does not match with accessor method type', async () => {
       const ObjectFlagSpec = {
         'a-object-flag': {
           variants: {
@@ -489,13 +424,7 @@ describe(InMemoryProvider, () => {
 
       provider.putConfiguration(ObjectFlagSpec);
 
-      const resolution = await provider.resolveObjectEvaluation('a-object-flag', defaultObject);
-
-      expect(resolution).toEqual({
-        value: defaultObject,
-        reason: StandardResolutionReasons.ERROR,
-        errorCode: ErrorCode.TYPE_MISMATCH,
-      });
+      await expect(provider.resolveObjectEvaluation('a-object-flag', defaultObject)).rejects.toThrow(TypeMismatchError);
     });
 
     it('resolves to variant value with reason target match if context is provided and flag spec has context evaluator', async () => {
