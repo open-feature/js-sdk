@@ -27,9 +27,13 @@ backend or vendor.</p>
 <ul class="tsd-hierarchy">
 <li><a href="OpenFeature_JS_SDK.CommonProvider.html" class="tsd-signature-type tsd-kind-interface">CommonProvider</a>
 <ul class="tsd-hierarchy">
-<li><span class="target">Provider</span></li></ul></li></ul></section><aside class="tsd-sources">
+<li><span class="target">Provider</span></li></ul></li></ul></section>
+<section class="tsd-panel">
+<h4>Implemented by</h4>
+<ul class="tsd-hierarchy">
+<li><a href="../classes/OpenFeature_JS_SDK.InMemoryProvider.html" class="tsd-signature-type tsd-kind-class">InMemoryProvider</a></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/2b4dbec/packages/server/src/provider/provider.ts#L9">packages/server/src/provider/provider.ts:9</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/5673362/packages/server/src/provider/provider.ts#L9">packages/server/src/provider/provider.ts:9</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -64,7 +68,7 @@ backend or vendor.</p>
 </div><aside class="tsd-sources">
 <p>Inherited from <a href="OpenFeature_JS_SDK.CommonProvider.html">CommonProvider</a>.<a href="OpenFeature_JS_SDK.CommonProvider.html#events">events</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/2b4dbec/packages/shared/src/provider/provider.ts#L60">packages/shared/src/provider/provider.ts:60</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/5673362/packages/shared/src/provider/provider.ts#L60">packages/shared/src/provider/provider.ts:60</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="hooks" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagOptional">Optional</code> <code class="tsd-tag ts-flagReadonly">Readonly</code> <span>hooks</span><a href="#hooks" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">hooks</span><span class="tsd-signature-symbol">?:</span> <a href="OpenFeature_JS_SDK.Hook.html" class="tsd-signature-type tsd-kind-interface">Hook</a><span class="tsd-signature-symbol">&lt;</span><a href="../types/OpenFeature_JS_SDK.FlagValue.html" class="tsd-signature-type tsd-kind-type-alias">FlagValue</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></div>
@@ -75,13 +79,13 @@ provider. Provider hooks are not configured or controlled by the application aut
 </div>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/2b4dbec/packages/server/src/provider/provider.ts#L16">packages/server/src/provider/provider.ts:16</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/5673362/packages/server/src/provider/provider.ts#L16">packages/server/src/provider/provider.ts:16</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="metadata" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagReadonly">Readonly</code> <span>metadata</span><a href="#metadata" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">metadata</span><span class="tsd-signature-symbol">:</span> <a href="OpenFeature_JS_SDK.ProviderMetadata.html" class="tsd-signature-type tsd-kind-interface">ProviderMetadata</a></div><aside class="tsd-sources">
 <p>Inherited from <a href="OpenFeature_JS_SDK.CommonProvider.html">CommonProvider</a>.<a href="OpenFeature_JS_SDK.CommonProvider.html#metadata">metadata</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/2b4dbec/packages/shared/src/provider/provider.ts#L38">packages/shared/src/provider/provider.ts:38</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/5673362/packages/shared/src/provider/provider.ts#L38">packages/shared/src/provider/provider.ts:38</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="runsOn" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagOptional">Optional</code> <code class="tsd-tag ts-flagReadonly">Readonly</code> <span>runs<wbr/>On</span><a href="#runsOn" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">runs<wbr/>On</span><span class="tsd-signature-symbol">?:</span> <a href="../types/OpenFeature_JS_SDK.Paradigm.html" class="tsd-signature-type tsd-kind-type-alias">Paradigm</a></div>
@@ -91,7 +95,7 @@ the SDK will enforce that the defined paradigm at runtime.</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from <a href="OpenFeature_JS_SDK.CommonProvider.html">CommonProvider</a>.<a href="OpenFeature_JS_SDK.CommonProvider.html#runsOn">runsOn</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/2b4dbec/packages/shared/src/provider/provider.ts#L44">packages/shared/src/provider/provider.ts:44</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/5673362/packages/shared/src/provider/provider.ts#L44">packages/shared/src/provider/provider.ts:44</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="status" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagOptional">Optional</code> <code class="tsd-tag ts-flagReadonly">Readonly</code> <span>status</span><a href="#status" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">status</span><span class="tsd-signature-symbol">?:</span> <a href="../enums/OpenFeature_JS_SDK.ProviderStatus.html" class="tsd-signature-type tsd-kind-enum">ProviderStatus</a></div>
@@ -104,7 +108,7 @@ If the provider is functioning normally, it should return <a href="../enums/Open
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from <a href="OpenFeature_JS_SDK.CommonProvider.html">CommonProvider</a>.<a href="OpenFeature_JS_SDK.CommonProvider.html#status">status</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/2b4dbec/packages/shared/src/provider/provider.ts#L54">packages/shared/src/provider/provider.ts:54</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/5673362/packages/shared/src/provider/provider.ts#L54">packages/shared/src/provider/provider.ts:54</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="initialize" class="tsd-anchor"></a>
@@ -128,7 +132,7 @@ Use this function to perform any context-dependent setup within the provider.</p
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from <a href="OpenFeature_JS_SDK.CommonProvider.html">CommonProvider</a>.<a href="OpenFeature_JS_SDK.CommonProvider.html#initialize">initialize</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/2b4dbec/packages/shared/src/provider/provider.ts#L76">packages/shared/src/provider/provider.ts:76</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/5673362/packages/shared/src/provider/provider.ts#L76">packages/shared/src/provider/provider.ts:76</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="onClose" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagOptional">Optional</code> <span>on<wbr/>Close</span><a href="#onClose" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -141,7 +145,7 @@ Called when this provider is replaced with a new one, or when the OpenFeature is
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from <a href="OpenFeature_JS_SDK.CommonProvider.html">CommonProvider</a>.<a href="OpenFeature_JS_SDK.CommonProvider.html#onClose">onClose</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/2b4dbec/packages/shared/src/provider/provider.ts#L66">packages/shared/src/provider/provider.ts:66</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/5673362/packages/shared/src/provider/provider.ts#L66">packages/shared/src/provider/provider.ts:66</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="resolveBooleanEvaluation" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>resolve<wbr/>Boolean<wbr/>Evaluation</span><a href="#resolveBooleanEvaluation" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -163,7 +167,7 @@ Called when this provider is replaced with a new one, or when the OpenFeature is
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/OpenFeature_JS_SDK.ResolutionDetails.html" class="tsd-signature-type tsd-kind-type-alias">ResolutionDetails</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/2b4dbec/packages/server/src/provider/provider.ts#L21">packages/server/src/provider/provider.ts:21</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/5673362/packages/server/src/provider/provider.ts#L21">packages/server/src/provider/provider.ts:21</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="resolveNumberEvaluation" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>resolve<wbr/>Number<wbr/>Evaluation</span><a href="#resolveNumberEvaluation" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -185,7 +189,7 @@ Called when this provider is replaced with a new one, or when the OpenFeature is
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/OpenFeature_JS_SDK.ResolutionDetails.html" class="tsd-signature-type tsd-kind-type-alias">ResolutionDetails</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/2b4dbec/packages/server/src/provider/provider.ts#L41">packages/server/src/provider/provider.ts:41</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/5673362/packages/server/src/provider/provider.ts#L41">packages/server/src/provider/provider.ts:41</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="resolveObjectEvaluation" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>resolve<wbr/>Object<wbr/>Evaluation</span><a href="#resolveObjectEvaluation" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -212,7 +216,7 @@ Called when this provider is replaced with a new one, or when the OpenFeature is
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/OpenFeature_JS_SDK.ResolutionDetails.html" class="tsd-signature-type tsd-kind-type-alias">ResolutionDetails</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/2b4dbec/packages/server/src/provider/provider.ts#L51">packages/server/src/provider/provider.ts:51</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/5673362/packages/server/src/provider/provider.ts#L51">packages/server/src/provider/provider.ts:51</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="resolveStringEvaluation" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>resolve<wbr/>String<wbr/>Evaluation</span><a href="#resolveStringEvaluation" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -234,7 +238,7 @@ Called when this provider is replaced with a new one, or when the OpenFeature is
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/OpenFeature_JS_SDK.ResolutionDetails.html" class="tsd-signature-type tsd-kind-type-alias">ResolutionDetails</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/2b4dbec/packages/server/src/provider/provider.ts#L31">packages/server/src/provider/provider.ts:31</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/5673362/packages/server/src/provider/provider.ts#L31">packages/server/src/provider/provider.ts:31</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -278,6 +282,7 @@ Called when this provider is replaced with a new one, or when the OpenFeature is
 <li><a href="../classes/OpenFeature_JS_SDK.DefaultLogger.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-128"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-class)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M11.898 16.1201C11.098 16.1201 10.466 15.8961 10.002 15.4481C9.53803 15.0001 9.30603 14.3841 9.30603 13.6001V9.64012C9.30603 8.85612 9.53803 8.24012 10.002 7.79212C10.466 7.34412 11.098 7.12012 11.898 7.12012C12.682 7.12012 13.306 7.34812 13.77 7.80412C14.234 8.25212 14.466 8.86412 14.466 9.64012H13.386C13.386 9.14412 13.254 8.76412 12.99 8.50012C12.734 8.22812 12.37 8.09212 11.898 8.09212C11.426 8.09212 11.054 8.22412 10.782 8.48812C10.518 8.75212 10.386 9.13212 10.386 9.62812V13.6001C10.386 14.0961 10.518 14.4801 10.782 14.7521C11.054 15.0161 11.426 15.1481 11.898 15.1481C12.37 15.1481 12.734 15.0161 12.99 14.7521C13.254 14.4801 13.386 14.0961 13.386 13.6001H14.466C14.466 14.3761 14.234 14.9921 13.77 15.4481C13.306 15.8961 12.682 16.1201 11.898 16.1201Z" fill="var(--color-text)"></path></g></svg><span>Default<wbr/>Logger</span></a></li>
 <li><a href="../classes/OpenFeature_JS_SDK.FlagNotFoundError.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Flag<wbr/>Not<wbr/>Found<wbr/>Error</span></a></li>
 <li><a href="../classes/OpenFeature_JS_SDK.GeneralError.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>General<wbr/>Error</span></a></li>
+<li><a href="../classes/OpenFeature_JS_SDK.InMemoryProvider.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>In<wbr/>Memory<wbr/>Provider</span></a></li>
 <li><a href="../classes/OpenFeature_JS_SDK.InternalEventEmitter.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Internal<wbr/>Event<wbr/>Emitter</span></a></li>
 <li><a href="../classes/OpenFeature_JS_SDK.InvalidContextError.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Invalid<wbr/>Context<wbr/>Error</span></a></li>
 <li><a href="../classes/OpenFeature_JS_SDK.OpenFeatureAPI.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Open<wbr/>FeatureAPI</span></a></li>
