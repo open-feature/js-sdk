@@ -17,10 +17,10 @@ import { Paradigm } from './types';
 
 export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProvider>
   implements
-  Eventing,
-  EvaluationLifeCycle<OpenFeatureCommonAPI<P>>,
-  ManageLogger<OpenFeatureCommonAPI<P>>,
-  ManageTransactionContextPropagator<OpenFeatureCommonAPI<P>>
+    Eventing,
+    EvaluationLifeCycle<OpenFeatureCommonAPI<P>>,
+    ManageLogger<OpenFeatureCommonAPI<P>>,
+    ManageTransactionContextPropagator<OpenFeatureCommonAPI<P>>
 {
   protected _hooks: Hook[] = [];
   protected _transactionContextPropagator: TransactionContextPropagator = NOOP_TRANSACTION_CONTEXT_PROPAGATOR;
@@ -296,13 +296,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     );
   }
 
-  /**
-   * Clears all registered providers and resets the default provider.
-   * @template P
-   * @param {P} defaultProvider The provider that should be set as the default.
-   * @returns {this} OpenFeature API
-   */
-  protected async clearProviders(defaultProvider: P) {
+  protected async clearProvidersAndSetDefault(defaultProvider: P): Promise<void> {
     try {
       await this.close();
     } catch (err) {
