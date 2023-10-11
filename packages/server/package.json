@@ -51,7 +51,7 @@
     "@openfeature/shared": "*"
   },
   "typedoc": {
-    "displayName": "OpenFeature JS SDK",
+    "displayName": "OpenFeature Server SDK",
     "entryPoint": "./src/index.ts"
   }
 }
