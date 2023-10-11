@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/open-feature/js-sdk/compare/js-sdk-v1.5.0...js-sdk-v1.6.0) (2023-10-11)
+
+
+### Features
+
+* **server:** add in memory provider ([#585](https://github.com/open-feature/js-sdk/issues/585)) ([5e044ef](https://github.com/open-feature/js-sdk/commit/5e044efc6da2af66885d0b234a6f487da325837c))
+
 ## [1.5.0](https://github.com/open-feature/js-sdk/compare/js-sdk-v1.4.2...js-sdk-v1.5.0) (2023-10-09)
 
 
