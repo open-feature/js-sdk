@@ -51,19 +51,19 @@
 #### npm
 
 ```sh
-npm install --save @openfeature/js-sdk
+npm install --save @openfeature/server-sdk
 ```
 
 #### yarn
 
 ```sh
-yarn add @openfeature/js-sdk
+yarn add @openfeature/server-sdk
 ```
 
 ### Usage
 
 ```ts
-import { OpenFeature } from '@openfeature/js-sdk';
+import { OpenFeature } from '@openfeature/server-sdk';
 
 // Register your feature flag provider
 OpenFeature.setProvider(new YourProviderOfChoice());
@@ -146,7 +146,7 @@ If the hook you're looking for hasn't been created yet, see the [develop a hook]
 Once you've added a hook as a dependency, it can be registered at the global, client, or flag invocation level.
 
 ```ts
-import { OpenFeature } from "@openfeature/js-sdk";
+import { OpenFeature } from "@openfeature/server-sdk";
 
 // add a hook globally, to run on all evaluations
 OpenFeature.addHooks(new ExampleGlobalHook());
@@ -166,7 +166,7 @@ This behavior can be overridden by passing a custom logger either globally or pe
 A custom logger must implement the [Logger interface](../shared/src/logger/logger.ts).
 
 ```ts
-import type { Logger } from "@openfeature/js-sdk";
+import type { Logger } from "@openfeature/server-sdk";
 
 // The logger can be anything that conforms with the Logger interface
 const logger: Logger = console;
@@ -186,7 +186,7 @@ A name is a logical identifier which can be used to associate clients with a par
 If a name has no associated provider, the global provider is used.
 
 ```ts
-import { OpenFeature, InMemoryProvider } from "@openfeature/js-sdk";
+import { OpenFeature, InMemoryProvider } from "@openfeature/server-sdk";
 
 const myFlags = {
   'v2_enabled': {
@@ -219,7 +219,7 @@ Some providers support additional events, such as `PROVIDER_CONFIGURATION_CHANGE
 Please refer to the documentation of the provider you're using to see what events are supported.
 
 ```ts
-import { OpenFeature, ProviderEvents } from '@openfeature/js-sdk';
+import { OpenFeature, ProviderEvents } from '@openfeature/server-sdk';
 
 // OpenFeature API
 OpenFeature.addHandler(ProviderEvents.Ready, (eventDetails) => {
@@ -239,7 +239,7 @@ The OpenFeature API provides a close function to perform a cleanup of all regist
 This should only be called when your application is in the process of shutting down.
 
 ```ts
-import { OpenFeature } from '@openfeature/js-sdk';
+import { OpenFeature } from '@openfeature/server-sdk';
 
 await OpenFeature.close()
 ```
@@ -253,7 +253,7 @@ This can be a new repository or included in [the existing contrib repository](ht
 You’ll then need to write the provider by implementing the [Provider interface](./src/provider/provider.ts) exported by the OpenFeature SDK.
 
 ```ts
-import { JsonValue, Provider, ResolutionDetails } from '@openfeature/js-sdk';
+import { JsonValue, Provider, ResolutionDetails } from '@openfeature/server-sdk';
 
 // implement the provider interface
 class MyProvider implements Provider {
@@ -303,7 +303,7 @@ This can be a new repository or included in [the existing contrib repository](ht
 Implement your own hook by conforming to the [Hook interface](../shared/src/hooks/hook.ts).
 
 ```ts
-import type { Hook, HookContext, EvaluationDetails, FlagValue } from "@openfeature/js-sdk";
+import type { Hook, HookContext, EvaluationDetails, FlagValue } from "@openfeature/server-sdk";
 
 export class MyHook implements Hook {
   after(hookContext: HookContext, evaluationDetails: EvaluationDetails<FlagValue>) {
