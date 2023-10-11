@@ -23,7 +23,7 @@ export class InMemoryProvider implements Provider {
   public readonly events = new OpenFeatureEventEmitter();
   public readonly runsOn = 'server';
   readonly metadata = {
-    name: 'In-Memory Provider',
+    name: 'in-memory',
   } as const;
   private _flagConfiguration: FlagConfiguration;
 
