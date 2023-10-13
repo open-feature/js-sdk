@@ -19,7 +19,6 @@ const _globalThis = globalThis as OpenFeatureGlobal;
 export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider> implements ManageContext<OpenFeatureAPI> {
   protected _defaultProvider: Provider = NOOP_PROVIDER;
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor() {
     super('server');
   }
@@ -103,6 +102,14 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider> implements Ma
       { name, version },
       context
     );
+  }
+
+  /**
+   * Clears all registered providers and resets the default provider.
+   * @returns {Promise<void>}
+   */
+  clearProviders(): Promise<void> {
+    return super.clearProvidersAndSetDefault(NOOP_PROVIDER);
   }
 }
 

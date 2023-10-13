@@ -45,11 +45,12 @@ const MOCK_PROVIDER: Provider = {
 };
 
 describe('Logger', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     OpenFeature.setProvider(MOCK_PROVIDER);
   });
 
-  afterEach(() => {
+  afterEach(async () => {
+    await OpenFeature.clearProviders();
     jest.clearAllMocks();
     // Resetting the default logger on the singleton
     OpenFeature['_logger'] = new DefaultLogger();

@@ -18,7 +18,8 @@ const mockProvider = (config?: { initialStatus?: ProviderStatus; runsOn?: Paradi
 };
 
 describe('OpenFeature', () => {
-  afterEach(() => {
+  afterEach(async () => {
+    await OpenFeature.clearProviders();
     jest.clearAllMocks();
   });
 

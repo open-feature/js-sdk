@@ -75,6 +75,14 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider> implements Ma
       { name, version }
     );
   }
+
+  /**
+   * Clears all registered providers and resets the default provider.
+   * @returns {Promise<void>}
+   */
+  clearProviders(): Promise<void> {
+    return super.clearProvidersAndSetDefault(NOOP_PROVIDER);
+  }
 }
 
 /**
