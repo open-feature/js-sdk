@@ -1,15 +1,12 @@
 import { Paradigm } from '@openfeature/shared';
 import { OpenFeature, OpenFeatureAPI, OpenFeatureClient, Provider, ProviderStatus } from '../src';
 
-const mockProvider = (config?: {
-  initialStatus?: ProviderStatus,
-  runsOn?: Paradigm,
-}) => {
+const mockProvider = (config?: { initialStatus?: ProviderStatus; runsOn?: Paradigm }) => {
   return {
     metadata: {
       name: 'mock-events-success',
     },
-    runsOn: config?.runsOn,
+    runsOn: config?.runsOn || 'server',
     status: config?.initialStatus || ProviderStatus.NOT_READY,
     initialize: jest.fn(() => {
       return Promise.resolve('started');
@@ -41,13 +38,13 @@ describe('OpenFeature', () => {
 
     describe('Requirement 1.1.2.1', () => {
       it('should throw because the provider is not intended for the server', () => {
-        const provider = mockProvider({ runsOn: 'client'});
+        const provider = mockProvider({ runsOn: 'client' });
         expect(() => OpenFeature.setProvider(provider)).toThrowError(
           "Provider 'mock-events-success' is intended for use on the client."
         );
       });
       it('should succeed because the provider is intended for the server', () => {
-        const provider = mockProvider({ runsOn: 'server'});
+        const provider = mockProvider({ runsOn: 'server' });
         expect(() => OpenFeature.setProvider(provider)).not.toThrowError();
       });
     });
@@ -60,7 +57,7 @@ describe('OpenFeature', () => {
         expect(provider.initialize).toHaveBeenCalled();
       });
 
-      it('should not invoke initialze function if the provider is not in state NOT_READY', () => {
+      it('should not invoke initialize function if the provider is not in state NOT_READY', () => {
         const provider = mockProvider({ initialStatus: ProviderStatus.READY });
         OpenFeature.setProvider(provider);
         expect(OpenFeature.providerMetadata.name).toBe('mock-events-success');

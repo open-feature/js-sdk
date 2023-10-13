@@ -1,5 +1,42 @@
 # Changelog
 
+## [1.6.3](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.6.2...server-sdk-v1.6.3) (2023-10-11)
+
+
+### Bug Fixes
+
+* package in readme installs/examples ([#595](https://github.com/open-feature/js-sdk/issues/595)) ([3a15cb2](https://github.com/open-feature/js-sdk/commit/3a15cb21dc60cd9ac0c0c57839532b6ee7ea1c15))
+
+## [1.6.2](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.6.1...server-sdk-v1.6.2) (2023-10-11)
+
+
+### Renamed Package
+
+* publish as @openfeature/server-sdk ([#593](https://github.com/open-feature/js-sdk/issues/593)) ([1fdebc4](https://github.com/open-feature/js-sdk/commit/1fdebc4777916e81e4b5feac286941c7d4b5bf13))
+
+## [1.6.1](https://github.com/open-feature/js-sdk/compare/js-sdk-v1.6.0...js-sdk-v1.6.1) (2023-10-11)
+
+
+### Deprecation Notice
+
+* rename, deprecate js-sdk ([#589](https://github.com/open-feature/js-sdk/issues/589)) ([a361393](https://github.com/open-feature/js-sdk/commit/a36139342101265733ec3ae2d11773530dd19210))
+
+## [1.6.0](https://github.com/open-feature/js-sdk/compare/js-sdk-v1.5.0...js-sdk-v1.6.0) (2023-10-11)
+
+
+### Features
+
+* **server:** add in memory provider ([#585](https://github.com/open-feature/js-sdk/issues/585)) ([5e044ef](https://github.com/open-feature/js-sdk/commit/5e044efc6da2af66885d0b234a6f487da325837c))
+
+## [1.5.0](https://github.com/open-feature/js-sdk/compare/js-sdk-v1.4.2...js-sdk-v1.5.0) (2023-10-09)
+
+
+### Features
+
+* add provider compatibility check ([#537](https://github.com/open-feature/js-sdk/issues/537)) ([2bc5d63](https://github.com/open-feature/js-sdk/commit/2bc5d63266424a900da523f001f425b95da29ccc))
+* add support for a blocking setProvider ([#577](https://github.com/open-feature/js-sdk/issues/577)) ([d1f5049](https://github.com/open-feature/js-sdk/commit/d1f50490650da78ff7936641425b1a0614833c63))
+* STALE state, minor event changes ([#541](https://github.com/open-feature/js-sdk/issues/541)) ([0b5355b](https://github.com/open-feature/js-sdk/commit/0b5355b3cf7e606f9364a110a18e1c6aeca5c230))
+
 ## [1.4.2](https://github.com/open-feature/js-sdk/compare/js-sdk-v1.4.1...js-sdk-v1.4.2) (2023-08-07)
 
 

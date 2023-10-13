@@ -17,6 +17,7 @@ const TIMEOUT = 1000;
 class MockProvider implements Provider {
   readonly metadata: ProviderMetadata;
   readonly events?: OpenFeatureEventEmitter;
+  readonly runsOn = 'server';
   private hasInitialize: boolean;
   private failOnInit: boolean;
   private initDelay?: number;

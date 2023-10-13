@@ -1,6 +1,6 @@
 {
-  "name": "@openfeature/js-sdk",
-  "version": "1.4.2",
+  "name": "@openfeature/server-sdk",
+  "version": "1.6.3",
   "description": "OpenFeature SDK for JavaScript",
   "main": "./dist/cjs/index.js",
   "files": [
@@ -51,7 +51,7 @@
     "@openfeature/shared": "*"
   },
   "typedoc": {
-    "displayName": "OpenFeature JS SDK",
+    "displayName": "OpenFeature Server SDK",
     "entryPoint": "./src/index.ts"
   }
 }

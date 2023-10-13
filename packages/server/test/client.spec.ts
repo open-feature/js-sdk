@@ -10,6 +10,7 @@ import {
   OpenFeature,
   OpenFeatureClient,
   Provider,
+  ProviderStatus,
   ResolutionDetails,
   StandardResolutionReasons,
   TransactionContext,
@@ -89,6 +90,65 @@ describe('OpenFeatureClient', () => {
   afterEach(async () => {
     await OpenFeature.clearProviders();
     jest.clearAllMocks();
+  });
+
+  describe('Requirement 1.1.8', () => {
+    class mockAsyncProvider implements Provider {
+      metadata = {
+        name: 'mock-async',
+      };
+
+      status = ProviderStatus.NOT_READY;
+      readonly runsOn = 'server';
+
+      constructor(private readonly throwInInit: boolean) {}
+
+      async initialize(): Promise<void> {
+        if (this.throwInInit) {
+          try {
+            throw new Error('provider failed to initialize');
+          } catch (err) {
+            this.status = ProviderStatus.ERROR;
+            throw err;
+          }
+        }
+        this.status = ProviderStatus.READY;
+        return;
+      }
+
+      resolveBooleanEvaluation(): Promise<ResolutionDetails<boolean>> {
+        throw new Error('Method not implemented.');
+      }
+      resolveStringEvaluation(): Promise<ResolutionDetails<string>> {
+        throw new Error('Method not implemented.');
+      }
+      resolveNumberEvaluation(): Promise<ResolutionDetails<number>> {
+        throw new Error('Method not implemented.');
+      }
+      resolveObjectEvaluation<T extends JsonValue>(): Promise<ResolutionDetails<T>> {
+        throw new Error('Method not implemented.');
+      }
+    }
+
+    it('should wait for the provider to successfully initialize', async () => {
+      const spy = jest.spyOn(mockAsyncProvider.prototype, 'initialize');
+
+      const provider = new mockAsyncProvider(false);
+      expect(provider.status).toBe(ProviderStatus.NOT_READY);
+      await OpenFeature.setProviderAndWait(provider);
+      expect(provider.status).toBe(ProviderStatus.READY);
+      expect(spy).toBeCalled();
+    });
+
+    it('should wait for the provider to fail during initialization', async () => {
+      const spy = jest.spyOn(mockAsyncProvider.prototype, 'initialize');
+
+      const provider = new mockAsyncProvider(true);
+      expect(provider.status).toBe(ProviderStatus.NOT_READY);
+      await expect(OpenFeature.setProviderAndWait(provider)).rejects.toThrow();
+      expect(provider.status).toBe(ProviderStatus.ERROR);
+      expect(spy).toBeCalled();
+    });
   });
 
   describe('Requirement 1.2.1', () => {
