@@ -19,7 +19,7 @@ jobs:
       release_created: ${{ steps.release.outputs.releases_created }}
 
   npm-release:
-    needs: Release-please
+    needs: release-please
     runs-on: ubuntu-latest
     if: ${{ needs.release-please.outputs.release_created }}
     steps:

@@ -8,6 +8,7 @@ on:
       - reopened
     branches:
       - main
+  merge_group:
 
 jobs:
   build-test-lint:
