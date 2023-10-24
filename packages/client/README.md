@@ -69,7 +69,7 @@ yarn add @openfeature/web-sdk
 import { OpenFeature } from '@openfeature/web-sdk';
 
 // Register your feature flag provider
-OpenFeature.setProvider(new YourProviderOfChoice());
+await OpenFeature.setProviderAndWait(new YourProviderOfChoice());
 
 // create a new client
 const client = OpenFeature.getClient();
@@ -109,9 +109,24 @@ If the provider you're looking for hasn't been created yet, see the [develop a p
 
 Once you've added a provider as a dependency, it can be registered with OpenFeature like this:
 
+#### Awaitable
+
+To register a provider and ensure it is ready before further actions are taken, you can use the `setProviderAndWait` method as shown below:
+
 ```ts
-OpenFeature.setProvider(new MyProvider())
+await OpenFeature.setProviderAndWait(new MyProvider());
+```  
+
+#### Synchronous
+
+To register a provider in a synchronous manner, you can use the `setProvider` method as shown below:
+
+```ts
+OpenFeature.setProvider(new MyProvider());
 ```
+
+> [!NOTE]  
+> The status of the provider can be tracked using [events](#eventing).
 
 In some situations, it may be beneficial to register multiple providers in the same application.
 This is possible using [named clients](#named-clients), which is covered in more detail below.
@@ -130,22 +145,7 @@ sequenceDiagram
 In (1) the Client sends a request to the provider backend in order to get all values from all feature flags that it has.
 Once the provider backend replies (2) the client holds all flag values and therefore the flag evaluation process is synchronous.
 
-In order to prevent flag evaluation to the default value while flags are still being fetched, it is highly recommended to only look for flag value after the provider has emitted the `Ready` event.
-The following code snippet provides an example.
-
-```ts
-import { OpenFeature, ProviderEvents } from '@openfeature/web-sdk';
-
-OpenFeature.setProvider( /*set a provider*/ );
-
-// OpenFeature API
-OpenFeature.addHandler(ProviderEvents.Ready, () => {
-  const client = OpenFeature.getClient();
-  const stringFlag = client.getStringValue('string-flag', "default value"))
-
-  //use stringFlag from this point
-});
-```
+In order to prevent flag evaluations from defaulting while the provider is initializing, it is highly recommended to only look for flag value after the provider is ready. This can be done using the `setProviderAndWait` method or using the `setProvider` method and listening for the `READY` [event](#eventing).
 
 ### Targeting and Context
 
@@ -237,13 +237,13 @@ import { OpenFeature, ProviderEvents } from '@openfeature/web-sdk';
 
 // OpenFeature API
 OpenFeature.addHandler(ProviderEvents.Ready, (eventDetails) => {
-  console.log(`Ready event from: ${eventDetails?.clientName}:`, eventDetails);
+  console.log(`Ready event from: ${eventDetails?.providerName}:`, eventDetails);
 });
 
 // Specific client
 const client = OpenFeature.getClient();
 client.addHandler(ProviderEvents.Error, (eventDetails) => {
-  console.log(`Error event from: ${eventDetails?.clientName}:`, eventDetails);
+  console.log(`Error event from: ${eventDetails?.providerName}:`, eventDetails);
 });
 ```
 
@@ -271,6 +271,8 @@ import { JsonValue, Provider, ResolutionDetails } from '@openfeature/web-sdk';
 
 // implement the provider interface
 class MyProvider implements Provider {
+  // Adds runtime validation that the provider is used with the expected SDK
+  public readonly runsOn = 'client';
 
   readonly metadata = {
     name: 'My Provider',
