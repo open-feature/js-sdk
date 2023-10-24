@@ -6,24 +6,13 @@ import { isDefined } from './filter';
 import { EvaluationLifeCycle, Hook } from './hooks';
 import { DefaultLogger, Logger, ManageLogger, SafeLogger } from './logger';
 import { CommonProvider, ProviderMetadata, ProviderStatus } from './provider';
-import {
-  ManageTransactionContextPropagator,
-  NOOP_TRANSACTION_CONTEXT_PROPAGATOR,
-  TransactionContext,
-  TransactionContextPropagator,
-} from './transaction-context';
 import { objectOrUndefined, stringOrUndefined } from './type-guards';
 import { Paradigm } from './types';
 
 export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProvider>
-  implements
-    Eventing,
-    EvaluationLifeCycle<OpenFeatureCommonAPI<P>>,
-    ManageLogger<OpenFeatureCommonAPI<P>>,
-    ManageTransactionContextPropagator<OpenFeatureCommonAPI<P>>
+  implements Eventing, EvaluationLifeCycle<OpenFeatureCommonAPI<P>>, ManageLogger<OpenFeatureCommonAPI<P>>
 {
   protected _hooks: Hook[] = [];
-  protected _transactionContextPropagator: TransactionContextPropagator = NOOP_TRANSACTION_CONTEXT_PROPAGATOR;
   protected _context: EvaluationContext = {};
   protected _logger: Logger = new DefaultLogger();
 
@@ -349,36 +338,5 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
   private handleShutdownError(provider: P, err: unknown) {
     this._logger.error(`Error during shutdown of provider ${provider.metadata.name}: ${err}`);
     this._logger.error((err as Error)?.stack);
-  }
-
-  setTransactionContextPropagator(transactionContextPropagator: TransactionContextPropagator): OpenFeatureCommonAPI<P> {
-    const baseMessage = 'Invalid TransactionContextPropagator, will not be set: ';
-    if (typeof transactionContextPropagator?.getTransactionContext !== 'function') {
-      this._logger.error(`${baseMessage}: getTransactionContext is not a function.`);
-    } else if (typeof transactionContextPropagator?.setTransactionContext !== 'function') {
-      this._logger.error(`${baseMessage}: setTransactionContext is not a function.`);
-    } else {
-      this._transactionContextPropagator = transactionContextPropagator;
-    }
-    return this;
-  }
-
-  setTransactionContext<R>(
-    transactionContext: TransactionContext,
-    callback: (...args: unknown[]) => R,
-    ...args: unknown[]
-  ): void {
-    this._transactionContextPropagator.setTransactionContext(transactionContext, callback, ...args);
-  }
-
-  getTransactionContext(): TransactionContext {
-    try {
-      return this._transactionContextPropagator.getTransactionContext();
-    } catch (err: unknown) {
-      const error = err as Error | undefined;
-      this._logger.error(`Error getting transaction context: ${error?.message}, returning empty context.`);
-      this._logger.error(error?.stack);
-      return {};
-    }
   }
 }
