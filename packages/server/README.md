@@ -66,7 +66,7 @@ yarn add @openfeature/server-sdk
 import { OpenFeature } from '@openfeature/server-sdk';
 
 // Register your feature flag provider
-OpenFeature.setProvider(new YourProviderOfChoice());
+await OpenFeature.setProviderAndWait(new YourProviderOfChoice());
 
 // create a new client
 const client = OpenFeature.getClient();
@@ -81,7 +81,7 @@ if (v2Enabled) {
 
 ### API Reference
 
-See [here](https://open-feature.github.io/js-sdk/modules/OpenFeature_JS_SDK.html) for the complete API documentation.
+See [here](https://open-feature.github.io/js-sdk/modules/OpenFeature_Server_SDK.html) for the complete API documentation.
 
 ## 🌟 Features
 
@@ -106,9 +106,24 @@ If the provider you're looking for hasn't been created yet, see the [develop a p
 
 Once you've added a provider as a dependency, it can be registered with OpenFeature like this:
 
+#### Awaitable
+
+To register a provider and ensure it is ready before further actions are taken, you can use the `setProviderAndWait` method as shown below:
+
 ```ts
-OpenFeature.setProvider(new MyProvider())
+await OpenFeature.setProviderAndWait(new MyProvider());
+```  
+
+#### Synchronous
+
+To register a provider in a synchronous manner, you can use the `setProvider` method as shown below:
+
+```ts
+OpenFeature.setProvider(new MyProvider());
 ```
+
+> [!NOTE]  
+> The status of the provider can be tracked using [events](#eventing).
 
 In some situations, it may be beneficial to register multiple providers in the same application.
 This is possible using [named clients](#named-clients), which is covered in more details below.
@@ -210,6 +225,9 @@ const clientWithDefault = OpenFeature.getClient();
 const clientForCache = OpenFeature.getClient("otherClient");
 ```
 
+Named providers can be set in an awaitable or synchronous way.
+For more details, please refer to the [providers](#providers) section.
+
 ### Eventing
 
 Events allow you to react to state changes in the provider or underlying flag management system, such as flag definition changes, provider readiness, or error conditions.
@@ -223,13 +241,13 @@ import { OpenFeature, ProviderEvents } from '@openfeature/server-sdk';
 
 // OpenFeature API
 OpenFeature.addHandler(ProviderEvents.Ready, (eventDetails) => {
-  console.log(`Ready event from: ${eventDetails?.clientName}:`, eventDetails);
+  console.log(`Ready event from: ${eventDetails?.providerName}:`, eventDetails);
 });
 
 // Specific client
 const client = OpenFeature.getClient();
 client.addHandler(ProviderEvents.Error, (eventDetails) => {
-  console.log(`Error event from: ${eventDetails?.clientName}:`, eventDetails);
+  console.log(`Error event from: ${eventDetails?.providerName}:`, eventDetails);
 });
 ```
 
@@ -257,6 +275,8 @@ import { JsonValue, Provider, ResolutionDetails } from '@openfeature/server-sdk'
 
 // implement the provider interface
 class MyProvider implements Provider {
+  // Adds runtime validation that the provider is used with the expected SDK
+  public readonly runsOn = 'server';
 
   readonly metadata = {
     name: 'My Provider',
