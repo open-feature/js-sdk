@@ -125,8 +125,7 @@ To register a provider in a synchronous manner, you can use the `setProvider` me
 OpenFeature.setProvider(new MyProvider());
 ```
 
-> [!NOTE]  
-> The status of the provider can be tracked using [events](#eventing).
+Once the provider has been registered, the status can be tracked using [events](#eventing).
 
 In some situations, it may be beneficial to register multiple providers in the same application.
 This is possible using [named clients](#named-clients), which is covered in more detail below.
