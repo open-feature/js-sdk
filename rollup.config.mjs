@@ -18,11 +18,12 @@ export default {
     }
   ],
   plugins: [
-    alias({
-      entries: [
-        { find: '@openfeature/shared', replacement: '../shared/dist/types.d.ts' },
-      ],
-    }),
-    dts({tsconfig: './tsconfig.json', respectExternal: true}),
+    // TODO delete?
+    // alias({
+    //   entries: [
+    //     { find: '@openfeature/core', replacement: '../shared/dist/types.d.ts' },
+    //   ],
+    // }),
+    dts({tsconfig: './tsconfig.json'}),
   ],
 };

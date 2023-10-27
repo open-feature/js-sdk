@@ -7,7 +7,7 @@ import {
   ResolutionDetails,
   StandardResolutionReasons,
   ProviderEvents,
-} from '@openfeature/shared';
+} from '@openfeature/core';
 import { OpenFeature } from '../..';
 // load the feature file.
 const feature = loadFeature('packages/server/e2e/features/evaluation.feature');
