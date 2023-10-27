@@ -1,4 +1,4 @@
-import { ClientMetadata, EvaluationLifeCycle, Eventing, ManageContext, ManageLogger } from '@openfeature/shared';
+import { ClientMetadata, EvaluationLifeCycle, Eventing, ManageContext, ManageLogger } from '@openfeature/core';
 import { Features } from '../evaluation';
 
 export interface Client

@@ -1,8 +1,18 @@
 {
-  "name": "@openfeature/shared",
-  "version": "0.0.12",
-  "main": "src/index",
-  "description": "Shared js/web components",
+  "name": "@openfeature/core",
+  "version": "0.1.0",
+  "description": "Shared js components (server and web)",
+  "main": "./dist/cjs/index.js",
+  "files": [
+    "dist/"
+  ],
+  "exports": {
+    "types": "./dist/types.d.ts",
+    "import": "./dist/esm/index.js",
+    "require": "./dist/cjs/index.js",
+    "default": "./dist/cjs/index.js"
+  },
+  "types": "./dist/types.d.ts",
   "devDependencies": {},
   "scripts": {
     "test": "jest --verbose",
@@ -12,7 +22,12 @@
     "build:esm": "esbuild src/index.ts --bundle --sourcemap --target=es2016 --format=esm --outfile=./dist/esm/index.js --analyze",
     "build:cjs": "esbuild src/index.ts --bundle --sourcemap --target=es2016 --format=cjs --outfile=./dist/cjs/index.js --analyze",
     "build:rollup-types": "rollup -c ../../rollup.config.mjs",
-    "build": "npm run clean && npm run build:esm && npm run build:cjs && npm run build:rollup-types"
+    "build": "npm run clean && npm run build:esm && npm run build:cjs && npm run build:rollup-types",
+    "postbuild": "shx cp ./../../package.esm.json ./dist/esm/package.json",
+    "current-version": "echo $npm_package_version",
+    "prepack": "shx cp ./../../LICENSE ./LICENSE",
+    "publish-if-not-exists": "cp $NPM_CONFIG_USERCONFIG .npmrc && if [ \"$(npm show $npm_package_name@$npm_package_version version)\" = \"$(npm run current-version -s)\" ]; then echo 'already published, skipping'; else npm publish --access public; fi",
+    "docs": "typedoc"
   },
   "repository": {
     "type": "git",

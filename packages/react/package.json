@@ -47,10 +47,12 @@
   },
   "homepage": "https://github.com/open-feature/js-sdk#readme",
   "peerDependencies": {
-    "@openfeature/web-sdk": ">=0.4.0",
-    "react": ">=18.0.0"
+    "react": ">=18.0.0",
+    "@openfeature/core": ">=0.1.0",
+    "@openfeature/web-sdk": ">=0.4.0"
   },
   "devDependencies": {
+    "@openfeature/core": "*",
     "@openfeature/web-sdk": "*"
   },
   "typedoc": {

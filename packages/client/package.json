@@ -17,8 +17,8 @@
     "test": "jest --verbose",
     "lint": "eslint ./",
     "clean": "shx rm -rf ./dist",
-    "build:web-esm": "esbuild src/index.ts --bundle --sourcemap --target=es2016 --platform=browser --format=esm --outfile=./dist/esm/index.js --analyze",
-    "build:web-cjs": "esbuild src/index.ts --bundle --sourcemap --target=es2016 --platform=browser --format=cjs --outfile=./dist/cjs/index.js --analyze",
+    "build:web-esm": "esbuild src/index.ts --bundle --external:@openfeature/core --sourcemap --target=es2016 --platform=browser --format=esm --outfile=./dist/esm/index.js --analyze",
+    "build:web-cjs": "esbuild src/index.ts --bundle --external:@openfeature/core --sourcemap --target=es2016 --platform=browser --format=cjs --outfile=./dist/cjs/index.js --analyze",
     "build:rollup-types": "rollup -c ../../rollup.config.mjs",
     "build": "npm run clean && npm run build:web-esm && npm run build:web-cjs && npm run build:rollup-types",
     "postbuild": "shx cp ./../../package.esm.json ./dist/esm/package.json",
@@ -45,8 +45,11 @@
     "url": "https://github.com/open-feature/js-sdk/issues"
   },
   "homepage": "https://github.com/open-feature/js-sdk#readme",
+  "peerDependencies": {
+    "@openfeature/core": ">=0.1.0"
+  },
   "devDependencies": {
-    "@openfeature/shared": "*"
+    "@openfeature/core": "*"
   },
   "typedoc": {
     "displayName": "OpenFeature Web SDK",

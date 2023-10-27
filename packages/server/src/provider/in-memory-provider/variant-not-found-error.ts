@@ -1,4 +1,4 @@
-import { ErrorCode, OpenFeatureError } from '@openfeature/shared';
+import { ErrorCode, OpenFeatureError } from '@openfeature/core';
 
 /**
  * A custom error for the in-memory provider.

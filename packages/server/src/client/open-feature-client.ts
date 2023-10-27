@@ -18,7 +18,7 @@ import {
   SafeLogger,
   StandardResolutionReasons,
   statusMatchesEvent
-} from '@openfeature/shared';
+} from '@openfeature/core';
 import { FlagEvaluationOptions } from '../evaluation';
 import { OpenFeature } from '../open-feature';
 import { Provider } from '../provider';
