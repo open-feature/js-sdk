@@ -1,0 +1,30 @@
+on:
+  push:
+    branches:
+      - release-please*
+
+name: Validate Release
+jobs:
+  npm-release:
+    runs-on: ubuntu-latest
+    steps:
+      # The logic below handles the npm publication:
+      - name: Checkout Release PR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr checkout ${{ github.event.pull_request.number }}
+      
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 16
+          registry-url: "https://registry.npmjs.org"
+          cache: 'npm'
+
+      - name: Attempt @openfeature/core Update
+        run: gh prs '"release shared" in:title'
+
+      # - name: Push changes
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: git push
