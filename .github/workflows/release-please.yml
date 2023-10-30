@@ -13,7 +13,7 @@ jobs:
         id: release
         with:
           command: manifest
-          token: ${{secrets.GITHUB_TOKEN}}
+          token: ${{secrets.RELEASE_PLEASE_ACTION_TOKEN}}
           default-branch: main
     outputs:
       release_created: ${{ steps.release.outputs.releases_created }}
