@@ -18,12 +18,6 @@ export default {
     }
   ],
   plugins: [
-    // TODO delete?
-    // alias({
-    //   entries: [
-    //     { find: '@openfeature/core', replacement: '../shared/dist/types.d.ts' },
-    //   ],
-    // }),
     dts({tsconfig: './tsconfig.json'}),
   ],
 };

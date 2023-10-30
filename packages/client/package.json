@@ -25,7 +25,7 @@
     "current-version": "echo $npm_package_version",
     "prepack": "shx cp ./../../LICENSE ./LICENSE",
     "publish-if-not-exists": "cp $NPM_CONFIG_USERCONFIG .npmrc && if [ \"$(npm show $npm_package_name@$npm_package_version version)\" = \"$(npm run current-version -s)\" ]; then echo 'already published, skipping'; else npm publish --access public; fi",
-    "docs": "typedoc"
+    "update-core-peer": "npm install --save-peer --save-exact @openfeature/core@$OPENFEATURE_CORE_VERSION"
   },
   "repository": {
     "type": "git",
@@ -50,9 +50,5 @@
   },
   "devDependencies": {
     "@openfeature/core": "*"
-  },
-  "typedoc": {
-    "displayName": "OpenFeature Web SDK",
-    "entryPoint": "./src/index.ts"
   }
 }
