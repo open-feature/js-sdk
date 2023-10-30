@@ -2,7 +2,6 @@
   "bootstrap-sha": "64eadd1b615997440ab4a246b941a24d13abd220",
   "separate-pull-requests": true,
   "plugins": ["node-workspace"],
-  "signoff": "openfeaturebot <109696520+openfeaturebot@users.noreply.github.com>",
   "packages": {
     "packages/server": {
       "release-type": "node",

@@ -15,6 +15,7 @@ jobs:
           command: manifest
           token: ${{secrets.RELEASE_PLEASE_ACTION_TOKEN}}
           default-branch: main
+          signoff: "openfeaturebot <109696520+openfeaturebot@users.noreply.github.com>"
     outputs:
       release_created: ${{ steps.release.outputs.releases_created }}
 
