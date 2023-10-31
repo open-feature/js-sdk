@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.13](https://github.com/open-feature/js-sdk/compare/shared-v0.0.12...shared-v0.0.13) (2023-10-31)
+
+
+### Features
+
+* add support for clearing providers ([#578](https://github.com/open-feature/js-sdk/issues/578)) ([a3a907f](https://github.com/open-feature/js-sdk/commit/a3a907f348d7ff2ac7cd42eca61cd760fdd93048))
+
 ## [0.0.12](https://github.com/open-feature/js-sdk/compare/shared-v0.0.11...shared-v0.0.12) (2023-10-09)
 
 
