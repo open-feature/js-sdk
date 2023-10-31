@@ -60,6 +60,7 @@ npm install --save @openfeature/web-sdk
 #### yarn
 
 ```sh
+# yarn requires manual installation of the @openfeature/core peer-dependency
 yarn add @openfeature/web-sdk @openfeature/core
 ```
 

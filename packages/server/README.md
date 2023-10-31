@@ -57,6 +57,7 @@ npm install --save @openfeature/server-sdk
 #### yarn
 
 ```sh
+# yarn requires manual installation of the @openfeature/core peer-dependency
 yarn add @openfeature/server-sdk @openfeature/core
 ```
 
