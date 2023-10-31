@@ -16,8 +16,8 @@
     <img alt="Specification" src="https://img.shields.io/static/v1?label=specification&message=v0.7.0&color=yellow&style=for-the-badge" />
   </a>
   <!-- x-release-please-start-version -->
-  <a href="https://github.com/open-feature/js-sdk/releases/tag/web-sdk-v0.4.1">
-    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v0.4.1&color=blue&style=for-the-badge" />
+  <a href="https://github.com/open-feature/js-sdk/releases/tag/web-sdk-v0.4.2">
+    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v0.4.2&color=blue&style=for-the-badge" />
   </a>
   <!-- x-release-please-end -->
   <br/>
