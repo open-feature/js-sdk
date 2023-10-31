@@ -29,7 +29,7 @@
     },
     "packages/shared": {
       "release-type": "node",
-      "prerelease": true,
+      "prerelease": false,
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true,
       "versioning": "default"
