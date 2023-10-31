@@ -1,6 +1,18 @@
 # Changelog
 
 
+## [0.4.3](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.2...web-sdk-v0.4.3) (2023-10-31)
+
+
+### Features
+
+* extract and publish core package ([#629](https://github.com/open-feature/js-sdk/issues/629)) ([c3ee90b](https://github.com/open-feature/js-sdk/commit/c3ee90b2e0fdcec235069960e7ec03e63028b08c))
+
+
+### Bug Fixes
+
+* api docs links ([#645](https://github.com/open-feature/js-sdk/issues/645)) ([4ff3f0e](https://github.com/open-feature/js-sdk/commit/4ff3f0e94cd597538b18f785873cb3beb0e83ff2))
+
 ## [0.4.2](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.1...web-sdk-v0.4.2) (2023-10-31)
 
 
