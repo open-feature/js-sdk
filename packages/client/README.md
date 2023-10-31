@@ -24,7 +24,7 @@
   <a href="https://www.repostatus.org/#wip">
     <img alt="Project Status" src="https://www.repostatus.org/badges/latest/wip.svg" />
   </a>
-  <a href="https://open-feature.github.io/js-sdk/modules/OpenFeature_Web_SDK.html">
+  <a href="https://open-feature.github.io/js-sdk/modules/_openfeature_web_sdk.html">
     <img alt="API Reference" src="https://img.shields.io/badge/reference-teal?logo=javascript&logoColor=white" />
   </a>
   <a href="https://www.npmjs.com/package/@openfeature/web-sdk">
