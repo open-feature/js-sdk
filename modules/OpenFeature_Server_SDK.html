@@ -38,7 +38,7 @@
   </a>
   <!-- x-release-please-end -->
   <br/>
-  <a href="https://open-feature.github.io/js-sdk/modules/OpenFeature_JS_SDK.html">
+  <a href="https://open-feature.github.io/js-sdk/modules/OpenFeature_Server_SDK.html">
     <img alt="API Reference" src="https://img.shields.io/badge/reference-teal?logo=javascript&logoColor=white" />
   </a>
   <a href="https://www.npmjs.com/package/@openfeature/server-sdk">
@@ -65,7 +65,7 @@
 </code><button>Copy</button></pre>
 <a id="md:usage" class="tsd-anchor"></a><h3><a href="#md:usage">Usage</a></h3><pre><code class="language-ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-5">OpenFeature</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;@openfeature/server-sdk&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-6">// Register your feature flag provider</span><br/><span class="hl-5">OpenFeature</span><span class="hl-1">.</span><span class="hl-0">setProvider</span><span class="hl-1">(</span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-0">YourProviderOfChoice</span><span class="hl-1">());</span><br/><br/><span class="hl-6">// create a new client</span><br/><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-7">client</span><span class="hl-1"> = </span><span class="hl-5">OpenFeature</span><span class="hl-1">.</span><span class="hl-0">getClient</span><span class="hl-1">();</span><br/><br/><span class="hl-6">// Evaluate your feature flag</span><br/><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-7">v2Enabled</span><span class="hl-1"> = </span><span class="hl-4">await</span><span class="hl-1"> </span><span class="hl-5">client</span><span class="hl-1">.</span><span class="hl-0">getBooleanValue</span><span class="hl-1">(</span><span class="hl-2">&#39;v2_enabled&#39;</span><span class="hl-1">, </span><span class="hl-3">false</span><span class="hl-1">);</span><br/><br/><span class="hl-4">if</span><span class="hl-1"> (</span><span class="hl-5">v2Enabled</span><span class="hl-1">) {</span><br/><span class="hl-1">  </span><span class="hl-5">console</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">(</span><span class="hl-2">&quot;v2 is enabled&quot;</span><span class="hl-1">);</span><br/><span class="hl-1">}</span>
 </code><button>Copy</button></pre>
-<a id="md:api-reference" class="tsd-anchor"></a><h3><a href="#md:api-reference">API Reference</a></h3><p>See <a href="https://open-feature.github.io/js-sdk/modules/OpenFeature_JS_SDK.html">here</a> for the complete API documentation.</p>
+<a id="md:api-reference" class="tsd-anchor"></a><h3><a href="#md:api-reference">API Reference</a></h3><p>See <a href="https://open-feature.github.io/js-sdk/modules/OpenFeature_Server_SDK.html">here</a> for the complete API documentation.</p>
 <a id="md:🌟-features" class="tsd-anchor"></a><h2><a href="#md:🌟-features">🌟 Features</a></h2><table>
 <thead>
 <tr>
@@ -173,7 +173,7 @@ Implement your own hook by conforming to the <a href="../shared/src/hooks/hook.t
 </blockquote>
 </section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/cb80161/packages/server/src/index.ts#L1">packages/server/src/index.ts:1</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/open-feature/js-sdk/blob/ac7b43f/packages/server/src/index.ts#L1">packages/server/src/index.ts:1</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <h3 class="tsd-index-heading uppercase">Index</h3>
