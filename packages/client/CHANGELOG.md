@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [0.4.2](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.1...web-sdk-v0.4.2) (2023-10-31)
+
+
+### Features
+
+* add support for clearing providers ([#578](https://github.com/open-feature/js-sdk/issues/578)) ([a3a907f](https://github.com/open-feature/js-sdk/commit/a3a907f348d7ff2ac7cd42eca61cd760fdd93048))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/shared bumped from * to 0.0.13
+
 ## [0.4.1](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.0...web-sdk-v0.4.1) (2023-10-09)
 
 
