@@ -8,7 +8,7 @@
 
 <h2 align="center">Shared js components (server and web)</h2>
 
-[OpenFeature](https://openfeature.dev) is an open standard that provides a vendor-agnostic, community-driven API for feature flagging that works with your favorite feature flag management tool.
+[OpenFeature](https://openfeature.dev) is an open specification that provides a vendor-agnostic, community-driven API for feature flagging that works with your favorite feature flag management tool.
 
 ## 🔩 Shared JS components
 
@@ -17,7 +17,7 @@
 
 This package comprises the common types and interfaces of the OpenFeature server and web SDKs.
 If you are developing a provider or a hook, you should instead utilize the [server](../server/README.md) or [web](../client/README.md) SDKs.
-This package is useful if you need to reference the underlying types common to all the JS SDKs, or if you're creating a utility that can be used to both server and web implementations.
+This package is useful if you need to reference the underlying types common to all the JS SDKs or if you're creating a utility that can be used for both server and web implementations.
 Be sure to add this module as either a `devDependency` (if only build time assets such as types are required) or as a `peerDependency` with a permissive version expression.
 
 ### API Reference
