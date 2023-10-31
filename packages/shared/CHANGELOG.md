@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.16](https://github.com/open-feature/js-sdk/compare/core-v0.0.15...core-v0.0.16) (2023-10-31)
+
+
+### Bug Fixes
+
+* api docs links ([#645](https://github.com/open-feature/js-sdk/issues/645)) ([4ff3f0e](https://github.com/open-feature/js-sdk/commit/4ff3f0e94cd597538b18f785873cb3beb0e83ff2))
+
 ## [0.0.15](https://github.com/open-feature/js-sdk/compare/core-v0.0.14...core-v0.0.15) (2023-10-31)
 
 
