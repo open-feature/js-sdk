@@ -57,7 +57,7 @@ npm install --save @openfeature/server-sdk
 #### yarn
 
 ```sh
-yarn add @openfeature/server-sdk
+yarn add @openfeature/server-sdk @openfeature/core
 ```
 
 ### Usage
