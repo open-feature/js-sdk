@@ -19,3 +19,7 @@ This package comprises the common types and interfaces of the OpenFeature server
 If you are developing a provider or a hook, you should instead utilize the [server](../server/README.md) or [web](../client/README.md) SDKs.
 This package is useful if you need to reference the underlying types common to all the JS SDKs, or if you're creating a utility that can be used to both server and web implementations.
 Be sure to add this module as either a `devDependency` (if only build time assets such as types are required) or as a `peerDependency` with a permissive version expression.
+
+### API Reference
+
+See [here](https://open-feature.github.io/js-sdk/modules/_openfeature_core.html) for the complete API documentation.

@@ -21,7 +21,7 @@
   </a>
   <!-- x-release-please-end -->
   <br/>
-  <a href="https://open-feature.github.io/js-sdk/modules/OpenFeature_Server_SDK.html">
+  <a href="https://open-feature.github.io/js-sdk/modules/_openfeature_server_sdk.html">
     <img alt="API Reference" src="https://img.shields.io/badge/reference-teal?logo=javascript&logoColor=white" />
   </a>
   <a href="https://www.npmjs.com/package/@openfeature/server-sdk">
@@ -81,7 +81,7 @@ if (v2Enabled) {
 
 ### API Reference
 
-See [here](https://open-feature.github.io/js-sdk/modules/OpenFeature_Server_SDK.html) for the complete API documentation.
+See [here](https://open-feature.github.io/js-sdk/modules/_openfeature_server_sdk.html) for the complete API documentation.
 
 ## 🌟 Features
 
