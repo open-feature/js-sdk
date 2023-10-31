@@ -81,7 +81,7 @@ if (v2Enabled) {
 
 ### API Reference
 
-See [here](https://open-feature.github.io/js-sdk/modules/OpenFeature_Server_SDK.html) for the complete API documentation.
+See [here](https://open-feature.github.io/js-sdk/modules/_openfeature_server_sdk.html) for the complete API documentation.
 
 ## 🌟 Features
 
