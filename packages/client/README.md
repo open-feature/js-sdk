@@ -60,7 +60,7 @@ npm install --save @openfeature/web-sdk
 #### yarn
 
 ```sh
-yarn add @openfeature/web-sdk
+yarn add @openfeature/web-sdk @openfeature/core
 ```
 
 ### Usage
