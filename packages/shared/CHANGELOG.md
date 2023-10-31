@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.15](https://github.com/open-feature/js-sdk/compare/core-v0.0.14...core-v0.0.15) (2023-10-31)
+
+
+### Bug Fixes
+
+* publish script, compilation error in tests ([#643](https://github.com/open-feature/js-sdk/issues/643)) ([1349bee](https://github.com/open-feature/js-sdk/commit/1349bee20c8ce02829fd7f49996a5940970a210d))
+
 ## [0.0.14](https://github.com/open-feature/js-sdk/compare/core-v0.0.13...core-v0.0.14) (2023-10-31)
 
 
