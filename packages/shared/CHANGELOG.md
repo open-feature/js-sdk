@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.14](https://github.com/open-feature/js-sdk/compare/core-v0.0.13...core-v0.0.14) (2023-10-31)
+
+
+### Features
+
+* add support for clearing providers ([#578](https://github.com/open-feature/js-sdk/issues/578)) ([a3a907f](https://github.com/open-feature/js-sdk/commit/a3a907f348d7ff2ac7cd42eca61cd760fdd93048))
+* extract and publish core package ([#629](https://github.com/open-feature/js-sdk/issues/629)) ([c3ee90b](https://github.com/open-feature/js-sdk/commit/c3ee90b2e0fdcec235069960e7ec03e63028b08c))
+
 ## [0.0.13](https://github.com/open-feature/js-sdk/compare/shared-v0.0.12...shared-v0.0.13) (2023-10-31)
 
 
