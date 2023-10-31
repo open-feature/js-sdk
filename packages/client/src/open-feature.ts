@@ -1,4 +1,4 @@
-import { EvaluationContext, ManageContext, OpenFeatureCommonAPI } from '@openfeature/shared';
+import { EvaluationContext, ManageContext, OpenFeatureCommonAPI } from '@openfeature/core';
 import { Client, OpenFeatureClient } from './client';
 import { NOOP_PROVIDER, Provider } from './provider';
 

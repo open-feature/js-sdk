@@ -1,4 +1,4 @@
-import { ResolutionDetails, JsonValue, ProviderStatus } from '@openfeature/shared';
+import { ResolutionDetails, JsonValue, ProviderStatus } from '@openfeature/core';
 import { Provider } from './provider';
 
 const REASON_NO_OP = 'No-op';

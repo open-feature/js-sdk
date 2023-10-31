@@ -5,7 +5,7 @@ import {
   EvaluationContext,
   objectOrUndefined,
   stringOrUndefined,
-} from '@openfeature/shared';
+} from '@openfeature/core';
 import {
   ManageTransactionContextPropagator,
   NOOP_TRANSACTION_CONTEXT_PROPAGATOR,

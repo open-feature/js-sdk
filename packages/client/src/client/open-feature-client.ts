@@ -17,7 +17,7 @@ import {
   ResolutionDetails,
   SafeLogger,
   StandardResolutionReasons,
-} from '@openfeature/shared';
+} from '@openfeature/core';
 import { FlagEvaluationOptions } from '../evaluation';
 import { OpenFeature } from '../open-feature';
 import { Provider } from '../provider';

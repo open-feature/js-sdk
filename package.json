@@ -12,7 +12,9 @@
     "clean": "shx rm -rf ./dist",
     "build": "npm run build --workspace=packages/shared --workspace=packages/server --workspace=packages/client --workspace=packages/react",
     "publish-all": "npm run publish-if-not-exists --workspace=packages/server --workspace=packages/client --workspace=packages/react",
-    "docs": "typedoc"
+    "docs": "typedoc",
+    "core-version": "npm run version --workspace=packages/shared",
+    "update-core-peers": "export OPENFEATURE_CORE_VERSION=$(npm run --silent core-version) && npm run update-core-peer --workspace=packages/server --workspace=packages/client --workspace=packages/react"
   },
   "repository": {
     "type": "git",
@@ -66,7 +68,7 @@
     "shx": "^0.3.4",
     "ts-jest": "^29.0.5",
     "ts-node": "^10.8.2",
-    "typedoc": "^0.24.8",
+    "typedoc": "^0.25.3",
     "typescript": "^4.7.4",
     "uuid": "^9.0.0"
   },

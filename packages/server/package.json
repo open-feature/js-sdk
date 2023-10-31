@@ -14,18 +14,18 @@
   },
   "types": "./dist/types.d.ts",
   "scripts": {
-    "test": "jest  --verbose",
+    "test": "jest --verbose",
     "lint": "eslint ./",
     "clean": "shx rm -rf ./dist",
-    "build:esm": "esbuild src/index.ts --bundle --sourcemap --target=es2016 --platform=node --format=esm --outfile=./dist/esm/index.js --analyze",
-    "build:cjs": "esbuild src/index.ts --bundle --sourcemap --target=es2016 --platform=node --format=cjs --outfile=./dist/cjs/index.js --analyze",
+    "build:esm": "esbuild src/index.ts --bundle --external:@openfeature/core --sourcemap --target=es2016 --platform=node --format=esm --outfile=./dist/esm/index.js --analyze",
+    "build:cjs": "esbuild src/index.ts --bundle --external:@openfeature/core --sourcemap --target=es2016 --platform=node --format=cjs --outfile=./dist/cjs/index.js --analyze",
     "build:rollup-types": "rollup -c ../../rollup.config.mjs",
     "build": "npm run clean && npm run build:esm && npm run build:cjs && npm run build:rollup-types",
     "postbuild": "shx cp ./../../package.esm.json ./dist/esm/package.json",
     "current-version": "echo $npm_package_version",
     "prepack": "shx cp ./../../LICENSE ./LICENSE",
     "publish-if-not-exists": "cp $NPM_CONFIG_USERCONFIG .npmrc && if [ \"$(npm show $npm_package_name@$npm_package_version version)\" = \"$(npm run current-version -s)\" ]; then echo 'already published, skipping'; else npm publish --access public; fi",
-    "docs": "typedoc"
+    "update-core-peer": "npm install --save-peer --save-exact @openfeature/core@$OPENFEATURE_CORE_VERSION"
   },
   "repository": {
     "type": "git",
@@ -47,11 +47,10 @@
   "engines": {
     "node": ">=16"
   },
-  "devDependencies": {
-    "@openfeature/shared": "*"
+  "peerDependencies": {
+    "@openfeature/core": "0.1.0"
   },
-  "typedoc": {
-    "displayName": "OpenFeature Server SDK",
-    "entryPoint": "./src/index.ts"
+  "devDependencies": {
+    "@openfeature/core": "*"
   }
 }

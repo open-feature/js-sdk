@@ -1,4 +1,4 @@
-import { EvaluationContext } from '@openfeature/shared';
+import { EvaluationContext } from '@openfeature/core';
 
 /**
  * Transaction context is a mechanism for adding transaction specific context that

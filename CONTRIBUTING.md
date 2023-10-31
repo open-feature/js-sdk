@@ -19,7 +19,10 @@ We value having as few runtime dependencies as possible. The addition of any dep
 ### Modules
 
 This repository uses [NPM workspaces](https://docs.npmjs.com/cli/v9/using-npm/workspaces) to establish a simple monorepo.
-Within the root project, there is one common project (`packages/shared`) which features common interfaces and code, consumed by the published modules (`packages/server` and `packages/client`). The shared module is bundled transparently into the published modules - it is not published itself. Changes in `packages/shared` will result in releases of the dependant modules via Release Please.
+Within the root project, there is one common project (`packages/shared`) which features common interfaces and code, consumed by the published modules (`packages/server` and `packages/client`).
+The shared module is built and published separately, and is a peer dependency of the SDK packages.
+Consumers need not install it separately, since `npm` and `yarn` automatically install required peers.
+In order to prevent regressions cause by incompatibilities due to version mismatches, the SDKs are locked to a particular version of the `@openfeature/core` module, and the CI enforces that it's released before any dependant SDKs (see [the related workflow](./.github/workflows/audit-pending-releases.yml)).
 
 ### Testing
 
@@ -44,8 +47,6 @@ for the client e2e tests.
 ### Packaging
 
 Both ES modules and CommonJS modules are supported, so consumers can use both `require` and `import` functions to utilize this module. This is accomplished by building 2 variations of the output, under `dist/esm` and `dist/cjs`, respectively. To force resolution of the `dist/esm/**.js*` files as modules, a package json with only the context `{"type": "module"}` is included at a in a `postbuild` step. Type declarations are included at `/dist/types/`
-
-For testing purposes, you can add a comment containing "/publish" in any PR. This will publish an experimental SDK version with the git SHA appended to the version number.
 
 ## Pull Request
 

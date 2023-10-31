@@ -11,7 +11,7 @@ import {
   ResolutionDetails,
   StandardResolutionReasons,
   TypeMismatchError
-} from '@openfeature/shared';
+} from '@openfeature/core';
 import { Provider } from '../provider';
 import { Flag, FlagConfiguration } from './flag-configuration';
 import { VariantFoundError } from './variant-not-found-error';
