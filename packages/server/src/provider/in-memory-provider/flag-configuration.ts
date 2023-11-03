@@ -3,7 +3,7 @@
  * It might cause confusion since these types are not a part of the general API,
  * but just for the in-memory provider.
  */
-import { EvaluationContext, JsonValue } from '@openfeature/shared';
+import { EvaluationContext, JsonValue } from '@openfeature/core';
 
 type Variants<T> = Record<string, T>;
 

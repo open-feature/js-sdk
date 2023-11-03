@@ -119,12 +119,18 @@ export default {
       testEnvironment: 'node',
       preset: 'ts-jest',
       testMatch: ['<rootDir>/packages/server/test/**/*.spec.ts'],
+      moduleNameMapper: {
+        '@openfeature/core': '<rootDir>/packages/shared/src'
+      },
     },
     {
       displayName: 'client',
       testEnvironment: 'node',
       preset: 'ts-jest',
       testMatch: ['<rootDir>/packages/client/test/**/*.spec.ts'],
+      moduleNameMapper: {
+        '@openfeature/core': '<rootDir>/packages/shared/src'
+      }
     },
     {
       displayName: 'server-e2e',
@@ -133,6 +139,9 @@ export default {
       testMatch: ['<rootDir>/packages/server/e2e/**/*.spec.ts'],
       modulePathIgnorePatterns: ['.*/node-modules/'],
       setupFiles: ['<rootDir>/packages/server/e2e/step-definitions/setup.ts'],
+      moduleNameMapper: {
+        '@openfeature/core': '<rootDir>/packages/shared/src'
+      },
     },
     {
       displayName: 'client-e2e',
@@ -144,6 +153,7 @@ export default {
       moduleNameMapper: {
         '^uuid$': require.resolve('uuid'),
         '^(.*)\\.js$': ['$1', '$1.js'],
+        '@openfeature/core': '<rootDir>/packages/shared/src'
       },
     },
   ],

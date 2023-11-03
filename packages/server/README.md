@@ -12,16 +12,16 @@
 <!-- x-hide-in-docs-end -->
 <!-- The 'github-badges' class is used in the docs -->
 <p align="center" class="github-badges">
-  <a href="https://github.com/open-feature/spec/tree/v0.7.0">
+  <a href="https://github.com/open-feature/spec/releases/tag/v0.7.0">
     <img alt="Specification" src="https://img.shields.io/static/v1?label=specification&message=v0.7.0&color=yellow&style=for-the-badge" />
   </a>
   <!-- x-release-please-start-version -->
-  <a href="https://github.com/open-feature/js-sdk/releases/tag/server-sdk-v1.6.3">
-    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v1.6.3&color=blue&style=for-the-badge" />
+  <a href="https://github.com/open-feature/js-sdk/releases/tag/server-sdk-v1.7.0">
+    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v1.7.0&color=blue&style=for-the-badge" />
   </a>
   <!-- x-release-please-end -->
   <br/>
-  <a href="https://open-feature.github.io/js-sdk/modules/OpenFeature_Server_SDK.html">
+  <a href="https://open-feature.github.io/js-sdk/modules/_openfeature_server_sdk.html">
     <img alt="API Reference" src="https://img.shields.io/badge/reference-teal?logo=javascript&logoColor=white" />
   </a>
   <a href="https://www.npmjs.com/package/@openfeature/server-sdk">
@@ -36,7 +36,7 @@
 </p>
 <!-- x-hide-in-docs-start -->
 
-[OpenFeature](https://openfeature.dev) is an open standard that provides a vendor-agnostic, community-driven API for feature flagging that works with your favorite feature flag management tool.
+[OpenFeature](https://openfeature.dev) is an open specification that provides a vendor-agnostic, community-driven API for feature flagging that works with your favorite feature flag management tool.
 
 <!-- x-hide-in-docs-end -->
 
@@ -57,7 +57,8 @@ npm install --save @openfeature/server-sdk
 #### yarn
 
 ```sh
-yarn add @openfeature/server-sdk
+# yarn requires manual installation of the @openfeature/core peer-dependency
+yarn add @openfeature/server-sdk @openfeature/core
 ```
 
 ### Usage
@@ -81,7 +82,7 @@ if (v2Enabled) {
 
 ### API Reference
 
-See [here](https://open-feature.github.io/js-sdk/modules/OpenFeature_Server_SDK.html) for the complete API documentation.
+See [here](https://open-feature.github.io/js-sdk/modules/_openfeature_server_sdk.html) for the complete API documentation.
 
 ## 🌟 Features
 

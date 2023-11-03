@@ -12,19 +12,19 @@
 <!-- x-hide-in-docs-end -->
 <!-- The 'github-badges' class is used in the docs -->
 <p align="center" class="github-badges">
-  <a href="https://github.com/open-feature/spec/tree/v0.7.0">
+  <a href="https://github.com/open-feature/spec/releases/tag/v0.7.0">
     <img alt="Specification" src="https://img.shields.io/static/v1?label=specification&message=v0.7.0&color=yellow&style=for-the-badge" />
   </a>
   <!-- x-release-please-start-version -->
-  <a href="https://github.com/open-feature/js-sdk/releases/tag/web-sdk-v0.4.1">
-    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v0.4.1&color=blue&style=for-the-badge" />
+  <a href="https://github.com/open-feature/js-sdk/releases/tag/web-sdk-v0.4.3">
+    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v0.4.3&color=blue&style=for-the-badge" />
   </a>
   <!-- x-release-please-end -->
   <br/>
   <a href="https://www.repostatus.org/#wip">
     <img alt="Project Status" src="https://www.repostatus.org/badges/latest/wip.svg" />
   </a>
-  <a href="https://open-feature.github.io/js-sdk/modules/OpenFeature_Web_SDK.html">
+  <a href="https://open-feature.github.io/js-sdk/modules/_openfeature_web_sdk.html">
     <img alt="API Reference" src="https://img.shields.io/badge/reference-teal?logo=javascript&logoColor=white" />
   </a>
   <a href="https://www.npmjs.com/package/@openfeature/web-sdk">
@@ -39,7 +39,7 @@
 </p>
 <!-- x-hide-in-docs-start -->
 
-[OpenFeature](https://openfeature.dev) is an open standard that provides a vendor-agnostic, community-driven API for feature flagging that works with your favorite feature flag management tool.
+[OpenFeature](https://openfeature.dev) is an open specification that provides a vendor-agnostic, community-driven API for feature flagging that works with your favorite feature flag management tool.
 
 <!-- x-hide-in-docs-end -->
 
@@ -60,7 +60,8 @@ npm install --save @openfeature/web-sdk
 #### yarn
 
 ```sh
-yarn add @openfeature/web-sdk
+# yarn requires manual installation of the @openfeature/core peer-dependency
+yarn add @openfeature/web-sdk @openfeature/core
 ```
 
 ### Usage
@@ -84,7 +85,7 @@ if (v2Enabled) {
 
 ### API Reference
 
-See [here](https://open-feature.github.io/js-sdk/modules/OpenFeature_Web_SDK.html) for the complete API documentation.
+See [here](https://open-feature.github.io/js-sdk/modules/_openfeature_web_sdk.html) for the complete API documentation.
 
 ## 🌟 Features
 

@@ -1,5 +1,41 @@
 # Changelog
 
+## [0.0.17](https://github.com/open-feature/js-sdk/compare/core-v0.0.16...core-v0.0.17) (2023-11-03)
+
+
+### Bug Fixes
+
+* remove events.js from core module ([#650](https://github.com/open-feature/js-sdk/issues/650)) ([14441b1](https://github.com/open-feature/js-sdk/commit/14441b1ad44d33ecc99942b0d48a49ccc50d9ee2))
+
+## [0.0.16](https://github.com/open-feature/js-sdk/compare/core-v0.0.15...core-v0.0.16) (2023-10-31)
+
+
+### Bug Fixes
+
+* api docs links ([#645](https://github.com/open-feature/js-sdk/issues/645)) ([4ff3f0e](https://github.com/open-feature/js-sdk/commit/4ff3f0e94cd597538b18f785873cb3beb0e83ff2))
+
+## [0.0.15](https://github.com/open-feature/js-sdk/compare/core-v0.0.14...core-v0.0.15) (2023-10-31)
+
+
+### Bug Fixes
+
+* publish script, compilation error in tests ([#643](https://github.com/open-feature/js-sdk/issues/643)) ([1349bee](https://github.com/open-feature/js-sdk/commit/1349bee20c8ce02829fd7f49996a5940970a210d))
+
+## [0.0.14](https://github.com/open-feature/js-sdk/compare/core-v0.0.13...core-v0.0.14) (2023-10-31)
+
+
+### Features
+
+* add support for clearing providers ([#578](https://github.com/open-feature/js-sdk/issues/578)) ([a3a907f](https://github.com/open-feature/js-sdk/commit/a3a907f348d7ff2ac7cd42eca61cd760fdd93048))
+* extract and publish core package ([#629](https://github.com/open-feature/js-sdk/issues/629)) ([c3ee90b](https://github.com/open-feature/js-sdk/commit/c3ee90b2e0fdcec235069960e7ec03e63028b08c))
+
+## [0.0.13](https://github.com/open-feature/js-sdk/compare/shared-v0.0.12...shared-v0.0.13) (2023-10-31)
+
+
+### Features
+
+* add support for clearing providers ([#578](https://github.com/open-feature/js-sdk/issues/578)) ([a3a907f](https://github.com/open-feature/js-sdk/commit/a3a907f348d7ff2ac7cd42eca61cd760fdd93048))
+
 ## [0.0.12](https://github.com/open-feature/js-sdk/compare/shared-v0.0.11...shared-v0.0.12) (2023-10-09)
 
 

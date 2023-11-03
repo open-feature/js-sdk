@@ -1,4 +1,4 @@
-import { ErrorCode, FlagNotFoundError, ProviderEvents, StandardResolutionReasons, TypeMismatchError } from '@openfeature/shared';
+import { ErrorCode, FlagNotFoundError, ProviderEvents, StandardResolutionReasons, TypeMismatchError } from '@openfeature/core';
 import { InMemoryProvider } from '../src';
 import { VariantFoundError } from '../src/provider/in-memory-provider/variant-not-found-error';
 

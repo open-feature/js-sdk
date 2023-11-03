@@ -1,9 +1,13 @@
 {
     "$schema": "https://typedoc.org/schema.json",
-    "entryPointStrategy": "legacy-packages",
+    "entryPointStrategy": "packages",
     "entryPoints": [
         "packages/server",
-        "packages/client"
+        "packages/client",
+        "packages/shared",
+    ],
+    "sort": [
+        "source-order"
     ],
     "out": "typedoc"
   }

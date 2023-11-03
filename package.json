@@ -4,15 +4,17 @@
   "private": true,
   "description": "OpenFeature SDK for JavaScript",
   "scripts": {
-    "test": "jest --selectProjects=server --selectProjects=shared --selectProjects=client --verbose",
+    "test": "jest --selectProjects=shared --selectProjects=server --selectProjects=client --verbose",
     "e2e-server": "git submodule update --init --recursive && shx cp test-harness/features/evaluation.feature packages/server/e2e/features && jest --selectProjects=server-e2e --verbose",
     "e2e-client": "git submodule update --init --recursive && shx cp test-harness/features/evaluation.feature packages/client/e2e/features && jest --selectProjects=client-e2e --verbose",
     "e2e": "npm run e2e-server && npm run e2e-client",
     "lint": "npm run lint --workspace=packages/shared --workspace=packages/server --workspace=packages/client --workspace=packages/react",
     "clean": "shx rm -rf ./dist",
     "build": "npm run build --workspace=packages/shared --workspace=packages/server --workspace=packages/client --workspace=packages/react",
-    "publish-all": "npm run publish-if-not-exists --workspace=packages/server --workspace=packages/client --workspace=packages/react",
-    "docs": "typedoc"
+    "publish-all": "npm run publish-if-not-exists --workspace=packages/shared --workspace=packages/server --workspace=packages/client --workspace=packages/react",
+    "docs": "typedoc",
+    "core-version": "npm run version --workspace=packages/shared",
+    "update-core-peers": "export OPENFEATURE_CORE_VERSION=$(npm run --silent core-version) && npm run update-core-peer --workspace=packages/server --workspace=packages/client --workspace=packages/react"
   },
   "repository": {
     "type": "git",
@@ -66,7 +68,7 @@
     "shx": "^0.3.4",
     "ts-jest": "^29.0.5",
     "ts-node": "^10.8.2",
-    "typedoc": "^0.24.8",
+    "typedoc": "^0.25.3",
     "typescript": "^4.7.4",
     "uuid": "^9.0.0"
   },
