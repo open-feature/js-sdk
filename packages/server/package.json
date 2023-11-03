@@ -48,9 +48,9 @@
     "node": ">=16"
   },
   "peerDependencies": {
-    "@openfeature/core": "0.0.16"
+    "@openfeature/core": "0.0.17"
   },
   "devDependencies": {
-    "@openfeature/core": "0.0.16"
+    "@openfeature/core": "0.0.17"
   }
 }
