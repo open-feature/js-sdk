@@ -1,6 +1,24 @@
 # Changelog
 
 
+## [0.4.4](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.3...web-sdk-v0.4.4) (2023-11-03)
+
+
+### 🐛 Bug Fixes
+
+* add setProviderAndWait examples ([#614](https://github.com/open-feature/js-sdk/issues/614)) ([6b3a4e3](https://github.com/open-feature/js-sdk/commit/6b3a4e3f93005d56f75a9251dcbb959dc696f1c2))
+
+
+### 🧹 Chore
+
+* **main:** release core 0.0.17 ([#651](https://github.com/open-feature/js-sdk/issues/651)) ([3c9fdd9](https://github.com/open-feature/js-sdk/commit/3c9fdd9e4c6b487f25494d03ed1f413d14b2ccfb))
+* update spec version link ([eef0fc0](https://github.com/open-feature/js-sdk/commit/eef0fc0a3ad3dc56b7a57c1645d3ae4917477998))
+
+
+### 📚 Documentation
+
+* extend yarn docs ([#647](https://github.com/open-feature/js-sdk/issues/647)) ([e72fc19](https://github.com/open-feature/js-sdk/commit/e72fc19da33ad3fa6bd35f5e59f35ae56876b7bd))
+
 ## [0.4.3](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.2...web-sdk-v0.4.3) (2023-10-31)
 
 
