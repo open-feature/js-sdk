@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.17](https://github.com/open-feature/js-sdk/compare/core-v0.0.16...core-v0.0.17) (2023-11-03)
+
+
+### Bug Fixes
+
+* remove events.js from core module ([#650](https://github.com/open-feature/js-sdk/issues/650)) ([14441b1](https://github.com/open-feature/js-sdk/commit/14441b1ad44d33ecc99942b0d48a49ccc50d9ee2))
+
 ## [0.0.16](https://github.com/open-feature/js-sdk/compare/core-v0.0.15...core-v0.0.16) (2023-10-31)
 
 
