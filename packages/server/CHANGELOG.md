@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.7.1](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.7.0...server-sdk-v1.7.1) (2023-11-03)
+
+
+### 🧹 Chore
+
+* **main:** release core 0.0.17 ([#651](https://github.com/open-feature/js-sdk/issues/651)) ([3c9fdd9](https://github.com/open-feature/js-sdk/commit/3c9fdd9e4c6b487f25494d03ed1f413d14b2ccfb))
+* update spec version link ([74d4b23](https://github.com/open-feature/js-sdk/commit/74d4b23f07ae1c486b274213f6edc8247cf8ba84))
+* add setProviderAndWait examples ([#614](https://github.com/open-feature/js-sdk/issues/614)) ([6b3a4e3](https://github.com/open-feature/js-sdk/commit/6b3a4e3f93005d56f75a9251dcbb959dc696f1c2))
+
+
+### 📚 Documentation
+
+* extend yarn docs ([#647](https://github.com/open-feature/js-sdk/issues/647)) ([e72fc19](https://github.com/open-feature/js-sdk/commit/e72fc19da33ad3fa6bd35f5e59f35ae56876b7bd))
+
 ## [1.7.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.6.3...server-sdk-v1.7.0) (2023-10-31)
 
 
