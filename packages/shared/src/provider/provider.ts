@@ -1,5 +1,5 @@
 import { EvaluationContext } from '../evaluation';
-import { OpenFeatureEventEmitter } from '../events';
+import { GenericEventEmitter } from '../events';
 import { Metadata, Paradigm } from '../types';
 
 /**
@@ -57,7 +57,7 @@ export interface CommonProvider {
    * An event emitter for ProviderEvents.
    * @see ProviderEvents
    */
-  events?: OpenFeatureEventEmitter;
+  events?: GenericEventEmitter;
 
   /**
    * A function used to shut down the provider.
