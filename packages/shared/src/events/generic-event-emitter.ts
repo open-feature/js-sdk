@@ -2,6 +2,10 @@ import { Logger, ManageLogger, SafeLogger } from '../logger';
 import { EventContext, EventDetails, EventHandler } from './eventing';
 import { ProviderEvents } from './events';
 
+/**
+ * The GenericEventEmitter should only be used within the SDK. It supports additional properties that can be included
+ * in the event details.
+ */
 export abstract class GenericEventEmitter<AdditionalContext extends Record<string, unknown> = Record<string, unknown>>
   implements ManageLogger<GenericEventEmitter<AdditionalContext>>
 {
