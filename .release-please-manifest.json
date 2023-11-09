@@ -1,5 +1,5 @@
 {
-  "packages/react": "0.0.2-experimental",
+  "packages/react": "0.0.3-experimental",
   "packages/client": "0.4.5",
   "packages/server": "1.7.1",
   "packages/shared": "0.0.18"
