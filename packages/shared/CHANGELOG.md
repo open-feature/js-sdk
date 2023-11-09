@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.18](https://github.com/open-feature/js-sdk/compare/core-v0.0.17...core-v0.0.18) (2023-11-09)
+
+
+### 🐛 Bug Fixes
+
+* missing events bundled dep ([#660](https://github.com/open-feature/js-sdk/issues/660)) ([f0e2aa6](https://github.com/open-feature/js-sdk/commit/f0e2aa617f83ce82e6e4d244b4ad618101d45459))
+
 ## [0.0.17](https://github.com/open-feature/js-sdk/compare/core-v0.0.16...core-v0.0.17) (2023-11-03)
 
 
