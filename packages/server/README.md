@@ -16,8 +16,8 @@
     <img alt="Specification" src="https://img.shields.io/static/v1?label=specification&message=v0.7.0&color=yellow&style=for-the-badge" />
   </a>
   <!-- x-release-please-start-version -->
-  <a href="https://github.com/open-feature/js-sdk/releases/tag/server-sdk-v1.7.0">
-    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v1.7.0&color=blue&style=for-the-badge" />
+  <a href="https://github.com/open-feature/js-sdk/releases/tag/server-sdk-v1.7.1">
+    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v1.7.1&color=blue&style=for-the-badge" />
   </a>
   <!-- x-release-please-end -->
   <br/>
@@ -67,7 +67,7 @@ yarn add @openfeature/server-sdk @openfeature/core
 import { OpenFeature } from '@openfeature/server-sdk';
 
 // Register your feature flag provider
-OpenFeature.setProvider(new YourProviderOfChoice());
+await OpenFeature.setProviderAndWait(new YourProviderOfChoice());
 
 // create a new client
 const client = OpenFeature.getClient();
@@ -107,9 +107,23 @@ If the provider you're looking for hasn't been created yet, see the [develop a p
 
 Once you've added a provider as a dependency, it can be registered with OpenFeature like this:
 
+#### Awaitable
+
+To register a provider and ensure it is ready before further actions are taken, you can use the `setProviderAndWait` method as shown below:
+
 ```ts
-OpenFeature.setProvider(new MyProvider())
+await OpenFeature.setProviderAndWait(new MyProvider());
+```  
+
+#### Synchronous
+
+To register a provider in a synchronous manner, you can use the `setProvider` method as shown below:
+
+```ts
+OpenFeature.setProvider(new MyProvider());
 ```
+
+Once the provider has been registered, the status can be tracked using [events](#eventing).
 
 In some situations, it may be beneficial to register multiple providers in the same application.
 This is possible using [named clients](#named-clients), which is covered in more details below.
@@ -211,6 +225,9 @@ const clientWithDefault = OpenFeature.getClient();
 const clientForCache = OpenFeature.getClient("otherClient");
 ```
 
+Named providers can be set in an awaitable or synchronous way.
+For more details, please refer to the [providers](#providers) section.
+
 ### Eventing
 
 Events allow you to react to state changes in the provider or underlying flag management system, such as flag definition changes, provider readiness, or error conditions.
@@ -224,13 +241,13 @@ import { OpenFeature, ProviderEvents } from '@openfeature/server-sdk';
 
 // OpenFeature API
 OpenFeature.addHandler(ProviderEvents.Ready, (eventDetails) => {
-  console.log(`Ready event from: ${eventDetails?.clientName}:`, eventDetails);
+  console.log(`Ready event from: ${eventDetails?.providerName}:`, eventDetails);
 });
 
 // Specific client
 const client = OpenFeature.getClient();
 client.addHandler(ProviderEvents.Error, (eventDetails) => {
-  console.log(`Error event from: ${eventDetails?.clientName}:`, eventDetails);
+  console.log(`Error event from: ${eventDetails?.providerName}:`, eventDetails);
 });
 ```
 
@@ -258,6 +275,8 @@ import { JsonValue, Provider, ResolutionDetails } from '@openfeature/server-sdk'
 
 // implement the provider interface
 class MyProvider implements Provider {
+  // Adds runtime validation that the provider is used with the expected SDK
+  public readonly runsOn = 'server';
 
   readonly metadata = {
     name: 'My Provider',

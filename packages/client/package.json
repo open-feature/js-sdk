@@ -1,6 +1,6 @@
 {
   "name": "@openfeature/web-sdk",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "OpenFeature SDK for Web",
   "main": "./dist/cjs/index.js",
   "files": [
@@ -46,9 +46,9 @@
   },
   "homepage": "https://github.com/open-feature/js-sdk#readme",
   "peerDependencies": {
-    "@openfeature/core": "0.0.16"
+    "@openfeature/core": "0.0.17"
   },
   "devDependencies": {
-    "@openfeature/core": "0.0.16"
+    "@openfeature/core": "0.0.17"
   }
 }
