@@ -1,6 +1,18 @@
 # Changelog
 
 
+## [0.4.5](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.4...web-sdk-v0.4.5) (2023-11-09)
+
+
+### 🐛 Bug Fixes
+
+* missing events bundled dep ([#660](https://github.com/open-feature/js-sdk/issues/660)) ([f0e2aa6](https://github.com/open-feature/js-sdk/commit/f0e2aa617f83ce82e6e4d244b4ad618101d45459))
+
+
+### 🧹 Chore
+
+* **main:** release core 0.0.18 ([#661](https://github.com/open-feature/js-sdk/issues/661)) ([cf7bbf0](https://github.com/open-feature/js-sdk/commit/cf7bbf063916c639878de16e54e974607a2cd7ed))
+
 ## [0.4.4](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.3...web-sdk-v0.4.4) (2023-11-03)
 
 
