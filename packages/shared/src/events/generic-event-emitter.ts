@@ -1,21 +1,21 @@
-import EventEmitter from 'events';
 import { Logger, ManageLogger, SafeLogger } from '../logger';
-import { CommonEventDetails, EventContext, EventDetails, EventHandler } from './eventing';
+import { EventContext, EventDetails, EventHandler } from './eventing';
 import { ProviderEvents } from './events';
 
-abstract class GenericEventEmitter<AdditionalContext extends Record<string, unknown> = Record<string, unknown>>
+/**
+ * The GenericEventEmitter should only be used within the SDK. It supports additional properties that can be included
+ * in the event details.
+ */
+export abstract class GenericEventEmitter<AdditionalContext extends Record<string, unknown> = Record<string, unknown>>
   implements ManageLogger<GenericEventEmitter<AdditionalContext>>
 {
+  protected abstract readonly eventEmitter: NodeJS.EventEmitter;
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private readonly _handlers = new WeakMap<EventHandler<any>, EventHandler<any>>();
-  private readonly eventEmitter = new EventEmitter({ captureRejections: true });
   private _eventLogger?: Logger;
 
-  constructor(private readonly globalLogger?: () => Logger) {
-    this.eventEmitter.on('error', (err) => {
-      this._logger?.error('Error running event handler:', err);
-    });
-  }
+  constructor(private readonly globalLogger?: () => Logger) {}
 
   emit<T extends ProviderEvents>(eventType: T, context?: EventContext<T, AdditionalContext>): void {
     this.eventEmitter.emit(eventType, context);
@@ -25,7 +25,7 @@ abstract class GenericEventEmitter<AdditionalContext extends Record<string, unkn
     // The handlers have to be wrapped with an async function because if a synchronous functions throws an error,
     // the other handlers will not run.
     const asyncHandler = async (details?: EventDetails<T>) => {
-      await handler(details);
+      await handler(details);    
     };
     // The async handler has to be written to the map, because we need to get the wrapper function when deleting a listener
     this._handlers.set(handler, asyncHandler);
@@ -61,23 +61,7 @@ abstract class GenericEventEmitter<AdditionalContext extends Record<string, unkn
     return this;
   }
 
-  private get _logger() {
+  protected get _logger() {
     return this._eventLogger ?? this.globalLogger?.();
   }
 }
-
-/**
- * The OpenFeatureEventEmitter can be used by provider developers to emit
- * events at various parts of the provider lifecycle.
- * 
- * NOTE: Ready and error events are automatically emitted by the SDK based on
- * the result of the initialize method.
- */
-export class OpenFeatureEventEmitter extends GenericEventEmitter {};
-
-/**
- * The InternalEventEmitter should only be used within the SDK. It extends the
- * OpenFeatureEventEmitter to include additional properties that can be included
- * in the event details.
- */
-export class InternalEventEmitter extends GenericEventEmitter<CommonEventDetails> {};

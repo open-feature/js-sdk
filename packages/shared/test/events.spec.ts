@@ -1,9 +1,22 @@
-import { OpenFeatureEventEmitter, ProviderEvents, Logger, ReadyEvent } from '../src';
+import EventEmitter from 'events';
+import { GenericEventEmitter, Logger, ProviderEvents, ReadyEvent } from '../src';
 
-describe('OpenFeatureEventEmitter', () => {
+// create concrete class to test the abstract functionality.
+class TestEventEmitter extends GenericEventEmitter {
+  protected readonly eventEmitter = new EventEmitter({ captureRejections: true });
+
+  constructor() {
+    super();
+    this.eventEmitter.on('error', (err) => {
+      this._logger?.error('Error running event handler:', err);
+    });
+  }
+}
+
+describe('GenericEventEmitter', () => {
   describe('addHandler should', function () {
     it('attach handler for event type', function () {
-      const emitter = new OpenFeatureEventEmitter();
+      const emitter = new TestEventEmitter();
 
       const handler1 = jest.fn();
       emitter.addHandler(ProviderEvents.Ready, handler1);
@@ -13,7 +26,7 @@ describe('OpenFeatureEventEmitter', () => {
     });
 
     it('attach several handlers for event type', function () {
-      const emitter = new OpenFeatureEventEmitter();
+      const emitter = new TestEventEmitter();
 
       const handler1 = jest.fn();
       const handler2 = jest.fn();
@@ -40,7 +53,7 @@ describe('OpenFeatureEventEmitter', () => {
         debug: () => done(),
       };
 
-      const emitter = new OpenFeatureEventEmitter();
+      const emitter = new TestEventEmitter();
       emitter.setLogger(logger);
 
       emitter.addHandler(ProviderEvents.Ready, async () => {
@@ -50,7 +63,7 @@ describe('OpenFeatureEventEmitter', () => {
     });
 
     it('trigger handler for event type', function () {
-      const emitter = new OpenFeatureEventEmitter();
+      const emitter = new TestEventEmitter();
 
       const handler1 = jest.fn();
       emitter.addHandler(ProviderEvents.Ready, handler1);
@@ -61,7 +74,7 @@ describe('OpenFeatureEventEmitter', () => {
 
     it('trigger handler for event type with event data', function () {
       const event: ReadyEvent = { message: 'message' };
-      const emitter = new OpenFeatureEventEmitter();
+      const emitter = new TestEventEmitter();
 
       const handler1 = jest.fn();
       emitter.addHandler(ProviderEvents.Ready, handler1);
@@ -71,7 +84,7 @@ describe('OpenFeatureEventEmitter', () => {
     });
 
     it('trigger several handlers for event type', function () {
-      const emitter = new OpenFeatureEventEmitter();
+      const emitter = new TestEventEmitter();
 
       const handler1 = jest.fn();
       const handler2 = jest.fn();
@@ -91,7 +104,7 @@ describe('OpenFeatureEventEmitter', () => {
 
   describe('removeHandler should', () => {
     it('remove single handler', function () {
-      const emitter = new OpenFeatureEventEmitter();
+      const emitter = new TestEventEmitter();
 
       const handler1 = jest.fn();
       emitter.addHandler(ProviderEvents.Ready, handler1);
@@ -106,7 +119,7 @@ describe('OpenFeatureEventEmitter', () => {
 
   describe('removeAllHandlers should', () => {
     it('remove all handlers for event type', function () {
-      const emitter = new OpenFeatureEventEmitter();
+      const emitter = new TestEventEmitter();
 
       const handler1 = jest.fn();
       const handler2 = jest.fn();
@@ -122,7 +135,7 @@ describe('OpenFeatureEventEmitter', () => {
     });
 
     it('remove all handlers only for event type', function () {
-      const emitter = new OpenFeatureEventEmitter();
+      const emitter = new TestEventEmitter();
 
       const handler1 = jest.fn();
       const handler2 = jest.fn();
@@ -138,7 +151,7 @@ describe('OpenFeatureEventEmitter', () => {
     });
 
     it('remove all handlers if no event type is given', function () {
-      const emitter = new OpenFeatureEventEmitter();
+      const emitter = new TestEventEmitter();
 
       const handler1 = jest.fn();
       const handler2 = jest.fn();

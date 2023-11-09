@@ -13,6 +13,7 @@ import {
   TransactionContextPropagator,
 } from './transaction-context';
 import { Client, OpenFeatureClient } from './client';
+import { OpenFeatureEventEmitter } from './events';
 
 // use a symbol as a key for the global singleton
 const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/js-sdk/api');
@@ -26,8 +27,11 @@ export class OpenFeatureAPI
   extends OpenFeatureCommonAPI<Provider>
   implements ManageContext<OpenFeatureAPI>, ManageTransactionContextPropagator<OpenFeatureCommonAPI<Provider>>
 {
-  private _transactionContextPropagator: TransactionContextPropagator = NOOP_TRANSACTION_CONTEXT_PROPAGATOR;
+  protected _events = new OpenFeatureEventEmitter();
   protected _defaultProvider: Provider = NOOP_PROVIDER;
+  protected _createEventEmitter = () => new OpenFeatureEventEmitter();
+  
+  private _transactionContextPropagator: TransactionContextPropagator = NOOP_TRANSACTION_CONTEXT_PROPAGATOR;
 
   private constructor() {
     super('server');
