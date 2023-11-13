@@ -1,6 +1,7 @@
 import { EvaluationContext, ManageContext, OpenFeatureCommonAPI } from '@openfeature/core';
 import { Client, OpenFeatureClient } from './client';
 import { NOOP_PROVIDER, Provider } from './provider';
+import { OpenFeatureEventEmitter } from './events';
 
 // use a symbol as a key for the global singleton
 const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/web-sdk/api');
@@ -11,7 +12,9 @@ type OpenFeatureGlobal = {
 const _globalThis = globalThis as OpenFeatureGlobal;
 
 export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider> implements ManageContext<Promise<void>> {
+  protected _events = new OpenFeatureEventEmitter();
   protected _defaultProvider: Provider = NOOP_PROVIDER;
+  protected _createEventEmitter = () => new OpenFeatureEventEmitter();
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor() {

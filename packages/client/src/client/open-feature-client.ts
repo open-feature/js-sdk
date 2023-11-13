@@ -11,7 +11,6 @@ import {
   JsonValue,
   Logger,
   OpenFeatureError,
-  OpenFeatureEventEmitter,
   ProviderEvents,
   ProviderStatus,
   ResolutionDetails,
@@ -21,6 +20,7 @@ import {
 import { FlagEvaluationOptions } from '../evaluation';
 import { OpenFeature } from '../open-feature';
 import { Provider } from '../provider';
+import { InternalEventEmitter } from '../events/internal/internal-event-emitter';
 import { Client } from './client';
 
 type OpenFeatureClientOptions = {
@@ -36,7 +36,7 @@ export class OpenFeatureClient implements Client {
     // functions are passed here to make sure that these values are always up to date,
     // and so we don't have to make these public properties on the API class.
     private readonly providerAccessor: () => Provider,
-    private readonly emitterAccessor: () => OpenFeatureEventEmitter,
+    private readonly emitterAccessor: () => InternalEventEmitter,
     private readonly globalLogger: () => Logger,
     private readonly options: OpenFeatureClientOptions
   ) {}

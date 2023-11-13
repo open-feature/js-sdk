@@ -8,7 +8,6 @@ import {
   FlagValueType,
   Hook,
   HookContext,
-  InternalEventEmitter,
   JsonValue,
   Logger,
   ManageContext,
@@ -23,6 +22,7 @@ import { FlagEvaluationOptions } from '../evaluation';
 import { OpenFeature } from '../open-feature';
 import { Provider } from '../provider';
 import { Client } from './client';
+import { InternalEventEmitter } from '../events/internal/internal-event-emitter';
 
 type OpenFeatureClientOptions = {
   name?: string;

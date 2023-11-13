@@ -9,7 +9,7 @@ import {
   ProviderMetadata,
   ProviderStatus,
   ResolutionDetails,
-  StaleEvent,
+  StaleEvent
 } from '../src';
 
 const TIMEOUT = 1000;

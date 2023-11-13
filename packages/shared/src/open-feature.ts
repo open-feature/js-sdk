@@ -1,7 +1,7 @@
 import { GeneralError } from './errors';
 import { EvaluationContext, FlagValue } from './evaluation';
 import { EventDetails, EventHandler, Eventing, ProviderEvents, statusMatchesEvent } from './events';
-import { InternalEventEmitter } from './events/open-feature-event-emitter';
+import { GenericEventEmitter } from './events';
 import { isDefined } from './filter';
 import { EvaluationLifeCycle, Hook } from './hooks';
 import { DefaultLogger, Logger, ManageLogger, SafeLogger } from './logger';
@@ -12,17 +12,18 @@ import { Paradigm } from './types';
 export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProvider>
   implements Eventing, EvaluationLifeCycle<OpenFeatureCommonAPI<P>>, ManageLogger<OpenFeatureCommonAPI<P>>
 {
+  protected abstract _createEventEmitter(): GenericEventEmitter;
+  protected abstract _defaultProvider: P;
+  protected abstract readonly _events: GenericEventEmitter;
+
   protected _hooks: Hook[] = [];
   protected _context: EvaluationContext = {};
   protected _logger: Logger = new DefaultLogger();
 
-  protected abstract _defaultProvider: P;
-
-  private readonly _events = new InternalEventEmitter(() => this._logger);
   private readonly _clientEventHandlers: Map<string | undefined, [ProviderEvents, EventHandler<ProviderEvents>][]> =
     new Map();
   protected _clientProviders: Map<string, P> = new Map();
-  protected _clientEvents: Map<string | undefined, InternalEventEmitter> = new Map();
+  protected _clientEvents: Map<string | undefined, GenericEventEmitter> = new Map();
   protected _runsOn: Paradigm;
 
   constructor(category: Paradigm) {
@@ -238,7 +239,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     return this._clientProviders.get(name) ?? this._defaultProvider;
   }
 
-  protected buildAndCacheEventEmitterForClient(name?: string): InternalEventEmitter {
+  protected buildAndCacheEventEmitterForClient(name?: string): GenericEventEmitter {
     const emitter = this._clientEvents.get(name);
 
     if (emitter) {
@@ -246,7 +247,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     }
 
     // lazily add the event emitters
-    const newEmitter = new InternalEventEmitter(() => this._logger);
+    const newEmitter = this._createEventEmitter();
     this._clientEvents.set(name, newEmitter);
 
     const clientProvider = this.getProviderForClient(name);
@@ -259,7 +260,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     return newEmitter;
   }
 
-  private getUnboundEmitters(): InternalEventEmitter[] {
+  private getUnboundEmitters(): GenericEventEmitter[] {
     const namedProviders = [...this._clientProviders.keys()];
     const eventEmitterNames = [...this._clientEvents.keys()].filter(isDefined);
     const unboundEmitterNames = eventEmitterNames.filter((name) => !namedProviders.includes(name));
@@ -279,7 +280,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     oldProvider: P,
     newProvider: P,
     clientName: string | undefined,
-    emitters: (InternalEventEmitter | undefined)[]
+    emitters: (GenericEventEmitter | undefined)[]
   ) {
     this._clientEventHandlers
       .get(clientName)

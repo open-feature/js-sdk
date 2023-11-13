@@ -9,7 +9,7 @@ import {
   ProviderMetadata,
   ProviderStatus,
   ResolutionDetails,
-  StaleEvent,
+  StaleEvent
 } from '../src';
 
 const TIMEOUT = 1000;
@@ -184,7 +184,7 @@ describe('Events', () => {
           OpenFeature.addHandler(ProviderEvents.Error, () => {
             resolve();
           });
-        })
+        }),
       ]).then(() => {
         done();
       });
@@ -312,7 +312,11 @@ describe('Events', () => {
     });
 
     it('handler added while while provider initializing runs', (done) => {
-      const provider = new MockProvider({ name: 'race', initialStatus: ProviderStatus.NOT_READY, initDelay: TIMEOUT / 2 });
+      const provider = new MockProvider({
+        name: 'race',
+        initialStatus: ProviderStatus.NOT_READY,
+        initDelay: TIMEOUT / 2,
+      });
 
       // set the default provider
       OpenFeature.setProvider(provider);
@@ -505,12 +509,12 @@ describe('Events', () => {
     describe('API', () => {
       it('Handlers attached after the provider is already in the associated state, MUST run immediately.', (done) => {
         const provider = new MockProvider({ initialStatus: ProviderStatus.ERROR });
-  
+
         OpenFeature.setProvider(clientId, provider);
         expect(provider.initialize).not.toHaveBeenCalled();
-  
+
         OpenFeature.addHandler(ProviderEvents.Error, () => {
-            done();
+          done();
         });
       });
     });
@@ -519,14 +523,14 @@ describe('Events', () => {
       it('Handlers attached after the provider is already in the associated state, MUST run immediately.', (done) => {
         const provider = new MockProvider({ initialStatus: ProviderStatus.READY });
         const client = OpenFeature.getClient(clientId);
-  
+
         OpenFeature.setProvider(clientId, provider);
         expect(provider.initialize).not.toHaveBeenCalled();
-  
+
         client.addHandler(ProviderEvents.Ready, () => {
-            done();
+          done();
         });
       });
-    });    
+    });
   });
 });

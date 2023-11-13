@@ -6,7 +6,6 @@ import {
   JsonValue,
   Logger,
   OpenFeatureError,
-  OpenFeatureEventEmitter,
   ProviderEvents,
   ResolutionDetails,
   StandardResolutionReasons,
@@ -15,6 +14,7 @@ import {
 import { Provider } from '../provider';
 import { Flag, FlagConfiguration } from './flag-configuration';
 import { VariantFoundError } from './variant-not-found-error';
+import { OpenFeatureEventEmitter } from '../..';
 
 /**
  * A simple OpenFeature provider intended for demos and as a test stub.
