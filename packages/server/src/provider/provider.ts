@@ -1,4 +1,5 @@
-import { CommonProvider, EvaluationContext, Hook, JsonValue, Logger, ResolutionDetails } from '@openfeature/core';
+import { CommonProvider, EvaluationContext, JsonValue, Logger, ResolutionDetails } from '@openfeature/core';
+import { Hook } from '../hooks/hook';
 
 /**
  * Interface that providers must implement to resolve flag values for their particular
@@ -22,7 +23,7 @@ export interface Provider extends CommonProvider {
     flagKey: string,
     defaultValue: boolean,
     context: EvaluationContext,
-    logger: Logger
+    logger: Logger,
   ): Promise<ResolutionDetails<boolean>>;
 
   /**
@@ -32,7 +33,7 @@ export interface Provider extends CommonProvider {
     flagKey: string,
     defaultValue: string,
     context: EvaluationContext,
-    logger: Logger
+    logger: Logger,
   ): Promise<ResolutionDetails<string>>;
 
   /**
@@ -42,7 +43,7 @@ export interface Provider extends CommonProvider {
     flagKey: string,
     defaultValue: number,
     context: EvaluationContext,
-    logger: Logger
+    logger: Logger,
   ): Promise<ResolutionDetails<number>>;
 
   /**
@@ -52,6 +53,6 @@ export interface Provider extends CommonProvider {
     flagKey: string,
     defaultValue: T,
     context: EvaluationContext,
-    logger: Logger
+    logger: Logger,
   ): Promise<ResolutionDetails<T>>;
 }

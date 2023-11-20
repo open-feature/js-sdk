@@ -1,17 +1,14 @@
 import { BeforeHookContext, HookContext, HookHints } from './hooks';
-import { EvaluationContext, EvaluationDetails, FlagValue } from '../evaluation';
+import { EvaluationDetails, FlagValue } from '../evaluation';
 
-export interface Hook<T extends FlagValue = FlagValue> {
+export interface BaseHook<T extends FlagValue = FlagValue, BeforeHookReturn = unknown, HooksReturn = unknown> {
   /**
    * Runs before flag values are resolved from the provider.
    * If an EvaluationContext is returned, it will be merged with the pre-existing EvaluationContext.
    * @param hookContext
    * @param hookHints
    */
-  before?(
-    hookContext: BeforeHookContext,
-    hookHints?: HookHints
-  ): Promise<EvaluationContext | void> | EvaluationContext | void;
+  before?(hookContext: BeforeHookContext, hookHints?: HookHints): BeforeHookReturn;
 
   /**
    * Runs after flag values are successfully resolved from the provider.
@@ -22,8 +19,8 @@ export interface Hook<T extends FlagValue = FlagValue> {
   after?(
     hookContext: Readonly<HookContext<T>>,
     evaluationDetails: EvaluationDetails<T>,
-    hookHints?: HookHints
-  ): Promise<void> | void;
+    hookHints?: HookHints,
+  ): HooksReturn;
 
   /**
    * Runs in the event of an unhandled error or promise rejection during flag resolution, or any attached hooks.
@@ -31,7 +28,7 @@ export interface Hook<T extends FlagValue = FlagValue> {
    * @param error
    * @param hookHints
    */
-  error?(hookContext: Readonly<HookContext<T>>, error: unknown, hookHints?: HookHints): Promise<void> | void;
+  error?(hookContext: Readonly<HookContext<T>>, error: unknown, hookHints?: HookHints): HooksReturn;
 
   /**
    * Runs after all other hook stages, regardless of success or error.
@@ -39,5 +36,5 @@ export interface Hook<T extends FlagValue = FlagValue> {
    * @param hookContext
    * @param hookHints
    */
-  finally?(hookContext: Readonly<HookContext<T>>, hookHints?: HookHints): Promise<void> | void;
+  finally?(hookContext: Readonly<HookContext<T>>, hookHints?: HookHints): HooksReturn;
 }

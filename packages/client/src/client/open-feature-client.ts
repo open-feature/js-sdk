@@ -6,7 +6,6 @@ import {
   EventHandler,
   FlagValue,
   FlagValueType,
-  Hook,
   HookContext,
   JsonValue,
   Logger,
@@ -22,6 +21,7 @@ import { OpenFeature } from '../open-feature';
 import { Provider } from '../provider';
 import { InternalEventEmitter } from '../events/internal/internal-event-emitter';
 import { Client } from './client';
+import { Hook } from '../hooks/hook';
 
 type OpenFeatureClientOptions = {
   name?: string;
@@ -38,7 +38,7 @@ export class OpenFeatureClient implements Client {
     private readonly providerAccessor: () => Provider,
     private readonly emitterAccessor: () => InternalEventEmitter,
     private readonly globalLogger: () => Logger,
-    private readonly options: OpenFeatureClientOptions
+    private readonly options: OpenFeatureClientOptions,
   ) {}
 
   get metadata(): ClientMetadata {
@@ -76,12 +76,12 @@ export class OpenFeatureClient implements Client {
     return this;
   }
 
-  addHooks(...hooks: Hook<FlagValue>[]): this {
+  addHooks(...hooks: Hook[]): this {
     this._hooks = [...this._hooks, ...hooks];
     return this;
   }
 
-  getHooks(): Hook<FlagValue>[] {
+  getHooks(): Hook[] {
     return this._hooks;
   }
 
@@ -97,7 +97,7 @@ export class OpenFeatureClient implements Client {
   getBooleanDetails(
     flagKey: string,
     defaultValue: boolean,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): EvaluationDetails<boolean> {
     return this.evaluate<boolean>(flagKey, this._provider.resolveBooleanEvaluation, defaultValue, 'boolean', options);
   }
@@ -109,7 +109,7 @@ export class OpenFeatureClient implements Client {
   getStringDetails<T extends string = string>(
     flagKey: string,
     defaultValue: T,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): EvaluationDetails<T> {
     return this.evaluate<T>(
       flagKey,
@@ -117,7 +117,7 @@ export class OpenFeatureClient implements Client {
       this._provider.resolveStringEvaluation as () => EvaluationDetails<T>,
       defaultValue,
       'string',
-      options
+      options,
     );
   }
 
@@ -128,7 +128,7 @@ export class OpenFeatureClient implements Client {
   getNumberDetails<T extends number = number>(
     flagKey: string,
     defaultValue: T,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): EvaluationDetails<T> {
     return this.evaluate<T>(
       flagKey,
@@ -136,14 +136,14 @@ export class OpenFeatureClient implements Client {
       this._provider.resolveNumberEvaluation as () => EvaluationDetails<T>,
       defaultValue,
       'number',
-      options
+      options,
     );
   }
 
   getObjectValue<T extends JsonValue = JsonValue>(
     flagKey: string,
     defaultValue: T,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): T {
     return this.getObjectDetails(flagKey, defaultValue, options).value;
   }
@@ -151,7 +151,7 @@ export class OpenFeatureClient implements Client {
   getObjectDetails<T extends JsonValue = JsonValue>(
     flagKey: string,
     defaultValue: T,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): EvaluationDetails<T> {
     return this.evaluate<T>(flagKey, this._provider.resolveObjectEvaluation, defaultValue, 'object', options);
   }
@@ -161,7 +161,7 @@ export class OpenFeatureClient implements Client {
     resolver: (flagKey: string, defaultValue: T, context: EvaluationContext, logger: Logger) => ResolutionDetails<T>,
     defaultValue: T,
     flagType: FlagValueType,
-    options: FlagEvaluationOptions = {}
+    options: FlagEvaluationOptions = {},
   ): EvaluationDetails<T> {
     // merge global, client, and evaluation context
 
@@ -224,26 +224,19 @@ export class OpenFeatureClient implements Client {
   }
 
   private beforeHooks(hooks: Hook[], hookContext: HookContext, options: FlagEvaluationOptions) {
+    Object.freeze(hookContext);
+    Object.freeze(hookContext.context);
+
     for (const hook of hooks) {
-      // freeze the hookContext
-      Object.freeze(hookContext);
-
-      // use Object.assign to avoid modification of frozen hookContext
-      Object.assign(hookContext.context, {
-        ...hookContext.context,
-        ...hook?.before?.(hookContext, Object.freeze(options.hookHints)),
-      });
+      hook?.before?.(hookContext, Object.freeze(options.hookHints));
     }
-
-    // after before hooks, freeze the EvaluationContext.
-    return Object.freeze(hookContext.context);
   }
 
   private afterHooks(
     hooks: Hook[],
     hookContext: HookContext,
     evaluationDetails: EvaluationDetails<FlagValue>,
-    options: FlagEvaluationOptions
+    options: FlagEvaluationOptions,
   ) {
     // run "after" hooks sequentially
     for (const hook of hooks) {

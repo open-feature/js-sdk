@@ -4,10 +4,10 @@ import {
   Client,
   FlagValueType,
   EvaluationContext,
-  Hook,
   GeneralError,
   OpenFeature,
 } from '../src';
+import { Hook } from '../src/hooks/hook';
 
 const BOOLEAN_VALUE = true;
 
@@ -107,27 +107,6 @@ describe('Hooks', () => {
   });
 
   describe('Requirement 4.1.4', () => {
-    describe('before', () => {
-      it('evaluationContext must be mutable', (done) => {
-        client.getBooleanValue(FLAG_KEY, false, {
-          hooks: [
-            {
-              before: (hookContext) => {
-                try {
-                  // evaluation context is mutable in before, so this should work.
-                  hookContext.context.newBeforeProp = 'new!';
-                  expect(hookContext.context.newBeforeProp).toBeTruthy();
-                  done();
-                } catch (err) {
-                  done(err);
-                }
-              },
-            },
-          ],
-        });
-      });
-    });
-
     describe('after', () => {
       it('evaluationContext must be immutable', (done) => {
         client.getBooleanValue(FLAG_KEY, false, {
@@ -147,58 +126,6 @@ describe('Hooks', () => {
             },
           ],
         });
-      });
-    });
-  });
-
-  describe('4.3.2', () => {
-    it('"before" must run before flag resolution', async () => {
-      await client.getBooleanValue(FLAG_KEY, false, {
-        hooks: [
-          {
-            before: () => {
-              // add a prop to the context.
-              return { beforeRan: true };
-            },
-          },
-        ],
-      });
-
-      expect(MOCK_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.anything(),
-        // ensure property was added by the time the flag resolution occurred.
-        expect.objectContaining({
-          beforeRan: true,
-        }),
-        expect.anything()
-      );
-    });
-  });
-
-  describe('Requirement 4.3.3', () => {
-    it('EvaluationContext must be passed to next "before" hook', (done) => {
-      client.getBooleanValue(FLAG_KEY, false, {
-        hooks: [
-          {
-            before: () => {
-              // add a prop to the context.
-              return { beforeRan: true };
-            },
-          },
-          {
-            before: (hookContext) => {
-              // ensure added prop exists in next hook
-              try {
-                expect(hookContext.context.beforeRan).toBeTruthy();
-                done();
-              } catch (err) {
-                done(err);
-              }
-              return { beforeRan: true };
-            },
-          },
-        ],
       });
     });
   });

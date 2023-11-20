@@ -2,6 +2,7 @@ import { EvaluationContext, ManageContext, OpenFeatureCommonAPI } from '@openfea
 import { Client, OpenFeatureClient } from './client';
 import { NOOP_PROVIDER, Provider } from './provider';
 import { OpenFeatureEventEmitter } from './events';
+import { Hook } from './hooks/hook';
 
 // use a symbol as a key for the global singleton
 const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/web-sdk/api');
@@ -11,7 +12,7 @@ type OpenFeatureGlobal = {
 };
 const _globalThis = globalThis as OpenFeatureGlobal;
 
-export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider> implements ManageContext<Promise<void>> {
+export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> implements ManageContext<Promise<void>> {
   protected _events = new OpenFeatureEventEmitter();
   protected _defaultProvider: Provider = NOOP_PROVIDER;
   protected _createEventEmitter = () => new OpenFeatureEventEmitter();
@@ -49,7 +50,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider> implements Ma
         } catch (err) {
           this._logger?.error(`Error running context change handler of provider ${provider.metadata.name}:`, err);
         }
-      })
+      }),
     );
   }
 
@@ -75,7 +76,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider> implements Ma
       () => this.getProviderForClient(name),
       () => this.buildAndCacheEventEmitterForClient(name),
       () => this._logger,
-      { name, version }
+      { name, version },
     );
   }
 

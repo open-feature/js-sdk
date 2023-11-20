@@ -1,4 +1,5 @@
-import { EvaluationContext, EvaluationDetails, Hook, HookHints, JsonValue } from '@openfeature/core';
+import { EvaluationContext, EvaluationDetails, HookHints, JsonValue } from '@openfeature/core';
+import { Hook } from '../hooks/hook';
 
 export interface FlagEvaluationOptions {
   hooks?: Hook[];
@@ -18,7 +19,7 @@ export interface Features {
     flagKey: string,
     defaultValue: boolean,
     context?: EvaluationContext,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): Promise<boolean>;
 
   /**
@@ -33,7 +34,7 @@ export interface Features {
     flagKey: string,
     defaultValue: boolean,
     context?: EvaluationContext,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): Promise<EvaluationDetails<boolean>>;
 
   /**
@@ -49,14 +50,14 @@ export interface Features {
     flagKey: string,
     defaultValue: string,
     context?: EvaluationContext,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): Promise<string>;
 
   getStringValue<T extends string = string>(
     flagKey: string,
     defaultValue: T,
     context?: EvaluationContext,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): Promise<T>;
 
   /**
@@ -72,14 +73,14 @@ export interface Features {
     flagKey: string,
     defaultValue: string,
     context?: EvaluationContext,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): Promise<EvaluationDetails<string>>;
 
   getStringDetails<T extends string = string>(
     flagKey: string,
     defaultValue: T,
     context?: EvaluationContext,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): Promise<EvaluationDetails<T>>;
 
   /**
@@ -95,14 +96,14 @@ export interface Features {
     flagKey: string,
     defaultValue: number,
     context?: EvaluationContext,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): Promise<number>;
 
   getNumberValue<T extends number = number>(
     flagKey: string,
     defaultValue: T,
     context?: EvaluationContext,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): Promise<T>;
 
   /**
@@ -118,14 +119,14 @@ export interface Features {
     flagKey: string,
     defaultValue: number,
     context?: EvaluationContext,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): Promise<EvaluationDetails<number>>;
 
   getNumberDetails<T extends number = number>(
     flagKey: string,
     defaultValue: T,
     context?: EvaluationContext,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): Promise<EvaluationDetails<T>>;
 
   /**
@@ -141,14 +142,14 @@ export interface Features {
     flagKey: string,
     defaultValue: JsonValue,
     context?: EvaluationContext,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): Promise<JsonValue>;
 
   getObjectValue<T extends JsonValue = JsonValue>(
     flagKey: string,
     defaultValue: T,
     context?: EvaluationContext,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): Promise<T>;
 
   /**
@@ -164,13 +165,13 @@ export interface Features {
     flagKey: string,
     defaultValue: JsonValue,
     context?: EvaluationContext,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): Promise<EvaluationDetails<JsonValue>>;
 
   getObjectDetails<T extends JsonValue = JsonValue>(
     flagKey: string,
     defaultValue: T,
     context?: EvaluationContext,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): Promise<EvaluationDetails<T>>;
 }
