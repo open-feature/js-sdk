@@ -1,6 +1,6 @@
 {
   "name": "@openfeature/server-sdk",
-  "version": "1.7.2",
+  "version": "1.7.3",
   "description": "OpenFeature SDK for JavaScript",
   "main": "./dist/cjs/index.js",
   "files": [
