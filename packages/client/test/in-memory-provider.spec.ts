@@ -1,7 +1,7 @@
 import { FlagNotFoundError, GeneralError, ProviderEvents, ProviderStatus, StandardResolutionReasons, TypeMismatchError } from '@openfeature/core';
 import { InMemoryProvider } from '../src';
 import { FlagConfiguration } from '../src/provider/in-memory-provider/flag-configuration';
-import { VariantFoundError } from '../src/provider/in-memory-provider/variant-not-found-error';
+import { VariantNotFoundError } from '../src/provider/in-memory-provider/variant-not-found-error';
 
 describe(InMemoryProvider, () => {
   describe('initialize', () => {
@@ -100,7 +100,7 @@ describe(InMemoryProvider, () => {
       expect(resolution).toEqual({ value: false, reason: StandardResolutionReasons.DISABLED });
     });
 
-    it('throws VariantFoundError if variant does not exist', async () => {
+    it('throws VariantNotFoundError if variant does not exist', async () => {
       const booleanFlagSpec = {
         'a-boolean-flag': {
           variants: {
@@ -113,7 +113,7 @@ describe(InMemoryProvider, () => {
       };
       await provider.putConfiguration(booleanFlagSpec);
 
-      expect(() => provider.resolveBooleanEvaluation('a-boolean-flag', false)).toThrow(VariantFoundError);
+      expect(() => provider.resolveBooleanEvaluation('a-boolean-flag', false)).toThrow(VariantNotFoundError);
     });
 
     it('throws TypeMismatchError if variant type does not match with accessors', async () => {
@@ -211,7 +211,7 @@ describe(InMemoryProvider, () => {
       expect(resolution).toEqual({ value: itsDefault, reason: StandardResolutionReasons.DISABLED });
     });
 
-    it('throws VariantFoundError if variant does not exist', async () => {
+    it('throws VariantNotFoundError if variant does not exist', async () => {
       const StringFlagSpec = {
         'a-string-flag': {
           variants: {
@@ -224,7 +224,7 @@ describe(InMemoryProvider, () => {
       };
       await provider.putConfiguration(StringFlagSpec);
 
-      expect(() => provider.resolveStringEvaluation('a-string-flag', itsDefault)).toThrow(VariantFoundError);
+      expect(() => provider.resolveStringEvaluation('a-string-flag', itsDefault)).toThrow(VariantNotFoundError);
     });
 
     it('throws TypeMismatchError if variant does not match with accessor method type', async () => {
@@ -335,7 +335,7 @@ describe(InMemoryProvider, () => {
       };
       await provider.putConfiguration(numberFlagSpec);
 
-      expect(() => provider.resolveNumberEvaluation('a-number-flag', defaultNumber)).toThrow(VariantFoundError);
+      expect(() => provider.resolveNumberEvaluation('a-number-flag', defaultNumber)).toThrow(VariantNotFoundError);
     });
 
     it('throws TypeMismatchError if variant does not match with accessor method type', async () => {
@@ -437,7 +437,7 @@ describe(InMemoryProvider, () => {
       expect(resolution).toEqual({ value: defaultObject, reason: StandardResolutionReasons.DISABLED });
     });
 
-    it('throws VariantFoundError if variant does not exist', async () => {
+    it('throws VariantNotFoundError if variant does not exist', async () => {
       const ObjectFlagSpec = {
         'a-Object-flag': {
           variants: {
@@ -450,7 +450,7 @@ describe(InMemoryProvider, () => {
       };
       await provider.putConfiguration(ObjectFlagSpec);
 
-      expect(() => provider.resolveObjectEvaluation('a-Object-flag', defaultObject)).toThrow(VariantFoundError);
+      expect(() => provider.resolveObjectEvaluation('a-Object-flag', defaultObject)).toThrow(VariantNotFoundError);
     });
 
     it('throws TypeMismatchError if variant does not match with accessor method type', async () => {

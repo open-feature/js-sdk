@@ -8,7 +8,7 @@ export class VariantNotFoundError extends OpenFeatureError {
   code: ErrorCode;
   constructor(message?: string) {
     super(message);
-    Object.setPrototypeOf(this, VariantFoundError.prototype);
+    Object.setPrototypeOf(this, VariantNotFoundError.prototype);
     this.name = 'VariantNotFoundError';
     this.code = ErrorCode.GENERAL;
   }

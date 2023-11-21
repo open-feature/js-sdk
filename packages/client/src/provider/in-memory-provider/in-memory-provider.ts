@@ -15,7 +15,7 @@ import {
 import { Provider } from '../provider';
 import { OpenFeatureEventEmitter } from '../../events';
 import { FlagConfiguration, Flag } from './flag-configuration';
-import { VariantFoundError } from './variant-not-found-error';
+import { VariantNotFoundError } from './variant-not-found-error';
 
 /**
  * A simple OpenFeature provider intended for demos and as a test stub.
@@ -42,6 +42,8 @@ export class InMemoryProvider implements Provider {
       }
 
       this._context = context;
+      // set the provider's state, but don't emit events manually;
+      // the SDK does this based on the resolution/rejection of the init promise
       this.status = ProviderStatus.READY;
     } catch (error) {
       this.status = ProviderStatus.ERROR;
@@ -66,6 +68,7 @@ export class InMemoryProvider implements Provider {
 
     try {
       await this.initialize(this._context);
+      // we need to emit our own events in this case, since it's not part of the init flow.
       this.events.emit(ProviderEvents.Ready);
     } catch (err) {
       this.events.emit(ProviderEvents.Error);
@@ -126,7 +129,7 @@ export class InMemoryProvider implements Provider {
     if (resolvedFlag.value === undefined) {
       const message = `no value associated with variant provided for ${flagKey} found`;
       logger?.error(message);
-      throw new VariantFoundError(message);
+      throw new VariantNotFoundError(message);
     }
 
     if (typeof resolvedFlag.value != typeof defaultValue) {
