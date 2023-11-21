@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.19](https://github.com/open-feature/js-sdk/compare/core-v0.0.18...core-v0.0.19) (2023-11-21)
+
+
+### 🐛 Bug Fixes
+
+* make hooks in client sdk only return void ([#671](https://github.com/open-feature/js-sdk/issues/671)) ([a7d0b95](https://github.com/open-feature/js-sdk/commit/a7d0b954dcd62730d508d203e0fd5bbfe3d39813))
+
 ## [0.0.18](https://github.com/open-feature/js-sdk/compare/core-v0.0.17...core-v0.0.18) (2023-11-09)
 
 
