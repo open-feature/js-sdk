@@ -1,5 +1,5 @@
 import { CommonProvider, EvaluationContext, JsonValue, Logger, ResolutionDetails } from '@openfeature/core';
-import { Hook } from '../hooks/hook';
+import { Hook } from '../hooks';
 
 /**
  * Interface that providers must implement to resolve flag values for their particular
