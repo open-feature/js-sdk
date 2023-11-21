@@ -1,5 +1,4 @@
-import { OpenFeature, Provider, ResolutionDetails, Client, FlagValueType, EvaluationContext } from '../src';
-import { Hook } from '../src/hooks/hook';
+import { OpenFeature, Provider, ResolutionDetails, Client, FlagValueType, EvaluationContext, Hook } from '../src';
 
 const BOOLEAN_VALUE = true;
 
