@@ -167,7 +167,7 @@ describe('Hooks', () => {
         expect.objectContaining({
           beforeRan: true,
         }),
-        expect.anything()
+        expect.anything(),
       );
     });
   });
@@ -252,7 +252,7 @@ describe('Hooks', () => {
           [invocationPropToOverwrite434]: true,
           [hookProp434]: true,
         }),
-        expect.anything()
+        expect.anything(),
       );
     });
   });
@@ -903,7 +903,7 @@ describe('Hooks', () => {
             return new Promise<EvaluationContext>((resolve) =>
               setTimeout(() => {
                 resolve({ beforeRan: true });
-              }, 100)
+              }, 100),
             );
           }),
           after: jest.fn((hookContext) => {
@@ -940,7 +940,7 @@ describe('Hooks', () => {
             return new Promise<EvaluationContext>((resolve, reject) =>
               setTimeout(() => {
                 reject();
-              }, 100)
+              }, 100),
             );
           }),
           error: jest.fn(() => {
