@@ -21,7 +21,7 @@ import { OpenFeature } from '../open-feature';
 import { Provider } from '../provider';
 import { InternalEventEmitter } from '../events/internal/internal-event-emitter';
 import { Client } from './client';
-import { Hook } from './hooks';
+import { Hook } from '../hooks';
 
 type OpenFeatureClientOptions = {
   name?: string;

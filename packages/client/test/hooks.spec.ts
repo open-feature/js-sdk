@@ -6,8 +6,8 @@ import {
   EvaluationContext,
   GeneralError,
   OpenFeature,
+  Hook,
 } from '../src';
-import { Hook } from '../src/hooks/hook';
 
 const BOOLEAN_VALUE = true;
 
