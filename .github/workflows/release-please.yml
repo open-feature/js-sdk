@@ -24,6 +24,7 @@ jobs:
   sbom:
     needs: release-please
     runs-on: ubuntu-latest
+    if: ${{ fromJSON(needs.release-please.outputs.paths_released)[0] != null }}
     strategy:
       matrix:
         release: ${{ fromJSON(needs.release-please.outputs.paths_released) }}
