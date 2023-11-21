@@ -2,7 +2,7 @@ import { EvaluationContext, ManageContext, OpenFeatureCommonAPI } from '@openfea
 import { Client, OpenFeatureClient } from './client';
 import { NOOP_PROVIDER, Provider } from './provider';
 import { OpenFeatureEventEmitter } from './events';
-import { Hook } from './hooks/hook';
+import { Hook } from './hooks';
 
 // use a symbol as a key for the global singleton
 const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/web-sdk/api');
