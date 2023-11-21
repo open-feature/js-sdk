@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.4-experimental](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.0.3-experimental...react-sdk-v0.0.4-experimental) (2023-11-21)
+
+
+### 🧹 Chore
+
+* **main:** release core 0.0.19 ([#676](https://github.com/open-feature/js-sdk/issues/676)) ([b0cbeb4](https://github.com/open-feature/js-sdk/commit/b0cbeb460cfb210d258cb7978e77f306353037d2))
+
 ## [0.0.3-experimental](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.0.2-experimental...react-sdk-v0.0.3-experimental) (2023-11-09)
 
 
