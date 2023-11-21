@@ -1,22 +1,22 @@
 import { GeneralError } from './errors';
-import { EvaluationContext, FlagValue } from './evaluation';
+import { EvaluationContext } from './evaluation';
 import { EventDetails, EventHandler, Eventing, ProviderEvents, statusMatchesEvent } from './events';
 import { GenericEventEmitter } from './events';
 import { isDefined } from './filter';
-import { EvaluationLifeCycle, Hook } from './hooks';
+import { EvaluationLifeCycle, BaseHook } from './hooks';
 import { DefaultLogger, Logger, ManageLogger, SafeLogger } from './logger';
 import { CommonProvider, ProviderMetadata, ProviderStatus } from './provider';
 import { objectOrUndefined, stringOrUndefined } from './type-guards';
 import { Paradigm } from './types';
 
-export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProvider>
+export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProvider, H extends BaseHook = BaseHook>
   implements Eventing, EvaluationLifeCycle<OpenFeatureCommonAPI<P>>, ManageLogger<OpenFeatureCommonAPI<P>>
 {
   protected abstract _createEventEmitter(): GenericEventEmitter;
   protected abstract _defaultProvider: P;
   protected abstract readonly _events: GenericEventEmitter;
 
-  protected _hooks: Hook[] = [];
+  protected _hooks: H[] = [];
   protected _context: EvaluationContext = {};
   protected _logger: Logger = new DefaultLogger();
 
@@ -30,12 +30,12 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     this._runsOn = category;
   }
 
-  addHooks(...hooks: Hook<FlagValue>[]): this {
+  addHooks(...hooks: H[]): this {
     this._hooks = [...this._hooks, ...hooks];
     return this;
   }
 
-  getHooks(): Hook<FlagValue>[] {
+  getHooks(): H[] {
     return this._hooks;
   }
 
@@ -184,7 +184,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     if (typeof provider.initialize === 'function' && provider.status === undefined) {
       const activeLogger = this._logger || console;
       activeLogger.warn(
-        `Provider ${providerName} implements 'initialize' but not 'status'. Please implement 'status'.`
+        `Provider ${providerName} implements 'initialize' but not 'status'. Please implement 'status'.`,
       );
     }
 
@@ -251,10 +251,11 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     this._clientEvents.set(name, newEmitter);
 
     const clientProvider = this.getProviderForClient(name);
-    Object.values<ProviderEvents>(ProviderEvents).forEach((eventType) =>
-      clientProvider.events?.addHandler(eventType, async (details) => {
-        newEmitter.emit(eventType, { ...details, clientName: name, providerName: clientProvider.metadata.name });
-      })
+    Object.values<ProviderEvents>(ProviderEvents).forEach(
+      (eventType) =>
+        clientProvider.events?.addHandler(eventType, async (details) => {
+          newEmitter.emit(eventType, { ...details, clientName: name, providerName: clientProvider.metadata.name });
+        }),
     );
 
     return newEmitter;
@@ -280,7 +281,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     oldProvider: P,
     newProvider: P,
     clientName: string | undefined,
-    emitters: (GenericEventEmitter | undefined)[]
+    emitters: (GenericEventEmitter | undefined)[],
   ) {
     this._clientEventHandlers
       .get(clientName)
@@ -321,7 +322,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
         } catch (err) {
           this.handleShutdownError(provider, err);
         }
-      })
+      }),
     );
   }
 

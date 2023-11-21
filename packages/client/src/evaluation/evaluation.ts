@@ -1,7 +1,7 @@
-import { EvaluationDetails, Hook, HookHints, JsonValue } from '@openfeature/core';
+import { EvaluationDetails, BaseHook, HookHints, JsonValue } from '@openfeature/core';
 
 export interface FlagEvaluationOptions {
-  hooks?: Hook[];
+  hooks?: BaseHook[];
   hookHints?: HookHints;
 }
 
@@ -25,7 +25,7 @@ export interface Features {
   getBooleanDetails(
     flagKey: string,
     defaultValue: boolean,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): EvaluationDetails<boolean>;
 
   /**
@@ -53,7 +53,7 @@ export interface Features {
   getStringDetails<T extends string = string>(
     flagKey: string,
     defaultValue: T,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): EvaluationDetails<T>;
 
   /**
@@ -81,7 +81,7 @@ export interface Features {
   getNumberDetails<T extends number = number>(
     flagKey: string,
     defaultValue: T,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): EvaluationDetails<T>;
 
   /**
@@ -107,12 +107,12 @@ export interface Features {
   getObjectDetails(
     flagKey: string,
     defaultValue: JsonValue,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): EvaluationDetails<JsonValue>;
 
   getObjectDetails<T extends JsonValue = JsonValue>(
     flagKey: string,
     defaultValue: T,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): EvaluationDetails<T>;
 }
