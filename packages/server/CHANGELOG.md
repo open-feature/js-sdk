@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.3](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.7.2...server-sdk-v1.7.3) (2023-11-21)
+
+
+### 🧹 Chore
+
+* **main:** release core 0.0.19 ([#676](https://github.com/open-feature/js-sdk/issues/676)) ([b0cbeb4](https://github.com/open-feature/js-sdk/commit/b0cbeb460cfb210d258cb7978e77f306353037d2))
+
 ## [1.7.2](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.7.1...server-sdk-v1.7.2) (2023-11-09)
 
 
