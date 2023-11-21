@@ -1,5 +1,5 @@
 import { EvaluationContext, EvaluationDetails, HookHints, JsonValue } from '@openfeature/core';
-import { Hook } from '../hooks/hook';
+import { Hook } from '../hooks';
 
 export interface FlagEvaluationOptions {
   hooks?: Hook[];
