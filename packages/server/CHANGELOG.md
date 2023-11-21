@@ -3,11 +3,6 @@
 ## [1.7.3](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.7.2...server-sdk-v1.7.3) (2023-11-21)
 
 
-### 🐛 Bug Fixes
-
-* make hooks in client sdk only return void ([#671](https://github.com/open-feature/js-sdk/issues/671)) ([a7d0b95](https://github.com/open-feature/js-sdk/commit/a7d0b954dcd62730d508d203e0fd5bbfe3d39813))
-
-
 ### 🧹 Chore
 
 * **main:** release core 0.0.19 ([#676](https://github.com/open-feature/js-sdk/issues/676)) ([b0cbeb4](https://github.com/open-feature/js-sdk/commit/b0cbeb460cfb210d258cb7978e77f306353037d2))
