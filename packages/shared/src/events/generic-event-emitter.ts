@@ -69,7 +69,7 @@ export abstract class GenericEventEmitter<AdditionalContext extends Record<strin
 /**
  * This is an un-exported type that corresponds to NodeJS.EventEmitter.
  * We can't use that type here, because this module is used in both the browser, and the server.
- * In the server, node (or whatever server runtime) provider an implementation for this.
+ * In the server, node (or whatever server runtime) provides an implementation for this.
  * In the browser, we bundle in the popular 'events' package, which is a polyfill of NodeJS.EventEmitter.
  */
 /* eslint-disable */
