@@ -4,6 +4,7 @@ import {
   GeneralError,
   InvalidContextError,
   ParseError,
+  ProviderNotReadyError,
   TargetingKeyMissingError,
   TypeMismatchError,
 } from '../src';
@@ -55,5 +56,13 @@ describe('Errors', () => {
     expect(error.code).toBe(ErrorCode.INVALID_CONTEXT);
     expect(error.name).toBe('InvalidContextError');
     expect(error instanceof InvalidContextError).toBe(true);
+  });
+
+  it('ProviderNotReadyError', () => {
+    const error = new ProviderNotReadyError('message');
+    expect(error.message).toBe('message');
+    expect(error.code).toBe(ErrorCode.PROVIDER_NOT_READY);
+    expect(error.name).toBe('ProviderNotReadyError');
+    expect(error instanceof ProviderNotReadyError).toBe(true);
   });
 });
