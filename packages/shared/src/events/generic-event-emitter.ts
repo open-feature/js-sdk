@@ -72,6 +72,7 @@ export abstract class GenericEventEmitter<AdditionalContext extends Record<strin
  * In the server, node (or whatever server runtime) provider an implementation for this.
  * In the browser, we bundle in the popular 'events' package, which is a polyfill of NodeJS.EventEmitter.
  */
+/* eslint-disable */
 interface PlatformEventEmitter {
   addListener(eventName: string | symbol, listener: (...args: any[]) => void): this;
   on(eventName: string | symbol, listener: (...args: any[]) => void): this;
