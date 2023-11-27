@@ -6,7 +6,6 @@ import {
   EventHandler,
   FlagValue,
   FlagValueType,
-  Hook,
   HookContext,
   JsonValue,
   Logger,
@@ -16,13 +15,14 @@ import {
   ResolutionDetails,
   SafeLogger,
   StandardResolutionReasons,
-  statusMatchesEvent
+  statusMatchesEvent,
 } from '@openfeature/core';
 import { FlagEvaluationOptions } from '../evaluation';
 import { OpenFeature } from '../open-feature';
 import { Provider } from '../provider';
 import { Client } from './client';
 import { InternalEventEmitter } from '../events/internal/internal-event-emitter';
+import { Hook } from '../hooks';
 
 type OpenFeatureClientOptions = {
   name?: string;
@@ -41,7 +41,7 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
     private readonly emitterAccessor: () => InternalEventEmitter,
     private readonly globalLogger: () => Logger,
     private readonly options: OpenFeatureClientOptions,
-    context: EvaluationContext = {}
+    context: EvaluationContext = {},
   ) {
     this._context = context;
   }
@@ -90,12 +90,12 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
     return this._context;
   }
 
-  addHooks(...hooks: Hook<FlagValue>[]): OpenFeatureClient {
+  addHooks(...hooks: Hook[]): OpenFeatureClient {
     this._hooks = [...this._hooks, ...hooks];
     return this;
   }
 
-  getHooks(): Hook<FlagValue>[] {
+  getHooks(): Hook[] {
     return this._hooks;
   }
 
@@ -108,7 +108,7 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
     flagKey: string,
     defaultValue: boolean,
     context?: EvaluationContext,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): Promise<boolean> {
     return (await this.getBooleanDetails(flagKey, defaultValue, context, options)).value;
   }
@@ -117,7 +117,7 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
     flagKey: string,
     defaultValue: boolean,
     context?: EvaluationContext,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): Promise<EvaluationDetails<boolean>> {
     return this.evaluate<boolean>(
       flagKey,
@@ -125,7 +125,7 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
       defaultValue,
       'boolean',
       context,
-      options
+      options,
     );
   }
 
@@ -133,7 +133,7 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
     flagKey: string,
     defaultValue: T,
     context?: EvaluationContext,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): Promise<T> {
     return (await this.getStringDetails<T>(flagKey, defaultValue, context, options)).value;
   }
@@ -142,7 +142,7 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
     flagKey: string,
     defaultValue: T,
     context?: EvaluationContext,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): Promise<EvaluationDetails<T>> {
     return this.evaluate<T>(
       flagKey,
@@ -151,7 +151,7 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
       defaultValue,
       'string',
       context,
-      options
+      options,
     );
   }
 
@@ -159,7 +159,7 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
     flagKey: string,
     defaultValue: T,
     context?: EvaluationContext,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): Promise<T> {
     return (await this.getNumberDetails(flagKey, defaultValue, context, options)).value;
   }
@@ -168,7 +168,7 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
     flagKey: string,
     defaultValue: T,
     context?: EvaluationContext,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): Promise<EvaluationDetails<T>> {
     return this.evaluate<T>(
       flagKey,
@@ -177,7 +177,7 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
       defaultValue,
       'number',
       context,
-      options
+      options,
     );
   }
 
@@ -185,7 +185,7 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
     flagKey: string,
     defaultValue: T,
     context?: EvaluationContext,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): Promise<T> {
     return (await this.getObjectDetails(flagKey, defaultValue, context, options)).value;
   }
@@ -194,7 +194,7 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
     flagKey: string,
     defaultValue: T,
     context?: EvaluationContext,
-    options?: FlagEvaluationOptions
+    options?: FlagEvaluationOptions,
   ): Promise<EvaluationDetails<T>> {
     return this.evaluate<T>(flagKey, this._provider.resolveObjectEvaluation, defaultValue, 'object', context, options);
   }
@@ -205,12 +205,12 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
       flagKey: string,
       defaultValue: T,
       context: EvaluationContext,
-      logger: Logger
+      logger: Logger,
     ) => Promise<ResolutionDetails<T>>,
     defaultValue: T,
     flagType: FlagValueType,
     invocationContext: EvaluationContext = {},
-    options: FlagEvaluationOptions = {}
+    options: FlagEvaluationOptions = {},
   ): Promise<EvaluationDetails<T>> {
     // merge global, client, and evaluation context
 
@@ -296,7 +296,7 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
     hooks: Hook[],
     hookContext: HookContext,
     evaluationDetails: EvaluationDetails<FlagValue>,
-    options: FlagEvaluationOptions
+    options: FlagEvaluationOptions,
   ) {
     // run "after" hooks sequentially
     for (const hook of hooks) {

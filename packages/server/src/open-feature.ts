@@ -14,6 +14,7 @@ import {
 } from './transaction-context';
 import { Client, OpenFeatureClient } from './client';
 import { OpenFeatureEventEmitter } from './events';
+import { Hook } from './hooks';
 
 // use a symbol as a key for the global singleton
 const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/js-sdk/api');
@@ -24,13 +25,13 @@ type OpenFeatureGlobal = {
 const _globalThis = globalThis as OpenFeatureGlobal;
 
 export class OpenFeatureAPI
-  extends OpenFeatureCommonAPI<Provider>
+  extends OpenFeatureCommonAPI<Provider, Hook>
   implements ManageContext<OpenFeatureAPI>, ManageTransactionContextPropagator<OpenFeatureCommonAPI<Provider>>
 {
   protected _events = new OpenFeatureEventEmitter();
   protected _defaultProvider: Provider = NOOP_PROVIDER;
   protected _createEventEmitter = () => new OpenFeatureEventEmitter();
-  
+
   private _transactionContextPropagator: TransactionContextPropagator = NOOP_TRANSACTION_CONTEXT_PROPAGATOR;
 
   private constructor() {
@@ -100,7 +101,7 @@ export class OpenFeatureAPI
   getClient(
     nameOrContext?: string | EvaluationContext,
     versionOrContext?: string | EvaluationContext,
-    contextOrUndefined?: EvaluationContext
+    contextOrUndefined?: EvaluationContext,
   ): Client {
     const name = stringOrUndefined(nameOrContext);
     const version = stringOrUndefined(versionOrContext);
@@ -114,7 +115,7 @@ export class OpenFeatureAPI
       () => this.buildAndCacheEventEmitterForClient(name),
       () => this._logger,
       { name, version },
-      context
+      context,
     );
   }
 
@@ -127,7 +128,7 @@ export class OpenFeatureAPI
   }
 
   setTransactionContextPropagator(
-    transactionContextPropagator: TransactionContextPropagator
+    transactionContextPropagator: TransactionContextPropagator,
   ): OpenFeatureCommonAPI<Provider> {
     const baseMessage = 'Invalid TransactionContextPropagator, will not be set: ';
     if (typeof transactionContextPropagator?.getTransactionContext !== 'function') {

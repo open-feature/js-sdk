@@ -1,4 +1,4 @@
-import { Hook } from './hook';
+import { BaseHook } from './hook';
 import { FlagValue } from '../evaluation';
 
 export interface EvaluationLifeCycle<T> {
@@ -9,16 +9,16 @@ export interface EvaluationLifeCycle<T> {
    * Hooks registered on the global API object run with all evaluations.
    * Hooks registered on the client run with all evaluations on that client.
    * @template T The type of the receiver
-   * @param {Hook<FlagValue>[]} hooks A list of hooks that should always run
+   * @param {BaseHook[]} hooks A list of hooks that should always run
    * @returns {T} The receiver (this object)
    */
-  addHooks(...hooks: Hook<FlagValue>[]): T;
+  addHooks(...hooks: BaseHook[]): T;
 
   /**
    * Access all the hooks that are registered on this receiver.
-   * @returns {Hook<FlagValue>[]} A list of the client hooks
+   * @returns {BaseHook<FlagValue>[]} A list of the client hooks
    */
-  getHooks(): Hook<FlagValue>[];
+  getHooks(): BaseHook[];
 
   /**
    * Clears all the hooks that are registered on this receiver.
