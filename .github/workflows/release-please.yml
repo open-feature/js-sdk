@@ -36,9 +36,9 @@ jobs:
         with:
           node-version: 18
       - name: Generate SBOM
-        run:
+        run: |
           npm install -g npm@^10.2.0
-          npm ci --omit dev --workspace=${{matrix.release}}
+          npm ci
           npm sbom --sbom-format=cyclonedx --omit=dev --omit=peer --workspace=${{matrix.release}} > bom.json
       - name: Attach SBOM to artifact
         env:
