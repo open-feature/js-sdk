@@ -1,6 +1,6 @@
 {
   "name": "@openfeature/react-sdk",
-  "version": "0.0.3-experimental",
+  "version": "0.0.5-experimental",
   "description": "OpenFeature React SDK",
   "main": "./dist/cjs/index.js",
   "files": [
@@ -24,8 +24,7 @@
     "postbuild": "shx cp ./../../package.esm.json ./dist/esm/package.json",
     "current-version": "echo $npm_package_version",
     "prepack": "shx cp ./../../LICENSE ./LICENSE",
-    "publish-if-not-exists": "cp $NPM_CONFIG_USERCONFIG .npmrc && if [ \"$(npm show $npm_package_name@$npm_package_version version)\" = \"$(npm run current-version -s)\" ]; then echo 'already published, skipping'; else npm publish --access public; fi",
-    "update-core-peer": "npm install --save-peer --save-exact @openfeature/core@$OPENFEATURE_CORE_VERSION"
+    "publish-if-not-exists": "cp $NPM_CONFIG_USERCONFIG .npmrc && if [ \"$(npm show $npm_package_name@$npm_package_version version)\" = \"$(npm run current-version -s)\" ]; then echo 'already published, skipping'; else npm publish --access public; fi"
   },
   "repository": {
     "type": "git",
@@ -47,12 +46,11 @@
   },
   "homepage": "https://github.com/open-feature/js-sdk#readme",
   "peerDependencies": {
-    "@openfeature/core": "0.0.18",
     "@openfeature/web-sdk": ">=0.4.0",
     "react": ">=18.0.0"
   },
   "devDependencies": {
-    "@openfeature/core": "0.0.18",
+    "@openfeature/core": "*",
     "@openfeature/web-sdk": "*"
   }
 }

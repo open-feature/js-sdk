@@ -1,6 +1,6 @@
 {
-  "packages/react": "0.0.3-experimental",
-  "packages/client": "0.4.5",
-  "packages/server": "1.7.2",
-  "packages/shared": "0.0.18"
+  "packages/react": "0.0.5-experimental",
+  "packages/client": "0.4.7",
+  "packages/server": "1.7.4",
+  "packages/shared": "0.0.20"
 }

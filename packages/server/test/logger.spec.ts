@@ -1,4 +1,4 @@
-import { OpenFeature, Hook, Logger, Provider, DefaultLogger, SafeLogger } from '../src';
+import { OpenFeature, BaseHook, Logger, Provider, DefaultLogger, SafeLogger } from '../src';
 
 class MockedLogger implements Logger {
   error = jest.fn();
@@ -12,7 +12,7 @@ const AFTER_HOOK_LOG_MESSAGE = 'in after hook';
 const ERROR_HOOK_LOG_MESSAGE = 'in error hook';
 const FINALLY_HOOK_LOG_MESSAGE = 'in finally hook';
 
-const MOCK_HOOK: Hook = {
+const MOCK_HOOK: BaseHook = {
   before: jest.fn((hookContext) => hookContext.logger.info(BEFORE_HOOK_LOG_MESSAGE)),
   after: jest.fn((hookContext) => hookContext.logger.info(AFTER_HOOK_LOG_MESSAGE)),
   error: jest.fn((hookContext) => hookContext.logger.info(ERROR_HOOK_LOG_MESSAGE)),
@@ -93,7 +93,7 @@ describe('Logger', () => {
         const safeLogger = new SafeLogger({} as Logger);
 
         expect(errorSpy).toBeCalledWith(
-          expect.objectContaining({ message: 'The provided logger is missing the error method.' })
+          expect.objectContaining({ message: 'The provided logger is missing the error method.' }),
         );
         // Checking the private logger
         expect(safeLogger['logger']).toBeInstanceOf(DefaultLogger);

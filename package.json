@@ -14,7 +14,7 @@
     "publish-all": "npm run publish-if-not-exists --workspace=packages/shared --workspace=packages/server --workspace=packages/client --workspace=packages/react",
     "docs": "typedoc",
     "core-version": "npm run version --workspace=packages/shared",
-    "update-core-peers": "export OPENFEATURE_CORE_VERSION=$(npm run --silent core-version) && npm run update-core-peer --workspace=packages/server --workspace=packages/client --workspace=packages/react"
+    "update-core-peers": "export OPENFEATURE_CORE_VERSION=$(npm run --silent core-version) && npm run update-core-peer --workspace=packages/server --workspace=packages/client"
   },
   "repository": {
     "type": "git",
