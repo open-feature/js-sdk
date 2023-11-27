@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.5-experimental](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.0.4-experimental...react-sdk-v0.0.5-experimental) (2023-11-27)
+
+
+### 🐛 Bug Fixes
+
+* rm NodeJS type from core, rm react core peer ([#681](https://github.com/open-feature/js-sdk/issues/681)) ([09ff7b4](https://github.com/open-feature/js-sdk/commit/09ff7b4d99ec2bfa4ef9c18cb1845af1ca14d7b9))
+
 ## [0.0.4-experimental](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.0.3-experimental...react-sdk-v0.0.4-experimental) (2023-11-21)
 
 
