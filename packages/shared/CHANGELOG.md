@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.20](https://github.com/open-feature/js-sdk/compare/core-v0.0.19...core-v0.0.20) (2023-11-27)
+
+
+### 🐛 Bug Fixes
+
+* add Provider Not Ready Error ([#680](https://github.com/open-feature/js-sdk/issues/680)) ([b0054f9](https://github.com/open-feature/js-sdk/commit/b0054f920dc8a36d2eab1b5fb75433405758440e))
+* rm NodeJS type from core, rm react core peer ([#681](https://github.com/open-feature/js-sdk/issues/681)) ([09ff7b4](https://github.com/open-feature/js-sdk/commit/09ff7b4d99ec2bfa4ef9c18cb1845af1ca14d7b9))
+
 ## [0.0.19](https://github.com/open-feature/js-sdk/compare/core-v0.0.18...core-v0.0.19) (2023-11-21)
 
 
