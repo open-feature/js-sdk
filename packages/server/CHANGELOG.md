@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.7.4](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.7.3...server-sdk-v1.7.4) (2023-11-27)
+
+
+### 🐛 Bug Fixes
+
+* add Provider Not Ready Error ([#680](https://github.com/open-feature/js-sdk/issues/680)) ([b0054f9](https://github.com/open-feature/js-sdk/commit/b0054f920dc8a36d2eab1b5fb75433405758440e))
+
+
+### 🧹 Chore
+
+* **main:** release core 0.0.20 ([#682](https://github.com/open-feature/js-sdk/issues/682)) ([9629578](https://github.com/open-feature/js-sdk/commit/96295783692656cccdcc327b7236cfbdf8094fa5))
+
 ## [1.7.3](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.7.2...server-sdk-v1.7.3) (2023-11-21)
 
 
