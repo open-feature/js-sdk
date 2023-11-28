@@ -234,30 +234,33 @@ describe('Hooks', () => {
 
       const localClient = OpenFeature.getClient('merge-test', 'test', clientContext);
 
+      const syncVoidHook: Hook = {
+        before: () => {
+          // synchronous hook that doesn't modify context
+        },
+      };
+
+      const syncContextHook: Hook = {
+        before: () => {
+          return syncHookContext;
+        },
+      };
+
+      const asyncVoidHook: Hook = {
+        before: async () => {
+          // asynchronous hook that doesn't modify context
+          await Promise.resolve();
+        },
+      };
+
+      const asyncContextHook: Hook = {
+        before: () => {
+          return Promise.resolve(asyncHookContext);
+        },
+      };
+
       await localClient.getBooleanValue(FLAG_KEY, false, invocationContext, {
-        hooks: [
-          {
-            before: () => {
-              // synchronous hook that doesn't modify context
-            },
-          },
-          {
-            before: () => {
-              return syncHookContext;
-            },
-          },
-          {
-            before: async () => {
-              // asynchronous hook that doesn't modify context
-              await Promise.resolve();
-            },
-          },
-          {
-            before: async () => {
-              return Promise.resolve(asyncHookContext);
-            },
-          },
-        ],
+        hooks: [syncVoidHook, syncContextHook, asyncVoidHook, asyncContextHook],
       });
       expect(MOCK_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalledWith(
         expect.anything(),
