@@ -47,7 +47,7 @@ export function useFeatureFlag<T extends FlagValue>(flagKey: string, defaultValu
     if (client.providerStatus !== ProviderStatus.READY) {
       client.addHandler(ProviderEvents.Ready, forceUpdate); // update the UI when the provider is ready
       if (defaultedOptions.suspend) {
-        suspend(client, updateState)
+        suspend(client, updateState);
       }
     }
 
