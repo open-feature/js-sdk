@@ -30,15 +30,15 @@ enum SuspendState {
 
 /**
  * Evaluates a feature flag, returning evaluation details.
- * 
- * @param flagKey the flag identifier
- * @param defaultValue the default value
- * @param options options for this evaluation
- * @returns a EvaluationDetails object for this evaluation
+ * @param {string}flagKey the flag identifier
+ * @param {T} defaultValue the default value
+ * @param {ReactFlagEvaluationOptions} options options for this evaluation
+ * @template T flag type
+ * @returns { EvaluationDetails<T>} a EvaluationDetails object for this evaluation
  */
 export function useFeatureFlag<T extends FlagValue>(flagKey: string, defaultValue: T, options?: ReactFlagEvaluationOptions): EvaluationDetails<T> {
   const defaultedOptions = { ...DEFAULT_OPTIONS, ...options };
-  const [, updateState] = useState<{}>();
+  const [, updateState] = useState<object | undefined>();
   const forceUpdate = () => updateState({});
   const client = useOpenFeatureClient();
 
@@ -79,11 +79,10 @@ function getFlag<T extends FlagValue>(client: Client, flagKey: string, defaultVa
 
 /**
  * Suspend function. If this runs, components using the calling hook will be suspended.
- * 
- * @param client the OpenFeature client
- * @param updateState the state update function
+ * @param {Client} client the OpenFeature client
+ * @param {Function} updateState the state update function
  */
-function suspend(client: Client, updateState: Dispatch<SetStateAction<{}>>) {
+function suspend(client: Client, updateState: Dispatch<SetStateAction<object | undefined>>) {
   let suspendResolver: () => void;
   let suspendRejecter: () => void;
   const suspendPromise = new Promise<void>((resolve) => {
@@ -103,9 +102,9 @@ function suspend(client: Client, updateState: Dispatch<SetStateAction<{}>>) {
 
 /**
  * Promise wrapper that throws unresolved promises to support React suspense.
- * 
- * @param promise promise to wrap
- * @returns suspense-compliant lambda
+ * @param {Promise<T>} promise to wrap
+ * @template T flag type
+ * @returns {Function} suspense-compliant lambda
  */
 function suspenseWrapper <T>(promise: Promise<T>) {
   let status: SuspendState = SuspendState.Pending;
