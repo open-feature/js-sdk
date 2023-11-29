@@ -28,6 +28,14 @@ enum SuspendState {
   Error
 }
 
+/**
+ * Evaluates a feature flag, returning evaluation details.
+ * 
+ * @param flagKey the flag identifier
+ * @param defaultValue the default value
+ * @param options options for this evaluation
+ * @returns a EvaluationDetails object for this evaluation
+ */
 export function useFeatureFlag<T extends FlagValue>(flagKey: string, defaultValue: T, options?: ReactFlagEvaluationOptions): EvaluationDetails<T> {
   const defaultedOptions = { ...DEFAULT_OPTIONS, ...options };
   const [, updateState] = useState<{}>();
