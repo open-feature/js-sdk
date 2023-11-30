@@ -207,7 +207,8 @@ describe('Hooks', () => {
       const clientPropToOverwrite434 = 'clientPropToOverwrite';
       const invocationProp434 = 'invocationProp';
       const invocationPropToOverwrite434 = 'invocationPropToOverwrite';
-      const hookProp434 = 'hookProp';
+      const syncHookProp434 = 'syncHookProp';
+      const asyncHookProp434 = 'asyncHookProp';
 
       OpenFeature.setContext({
         [globalProp434]: true,
@@ -223,21 +224,43 @@ describe('Hooks', () => {
         [invocationPropToOverwrite434]: false,
         [clientPropToOverwrite434]: true,
       };
-      const hookContext = {
+      const syncHookContext = {
         [invocationPropToOverwrite434]: true,
-        [hookProp434]: true,
+        [syncHookProp434]: true,
+      };
+      const asyncHookContext = {
+        [asyncHookProp434]: true,
       };
 
       const localClient = OpenFeature.getClient('merge-test', 'test', clientContext);
 
+      const syncVoidHook: Hook = {
+        before: () => {
+          // synchronous hook that doesn't modify context
+        },
+      };
+
+      const syncContextHook: Hook = {
+        before: () => {
+          return syncHookContext;
+        },
+      };
+
+      const asyncVoidHook: Hook = {
+        before: async () => {
+          // asynchronous hook that doesn't modify context
+          await Promise.resolve();
+        },
+      };
+
+      const asyncContextHook: Hook = {
+        before: () => {
+          return Promise.resolve(asyncHookContext);
+        },
+      };
+
       await localClient.getBooleanValue(FLAG_KEY, false, invocationContext, {
-        hooks: [
-          {
-            before: () => {
-              return hookContext;
-            },
-          },
-        ],
+        hooks: [syncVoidHook, syncContextHook, asyncVoidHook, asyncContextHook],
       });
       expect(MOCK_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalledWith(
         expect.anything(),
@@ -250,7 +273,8 @@ describe('Hooks', () => {
           [clientPropToOverwrite434]: true,
           [invocationProp434]: true,
           [invocationPropToOverwrite434]: true,
-          [hookProp434]: true,
+          [syncHookProp434]: true,
+          [asyncHookProp434]: true,
         }),
         expect.anything(),
       );
