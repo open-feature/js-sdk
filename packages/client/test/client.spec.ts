@@ -528,5 +528,17 @@ describe('OpenFeatureClient', () => {
       });
     });
   });
+
+  describe('providerStatus', () => {
+    it('should return current provider status', ()=> {
+      OpenFeature.setProvider({ ...MOCK_PROVIDER, status: ProviderStatus.STALE});
+      expect(OpenFeature.getClient().providerStatus).toEqual(ProviderStatus.STALE);
+    });
+
+    it('should return READY if not defined', ()=> {
+      OpenFeature.setProvider(MOCK_PROVIDER);
+      expect(OpenFeature.getClient().providerStatus).toEqual(ProviderStatus.READY);
+    });
+  });
 });
 
