@@ -11,17 +11,17 @@ import {
   Logger,
   OpenFeatureError,
   ProviderEvents,
-  ProviderStatus,
   ResolutionDetails,
   SafeLogger,
   StandardResolutionReasons,
+  statusMatchesEvent
 } from '@openfeature/core';
 import { FlagEvaluationOptions } from '../evaluation';
+import { InternalEventEmitter } from '../events/internal/internal-event-emitter';
+import { Hook } from '../hooks';
 import { OpenFeature } from '../open-feature';
 import { Provider } from '../provider';
-import { InternalEventEmitter } from '../events/internal/internal-event-emitter';
 import { Client } from './client';
-import { Hook } from '../hooks';
 
 type OpenFeatureClientOptions = {
   name?: string;
@@ -51,10 +51,10 @@ export class OpenFeatureClient implements Client {
 
   addHandler<T extends ProviderEvents>(eventType: T, handler: EventHandler<T>): void {
     this.emitterAccessor().addHandler(eventType, handler);
-    const providerReady = !this._provider.status || this._provider.status === ProviderStatus.READY;
+    const shouldRunNow = statusMatchesEvent(eventType, this._provider.status);
 
-    if (eventType === ProviderEvents.Ready && providerReady) {
-      // run immediately, we're ready.
+    if (shouldRunNow) {
+      // run immediately, we're in the matching state
       try {
         handler({ clientName: this.metadata.name, providerName: this._provider.metadata.name });
       } catch (err) {
