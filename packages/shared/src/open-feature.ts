@@ -16,8 +16,9 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
   protected abstract _defaultProvider: P;
   protected abstract readonly _events: GenericEventEmitter;
 
+  protected readonly _defaultContext = {};
   protected _hooks: H[] = [];
-  protected _context: EvaluationContext = {};
+  protected _context: EvaluationContext = this._defaultContext;
   protected _logger: Logger = new DefaultLogger();
 
   private readonly _clientEventHandlers: Map<string | undefined, [ProviderEvents, EventHandler<ProviderEvents>][]> =
