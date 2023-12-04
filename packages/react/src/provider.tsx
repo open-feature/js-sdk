@@ -2,16 +2,23 @@ import * as React from 'react';
 import { Client, OpenFeature } from '@openfeature/web-sdk';
 
 type ProviderProps = {
+  /**
+   * OpenFeature client to use.
+   */
   client?: Client;
-  name?: string,
+  /**
+   * The name of the client.
+   * @see OpenFeature.setProvider() and overloads.
+   */
+  clientName?: string,
   children?: React.ReactNode;
 };
 
 const Context = React.createContext<Client | undefined>(undefined);
 
-export const OpenFeatureProvider = ({ client, name, children }: ProviderProps) => {
+export const OpenFeatureProvider = ({ client, clientName, children }: ProviderProps) => {
   if (!client) {
-    client = OpenFeature.getClient(name);
+    client = OpenFeature.getClient(clientName);
   }
 
   return <Context.Provider value={client}>{children}</Context.Provider>;
