@@ -65,8 +65,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
   async setContext(clientName: string, context: EvaluationContext): Promise<void>;
   async setContext<T extends EvaluationContext>(nameOrContext: T | string, contextOrUndefined?: T): Promise<void> {
     const clientName = stringOrUndefined(nameOrContext);
-    const context =
-      objectOrUndefined<T>(nameOrContext) ?? objectOrUndefined(contextOrUndefined) ?? this._defaultContext;
+    const context = objectOrUndefined<T>(nameOrContext) ?? objectOrUndefined(contextOrUndefined) ?? {};
 
     if (clientName) {
       const provider = this._clientProviders.get(clientName);
@@ -142,7 +141,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
         this._namedProviderContext.delete(clientName);
       }
     } else {
-      return this.setContext(this._defaultContext);
+      return this.setContext({});
     }
   }
 
