@@ -1,6 +1,19 @@
 # Changelog
 
 
+## [0.4.8](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.7...web-sdk-v0.4.8) (2023-12-08)
+
+
+### ✨ New Features
+
+* ability to get current provider state ([#703](https://github.com/open-feature/js-sdk/issues/703)) ([5be715e](https://github.com/open-feature/js-sdk/commit/5be715e10b177949af488d992926ec494c54d97b))
+* add evaluation context management to the web SDK ([#704](https://github.com/open-feature/js-sdk/issues/704)) ([95524f4](https://github.com/open-feature/js-sdk/commit/95524f41991bc51619c84181386851c7f5e6e21b))
+
+
+### 🐛 Bug Fixes
+
+* handlers should run immediately ([#701](https://github.com/open-feature/js-sdk/issues/701)) ([dba858b](https://github.com/open-feature/js-sdk/commit/dba858b454145c8119eff67c50dbad90b9deb4f4))
+
 ## [0.4.7](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.6...web-sdk-v0.4.7) (2023-11-27)
 
 
