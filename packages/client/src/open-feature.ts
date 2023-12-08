@@ -197,7 +197,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
     try {
       return await provider.onContextChange?.(oldContext, newContext);
     } catch (err) {
-      this._logger?.error(`Error running context change handler of provider ${provider.metadata.name}:`, err);
+      this._logger?.error(`Error running ${provider.metadata.name}'s context change handler:`, err);
     }
   }
 }
