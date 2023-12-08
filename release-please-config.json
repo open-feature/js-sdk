@@ -37,12 +37,12 @@
   },
   "changelog-sections": [
     {
-      "type": "fix",
-      "section": "🐛 Bug Fixes"
-    },
-    {
       "type": "feat",
       "section": "✨ New Features"
+    },
+    {
+      "type": "fix",
+      "section": "🐛 Bug Fixes"
     },
     {
       "type": "chore",
