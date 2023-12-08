@@ -80,12 +80,12 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
       const oldContext = this._context;
       this._context = context;
 
-      const providersWithoutContextOverride = [];
-      for (const [name, provider] of this._clientProviders.entries()) {
-        if (!this._namedProviderContext.has(name)) {
-          providersWithoutContextOverride.push(provider);
-        }
-      }
+      const providersWithoutContextOverride = Array.from(this._clientProviders.entries())
+        .filter(([name]) => !this._namedProviderContext.has(name))
+        .reduce<Provider[]>((acc, [, provider]) => {
+          acc.push(provider);
+          return acc;
+        }, []);
 
       const allProviders = [this._defaultProvider, ...providersWithoutContextOverride];
       await Promise.all(
@@ -154,13 +154,8 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
     // handler multiple times for named clients.
     await this.clearContext();
 
-    const clearContextPromises: Promise<void>[] = [];
-    for (const name of this._clientProviders.keys()) {
-      clearContextPromises.push(this.clearContext(name));
-    }
-
     // Use allSettled so a promise rejection doesn't affect others
-    await Promise.allSettled(clearContextPromises);
+    await Promise.allSettled(Array.from(this._clientProviders.keys()).map((name) => this.clearContext(name)));
   }
 
   /**
