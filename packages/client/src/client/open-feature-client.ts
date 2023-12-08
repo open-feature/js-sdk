@@ -11,6 +11,7 @@ import {
   Logger,
   OpenFeatureError,
   ProviderEvents,
+  ProviderStatus,
   ResolutionDetails,
   SafeLogger,
   StandardResolutionReasons,
@@ -47,6 +48,10 @@ export class OpenFeatureClient implements Client {
       version: this.options.version,
       providerMetadata: this.providerAccessor().metadata,
     };
+  }
+
+  get providerStatus(): ProviderStatus {
+    return this.providerAccessor()?.status || ProviderStatus.READY;
   }
 
   addHandler<T extends ProviderEvents>(eventType: T, handler: EventHandler<T>): void {
