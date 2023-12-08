@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.5](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.7.4...server-sdk-v1.7.5) (2023-12-08)
+
+
+### 🐛 Bug Fixes
+
+* handlers should run immediately ([#701](https://github.com/open-feature/js-sdk/issues/701)) ([dba858b](https://github.com/open-feature/js-sdk/commit/dba858b454145c8119eff67c50dbad90b9deb4f4))
+* type support for Promise&lt;void&gt; before hook ([#693](https://github.com/open-feature/js-sdk/issues/693)) ([0b9ca18](https://github.com/open-feature/js-sdk/commit/0b9ca1814cce607d8e4587914584df88fbb0cffe))
+
 ## [1.7.4](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.7.3...server-sdk-v1.7.4) (2023-11-27)
 
 
