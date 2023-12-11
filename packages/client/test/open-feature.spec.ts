@@ -136,7 +136,7 @@ describe('OpenFeature', () => {
     it('should return the default provider metadata when passing an unregistered client name', async () => {
       const mockProvider = { metadata: { name: 'test' } } as unknown as Provider;
       OpenFeature.setProvider(mockProvider);
-      const metadata = OpenFeature.getProviderMetadata('invalid');
+      const metadata = OpenFeature.getProviderMetadata('unused');
       expect(metadata.name === mockProvider.metadata.name).toBeTruthy();
     });
 
