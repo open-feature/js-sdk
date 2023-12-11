@@ -133,14 +133,14 @@ describe('OpenFeature', () => {
       expect(provider1.onClose).toHaveBeenCalledTimes(1);
     });
 
-    it('should return the default provider metadata when passing an invalid client name', async () => {
+    it('should return the default provider metadata when passing an unregistered client name', async () => {
       const mockProvider = { metadata: { name: 'test' } } as unknown as Provider;
       OpenFeature.setProvider(mockProvider);
       const metadata = OpenFeature.getProviderMetadata('invalid');
       expect(metadata.name === mockProvider.metadata.name).toBeTruthy();
     });
 
-    it('should return the named provider metadata when passing a valid client name', async () => {
+    it('should return the named provider metadata when passing a registered client name', async () => {
       const mockProvider = { metadata: { name: 'mock' } } as unknown as Provider;
       const mockNamedProvider = { metadata: { name: 'named-mock' } } as unknown as Provider;
       OpenFeature.setProvider(mockProvider);
