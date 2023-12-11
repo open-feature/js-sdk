@@ -39,13 +39,13 @@ describe('OpenFeature', () => {
     describe('Requirement 1.1.2.1', () => {
       it('should throw because the provider is not intended for the server', () => {
         const provider = mockProvider({ runsOn: 'client' });
-        expect(() => OpenFeature.setProvider(provider)).toThrowError(
-          "Provider 'mock-events-success' is intended for use on the client."
+        expect(() => OpenFeature.setProvider(provider)).toThrow(
+          "Provider 'mock-events-success' is intended for use on the client.",
         );
       });
       it('should succeed because the provider is intended for the server', () => {
         const provider = mockProvider({ runsOn: 'server' });
-        expect(() => OpenFeature.setProvider(provider)).not.toThrowError();
+        expect(() => OpenFeature.setProvider(provider)).not.toThrow();
       });
     });
 
@@ -131,6 +131,22 @@ describe('OpenFeature', () => {
 
       OpenFeature.setProvider('client2', { ...provider1 });
       expect(provider1.onClose).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return the default provider metadata when passing an invalid client name', async () => {
+      const mockProvider = { metadata: { name: 'test' } } as unknown as Provider;
+      OpenFeature.setProvider(mockProvider);
+      const metadata = OpenFeature.getProviderMetadata('invalid');
+      expect(metadata.name === mockProvider.metadata.name).toBeTruthy();
+    });
+
+    it('should return the named provider metadata when passing a valid client name', async () => {
+      const mockProvider = { metadata: { name: 'mock' } } as unknown as Provider;
+      const mockNamedProvider = { metadata: { name: 'named-mock' } } as unknown as Provider;
+      OpenFeature.setProvider(mockProvider);
+      OpenFeature.setProvider('mocked', mockNamedProvider);
+      const metadata = OpenFeature.getProviderMetadata('mocked');
+      expect(metadata.name === mockNamedProvider.metadata.name).toBeTruthy();
     });
   });
 

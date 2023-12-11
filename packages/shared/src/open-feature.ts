@@ -50,11 +50,21 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
   }
 
   /**
-   * Get metadata about registered provider.
+   * Get metadata about default provider.
    * @returns {ProviderMetadata} Provider Metadata
    */
   get providerMetadata(): ProviderMetadata {
-    return this._defaultProvider.metadata;
+    return this.getProviderMetadata();
+  }
+
+  /**
+   * Get metadata about a registered provider using the client name.
+   * An invalid or empty client name will return the default provider.
+   * @param {string} [clientName] The name to identify the client
+   * @returns {ProviderMetadata} Provider Metadata
+   */
+  getProviderMetadata(clientName?: string): ProviderMetadata {
+    return this.getProviderForClient(clientName).metadata;
   }
 
   /**
