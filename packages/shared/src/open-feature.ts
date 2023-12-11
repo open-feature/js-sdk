@@ -50,7 +50,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
   }
 
   /**
-   * Get metadata about default provider.
+   * Get metadata about the default provider.
    * @returns {ProviderMetadata} Provider Metadata
    */
   get providerMetadata(): ProviderMetadata {
