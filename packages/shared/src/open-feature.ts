@@ -59,7 +59,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
 
   /**
    * Get metadata about a registered provider using the client name.
-   * An unbound or empty client name will return the default provider.
+   * An unbound or empty client name will return metadata from the default provider.
    * @param {string} [clientName] The name to identify the client
    * @returns {ProviderMetadata} Provider Metadata
    */
