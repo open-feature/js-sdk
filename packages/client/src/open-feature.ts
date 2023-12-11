@@ -1,4 +1,10 @@
-import { EvaluationContext, ManageContext, OpenFeatureCommonAPI } from '@openfeature/core';
+import {
+  EvaluationContext,
+  ManageContext,
+  OpenFeatureCommonAPI,
+  objectOrUndefined,
+  stringOrUndefined,
+} from '@openfeature/core';
 import { Client, OpenFeatureClient } from './client';
 import { NOOP_PROVIDER, Provider } from './provider';
 import { OpenFeatureEventEmitter } from './events';
@@ -16,8 +22,8 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
   protected _events = new OpenFeatureEventEmitter();
   protected _defaultProvider: Provider = NOOP_PROVIDER;
   protected _createEventEmitter = () => new OpenFeatureEventEmitter();
+  protected _namedProviderContext: Map<string, EvaluationContext> = new Map();
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor() {
     super('client');
   }
@@ -38,24 +44,118 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
     return instance;
   }
 
-  async setContext(context: EvaluationContext): Promise<void> {
-    const oldContext = this._context;
-    this._context = context;
+  /**
+   * Sets the evaluation context globally.
+   * This will be used by all providers that have not been overridden with a named client.
+   * @param {EvaluationContext} context Evaluation context
+   * @example
+   * await OpenFeature.setContext({ region: "us" });
+   */
+  async setContext(context: EvaluationContext): Promise<void>;
+  /**
+   * Sets the evaluation context for a specific provider.
+   * This will only affect providers with a matching client name.
+   * @param {string} clientName The name to identify the client
+   * @param {EvaluationContext} context Evaluation context
+   * @example
+   * await OpenFeature.setContext("test", { scope: "provider" });
+   * OpenFeature.setProvider(new MyProvider()) // Uses the default context
+   * OpenFeature.setProvider("test", new MyProvider()) // Uses context: { scope: "provider" }
+   */
+  async setContext(clientName: string, context: EvaluationContext): Promise<void>;
+  async setContext<T extends EvaluationContext>(nameOrContext: T | string, contextOrUndefined?: T): Promise<void> {
+    const clientName = stringOrUndefined(nameOrContext);
+    const context = objectOrUndefined<T>(nameOrContext) ?? objectOrUndefined(contextOrUndefined) ?? {};
 
-    const allProviders = [this._defaultProvider, ...this._clientProviders.values()];
-    await Promise.all(
-      allProviders.map(async (provider) => {
-        try {
-          return await provider.onContextChange?.(oldContext, context);
-        } catch (err) {
-          this._logger?.error(`Error running context change handler of provider ${provider.metadata.name}:`, err);
-        }
-      }),
-    );
+    if (clientName) {
+      const provider = this._clientProviders.get(clientName);
+      if (provider) {
+        const oldContext = this.getContext(clientName);
+        this._namedProviderContext.set(clientName, context);
+        await this.runProviderContextChangeHandler(provider, oldContext, context);
+      } else {
+        this._namedProviderContext.set(clientName, context);
+      }
+    } else {
+      const oldContext = this._context;
+      this._context = context;
+
+      const providersWithoutContextOverride = Array.from(this._clientProviders.entries())
+        .filter(([name]) => !this._namedProviderContext.has(name))
+        .reduce<Provider[]>((acc, [, provider]) => {
+          acc.push(provider);
+          return acc;
+        }, []);
+
+      const allProviders = [this._defaultProvider, ...providersWithoutContextOverride];
+      await Promise.all(
+        allProviders.map((provider) => this.runProviderContextChangeHandler(provider, oldContext, context)),
+      );
+    }
   }
 
-  getContext(): EvaluationContext {
+  /**
+   * Access the global evaluation context.
+   * @returns {EvaluationContext} Evaluation context
+   */
+  getContext(): EvaluationContext;
+  /**
+   * Access the evaluation context for a specific named client.
+   * The global evaluation context is returned if a matching named client is not found.
+   * @param {string} clientName The name to identify the client
+   * @returns {EvaluationContext} Evaluation context
+   */
+  getContext(clientName: string): EvaluationContext;
+  getContext(nameOrUndefined?: string): EvaluationContext {
+    const clientName = stringOrUndefined(nameOrUndefined);
+    if (clientName) {
+      const context = this._namedProviderContext.get(clientName);
+      if (context) {
+        return context;
+      } else {
+        this._logger.debug(`Unable to find context for '${clientName}'.`);
+      }
+    }
     return this._context;
+  }
+
+  /**
+   * Resets the global evaluation context to an empty object.
+   */
+  clearContext(): Promise<void>;
+  /**
+   * Removes the evaluation context for a specific named client.
+   * @param {string} clientName The name to identify the client
+   */
+  clearContext(clientName: string): Promise<void>;
+  async clearContext(nameOrUndefined?: string): Promise<void> {
+    const clientName = stringOrUndefined(nameOrUndefined);
+    if (clientName) {
+      const provider = this._clientProviders.get(clientName);
+      if (provider) {
+        const oldContext = this.getContext(clientName);
+        this._namedProviderContext.delete(clientName);
+        const newContext = this.getContext();
+        await this.runProviderContextChangeHandler(provider, oldContext, newContext);
+      } else {
+        this._namedProviderContext.delete(clientName);
+      }
+    } else {
+      return this.setContext({});
+    }
+  }
+
+  /**
+   * Resets the global evaluation context and removes the evaluation context for
+   * all named clients.
+   */
+  async clearContexts(): Promise<void> {
+    // Default context must be cleared first to avoid calling the onContextChange
+    // handler multiple times for named clients.
+    await this.clearContext();
+
+    // Use allSettled so a promise rejection doesn't affect others
+    await Promise.allSettled(Array.from(this._clientProviders.keys()).map((name) => this.clearContext(name)));
   }
 
   /**
@@ -84,8 +184,21 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
    * Clears all registered providers and resets the default provider.
    * @returns {Promise<void>}
    */
-  clearProviders(): Promise<void> {
-    return super.clearProvidersAndSetDefault(NOOP_PROVIDER);
+  async clearProviders(): Promise<void> {
+    await super.clearProvidersAndSetDefault(NOOP_PROVIDER);
+    this._namedProviderContext.clear();
+  }
+
+  private async runProviderContextChangeHandler(
+    provider: Provider,
+    oldContext: EvaluationContext,
+    newContext: EvaluationContext,
+  ): Promise<void> {
+    try {
+      return await provider.onContextChange?.(oldContext, newContext);
+    } catch (err) {
+      this._logger?.error(`Error running ${provider.metadata.name}'s context change handler:`, err);
+    }
   }
 }
 

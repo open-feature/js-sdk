@@ -504,28 +504,78 @@ describe('Events', () => {
 
   describe('Requirement 5.3.3', () => {
     describe('API', () => {
-      it('Handlers attached after the provider is already in the associated state, MUST run immediately.', (done) => {
-        const provider = new MockProvider({ initialStatus: ProviderStatus.ERROR });
+      describe('Handlers attached after the provider is already in the associated state, MUST run immediately.', () => {
+        it('Ready', (done) => {
+          const provider = new MockProvider({ initialStatus: ProviderStatus.READY });
+  
+          OpenFeature.setProvider(clientId, provider);
+          expect(provider.initialize).not.toHaveBeenCalled();
+  
+          OpenFeature.addHandler(ProviderEvents.Ready, () => {
+            done();
+          });
+        });
 
-        OpenFeature.setProvider(clientId, provider);
-        expect(provider.initialize).not.toHaveBeenCalled();
+        it('Error', (done) => {
+          const provider = new MockProvider({ initialStatus: ProviderStatus.ERROR });
+  
+          OpenFeature.setProvider(clientId, provider);
+          expect(provider.initialize).not.toHaveBeenCalled();
+  
+          OpenFeature.addHandler(ProviderEvents.Error, () => {
+            done();
+          });
+        });
 
-        OpenFeature.addHandler(ProviderEvents.Error, () => {
-          done();
+        it('Stale', (done) => {
+          const provider = new MockProvider({ initialStatus: ProviderStatus.STALE });
+  
+          OpenFeature.setProvider(clientId, provider);
+          expect(provider.initialize).not.toHaveBeenCalled();
+  
+          OpenFeature.addHandler(ProviderEvents.Stale, () => {
+            done();
+          });
         });
       });
     });
 
     describe('client', () => {
-      it('Handlers attached after the provider is already in the associated state, MUST run immediately.', (done) => {
-        const provider = new MockProvider({ initialStatus: ProviderStatus.READY });
-        const client = OpenFeature.getClient(clientId);
+      describe('Handlers attached after the provider is already in the associated state, MUST run immediately.', () => {
+        it('Ready', (done) => {
+          const provider = new MockProvider({ initialStatus: ProviderStatus.READY });
+          const client = OpenFeature.getClient(clientId);
+  
+          OpenFeature.setProvider(clientId, provider);
+          expect(provider.initialize).not.toHaveBeenCalled();
+  
+          client.addHandler(ProviderEvents.Ready, () => {
+            done();
+          });
+        });
 
-        OpenFeature.setProvider(clientId, provider);
-        expect(provider.initialize).not.toHaveBeenCalled();
+        it('Error', (done) => {
+          const provider = new MockProvider({ initialStatus: ProviderStatus.ERROR });
+          const client = OpenFeature.getClient(clientId);
+  
+          OpenFeature.setProvider(clientId, provider);
+          expect(provider.initialize).not.toHaveBeenCalled();
+  
+          client.addHandler(ProviderEvents.Error, () => {
+            done();
+          });
+        });
 
-        client.addHandler(ProviderEvents.Ready, () => {
-          done();
+        it('Stale', (done) => {
+          const provider = new MockProvider({ initialStatus: ProviderStatus.STALE });
+          const client = OpenFeature.getClient(clientId);
+  
+          OpenFeature.setProvider(clientId, provider);
+          expect(provider.initialize).not.toHaveBeenCalled();
+  
+          client.addHandler(ProviderEvents.Stale, () => {
+            done();
+          });
         });
       });
     });
