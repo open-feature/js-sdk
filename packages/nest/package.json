@@ -1,0 +1,61 @@
+{
+  "name": "@openfeature/nestjs-sdk",
+  "version": "0.0.1-experimental",
+  "description": "OpenFeature Nest.js SDK",
+  "main": "./dist/cjs/index.js",
+  "files": [
+    "dist/"
+  ],
+  "exports": {
+    "types": "./dist/types.d.ts",
+    "import": "./dist/esm/index.js",
+    "require": "./dist/cjs/index.js",
+    "default": "./dist/cjs/index.js"
+  },
+  "types": "./dist/types.d.ts",
+  "scripts": {
+    "test": "jest --verbose",
+    "lint": "eslint ./",
+    "clean": "shx rm -rf ./dist",
+    "build:esm": "esbuild src/index.ts --bundle --external:@nestjs/common --external:@nestjs/common --external:@openfeature/server-sdk --sourcemap --target=es2016 --platform=node --format=esm --outfile=./dist/esm/index.js --analyze",
+    "build:cjs": "esbuild src/index.ts --bundle --external:@nestjs/common --external:@nestjs/common --external:@openfeature/server-sdk --sourcemap --target=es2016 --platform=node --format=cjs --outfile=./dist/cjs/index.js --analyze",
+    "build:rollup-types": "rollup -c ../../rollup.config.mjs",
+    "build": "npm run clean && npm run build:esm && npm run build:cjs && npm run build:rollup-types",
+    "postbuild": "shx cp ./../../package.esm.json ./dist/esm/package.json",
+    "current-version": "echo $npm_package_version",
+    "prepack": "shx cp ./../../LICENSE ./LICENSE",
+    "publish-if-not-exists": "cp $NPM_CONFIG_USERCONFIG .npmrc && if [ \"$(npm show $npm_package_name@$npm_package_version version)\" = \"$(npm run current-version -s)\" ]; then echo 'already published, skipping'; else npm publish --access public; fi"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/open-feature/js-sdk.git"
+  },
+  "keywords": [
+    "openfeature",
+    "feature",
+    "flags",
+    "toggles",
+    "server",
+    "nest"
+  ],
+  "author": "",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/open-feature/js-sdk/issues"
+  },
+  "homepage": "https://github.com/open-feature/js-sdk#readme",
+  "peerDependencies": {
+    "@openfeature/server-sdk": ">=0.4.0",
+    "@nestjs/common": "^8.0.0 || ^9.0.0 || ^10.0.0",
+    "rxjs": "^6.0.0 || ^7.0.0"
+  },
+  "devDependencies": {
+    "@nestjs/core": "^10.2.10",
+    "@nestjs/platform-express": "^10.2.10",
+    "@nestjs/testing": "^10.2.10",
+    "@openfeature/core": "*",
+    "@openfeature/server-sdk": "*",
+    "@types/supertest": "^2.0.16",
+    "supertest": "^6.3.3"
+  }
+}
