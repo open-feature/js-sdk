@@ -22,13 +22,13 @@
 </p>
 <!-- x-hide-in-docs-start -->
 
-[OpenFeature](https://openfeature.dev) is an open specification that provides a vendor-agnostic, community-driven API for feature flagging that works with your favorite feature flag management tool.
+[OpenFeature](https://openfeature.dev) is an open specification that provides a vendor-agnostic, community-driven API
+for feature flagging that works with your favorite feature flag management tool.
 
 🧪 This is SDK is experimental.
 
-
-
 #### Here's a basic example of how ot use the current API with flagd.
+
 #### Registering the Nest.js SDK module in the App Module:
 
 ```ts
@@ -54,22 +54,42 @@ import { OpenFeatureModule } from '@openfeature/nestjs-sdk';
     }),
   ],
 })
-export class AppModule {}
+export class AppModule {
+}
 ```
 
-#### Injecting the default and a named client into a service:
+#### Injecting a feature flag with header value in evakuation context into an endpoint handler method
+
 ```ts
-import { Controller, Get } from '@nestjs/common';
+import { Controller, ExecutionContext, Get } from '@nestjs/common';
 import { map, Observable } from 'rxjs';
 import { BooleanFeatureFlag } from '@openfeature/nestjs-sdk';
 import { EvaluationDetails } from '@openfeature/server-sdk';
+import { Request } from 'express';
+
+function getContext(executionContext: ExecutionContext) {
+  const request = executionContext.switchToHttp().getRequest<Request>();
+  const userId = request.header('x-user-id');
+
+  if (!userId) {
+    return undefined;
+  }
+
+  return {
+    targetingKey: userId,
+  };
+}
 
 @Controller()
 export class OpenFeatureController {
   @Get('/welcome')
   public async welcome(
-    @BooleanFeatureFlag({ flagKey: 'testBooleanFlag', defaultValue: false })
-    feature: Observable<EvaluationDetails<boolean>>,
+    @BooleanFeatureFlag({
+      flagKey: 'testBooleanFlag',
+      defaultValue: false,
+      contextFactory: getContext,
+    })
+      feature: Observable<EvaluationDetails<boolean>>,
   ) {
     return feature.pipe(
       map((details) =>
@@ -80,7 +100,8 @@ export class OpenFeatureController {
 }
 ```
 
-#### Injecting a feature flag into an endpoint handler method
+#### Injecting the default and a named client into a service:
+
 ```ts
 import { Injectable } from '@nestjs/common';
 import { Client } from '@openfeature/server-sdk';
@@ -91,7 +112,8 @@ export class OpenFeatureTestService {
   constructor(
     @OpenFeatureClient() private defaultClient: Client,
     @OpenFeatureClient({ name: 'differentServer' }) private namedClient: Client,
-  ) {}
+  ) {
+  }
 
   public async getMessage() {
     const companyName = await this.defaultClient.getStringValue('companyName', 'Unknown Company');
