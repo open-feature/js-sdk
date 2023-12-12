@@ -1,15 +1,72 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import supertest from 'supertest';
-import { getOpenFeatureTestModule, OpenFeatureController, OpenFeatureTestService } from './test-app';
+import { OpenFeatureController, OpenFeatureTestService } from './test-app';
+import { OpenFeatureModule } from '../src';
+import { InMemoryProvider } from '@openfeature/server-sdk';
 
 describe('OpenFeature SDK', () => {
   let moduleRef: TestingModule;
   let app: INestApplication;
+  let defaultProvider: InMemoryProvider;
+  let namedProvider: InMemoryProvider;
 
   beforeAll(async () => {
+    defaultProvider = new InMemoryProvider({
+      testBooleanFlag: {
+        defaultVariant: 'default',
+        variants: { default: true },
+        disabled: false,
+      },
+      testStringFlag: {
+        defaultVariant: 'default',
+        variants: { default: 'expected-string-value-default' },
+        disabled: false,
+      },
+      testNumberFlag: {
+        defaultVariant: 'default',
+        variants: { default: 10 },
+        disabled: false,
+      },
+      testObjectFlag: {
+        defaultVariant: 'default',
+        variants: { default: { client: 'default' } },
+        disabled: false,
+      },
+    });
+
+    namedProvider = new InMemoryProvider({
+      testBooleanFlag: {
+        defaultVariant: 'default',
+        variants: { default: true },
+        disabled: false,
+      },
+      testStringFlag: {
+        defaultVariant: 'default',
+        variants: { default: 'expected-string-value-named' },
+        disabled: false,
+      },
+      testNumberFlag: {
+        defaultVariant: 'default',
+        variants: { default: 10 },
+        disabled: false,
+      },
+      testObjectFlag: {
+        defaultVariant: 'default',
+        variants: { default: { client: 'named' } },
+        disabled: false,
+      },
+    });
+
     moduleRef = await Test.createTestingModule({
-      imports: [getOpenFeatureTestModule()],
+      imports: [
+        OpenFeatureModule.forRoot({
+          defaultProvider: defaultProvider,
+          providers: {
+            namedClient: namedProvider,
+          },
+        }),
+      ],
       providers: [OpenFeatureTestService],
       controllers: [OpenFeatureController],
     }).compile();
@@ -95,6 +152,12 @@ describe('OpenFeature SDK', () => {
         value: { client: 'default' },
         variant: 'default',
       });
+    });
+
+    it('should use the execution context from contextFactory', async () => {
+      const evaluationSpy = jest.spyOn(defaultProvider, 'resolveBooleanEvaluation');
+      await supertest(app.getHttpServer()).get('/dynamic-context').set('x-user-id', '123').expect(200).expect('true');
+      expect(evaluationSpy).toHaveBeenCalledWith('testBooleanFlag', false, { targetingKey: '123' }, {});
     });
   });
 });

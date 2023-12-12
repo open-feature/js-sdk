@@ -1,4 +1,4 @@
-import { createParamDecorator, Inject } from '@nestjs/common';
+import { createParamDecorator, ExecutionContext, Inject } from '@nestjs/common';
 import { EvaluationContext, FlagValue, JsonValue, OpenFeature } from '@openfeature/server-sdk';
 import { getOpenFeatureClientToken } from './open-feature.module';
 import { from } from 'rxjs';
@@ -14,6 +14,7 @@ interface FeatureProps<T extends FlagValue> {
   flagKey: string;
   defaultValue: T;
   context?: EvaluationContext;
+  contextFactory?: (executionContext: ExecutionContext) => EvaluationContext | undefined;
 }
 
 function getClientForEvaluation(clientName?: string, context?: EvaluationContext) {
@@ -21,29 +22,41 @@ function getClientForEvaluation(clientName?: string, context?: EvaluationContext
 }
 
 export const BooleanFeatureFlag = createParamDecorator(
-  ({ clientName, flagKey, defaultValue, context }: FeatureProps<boolean>) => {
+  (
+    { clientName, flagKey, defaultValue, context, contextFactory }: FeatureProps<boolean>,
+    executionContext: ExecutionContext,
+  ) => {
     const client = getClientForEvaluation(clientName, context);
-    return from(client.getBooleanDetails(flagKey, defaultValue, context));
+    return from(client.getBooleanDetails(flagKey, defaultValue, contextFactory?.(executionContext)));
   },
 );
 
 export const StringFeatureFlag = createParamDecorator(
-  ({ clientName, flagKey, defaultValue, context }: FeatureProps<string>) => {
+  (
+    { clientName, flagKey, defaultValue, context, contextFactory }: FeatureProps<string>,
+    executionContext: ExecutionContext,
+  ) => {
     const client = getClientForEvaluation(clientName, context);
-    return from(client.getStringDetails(flagKey, defaultValue, context));
+    return from(client.getStringDetails(flagKey, defaultValue, contextFactory?.(executionContext)));
   },
 );
 
 export const NumberFeatureFlag = createParamDecorator(
-  ({ clientName, flagKey, defaultValue, context }: FeatureProps<number>) => {
+  (
+    { clientName, flagKey, defaultValue, context, contextFactory }: FeatureProps<number>,
+    executionContext: ExecutionContext,
+  ) => {
     const client = getClientForEvaluation(clientName, context);
-    return from(client.getNumberDetails(flagKey, defaultValue, context));
+    return from(client.getNumberDetails(flagKey, defaultValue, contextFactory?.(executionContext)));
   },
 );
 
 export const ObjectFeatureFlag = createParamDecorator(
-  ({ clientName, flagKey, defaultValue, context }: FeatureProps<JsonValue>) => {
+  (
+    { clientName, flagKey, defaultValue, context, contextFactory }: FeatureProps<JsonValue>,
+    executionContext: ExecutionContext,
+  ) => {
     const client = getClientForEvaluation(clientName, context);
-    return from(client.getObjectDetails(flagKey, defaultValue, context));
+    return from(client.getObjectDetails(flagKey, defaultValue, contextFactory?.(executionContext)));
   },
 );

@@ -1,4 +1,5 @@
-import { Controller, Get, Injectable, Module } from '@nestjs/common';
+import { Controller, Get, Injectable } from '@nestjs/common';
+import { Request } from 'express';
 import { Observable, map } from 'rxjs';
 import {
   BooleanFeatureFlag,
@@ -9,7 +10,6 @@ import {
   StringFeatureFlag,
 } from '../src';
 import { Client, EvaluationDetails, FlagValue, InMemoryProvider } from '@openfeature/server-sdk';
-import { FlagdProvider } from '@openfeature/flagd-provider';
 
 @Injectable()
 export class OpenFeatureTestService {
@@ -22,19 +22,6 @@ export class OpenFeatureTestService {
     return flag.value;
   }
 }
-
-@Module({
-  imports: [
-    OpenFeatureModule.forRoot({
-      defaultProvider: new FlagdProvider({
-        host: 'localhost',
-        port: 8013,
-        tls: false,
-      }),
-    }),
-  ],
-})
-export class AppModule {}
 
 @Controller()
 export class OpenFeatureController {
@@ -79,6 +66,26 @@ export class OpenFeatureController {
   @Get('/object')
   public async handleObjectRequest(
     @ObjectFeatureFlag({ flagKey: 'testObjectFlag', defaultValue: {} })
+    feature: Observable<EvaluationDetails<number>>,
+  ) {
+    return feature.pipe(map((details) => this.testService.serviceMethod(details)));
+  }
+
+  @Get('/dynamic-context')
+  public async handleDynamicContextRequest(
+    @BooleanFeatureFlag({
+      flagKey: 'testBooleanFlag',
+      defaultValue: false,
+      contextFactory: (executionContext) => {
+        const request = executionContext.switchToHttp().getRequest<Request>();
+        const userId = request.header('x-user-id');
+        return userId
+          ? {
+              targetingKey: userId,
+            }
+          : undefined;
+      },
+    })
     feature: Observable<EvaluationDetails<number>>,
   ) {
     return feature.pipe(map((details) => this.testService.serviceMethod(details)));

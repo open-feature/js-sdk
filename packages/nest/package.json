@@ -45,8 +45,8 @@
   },
   "homepage": "https://github.com/open-feature/js-sdk#readme",
   "peerDependencies": {
-    "@openfeature/server-sdk": ">=0.4.0",
     "@nestjs/common": "^8.0.0 || ^9.0.0 || ^10.0.0",
+    "@openfeature/server-sdk": ">=0.4.0",
     "rxjs": "^6.0.0 || ^7.0.0"
   },
   "devDependencies": {
@@ -55,7 +55,9 @@
     "@nestjs/testing": "^10.2.10",
     "@openfeature/core": "*",
     "@openfeature/server-sdk": "*",
+    "@types/express": "^4.17.21",
     "@types/supertest": "^2.0.16",
+    "express": "^4.18.2",
     "supertest": "^6.3.3"
   }
 }
