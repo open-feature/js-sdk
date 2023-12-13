@@ -1,5 +1,4 @@
-import { FlagNotFoundError, GeneralError, ProviderEvents, ProviderStatus, StandardResolutionReasons, TypeMismatchError } from '@openfeature/core';
-import { InMemoryProvider } from '../src';
+import { FlagNotFoundError, GeneralError, InMemoryProvider, ProviderEvents, ProviderStatus, StandardResolutionReasons, TypeMismatchError } from '../src';
 import { FlagConfiguration } from '../src/provider/in-memory-provider/flag-configuration';
 import { VariantNotFoundError } from '../src/provider/in-memory-provider/variant-not-found-error';
 

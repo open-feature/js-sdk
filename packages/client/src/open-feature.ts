@@ -7,8 +7,9 @@ import {
 } from '@openfeature/core';
 import { Client, OpenFeatureClient } from './client';
 import { NOOP_PROVIDER, Provider } from './provider';
-import { OpenFeatureEventEmitter } from './events';
+import { OpenFeatureEventEmitter, ProviderEvents } from './events';
 import { Hook } from './hooks';
+import { GenericEventEmitter } from '@openfeature/core';
 
 // use a symbol as a key for the global singleton
 const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/web-sdk/api');
@@ -19,7 +20,7 @@ type OpenFeatureGlobal = {
 const _globalThis = globalThis as OpenFeatureGlobal;
 
 export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> implements ManageContext<Promise<void>> {
-  protected _events = new OpenFeatureEventEmitter();
+  protected _events: GenericEventEmitter<ProviderEvents> = new OpenFeatureEventEmitter();
   protected _defaultProvider: Provider = NOOP_PROVIDER;
   protected _createEventEmitter = () => new OpenFeatureEventEmitter();
   protected _namedProviderContext: Map<string, EvaluationContext> = new Map();
@@ -72,7 +73,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
       if (provider) {
         const oldContext = this.getContext(clientName);
         this._namedProviderContext.set(clientName, context);
-        await this.runProviderContextChangeHandler(provider, oldContext, context);
+        await this.runProviderContextChangeHandler(clientName, provider, oldContext, context);
       } else {
         this._namedProviderContext.set(clientName, context);
       }
@@ -89,7 +90,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
 
       const allProviders = [this._defaultProvider, ...providersWithoutContextOverride];
       await Promise.all(
-        allProviders.map((provider) => this.runProviderContextChangeHandler(provider, oldContext, context)),
+        allProviders.map((provider) => this.runProviderContextChangeHandler(undefined, provider, oldContext, context)),
       );
     }
   }
@@ -136,7 +137,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
         const oldContext = this.getContext(clientName);
         this._namedProviderContext.delete(clientName);
         const newContext = this.getContext();
-        await this.runProviderContextChangeHandler(provider, oldContext, newContext);
+        await this.runProviderContextChangeHandler(clientName, provider, oldContext, newContext);
       } else {
         this._namedProviderContext.delete(clientName);
       }
@@ -190,15 +191,25 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
   }
 
   private async runProviderContextChangeHandler(
+    clientName: string | undefined,
     provider: Provider,
     oldContext: EvaluationContext,
     newContext: EvaluationContext,
   ): Promise<void> {
-    try {
-      return await provider.onContextChange?.(oldContext, newContext);
-    } catch (err) {
-      this._logger?.error(`Error running ${provider.metadata.name}'s context change handler:`, err);
-    }
+      const providerName = provider.metadata.name;
+      return await provider.onContextChange?.(oldContext, newContext).then(() => {
+        this.getAssociatedEventEmitters(clientName).forEach((emitter) => {
+          emitter?.emit(ProviderEvents.ContextChanged, { clientName, providerName });
+        });
+        this._events?.emit(ProviderEvents.ContextChanged, { clientName, providerName });
+      }).catch((err) => {
+        this._logger?.error(`Error running ${provider.metadata.name}'s context change handler:`, err);
+        this.getAssociatedEventEmitters(clientName).forEach((emitter) => {
+          emitter?.emit(ProviderEvents.Error, { clientName, providerName });
+        });
+        this._events?.emit(ProviderEvents.Error, { clientName, providerName });
+      });
+
   }
 }
 
