@@ -5,7 +5,7 @@ export default {
   coverageProvider: 'v8',
   globals: {
     'ts-jest': {
-      tsConfig: 'integration/step-definitions/tsconfig.json',
+      tsConfig: 'e2e/step-definitions/tsconfig.json',
     },
   },
   moduleNameMapper: {
