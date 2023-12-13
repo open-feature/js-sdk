@@ -3,11 +3,11 @@ import { EvaluationContext, FlagValue, JsonValue, OpenFeature } from '@openfeatu
 import { getOpenFeatureClientToken } from './open-feature.module';
 import { from } from 'rxjs';
 
-interface OpenFeatureClientProps {
+interface FeatureClientProps {
   name?: string;
 }
 
-export const OpenFeatureClient = (props?: OpenFeatureClientProps) => Inject(getOpenFeatureClientToken(props?.name));
+export const FeatureClient = (props?: FeatureClientProps) => Inject(getOpenFeatureClientToken(props?.name));
 
 interface FeatureProps<T extends FlagValue> {
   clientName?: string;

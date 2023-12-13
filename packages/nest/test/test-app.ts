@@ -5,7 +5,7 @@ import {
   BooleanFeatureFlag,
   ObjectFeatureFlag,
   NumberFeatureFlag,
-  OpenFeatureClient,
+  FeatureClient,
   OpenFeatureModule,
   StringFeatureFlag,
 } from '../src';
@@ -14,8 +14,8 @@ import { Client, EvaluationDetails, FlagValue, InMemoryProvider } from '@openfea
 @Injectable()
 export class OpenFeatureTestService {
   constructor(
-    @OpenFeatureClient() public defaultClient: Client,
-    @OpenFeatureClient({ name: 'namedClient' }) public namedClient: Client,
+    @FeatureClient() public defaultClient: Client,
+    @FeatureClient({ name: 'namedClient' }) public namedClient: Client,
   ) {}
 
   public async serviceMethod(flag: EvaluationDetails<FlagValue>) {

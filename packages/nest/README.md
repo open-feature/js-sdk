@@ -108,13 +108,13 @@ export class OpenFeatureController {
 ```ts
 import { Injectable } from '@nestjs/common';
 import { Client } from '@openfeature/server-sdk';
-import { OpenFeatureClient } from '@openfeature/nestjs-sdk';
+import { FeatureClient } from '@openfeature/nestjs-sdk';
 
 @Injectable()
 export class OpenFeatureTestService {
   constructor(
-    @OpenFeatureClient() private defaultClient: Client,
-    @OpenFeatureClient({ name: 'differentServer' }) private namedClient: Client,
+    @FeatureClient() private defaultClient: Client,
+    @FeatureClient({ name: 'differentServer' }) private namedClient: Client,
   ) {
   }
 
