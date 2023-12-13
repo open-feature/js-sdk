@@ -1,12 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getOpenFeatureClientToken } from '../src';
+import { getOpenFeatureClientToken, OpenFeatureModule } from '../src';
 import { OpenFeatureClient } from '@openfeature/server-sdk';
 import { getOpenFeatureTestModule } from './test-app';
+import { OpenFeature } from '@openfeature/web-sdk';
 
 describe('OpenFeatureModule', () => {
   let moduleRef: TestingModule;
 
-  describe('basic functionality', () => {
+  describe('client injection', () => {
     beforeAll(async () => {
       moduleRef = await Test.createTestingModule({
         imports: [getOpenFeatureTestModule()],
@@ -15,6 +16,25 @@ describe('OpenFeatureModule', () => {
 
     afterAll(async () => {
       await moduleRef.close();
+    });
+
+    describe('without configured providers', () => {
+      let moduleWithoutProvidersRef: TestingModule;
+      beforeAll(async () => {
+        moduleWithoutProvidersRef = await Test.createTestingModule({
+          imports: [OpenFeatureModule.forRoot({})],
+        }).compile();
+      });
+
+      afterAll(async () => {
+        await moduleWithoutProvidersRef.close();
+      });
+
+      it('should return the SDKs default provider and not throw', async () => {
+        expect(() => {
+          moduleWithoutProvidersRef.get<OpenFeatureClient>(getOpenFeatureClientToken());
+        }).not.toThrow();
+      });
     });
 
     it('should return the default provider', async () => {

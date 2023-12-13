@@ -3,18 +3,19 @@ import { Client, OpenFeature, Provider } from '@openfeature/server-sdk';
 
 @Module({})
 export class OpenFeatureModule {
-  static forRoot(options: OpenFeatureModuleOptions): DynamicModule {
-    const clientValueProviders: NestValueProvider<Client>[] = [];
-
-    if (options.defaultProvider) {
-      OpenFeature.setProvider(options.defaultProvider);
-      clientValueProviders.push({
+  static forRoot(options?: OpenFeatureModuleOptions): DynamicModule {
+    const clientValueProviders: NestValueProvider<Client>[] = [
+      {
         provide: getOpenFeatureClientToken(),
         useFactory: () => OpenFeature.getClient(),
-      });
+      },
+    ];
+
+    if (options?.defaultProvider) {
+      OpenFeature.setProvider(options.defaultProvider);
     }
 
-    if (options.providers) {
+    if (options?.providers) {
       Object.entries(options.providers).forEach(([name, provider]) => {
         OpenFeature.setProvider(name, provider);
         clientValueProviders.push({
