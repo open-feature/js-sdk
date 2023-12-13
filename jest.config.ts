@@ -120,7 +120,7 @@ export default {
       preset: 'ts-jest',
       testMatch: ['<rootDir>/packages/server/test/**/*.spec.ts'],
       moduleNameMapper: {
-        '@openfeature/core': '<rootDir>/packages/shared/src'
+        '@openfeature/core': '<rootDir>/packages/shared/src',
       },
     },
     {
@@ -129,8 +129,8 @@ export default {
       preset: 'ts-jest',
       testMatch: ['<rootDir>/packages/client/test/**/*.spec.ts'],
       moduleNameMapper: {
-        '@openfeature/core': '<rootDir>/packages/shared/src'
-      }
+        '@openfeature/core': '<rootDir>/packages/shared/src',
+      },
     },
     {
       displayName: 'server-e2e',
@@ -140,7 +140,7 @@ export default {
       modulePathIgnorePatterns: ['.*/node-modules/'],
       setupFiles: ['<rootDir>/packages/server/e2e/step-definitions/setup.ts'],
       moduleNameMapper: {
-        '@openfeature/core': '<rootDir>/packages/shared/src'
+        '@openfeature/core': '<rootDir>/packages/shared/src',
       },
     },
     {
@@ -153,7 +153,24 @@ export default {
       moduleNameMapper: {
         '^uuid$': require.resolve('uuid'),
         '^(.*)\\.js$': ['$1', '$1.js'],
-        '@openfeature/core': '<rootDir>/packages/shared/src'
+        '@openfeature/core': '<rootDir>/packages/shared/src',
+      },
+    },
+    {
+      displayName: 'nest',
+      testEnvironment: 'node',
+      preset: 'ts-jest',
+      testMatch: ['<rootDir>/packages/nest/test/**/*.spec.ts'],
+      moduleNameMapper: {
+        '@openfeature/core': '<rootDir>/packages/shared/src',
+      },
+      transform: {
+        '^.+\\.ts$': [
+          'ts-jest',
+          {
+            tsconfig: '<rootDir>/packages/nest/tsconfig.spec.json',
+          },
+        ],
       },
     },
   ],
