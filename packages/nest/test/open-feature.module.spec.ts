@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getOpenFeatureClientToken, OpenFeatureModule } from '../src';
 import { OpenFeatureClient } from '@openfeature/server-sdk';
 import { getOpenFeatureTestModule } from './test-app';
-import { OpenFeature } from '@openfeature/web-sdk';
 
 describe('OpenFeatureModule', () => {
   let moduleRef: TestingModule;
