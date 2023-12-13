@@ -1,6 +1,6 @@
 {
     "$schema": "https://typedoc.org/schema.json",
-    "name": "@openfeature/react-sdk",
+    "name": "@openfeature/nestjs-sdk",
     "includeVersion": true,
     "entryPoints": [
         "src/index.ts",
