@@ -25,9 +25,9 @@
 [OpenFeature](https://openfeature.dev) is an open specification that provides a vendor-agnostic, community-driven API
 for feature flagging that works with your favorite feature flag management tool.
 
-🧪 This is SDK is experimental.
+🧪 This SDK is experimental.
 
-#### Here's a basic example of how ot use the current API with flagd.
+#### Here's a basic example of how to use the current API with flagd.
 
 #### Registering the Nest.js SDK module in the App Module:
 
@@ -58,7 +58,7 @@ export class AppModule {
 }
 ```
 
-#### Injecting a feature flag with header value in evakuation context into an endpoint handler method
+#### Injecting a feature flag with header value in evaluation context into an endpoint handler method
 
 ```ts
 import { Controller, ExecutionContext, Get } from '@nestjs/common';
