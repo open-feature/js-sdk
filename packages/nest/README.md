@@ -27,7 +27,7 @@ for feature flagging that works with your favorite feature flag management tool.
 
 🧪 This SDK is experimental.
 
-#### Here's a basic example of how to use the current API with flagd.
+#### Here's a basic example of how to use the OpenFeature NestJS API with flagd.
 
 #### Registering the Nest.js SDK module in the App Module:
 
