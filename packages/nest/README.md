@@ -27,7 +27,7 @@ for feature flagging that works with your favorite feature flag management tool.
 
 🧪 This SDK is experimental.
 
-#### Here's a basic example of how to use the OpenFeature NestJS API with flagd.
+#### Here's a basic example of how to use the OpenFeature NestJS API with `InMemoryProvider`.
 
 #### Registering the Nest.js SDK module in the App Module:
 
@@ -35,27 +35,30 @@ for feature flagging that works with your favorite feature flag management tool.
 import { Module } from '@nestjs/common';
 import { FlagdProvider } from '@openfeature/flagd-provider';
 import { OpenFeatureModule } from '@openfeature/nestjs-sdk';
+import { InMemoryProvider } from '@openfeature/web-sdk';
 
 @Module({
   imports: [
     OpenFeatureModule.forRoot({
-      defaultProvider: new FlagdProvider({
-        host: 'localhost',
-        port: 8013,
-        tls: false,
+      defaultProvider: new InMemoryProvider({
+        testBooleanFlag: {
+          defaultVariant: 'default',
+          variants: { default: true },
+          disabled: false
+        },
+        companyName: {
+          defaultVariant: 'default',
+          variants: { default: "BigCorp" },
+          disabled: false
+        }
       }),
       providers: {
-        differentServer: new FlagdProvider({
-          host: 'different-server.com',
-          port: 8013,
-          tls: false,
-        }),
-      },
-    }),
-  ],
+        differentProvider: new InMemoryProvider()
+      }
+    })
+  ]
 })
-export class AppModule {
-}
+export class AppModule {}
 ```
 
 #### Injecting a feature flag with header value in evaluation context into an endpoint handler method
