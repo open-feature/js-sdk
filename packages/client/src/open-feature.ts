@@ -1,15 +1,15 @@
 import {
   EvaluationContext,
+  GenericEventEmitter,
   ManageContext,
   OpenFeatureCommonAPI,
   objectOrUndefined,
   stringOrUndefined,
 } from '@openfeature/core';
 import { Client, OpenFeatureClient } from './client';
-import { NOOP_PROVIDER, Provider } from './provider';
 import { OpenFeatureEventEmitter, ProviderEvents } from './events';
 import { Hook } from './hooks';
-import { GenericEventEmitter } from '@openfeature/core';
+import { NOOP_PROVIDER, Provider } from './provider';
 
 // use a symbol as a key for the global singleton
 const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/web-sdk/api');
@@ -205,9 +205,9 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
       }).catch((err) => {
         this._logger?.error(`Error running ${provider.metadata.name}'s context change handler:`, err);
         this.getAssociatedEventEmitters(clientName).forEach((emitter) => {
-          emitter?.emit(ProviderEvents.Error, { clientName, providerName });
+          emitter?.emit(ProviderEvents.Error, { clientName, providerName, message: err?.message, });
         });
-        this._events?.emit(ProviderEvents.Error, { clientName, providerName });
+        this._events?.emit(ProviderEvents.Error, { clientName, providerName, message: err?.message, });
       });
 
   }

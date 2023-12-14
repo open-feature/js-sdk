@@ -1,9 +1,16 @@
 import { GeneralError } from './errors';
 import { EvaluationContext } from './evaluation';
-import { AllProviderEvents, AnyProviderEvent, EventDetails, EventHandler, Eventing, statusMatchesEvent } from './events';
-import { GenericEventEmitter } from './events';
+import {
+  AllProviderEvents,
+  AnyProviderEvent,
+  EventDetails,
+  EventHandler,
+  Eventing,
+  GenericEventEmitter,
+  statusMatchesEvent,
+} from './events';
 import { isDefined } from './filter';
-import { EvaluationLifeCycle, BaseHook } from './hooks';
+import { BaseHook, EvaluationLifeCycle } from './hooks';
 import { DefaultLogger, Logger, ManageLogger, SafeLogger } from './logger';
 import { CommonProvider, ProviderMetadata, ProviderStatus } from './provider';
 import { objectOrUndefined, stringOrUndefined } from './type-guards';
@@ -20,8 +27,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
   protected _context: EvaluationContext = {};
   protected _logger: Logger = new DefaultLogger();
 
-  private readonly _clientEventHandlers: Map<string | undefined, [AnyProviderEvent, EventHandler][]> =
-    new Map();
+  private readonly _clientEventHandlers: Map<string | undefined, [AnyProviderEvent, EventHandler][]> = new Map();
   protected _clientProviders: Map<string, P> = new Map();
   protected _clientEvents: Map<string | undefined, GenericEventEmitter<AnyProviderEvent>> = new Map();
   protected _runsOn: Paradigm;
@@ -212,9 +218,9 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
         })
         ?.catch((error) => {
           this.getAssociatedEventEmitters(clientName).forEach((emitter) => {
-            emitter?.emit(AllProviderEvents.Error, { clientName, providerName, message: error.message });
+            emitter?.emit(AllProviderEvents.Error, { clientName, providerName, message: error?.message });
           });
-          this._events?.emit(AllProviderEvents.Error, { clientName, providerName, message: error.message });
+          this._events?.emit(AllProviderEvents.Error, { clientName, providerName, message: error?.message });
           // rethrow after emitting error events, so that public methods can control error handling
           throw error;
         });
@@ -271,7 +277,6 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     return newEmitter;
   }
 
-
   private getUnboundEmitters(): GenericEventEmitter<AnyProviderEvent>[] {
     const namedProviders = [...this._clientProviders.keys()];
     const eventEmitterNames = [...this._clientEvents.keys()].filter(isDefined);
@@ -299,9 +304,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
       ?.forEach((eventHandler) => oldProvider.events?.removeHandler(...eventHandler));
 
     // iterate over the event types
-    const newClientHandlers = Object.values(AllProviderEvents).map<
-      [AllProviderEvents, EventHandler]
-    >((eventType) => {
+    const newClientHandlers = Object.values(AllProviderEvents).map<[AllProviderEvents, EventHandler]>((eventType) => {
       const handler = async (details?: EventDetails) => {
         // on each event type, fire the associated handlers
         emitters.forEach((emitter) => {
