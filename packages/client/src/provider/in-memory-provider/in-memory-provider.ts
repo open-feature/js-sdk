@@ -62,8 +62,6 @@ export class InMemoryProvider implements Provider {
     this.status = ProviderStatus.STALE;
     this.events.emit(ProviderEvents.Stale);
 
-//    this.events.emit(ProviderEvents.ContextChanged)
-
     this._flagConfiguration = { ...flagConfiguration };
     this.events.emit(ProviderEvents.ConfigurationChanged, { flagsChanged });
 
