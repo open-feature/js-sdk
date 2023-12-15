@@ -8,6 +8,8 @@ import {
   FeatureClient,
   OpenFeatureModule,
   StringFeatureFlag,
+  BooleanFFlagDetails,
+  ResolveFeatureFlags,
 } from '../src';
 import { Client, EvaluationDetails, FlagValue, InMemoryProvider } from '@openfeature/server-sdk';
 
@@ -16,16 +18,24 @@ export class OpenFeatureTestService {
   constructor(
     @FeatureClient() public defaultClient: Client,
     @FeatureClient({ name: 'namedClient' }) public namedClient: Client,
-  ) {}
+  ) { }
 
   public async serviceMethod(flag: EvaluationDetails<FlagValue>) {
     return flag.value;
+  }
+
+  @ResolveFeatureFlags
+  public injectedFlagWithContextMethod(
+     @BooleanFFlagDetails('testBooleanFlag', false) featureDetails: any,
+  ) {
+    console.log({featureDetails});
+    return featureDetails.value;
   }
 }
 
 @Controller()
 export class OpenFeatureController {
-  constructor(private testService: OpenFeatureTestService) {}
+  constructor(private testService: OpenFeatureTestService) { }
 
   @Get('/welcome')
   public async welcome(
@@ -81,8 +91,8 @@ export class OpenFeatureController {
         const userId = request.header('x-user-id');
         return userId
           ? {
-              targetingKey: userId,
-            }
+            targetingKey: userId,
+          }
           : undefined;
       },
     })
@@ -90,6 +100,12 @@ export class OpenFeatureController {
   ) {
     return feature.pipe(map((details) => this.testService.serviceMethod(details)));
   }
+
+  @Get('/dynamic-context/service')
+  public handleDynamicContextForService() {
+    return this.testService.injectedFlagWithContextMethod("dummy");
+  }
+
 }
 
 export function getOpenFeatureTestModule() {

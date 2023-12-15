@@ -4,6 +4,7 @@ import supertest from 'supertest';
 import { OpenFeatureController, OpenFeatureTestService } from './test-app';
 import { OpenFeatureModule } from '../src';
 import { InMemoryProvider } from '@openfeature/server-sdk';
+import { OpenFeatureContextInterceptor } from '../src/feature.interceptor';
 
 describe('OpenFeature SDK', () => {
   let moduleRef: TestingModule;
@@ -71,6 +72,7 @@ describe('OpenFeature SDK', () => {
       controllers: [OpenFeatureController],
     }).compile();
     app = moduleRef.createNestApplication();
+    app.useGlobalInterceptors(new OpenFeatureContextInterceptor());
     app = await app.init();
   });
 
@@ -157,6 +159,12 @@ describe('OpenFeature SDK', () => {
     it('should use the execution context from contextFactory', async () => {
       const evaluationSpy = jest.spyOn(defaultProvider, 'resolveBooleanEvaluation');
       await supertest(app.getHttpServer()).get('/dynamic-context').set('x-user-id', '123').expect(200).expect('true');
+      expect(evaluationSpy).toHaveBeenCalledWith('testBooleanFlag', false, { targetingKey: '123' }, {});
+    });
+
+    it('should use the execution context from interceptor', async () => {
+      const evaluationSpy = jest.spyOn(defaultProvider, 'resolveBooleanEvaluation');
+      await supertest(app.getHttpServer()).get('/dynamic-context/service').set('x-user-id', '123').expect(200).expect('true');
       expect(evaluationSpy).toHaveBeenCalledWith('testBooleanFlag', false, { targetingKey: '123' }, {});
     });
   });
