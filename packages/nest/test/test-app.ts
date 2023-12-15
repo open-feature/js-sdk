@@ -1,5 +1,4 @@
 import { Controller, Get, Injectable } from '@nestjs/common';
-import { Request } from 'express';
 import { Observable, map } from 'rxjs';
 import {
   BooleanFeatureFlag,
@@ -26,9 +25,9 @@ export class OpenFeatureTestService {
 
   @ResolveFeatureFlags
   public injectedFlagWithContextMethod(
-     @BooleanFFlagDetails('testBooleanFlag', false) featureDetails: any,
+    @BooleanFFlagDetails({flag: 'testBooleanFlag', defaultValue: false}) featureDetails: any = {},
   ) {
-    console.log({featureDetails});
+    console.log({ featureDetails });
     return featureDetails.value;
   }
 }
@@ -82,32 +81,23 @@ export class OpenFeatureController {
   }
 
   @Get('/dynamic-context')
+  @ResolveFeatureFlags
   public async handleDynamicContextRequest(
-    @BooleanFeatureFlag({
-      flagKey: 'testBooleanFlag',
-      defaultValue: false,
-      contextFactory: (executionContext) => {
-        const request = executionContext.switchToHttp().getRequest<Request>();
-        const userId = request.header('x-user-id');
-        return userId
-          ? {
-            targetingKey: userId,
-          }
-          : undefined;
-      },
-    })
-    feature: Observable<EvaluationDetails<number>>,
+    @BooleanFFlagDetails({ flag: 'testBooleanFlag', defaultValue: false }) featureDetails: any,
   ) {
-    return feature.pipe(map((details) => this.testService.serviceMethod(details)));
+    return this.testService.serviceMethod(featureDetails);
   }
 
   @Get('/dynamic-context/service')
   public handleDynamicContextForService() {
-    return this.testService.injectedFlagWithContextMethod("dummy");
+    return this.testService.injectedFlagWithContextMethod();
   }
 
 }
 
+/**
+ *
+ */
 export function getOpenFeatureTestModule() {
   return OpenFeatureModule.forRoot({
     defaultProvider: new InMemoryProvider({

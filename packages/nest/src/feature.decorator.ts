@@ -51,12 +51,14 @@ export const ObjectFeatureFlag = baseFeatureFlag<JsonValue>('getObjectDetails');
 
 const featureFlagMetadataKey = Symbol('feature-flag-metadata');
 
-const featureFlagDetailsDecoratorFactory = <T extends FlagValue>()=> (flag:string, defaultValue: T) => (target: Object, propertyKey: string | symbol, parameterIndex: number) => {
+const featureFlagDetailsDecoratorFactory = <T extends FlagValue>() => ({ flag, defaultValue, clientName, aditionalContext }: { flag: string, defaultValue: T, clientName?: string; aditionalContext?: any }) => (target: Object, propertyKey: string | symbol, parameterIndex: number) => {
   const existingFeatureFlagParameters: any[] = Reflect.getOwnMetadata(featureFlagMetadataKey, target, propertyKey) || [];
   existingFeatureFlagParameters.push({
     flag,
     defaultValue,
-    parameterIndex
+    parameterIndex,
+    clientName,
+    aditionalContext,
   });
   Reflect.defineMetadata(featureFlagMetadataKey, existingFeatureFlagParameters, target, propertyKey);
 };
@@ -70,27 +72,33 @@ export const ResolveFeatureFlags = (target: any, propertyName: string, descripto
     const featureFlagParameters: any[] = Reflect.getOwnMetadata(featureFlagMetadataKey, target, propertyName);
     const featureFlagsResolution: any[] = await Promise.all(featureFlagParameters.map(resolveFlagDetails));
 
-    for (let i =0; i < featureFlagParameters.length; i++) {
-      arguments[featureFlagParameters[i].parameterIndex] = featureFlagsResolution[i];
-    }
+    for (let i = 0; i < featureFlagParameters.length; i++) {
+      const paramIdx = featureFlagParameters[i].parameterIndex;
 
+      if (!arguments[paramIdx]) {
+        arguments.length += 1;
+      }
+
+      arguments[paramIdx] = featureFlagsResolution[i];
+    }
 
     return method.apply(this, arguments);
   };
 };
 
-const resolveFlagDetails = ({flag, defaultValue }:any) => {
-  const client = OpenFeature.getClient();
-  const injectedCtx = asyncLocalStorage.getStore();
-  switch(typeof defaultValue) {
+const resolveFlagDetails = ({ flag, defaultValue, clientName, aditionalContext }: any) => {
+  const client = OpenFeature.getClient(clientName);
+  const ctxt = { ...asyncLocalStorage.getStore(), ...(aditionalContext && aditionalContext) };
+
+  switch (typeof defaultValue) {
     case ('boolean'):
-      return client.getBooleanDetails(flag, defaultValue, injectedCtx);
+      return client.getBooleanDetails(flag, defaultValue, ctxt );
     case ('string'):
-      return client.getStringDetails(flag, defaultValue, injectedCtx);
+      return client.getStringDetails(flag, defaultValue, ctxt);
     case ('number'):
-      return client.getNumberDetails(flag, defaultValue, injectedCtx);
+      return client.getNumberDetails(flag, defaultValue, ctxt);
     case ('object'):
-      return client.getObjectDetails(flag, defaultValue, injectedCtx);
+      return client.getObjectDetails(flag, defaultValue, ctxt);
     default:
       return Promise.reject();
   }
