@@ -1,20 +1,22 @@
-import { createParamDecorator, ExecutionContext, Inject } from '@nestjs/common';
+import { createParamDecorator, Inject } from '@nestjs/common';
 import { EvaluationContext, FlagValue, JsonValue, OpenFeature } from '@openfeature/server-sdk';
 import { getOpenFeatureClientToken } from './open-feature.module';
 import { from } from 'rxjs';
+import { OpenFeatureContextService } from './feature.service';
+import { SharedAsyncLocalStorage } from './async-storage';
 
 interface FeatureClientProps {
   name?: string;
 }
 
 export const FeatureClient = (props?: FeatureClientProps) => Inject(getOpenFeatureClientToken(props?.name));
+export const FeatureContextService = () => Inject(OpenFeatureContextService);
 
 interface FeatureProps<T extends FlagValue> {
   clientName?: string;
   flagKey: string;
   defaultValue: T;
   context?: EvaluationContext;
-  contextFactory?: (executionContext: ExecutionContext) => EvaluationContext | undefined;
 }
 
 function getClientForEvaluation(clientName?: string, context?: EvaluationContext) {
@@ -22,41 +24,29 @@ function getClientForEvaluation(clientName?: string, context?: EvaluationContext
 }
 
 export const BooleanFeatureFlag = createParamDecorator(
-  (
-    { clientName, flagKey, defaultValue, context, contextFactory }: FeatureProps<boolean>,
-    executionContext: ExecutionContext,
-  ) => {
-    const client = getClientForEvaluation(clientName, context);
-    return from(client.getBooleanDetails(flagKey, defaultValue, contextFactory?.(executionContext)));
+  ({ clientName, flagKey, defaultValue }: FeatureProps<boolean>) => {
+    const client = getClientForEvaluation(clientName);
+    return from(client.getBooleanDetails(flagKey, defaultValue, SharedAsyncLocalStorage.getStore()?.context));
   },
 );
 
 export const StringFeatureFlag = createParamDecorator(
-  (
-    { clientName, flagKey, defaultValue, context, contextFactory }: FeatureProps<string>,
-    executionContext: ExecutionContext,
-  ) => {
+  ({ clientName, flagKey, defaultValue, context }: FeatureProps<string>) => {
     const client = getClientForEvaluation(clientName, context);
-    return from(client.getStringDetails(flagKey, defaultValue, contextFactory?.(executionContext)));
+    return from(client.getStringDetails(flagKey, defaultValue, SharedAsyncLocalStorage.getStore()?.context));
   },
 );
 
 export const NumberFeatureFlag = createParamDecorator(
-  (
-    { clientName, flagKey, defaultValue, context, contextFactory }: FeatureProps<number>,
-    executionContext: ExecutionContext,
-  ) => {
+  ({ clientName, flagKey, defaultValue, context }: FeatureProps<number>) => {
     const client = getClientForEvaluation(clientName, context);
-    return from(client.getNumberDetails(flagKey, defaultValue, contextFactory?.(executionContext)));
+    return from(client.getNumberDetails(flagKey, defaultValue, SharedAsyncLocalStorage.getStore()?.context));
   },
 );
 
 export const ObjectFeatureFlag = createParamDecorator(
-  (
-    { clientName, flagKey, defaultValue, context, contextFactory }: FeatureProps<JsonValue>,
-    executionContext: ExecutionContext,
-  ) => {
+  ({ clientName, flagKey, defaultValue, context }: FeatureProps<JsonValue>) => {
     const client = getClientForEvaluation(clientName, context);
-    return from(client.getObjectDetails(flagKey, defaultValue, contextFactory?.(executionContext)));
+    return from(client.getObjectDetails(flagKey, defaultValue, SharedAsyncLocalStorage.getStore()?.context));
   },
 );

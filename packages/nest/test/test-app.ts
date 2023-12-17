@@ -1,5 +1,4 @@
-import { Controller, Get, Injectable } from '@nestjs/common';
-import { Request } from 'express';
+import { Controller, ExecutionContext, Get, Injectable } from '@nestjs/common';
 import { Observable, map } from 'rxjs';
 import {
   BooleanFeatureFlag,
@@ -8,18 +7,25 @@ import {
   FeatureClient,
   OpenFeatureModule,
   StringFeatureFlag,
+  FeatureContextService,
 } from '../src';
-import { Client, EvaluationDetails, FlagValue, InMemoryProvider } from '@openfeature/server-sdk';
+import { OpenFeatureClient, EvaluationDetails, FlagValue, InMemoryProvider } from '@openfeature/server-sdk';
+import { OpenFeatureContextService } from '../src/feature.service';
 
 @Injectable()
 export class OpenFeatureTestService {
   constructor(
-    @FeatureClient() public defaultClient: Client,
-    @FeatureClient({ name: 'namedClient' }) public namedClient: Client,
+    @FeatureClient() public defaultClient: OpenFeatureClient,
+    @FeatureClient({ name: 'namedClient' }) public namedClient: OpenFeatureClient,
+    @FeatureContextService() public contextService: OpenFeatureContextService,
   ) {}
 
   public async serviceMethod(flag: EvaluationDetails<FlagValue>) {
     return flag.value;
+  }
+
+  public async serviceMethodWithDynamicContext(flagKey: string): Promise<boolean> {
+    return this.defaultClient.getBooleanValue(flagKey, false, this.contextService.getContext());
   }
 }
 
@@ -76,24 +82,35 @@ export class OpenFeatureController {
     @BooleanFeatureFlag({
       flagKey: 'testBooleanFlag',
       defaultValue: false,
-      contextFactory: (executionContext) => {
-        const request = executionContext.switchToHttp().getRequest<Request>();
-        const userId = request.header('x-user-id');
-        return userId
-          ? {
-              targetingKey: userId,
-            }
-          : undefined;
-      },
     })
     feature: Observable<EvaluationDetails<number>>,
   ) {
     return feature.pipe(map((details) => this.testService.serviceMethod(details)));
   }
+
+  @Get('/dynamic-context-in-service')
+  public async handleDynamicContextInServiceRequest() {
+    return this.testService.serviceMethodWithDynamicContext('testBooleanFlag');
+  }
+}
+
+export async function exampleContextFactory(context: ExecutionContext) {
+  const request = await context.switchToHttp().getRequest();
+
+  const userId = request.header('x-user-id');
+
+  if (userId) {
+    return {
+      targetingKey: userId,
+    };
+  }
+
+  return undefined;
 }
 
 export function getOpenFeatureTestModule() {
   return OpenFeatureModule.forRoot({
+    contextFactory: exampleContextFactory,
     defaultProvider: new InMemoryProvider({
       testBooleanFlag: {
         defaultVariant: 'default',
