@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import supertest from 'supertest';
-import { OpenFeatureController, OpenFeatureTestService } from './test-app';
+import { exampleContextFactory, OpenFeatureController, OpenFeatureTestService } from './test-app';
 import { OpenFeatureModule } from '../src';
 import { InMemoryProvider } from '@openfeature/server-sdk';
 
@@ -61,6 +61,7 @@ describe('OpenFeature SDK', () => {
     moduleRef = await Test.createTestingModule({
       imports: [
         OpenFeatureModule.forRoot({
+          contextFactory: exampleContextFactory,
           defaultProvider: defaultProvider,
           providers: {
             namedClient: namedProvider,
@@ -158,6 +159,18 @@ describe('OpenFeature SDK', () => {
       const evaluationSpy = jest.spyOn(defaultProvider, 'resolveBooleanEvaluation');
       await supertest(app.getHttpServer()).get('/dynamic-context').set('x-user-id', '123').expect(200).expect('true');
       expect(evaluationSpy).toHaveBeenCalledWith('testBooleanFlag', false, { targetingKey: '123' }, {});
+    });
+  });
+
+  describe('evaluation context service should', () => {
+    it('inject the evaluation context from contex factory', async function () {
+      const evaluationSpy = jest.spyOn(defaultProvider, 'resolveBooleanEvaluation');
+      await supertest(app.getHttpServer())
+        .get('/dynamic-context-in-service')
+        .set('x-user-id', 'dynamic-user')
+        .expect(200)
+        .expect('true');
+      expect(evaluationSpy).toHaveBeenCalledWith('testBooleanFlag', false, { targetingKey: 'dynamic-user' }, {});
     });
   });
 });
