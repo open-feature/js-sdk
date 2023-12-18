@@ -20,10 +20,12 @@ import { Observable } from 'rxjs';
 
 export type AsyncContextType = { context?: EvaluationContext | undefined };
 
+const AsyncLocalStorageToken = Symbol('Nest_AsyncLocalStorage');
+
 @Module({})
 export class OpenFeatureModule {
   constructor(
-    @Inject(AsyncLocalStorage) private asyncLocalStorage: AsyncLocalStorage<AsyncContextType>,
+    @Inject(AsyncLocalStorageToken) private asyncLocalStorage: AsyncLocalStorage<AsyncContextType>,
     @Inject(ContextFactoryToken) private contextFactory?: ContextFactory,
   ) {}
 
@@ -50,7 +52,7 @@ export class OpenFeatureModule {
     }
 
     const alsProvider: ValueProvider = {
-      provide: AsyncLocalStorage,
+      provide: AsyncLocalStorageToken,
       useValue: SharedAsyncLocalStorage,
     };
 
@@ -64,7 +66,7 @@ export class OpenFeatureModule {
       useValue: new OpenFeatureContextService(SharedAsyncLocalStorage),
     };
 
-    const x: ClassProvider = {
+    const interceptorProvider: ClassProvider = {
       provide: APP_INTERCEPTOR,
       useClass: EvaluationContextInterceptor,
     };
@@ -72,7 +74,13 @@ export class OpenFeatureModule {
     return {
       global: true,
       module: OpenFeatureModule,
-      providers: [alsProvider, contextFactoryProvider, x, contextServiceProvider, ...clientValueProviders],
+      providers: [
+        alsProvider,
+        contextFactoryProvider,
+        interceptorProvider,
+        contextServiceProvider,
+        ...clientValueProviders,
+      ],
       exports: [contextServiceProvider, ...clientValueProviders],
     };
   }
@@ -93,7 +101,7 @@ export function getOpenFeatureClientToken(name?: string): string {
 @Injectable()
 class EvaluationContextInterceptor implements NestInterceptor {
   constructor(
-    @Inject(AsyncLocalStorage) private asyncLocalStorage: AsyncLocalStorage<AsyncContextType>,
+    @Inject(AsyncLocalStorageToken) private asyncLocalStorage: AsyncLocalStorage<AsyncContextType>,
     @Inject(ContextFactoryToken) private contextFactory?: ContextFactory,
   ) {}
 
