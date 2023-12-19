@@ -163,6 +163,7 @@ export default {
       testMatch: ['<rootDir>/packages/nest/test/**/*.spec.ts'],
       moduleNameMapper: {
         '@openfeature/core': '<rootDir>/packages/shared/src',
+        '@openfeature/server-sdk': '<rootDir>/packages/server/src',
       },
       transform: {
         '^.+\\.ts$': [

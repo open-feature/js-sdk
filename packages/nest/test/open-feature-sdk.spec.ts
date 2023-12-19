@@ -173,4 +173,16 @@ describe('OpenFeature SDK', () => {
       expect(evaluationSpy).toHaveBeenCalledWith('testBooleanFlag', false, { targetingKey: 'dynamic-user' }, {});
     });
   });
+
+  describe('evaluation context injected behind the scenes + aditional context info', () => {
+    it('inject the evaluation context from contex factory and merge with aditional context', async function () {
+      const evaluationSpy = jest.spyOn(defaultProvider, 'resolveBooleanEvaluation');
+      await supertest(app.getHttpServer())
+        .get('/dynamic-aditional-context-in-service')
+        .set('x-user-id', 'dynamic-user')
+        .expect(200)
+        .expect('true');
+      expect(evaluationSpy).toHaveBeenCalledWith('testBooleanFlag', false, { targetingKey: 'dynamic-user', isAditionalContext: true }, {});
+    });
+  });
 });

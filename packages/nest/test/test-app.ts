@@ -19,20 +19,24 @@ export class OpenFeatureTestService {
     @FeatureClient() public defaultClient: OpenFeatureClient,
     @FeatureClient({ name: 'namedClient' }) public namedClient: OpenFeatureClient,
     @FeatureContextService() public contextService: OpenFeatureContextService,
-  ) {}
+  ) { }
 
   public async serviceMethod(flag: EvaluationDetails<FlagValue>) {
     return flag.value;
   }
 
   public async serviceMethodWithDynamicContext(flagKey: string): Promise<boolean> {
-    return this.defaultClient.getBooleanValue(flagKey, false, this.contextService.getContext());
+    return this.defaultClient.getBooleanValue(flagKey, false);
+  }
+
+  public async serviceMethodWithDynamicAditionalContext(flagKey: string): Promise<boolean> {
+    return this.defaultClient.getBooleanValue(flagKey, false, {isAditionalContext: true});
   }
 }
 
 @Controller()
 export class OpenFeatureController {
-  constructor(private testService: OpenFeatureTestService) {}
+  constructor(private testService: OpenFeatureTestService) { }
 
   @Get('/welcome')
   public async welcome(
@@ -92,6 +96,11 @@ export class OpenFeatureController {
   @Get('/dynamic-context-in-service')
   public async handleDynamicContextInServiceRequest() {
     return this.testService.serviceMethodWithDynamicContext('testBooleanFlag');
+  }
+
+  @Get('/dynamic-aditional-context-in-service')
+  public async handleDynamicAditionalContextInServiceRequest() {
+    return this.testService.serviceMethodWithDynamicAditionalContext('testBooleanFlag');
   }
 }
 
