@@ -5,31 +5,20 @@ import {
   ValueProvider,
   Inject,
   ClassProvider,
-  NestInterceptor,
-  ExecutionContext,
-  CallHandler,
-  Injectable,
 } from '@nestjs/common';
-import { Client, EvaluationContext, OpenFeature, Provider } from '@openfeature/server-sdk';
-import { OpenFeatureContextService } from './feature.service';
+import { Client, OpenFeature, Provider } from '@openfeature/server-sdk';
 import { ContextFactory, ContextFactoryToken } from './context-factory';
-import { AsyncLocalStorage } from 'async_hooks';
-import { SharedAsyncLocalStorage } from './async-storage';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { Observable } from 'rxjs';
-
-export type AsyncContextType = { context?: EvaluationContext | undefined };
-
-const AsyncLocalStorageToken = Symbol('Nest_AsyncLocalStorage');
+import { AsyncLocalStorageTransactionContext } from './evaluation-context-propagator';
+import { EvaluationContextInterceptor } from './evaluation-context-interceptor';
 
 @Module({})
 export class OpenFeatureModule {
-  constructor(
-    @Inject(AsyncLocalStorageToken) private asyncLocalStorage: AsyncLocalStorage<AsyncContextType>,
-    @Inject(ContextFactoryToken) private contextFactory?: ContextFactory,
-  ) {}
+  constructor(@Inject(ContextFactoryToken) private contextFactory?: ContextFactory) {}
 
   static forRoot(options?: OpenFeatureModuleOptions): DynamicModule {
+    OpenFeature.setTransactionContextPropagator(new AsyncLocalStorageTransactionContext());
+
     const clientValueProviders: NestValueProvider<Client>[] = [
       {
         provide: getOpenFeatureClientToken(),
@@ -51,19 +40,9 @@ export class OpenFeatureModule {
       });
     }
 
-    const alsProvider: ValueProvider = {
-      provide: AsyncLocalStorageToken,
-      useValue: SharedAsyncLocalStorage,
-    };
-
     const contextFactoryProvider: ValueProvider = {
       provide: ContextFactoryToken,
       useValue: options?.contextFactory,
-    };
-
-    const contextServiceProvider: ValueProvider = {
-      provide: OpenFeatureContextService,
-      useValue: new OpenFeatureContextService(SharedAsyncLocalStorage),
     };
 
     const interceptorProvider: ClassProvider = {
@@ -74,14 +53,8 @@ export class OpenFeatureModule {
     return {
       global: true,
       module: OpenFeatureModule,
-      providers: [
-        alsProvider,
-        contextFactoryProvider,
-        interceptorProvider,
-        contextServiceProvider,
-        ...clientValueProviders,
-      ],
-      exports: [contextServiceProvider, ...clientValueProviders],
+      providers: [contextFactoryProvider, interceptorProvider, ...clientValueProviders],
+      exports: [...clientValueProviders],
     };
   }
 }
@@ -96,34 +69,4 @@ export interface OpenFeatureModuleOptions {
 
 export function getOpenFeatureClientToken(name?: string): string {
   return name ? `OpenFeatureClient_${name}` : 'OpenFeatureClient_default';
-}
-
-@Injectable()
-class EvaluationContextInterceptor implements NestInterceptor {
-  constructor(
-    @Inject(AsyncLocalStorageToken) private asyncLocalStorage: AsyncLocalStorage<AsyncContextType>,
-    @Inject(ContextFactoryToken) private contextFactory?: ContextFactory,
-  ) {}
-
-  async intercept(executionContext: ExecutionContext, next: CallHandler) {
-    const context = await this.contextFactory?.(executionContext);
-
-    return new Observable((subscriber) => {
-      this.asyncLocalStorage.run(
-        {
-          context,
-        },
-        async () => {
-          next
-            .handle()
-            .pipe()
-            .subscribe({
-              next: (res) => subscriber.next(res),
-              error: (err) => subscriber.error(err),
-              complete: () => subscriber.complete(),
-            });
-        },
-      );
-    });
-  }
 }

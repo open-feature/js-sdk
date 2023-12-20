@@ -7,17 +7,14 @@ import {
   FeatureClient,
   OpenFeatureModule,
   StringFeatureFlag,
-  FeatureContextService,
 } from '../src';
 import { OpenFeatureClient, EvaluationDetails, FlagValue, InMemoryProvider } from '@openfeature/server-sdk';
-import { OpenFeatureContextService } from '../src/feature.service';
 
 @Injectable()
 export class OpenFeatureTestService {
   constructor(
     @FeatureClient() public defaultClient: OpenFeatureClient,
     @FeatureClient({ name: 'namedClient' }) public namedClient: OpenFeatureClient,
-    @FeatureContextService() public contextService: OpenFeatureContextService,
   ) {}
 
   public async serviceMethod(flag: EvaluationDetails<FlagValue>) {
@@ -25,7 +22,7 @@ export class OpenFeatureTestService {
   }
 
   public async serviceMethodWithDynamicContext(flagKey: string): Promise<boolean> {
-    return this.defaultClient.getBooleanValue(flagKey, false, this.contextService.getContext());
+    return this.defaultClient.getBooleanValue(flagKey, false);
   }
 }
 
