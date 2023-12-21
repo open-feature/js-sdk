@@ -1,6 +1,6 @@
 import { TransactionContextPropagator } from '@openfeature/server-sdk';
 import { AsyncLocalStorage } from 'async_hooks';
-import { EvaluationContext } from '@openfeature/web-sdk';
+import { EvaluationContext } from '@openfeature/server-sdk';
 
 export class AsyncLocalStorageTransactionContext implements TransactionContextPropagator {
   private asyncLocalStorage = new AsyncLocalStorage<EvaluationContext>();
