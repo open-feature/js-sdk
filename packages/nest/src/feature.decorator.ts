@@ -21,8 +21,8 @@ function getClientForEvaluation(clientName?: string, context?: EvaluationContext
 }
 
 export const BooleanFeatureFlag = createParamDecorator(
-  ({ clientName, flagKey, defaultValue }: FeatureProps<boolean>) => {
-    const client = getClientForEvaluation(clientName);
+  ({ clientName, flagKey, defaultValue, context }: FeatureProps<boolean>) => {
+    const client = getClientForEvaluation(clientName, context);
     return from(client.getBooleanDetails(flagKey, defaultValue));
   },
 );
