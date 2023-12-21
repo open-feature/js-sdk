@@ -197,7 +197,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
     newContext: EvaluationContext,
   ): Promise<void> {
       const providerName = provider.metadata.name;
-      return await provider.onContextChange?.(oldContext, newContext).then(() => {
+      return provider.onContextChange?.(oldContext, newContext).then(() => {
         this.getAssociatedEventEmitters(clientName).forEach((emitter) => {
           emitter?.emit(ProviderEvents.ContextChanged, { clientName, providerName });
         });
@@ -209,7 +209,6 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
         });
         this._events?.emit(ProviderEvents.Error, { clientName, providerName, message: err?.message, });
       });
-
   }
 }
 

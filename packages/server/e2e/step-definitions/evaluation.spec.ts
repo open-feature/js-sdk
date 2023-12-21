@@ -3,12 +3,11 @@ import {
   EvaluationDetails,
   JsonObject,
   JsonValue,
-  ProviderEvents,
   ResolutionDetails,
   StandardResolutionReasons,
 } from '@openfeature/core';
 import { defineFeature, loadFeature } from 'jest-cucumber';
-import { InMemoryProvider, OpenFeature } from '../../src';
+import { InMemoryProvider, OpenFeature, ProviderEvents } from '../../src';
 import flagConfiguration from './flags-config';
 
 // load the feature file.

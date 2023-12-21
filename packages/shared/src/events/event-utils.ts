@@ -11,7 +11,7 @@ const eventStatusMap = {
 /**
  * Returns true if the provider's status corresponds to the event.
  * If the provider's status is not defined, it matches READY.
- * @param {ProviderEvents} event event to match
+ * @param {AnyProviderEvent} event event to match
  * @param {ProviderStatus} status  status of provider
  * @returns {boolean} boolean indicating if the provider status corresponds to the event.
  */

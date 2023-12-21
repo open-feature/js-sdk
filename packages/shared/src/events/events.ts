@@ -1,6 +1,6 @@
 // TODO: with TypeScript 5+, we can use computed string properties,
 // so we can extract all of these into a shared set of string consts and use that in both enums
-// for now we have to duplicated them.
+// for now we have duplicated them.
 
 /**
  * An enumeration of possible events for server-sdk providers.
