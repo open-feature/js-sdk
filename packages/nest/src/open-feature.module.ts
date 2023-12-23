@@ -3,8 +3,8 @@ import {
   Module,
   FactoryProvider as NestValueProvider,
   ValueProvider,
-  Inject,
   ClassProvider,
+  Provider as NestProvider,
 } from '@nestjs/common';
 import { Client, OpenFeature, Provider } from '@openfeature/server-sdk';
 import { ContextFactory, ContextFactoryToken } from './context-factory';
@@ -14,10 +14,10 @@ import { EvaluationContextInterceptor } from './evaluation-context-interceptor';
 
 @Module({})
 export class OpenFeatureModule {
-  constructor(@Inject(ContextFactoryToken) private contextFactory?: ContextFactory) {}
 
-  static forRoot(options?: OpenFeatureModuleOptions): DynamicModule {
+  static forRoot({  useGlobalInterceptor = true, ...options }: OpenFeatureModuleOptions): DynamicModule {
     OpenFeature.setTransactionContextPropagator(new AsyncLocalStorageTransactionContext());
+    const providers: NestProvider[] = [];
 
     const clientValueProviders: NestValueProvider<Client>[] = [
       {
@@ -40,20 +40,27 @@ export class OpenFeatureModule {
       });
     }
 
+    providers.push(...clientValueProviders);
+
     const contextFactoryProvider: ValueProvider = {
       provide: ContextFactoryToken,
       useValue: options?.contextFactory,
     };
 
-    const interceptorProvider: ClassProvider = {
-      provide: APP_INTERCEPTOR,
-      useClass: EvaluationContextInterceptor,
-    };
+    providers.push(contextFactoryProvider);
+
+    if (useGlobalInterceptor) {
+      const interceptorProvider: ClassProvider = {
+        provide: APP_INTERCEPTOR,
+        useClass: EvaluationContextInterceptor,
+      };
+      providers.push(interceptorProvider);
+    }
 
     return {
       global: true,
       module: OpenFeatureModule,
-      providers: [contextFactoryProvider, interceptorProvider, ...clientValueProviders],
+      providers,
       exports: [...clientValueProviders],
     };
   }
@@ -65,8 +72,13 @@ export interface OpenFeatureModuleOptions {
     [providerName: string]: Provider;
   };
   contextFactory?: ContextFactory;
+  useGlobalInterceptor?: boolean;
 }
 
+/**
+ *
+ * @param name
+ */
 export function getOpenFeatureClientToken(name?: string): string {
   return name ? `OpenFeatureClient_${name}` : 'OpenFeatureClient_default';
 }

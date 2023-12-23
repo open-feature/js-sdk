@@ -1,4 +1,4 @@
-import { Controller, ExecutionContext, Get, Injectable } from '@nestjs/common';
+import { Controller, Get, Injectable, UseInterceptors } from '@nestjs/common';
 import { Observable, map } from 'rxjs';
 import {
   BooleanFeatureFlag,
@@ -8,7 +8,9 @@ import {
   OpenFeatureModule,
   StringFeatureFlag,
 } from '../src';
-import { OpenFeatureClient, EvaluationDetails, FlagValue, InMemoryProvider } from '@openfeature/server-sdk';
+import { OpenFeatureClient, EvaluationDetails, FlagValue } from '@openfeature/server-sdk';
+import { EvaluationContextInterceptor } from '../src/evaluation-context-interceptor';
+import { defaultProvider, providers, exampleContextFactory } from './fixtures';
 
 @Injectable()
 export class OpenFeatureTestService {
@@ -91,68 +93,19 @@ export class OpenFeatureController {
   }
 }
 
-export async function exampleContextFactory(context: ExecutionContext) {
-  const request = await context.switchToHttp().getRequest();
+@Controller()
+@UseInterceptors(new EvaluationContextInterceptor(exampleContextFactory))
+export class OpenFeatureControllerContextScopedController {
+  constructor(private testService: OpenFeatureTestService) {}
 
-  const userId = request.header('x-user-id');
-
-  if (userId) {
-    return {
-      targetingKey: userId,
-    };
+  @Get('/controller-context')
+  public async handleDynamicContextRequest(
+    @BooleanFeatureFlag({
+      flagKey: 'testBooleanFlag',
+      defaultValue: false,
+    })
+    feature: Observable<EvaluationDetails<number>>,
+  ) {
+    return feature.pipe(map((details) => this.testService.serviceMethod(details)));
   }
-
-  return undefined;
-}
-
-export function getOpenFeatureTestModule() {
-  return OpenFeatureModule.forRoot({
-    contextFactory: exampleContextFactory,
-    defaultProvider: new InMemoryProvider({
-      testBooleanFlag: {
-        defaultVariant: 'default',
-        variants: { default: true },
-        disabled: false,
-      },
-      testStringFlag: {
-        defaultVariant: 'default',
-        variants: { default: 'expected-string-value-default' },
-        disabled: false,
-      },
-      testNumberFlag: {
-        defaultVariant: 'default',
-        variants: { default: 10 },
-        disabled: false,
-      },
-      testObjectFlag: {
-        defaultVariant: 'default',
-        variants: { default: { client: 'default' } },
-        disabled: false,
-      },
-    }),
-    providers: {
-      namedClient: new InMemoryProvider({
-        testBooleanFlag: {
-          defaultVariant: 'default',
-          variants: { default: true },
-          disabled: false,
-        },
-        testStringFlag: {
-          defaultVariant: 'default',
-          variants: { default: 'expected-string-value-named' },
-          disabled: false,
-        },
-        testNumberFlag: {
-          defaultVariant: 'default',
-          variants: { default: 10 },
-          disabled: false,
-        },
-        testObjectFlag: {
-          defaultVariant: 'default',
-          variants: { default: { client: 'named' } },
-          disabled: false,
-        },
-      }),
-    },
-  });
 }
