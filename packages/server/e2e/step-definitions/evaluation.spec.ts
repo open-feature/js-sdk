@@ -8,7 +8,7 @@ import {
   StandardResolutionReasons,
   ProviderEvents,
 } from '@openfeature/core';
-import { OpenFeature } from '../..';
+import { OpenFeature, InMemoryProvider } from '../..';
 // load the feature file.
 const feature = loadFeature('packages/server/e2e/features/evaluation.feature');
 
@@ -18,7 +18,7 @@ const client = OpenFeature.getClient();
 const givenAnOpenfeatureClientIsRegisteredWithCacheDisabled = (
   given: (stepMatcher: string, stepDefinitionCallback: () => void) => void
 ) => {
-  // TODO: when the FlagdProvider is updated to support caching, we may need to disable it here for this test to work as expected.
+  OpenFeature.setProvider(new InMemoryProvider());
   given('a provider is registered with cache disabled', () => undefined);
 };
 

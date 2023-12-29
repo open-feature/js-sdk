@@ -138,7 +138,6 @@ export default {
       preset: 'ts-jest',
       testMatch: ['<rootDir>/packages/server/e2e/**/*.spec.ts'],
       modulePathIgnorePatterns: ['.*/node-modules/'],
-      setupFiles: ['<rootDir>/packages/server/e2e/step-definitions/setup.ts'],
       moduleNameMapper: {
         '@openfeature/core': '<rootDir>/packages/shared/src',
       },
