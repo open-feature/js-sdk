@@ -7,7 +7,7 @@ import {
   ResolutionDetails,
   StandardResolutionReasons,
 } from '@openfeature/core';
-import { OpenFeature, ProviderEvents } from '../..';
+import { OpenFeature, ProviderEvents, InMemoryProvider } from '../../src';
 // load the feature file.
 const feature = loadFeature('packages/client/e2e/features/evaluation.feature');
 
@@ -17,6 +17,7 @@ const client = OpenFeature.getClient();
 const givenAnOpenfeatureClientIsRegisteredWithCacheDisabled = (
   given: (stepMatcher: string, stepDefinitionCallback: () => void) => void
 ) => {
+  OpenFeature.setProvider(new InMemoryProvider());
   given('a provider is registered with cache disabled', () => undefined);
 };
 

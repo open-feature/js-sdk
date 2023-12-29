@@ -148,7 +148,6 @@ export default {
       preset: 'ts-jest',
       testMatch: ['<rootDir>/packages/client/e2e/**/*.spec.ts'],
       modulePathIgnorePatterns: ['.*/node-modules/'],
-      setupFiles: ['<rootDir>/packages/client/e2e/step-definitions/setup.ts'],
       moduleNameMapper: {
         '^uuid$': require.resolve('uuid'),
         '^(.*)\\.js$': ['$1', '$1.js'],
