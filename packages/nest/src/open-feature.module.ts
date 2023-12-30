@@ -1,7 +1,7 @@
 import {
   DynamicModule,
   Module,
-  FactoryProvider as NestValueProvider,
+  FactoryProvider as NestFactoryProvider,
   ValueProvider,
   ClassProvider,
   Provider as NestProvider,
@@ -14,12 +14,11 @@ import { EvaluationContextInterceptor } from './evaluation-context-interceptor';
 
 @Module({})
 export class OpenFeatureModule {
-
-  static forRoot({  useGlobalInterceptor = true, ...options }: OpenFeatureModuleOptions): DynamicModule {
+  static forRoot({ useGlobalInterceptor = true, ...options }: OpenFeatureModuleOptions): DynamicModule {
     OpenFeature.setTransactionContextPropagator(new AsyncLocalStorageTransactionContext());
     const providers: NestProvider[] = [];
 
-    const clientValueProviders: NestValueProvider<Client>[] = [
+    const clientValueProviders: NestFactoryProvider<Client>[] = [
       {
         provide: getOpenFeatureClientToken(),
         useFactory: () => OpenFeature.getClient(),
