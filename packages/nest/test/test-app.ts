@@ -1,16 +1,9 @@
 import { Controller, Get, Injectable, UseInterceptors } from '@nestjs/common';
 import { Observable, map } from 'rxjs';
-import {
-  BooleanFeatureFlag,
-  ObjectFeatureFlag,
-  NumberFeatureFlag,
-  FeatureClient,
-  OpenFeatureModule,
-  StringFeatureFlag,
-} from '../src';
+import { BooleanFeatureFlag, ObjectFeatureFlag, NumberFeatureFlag, FeatureClient, StringFeatureFlag } from '../src';
 import { OpenFeatureClient, EvaluationDetails, FlagValue } from '@openfeature/server-sdk';
 import { EvaluationContextInterceptor } from '../src/evaluation-context-interceptor';
-import { defaultProvider, providers, exampleContextFactory } from './fixtures';
+import { exampleContextFactory } from './fixtures';
 
 @Injectable()
 export class OpenFeatureTestService {
