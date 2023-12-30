@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getOpenFeatureClientToken, OpenFeatureModule } from '../src';
 import { OpenFeatureClient } from '@openfeature/server-sdk';
-import { getOpenFeatureTestModule } from './test-app';
+import { getOpenFeatureDefaultTestModule } from './fixtures';
 
 describe('OpenFeatureModule', () => {
   let moduleRef: TestingModule;
@@ -9,7 +9,7 @@ describe('OpenFeatureModule', () => {
   describe('client injection', () => {
     beforeAll(async () => {
       moduleRef = await Test.createTestingModule({
-        imports: [getOpenFeatureTestModule()],
+        imports: [getOpenFeatureDefaultTestModule()],
       }).compile();
     });
 
