@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.8.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.7.5...server-sdk-v1.8.0) (2024-01-03)
+
+
+### ✨ New Features
+
+* add named provider metadata accessor ([#715](https://github.com/open-feature/js-sdk/issues/715)) ([23d14aa](https://github.com/open-feature/js-sdk/commit/23d14aade82d25132714fd3be108cd91c9c15f49))
+
+
+### 🧹 Chore
+
+* **main:** release core 0.0.21 ([#720](https://github.com/open-feature/js-sdk/issues/720)) ([7d1aca4](https://github.com/open-feature/js-sdk/commit/7d1aca4bf85c5ed4335d39542c39c1f9a16ab568))
+* update flagd-provider ([#723](https://github.com/open-feature/js-sdk/issues/723)) ([c7098c3](https://github.com/open-feature/js-sdk/commit/c7098c365a3723c12eb3b1b35b1f5c58e0cc231f))
+
 ## [1.7.5](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.7.4...server-sdk-v1.7.5) (2023-12-08)
 
 
