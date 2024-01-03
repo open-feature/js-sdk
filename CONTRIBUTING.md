@@ -30,7 +30,7 @@ Run tests with `npm test`.
 
 ### End-to-End Tests
 
-The continuous integration runs a set of [gherkin e2e tests](https://github.com/open-feature/test-harness/blob/main/features/evaluation.feature) using in-memory provider. These tests run with the "e2e" npm script. If you'd like to run
+The continuous integration runs a set of [gherkin e2e tests](https://github.com/open-feature/test-harness/blob/main/features/evaluation.feature) using in-memory provider. These tests run with the "e2e" npm script. If you'd like to run them locally, follow the steps below:
 ```
 npm run e2e-server
 ```
