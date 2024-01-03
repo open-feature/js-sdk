@@ -9,6 +9,7 @@ import {
   ProviderEvents,
 } from '@openfeature/core';
 import { OpenFeature, InMemoryProvider } from '../..';
+import flagConfiguration from './flags-config';
 // load the feature file.
 const feature = loadFeature('packages/server/e2e/features/evaluation.feature');
 
@@ -18,7 +19,9 @@ const client = OpenFeature.getClient();
 const givenAnOpenfeatureClientIsRegisteredWithCacheDisabled = (
   given: (stepMatcher: string, stepDefinitionCallback: () => void) => void
 ) => {
-  OpenFeature.setProvider(new InMemoryProvider());
+  OpenFeature.setProvider(
+    new InMemoryProvider(flagConfiguration),
+  );
   given('a provider is registered with cache disabled', () => undefined);
 };
 

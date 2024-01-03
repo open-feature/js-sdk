@@ -8,6 +8,7 @@ import {
   StandardResolutionReasons,
 } from '@openfeature/core';
 import { OpenFeature, ProviderEvents, InMemoryProvider } from '../..';
+import flagConfiguration from './flags-config';
 // load the feature file.
 const feature = loadFeature('packages/client/e2e/features/evaluation.feature');
 
@@ -17,7 +18,7 @@ const client = OpenFeature.getClient();
 const givenAnOpenfeatureClientIsRegisteredWithCacheDisabled = (
   given: (stepMatcher: string, stepDefinitionCallback: () => void) => void
 ) => {
-  OpenFeature.setProvider(new InMemoryProvider());
+  OpenFeature.setProvider(new InMemoryProvider(flagConfiguration));
   given('a provider is registered with cache disabled', () => undefined);
 };
 
@@ -71,10 +72,11 @@ defineFeature(feature, (test) => {
 
     givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
 
+    
     when(
       /^an integer flag with key "(.*)" is evaluated with default value (\d+)$/,
-      (key: string, defaultValue: number) => {
-        value = client.getNumberValue(key, defaultValue);
+      (key: string, defaultValue: string) => {    
+        value = client.getNumberValue(key, Number.parseInt(defaultValue));
       }
     );
 
