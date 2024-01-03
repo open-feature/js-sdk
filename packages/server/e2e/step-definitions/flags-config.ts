@@ -60,15 +60,6 @@ export default {
       }
     },
   },
-  'timestamp-flag': {
-    disabled: false,
-    variants: {
-      past: -1,
-      future: 1,
-      none: 0,
-    },
-    defaultVariant: 'none',
-  },
   'wrong-flag': {
     disabled: false,
     variants: {
