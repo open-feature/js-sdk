@@ -7,7 +7,7 @@ import {
   ResolutionDetails,
   StandardResolutionReasons,
 } from '@openfeature/core';
-import { OpenFeature, ProviderEvents, InMemoryProvider } from '../..';
+import { OpenFeature, ProviderEvents, InMemoryProvider } from '../../src';
 import flagConfiguration from './flags-config';
 // load the feature file.
 const feature = loadFeature('packages/client/e2e/features/evaluation.feature');
