@@ -8,7 +8,7 @@ import {
   StandardResolutionReasons,
   ProviderEvents,
 } from '@openfeature/core';
-import { OpenFeature, InMemoryProvider } from '../..';
+import { OpenFeature, InMemoryProvider } from '../../src';
 import flagConfiguration from './flags-config';
 // load the feature file.
 const feature = loadFeature('packages/server/e2e/features/evaluation.feature');
