@@ -1,3 +1,4 @@
+import { EventDetails } from '@openfeature/core';
 import { v4 as uuid } from 'uuid';
 import {
   JsonValue,
@@ -13,6 +14,7 @@ import {
 } from '../src';
 
 const TIMEOUT = 1000;
+const ERR_MESSAGE = 'fake err';
 
 class MockProvider implements Provider {
   readonly metadata: ProviderMetadata;
@@ -20,24 +22,27 @@ class MockProvider implements Provider {
   readonly runsOn = 'client';
   private hasInitialize: boolean;
   private failOnInit: boolean;
-  private initDelay?: number;
+  private failOnContextChange: boolean;
+  private asyncDelay?: number;
   private enableEvents: boolean;
   status?: ProviderStatus = undefined;
 
   constructor(options?: {
     hasInitialize?: boolean;
     initialStatus?: ProviderStatus;
-    initDelay?: number;
+    asyncDelay?: number;
     enableEvents?: boolean;
     failOnInit?: boolean;
+    failOnContextChange?: boolean;
     name?: string;
   }) {
     this.metadata = { name: options?.name ?? 'mock-provider' };
     this.hasInitialize = options?.hasInitialize ?? true;
     this.status = options?.initialStatus ?? ProviderStatus.NOT_READY;
-    this.initDelay = options?.initDelay ?? 0;
+    this.asyncDelay = options?.asyncDelay ?? 0;
     this.enableEvents = options?.enableEvents ?? true;
     this.failOnInit = options?.failOnInit ?? false;
+    this.failOnContextChange = options?.failOnContextChange ?? false;
 
     if (this.enableEvents) {
       this.events = new OpenFeatureEventEmitter();
@@ -45,9 +50,9 @@ class MockProvider implements Provider {
 
     if (this.hasInitialize) {
       this.initialize = jest.fn(async () => {
-        await new Promise((resolve) => setTimeout(resolve, this.initDelay));
+        await new Promise((resolve) => setTimeout(resolve, this.asyncDelay));
         if (this.failOnInit) {
-          throw new Error('Provider initialization failed');
+          throw new Error(ERR_MESSAGE);
         }
 
         this.status = ProviderStatus.READY;
@@ -56,6 +61,16 @@ class MockProvider implements Provider {
   }
 
   initialize: jest.Mock<Promise<void>, []> | undefined;
+
+  async onContextChange(): Promise<void> {
+      return new Promise((resolve, reject) => setTimeout(() => {
+        if (this.failOnContextChange) {
+          reject(new Error(ERR_MESSAGE));
+        } else {
+          resolve();
+        }
+      }, this.asyncDelay));
+  }
 
   resolveBooleanEvaluation(): ResolutionDetails<boolean> {
     throw new Error('Not implemented');
@@ -312,7 +327,7 @@ describe('Events', () => {
       const provider = new MockProvider({
         name: 'race',
         initialStatus: ProviderStatus.NOT_READY,
-        initDelay: TIMEOUT / 2,
+        asyncDelay: TIMEOUT / 2,
       });
 
       // set the default provider
@@ -507,10 +522,10 @@ describe('Events', () => {
       describe('Handlers attached after the provider is already in the associated state, MUST run immediately.', () => {
         it('Ready', (done) => {
           const provider = new MockProvider({ initialStatus: ProviderStatus.READY });
-  
+
           OpenFeature.setProvider(clientId, provider);
           expect(provider.initialize).not.toHaveBeenCalled();
-  
+
           OpenFeature.addHandler(ProviderEvents.Ready, () => {
             done();
           });
@@ -518,10 +533,10 @@ describe('Events', () => {
 
         it('Error', (done) => {
           const provider = new MockProvider({ initialStatus: ProviderStatus.ERROR });
-  
+
           OpenFeature.setProvider(clientId, provider);
           expect(provider.initialize).not.toHaveBeenCalled();
-  
+
           OpenFeature.addHandler(ProviderEvents.Error, () => {
             done();
           });
@@ -529,10 +544,10 @@ describe('Events', () => {
 
         it('Stale', (done) => {
           const provider = new MockProvider({ initialStatus: ProviderStatus.STALE });
-  
+
           OpenFeature.setProvider(clientId, provider);
           expect(provider.initialize).not.toHaveBeenCalled();
-  
+
           OpenFeature.addHandler(ProviderEvents.Stale, () => {
             done();
           });
@@ -545,10 +560,10 @@ describe('Events', () => {
         it('Ready', (done) => {
           const provider = new MockProvider({ initialStatus: ProviderStatus.READY });
           const client = OpenFeature.getClient(clientId);
-  
+
           OpenFeature.setProvider(clientId, provider);
           expect(provider.initialize).not.toHaveBeenCalled();
-  
+
           client.addHandler(ProviderEvents.Ready, () => {
             done();
           });
@@ -557,10 +572,10 @@ describe('Events', () => {
         it('Error', (done) => {
           const provider = new MockProvider({ initialStatus: ProviderStatus.ERROR });
           const client = OpenFeature.getClient(clientId);
-  
+
           OpenFeature.setProvider(clientId, provider);
           expect(provider.initialize).not.toHaveBeenCalled();
-  
+
           client.addHandler(ProviderEvents.Error, () => {
             done();
           });
@@ -569,14 +584,150 @@ describe('Events', () => {
         it('Stale', (done) => {
           const provider = new MockProvider({ initialStatus: ProviderStatus.STALE });
           const client = OpenFeature.getClient(clientId);
-  
+
           OpenFeature.setProvider(clientId, provider);
           expect(provider.initialize).not.toHaveBeenCalled();
-  
+
           client.addHandler(ProviderEvents.Stale, () => {
             done();
           });
         });
+      });
+    });
+  });
+
+  describe('Requirement 5.3.4.2, 5.3.4.3', () => {
+    describe('API', () => {
+      describe('context set for same client', () => {
+        it("If the provider's `on context changed` function terminates normally, associated `PROVIDER_CONTEXT_CHANGED` handlers MUST run.", (done) => {
+          const provider = new MockProvider({ initialStatus: ProviderStatus.READY });
+
+          OpenFeature.setProvider(clientId, provider);
+          OpenFeature.setContext(clientId, {});
+
+          const handler = (details?: EventDetails) => {
+            try {
+              expect(details?.clientName).toEqual(clientId);
+              expect(details?.providerName).toEqual(provider.metadata.name);
+              done();
+              OpenFeature.removeHandler(ProviderEvents.ContextChanged, handler);
+            } catch (e) {
+              done(e);
+            }
+          };
+
+          OpenFeature.addHandler(ProviderEvents.ContextChanged, handler);
+        });
+
+        it("If the provider's `on context changed` function terminates abnormally, associated `PROVIDER_ERROR` handlers MUST run.", (done) => {
+          const provider = new MockProvider({ initialStatus: ProviderStatus.READY, failOnContextChange: true });
+
+          OpenFeature.setProvider(clientId, provider);
+          OpenFeature.setContext(clientId, {});
+
+          const handler = (details?: EventDetails) => {
+            try {
+              expect(details?.clientName).toEqual(clientId);
+              expect(details?.providerName).toEqual(provider.metadata.name);
+              done();
+              OpenFeature.removeHandler(ProviderEvents.Error, handler);
+            } catch (e) {
+              done(e);
+            }
+          };
+
+          OpenFeature.addHandler(ProviderEvents.Error, handler);
+        });
+      });
+
+      describe('context set for different client', () => {
+        it("If the provider's `on context changed` function terminates normally, associated `PROVIDER_CONTEXT_CHANGED` handlers MUST run.", (done) => {
+          const provider = new MockProvider({ initialStatus: ProviderStatus.READY });
+
+          OpenFeature.setProvider(clientId, provider);
+
+          const handler = (details?: EventDetails) => {
+            try {
+              expect(details?.clientName).toBeUndefined();
+              expect(details?.providerName).toEqual(provider.metadata.name);
+              OpenFeature.removeHandler(ProviderEvents.ContextChanged, handler);
+              done();
+            } catch (e) {
+              done(e);
+            }
+          };
+
+          OpenFeature.addHandler(ProviderEvents.ContextChanged, handler);
+          OpenFeature.setContext({});
+
+        });
+
+        it("If the provider's `on context changed` function terminates abnormally, associated `PROVIDER_ERROR` handlers MUST run.", (done) => {
+          const provider = new MockProvider({ initialStatus: ProviderStatus.READY, failOnContextChange: true });
+
+          OpenFeature.setProvider(clientId, provider);
+
+          const handler = (details?: EventDetails) => {
+            try {
+              expect(details?.clientName).toBeUndefined();
+              expect(details?.providerName).toEqual(provider.metadata.name);
+              expect(details?.message).toEqual(ERR_MESSAGE);
+              OpenFeature.removeHandler(ProviderEvents.Error, handler);
+              done();
+            } catch (e) {
+              done(e);
+            }
+          };
+
+          OpenFeature.addHandler(ProviderEvents.Error, handler);
+          OpenFeature.setContext({});
+        });
+      });
+    });
+
+    describe('client', () => {
+      it("If the provider's `on context changed` function terminates normally, associated `PROVIDER_CONTEXT_CHANGED` handlers MUST run.", (done) => {
+        const provider = new MockProvider({ initialStatus: ProviderStatus.READY });
+        const client = OpenFeature.getClient(clientId);
+
+        OpenFeature.setProvider(clientId, provider);
+
+        const handler = (details?: EventDetails) => {
+          try {
+            expect(details?.clientName).toEqual(clientId);
+            expect(details?.providerName).toEqual(provider.metadata.name);
+            OpenFeature.removeHandler(ProviderEvents.ContextChanged, handler);
+            done();
+          } catch (e) {
+            done(e);
+          }
+        };
+
+        client.addHandler(ProviderEvents.ContextChanged, handler);
+        OpenFeature.setContext(clientId, {});
+      });
+
+      it("If the provider's `on context changed` function terminates abnormally, associated `PROVIDER_ERROR` handlers MUST run.", (done) => {
+        const provider = new MockProvider({ initialStatus: ProviderStatus.READY, failOnContextChange: true });
+        const client = OpenFeature.getClient(clientId);
+
+        OpenFeature.setProvider(clientId, provider);
+
+        const handler = (details?: EventDetails) => {
+          try {
+            expect(details?.clientName).toEqual(clientId);
+            expect(details?.providerName).toEqual(provider.metadata.name);
+            expect(details?.message).toEqual(ERR_MESSAGE);
+            OpenFeature.removeHandler(ProviderEvents.Error, handler);
+            done();
+          } catch (e) {
+            done(e);
+          }
+        };
+
+        client.addHandler(ProviderEvents.Error, handler);
+        OpenFeature.setContext(clientId, {});
+
       });
     });
   });
