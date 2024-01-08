@@ -2,8 +2,7 @@ import { Controller, Get, Injectable, UseInterceptors } from '@nestjs/common';
 import { Observable, map } from 'rxjs';
 import { BooleanFeatureFlag, ObjectFeatureFlag, NumberFeatureFlag, FeatureClient, StringFeatureFlag } from '../src';
 import { OpenFeatureClient, EvaluationDetails, FlagValue } from '@openfeature/server-sdk';
-import { EvaluationContextInterceptor } from '../src/evaluation-context-interceptor';
-import { exampleContextFactory } from './fixtures';
+import { EvaluationContextInterceptor } from '../src';
 
 @Injectable()
 export class OpenFeatureTestService {
@@ -87,7 +86,7 @@ export class OpenFeatureController {
 }
 
 @Controller()
-@UseInterceptors(new EvaluationContextInterceptor(exampleContextFactory))
+@UseInterceptors(EvaluationContextInterceptor)
 export class OpenFeatureControllerContextScopedController {
   constructor(private testService: OpenFeatureTestService) {}
 

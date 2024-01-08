@@ -170,7 +170,6 @@ describe('OpenFeature SDK', () => {
     });
 
     describe('With Controller bound Context interceptor', () => {
-
       it('should not use context if global context interceptor is not configured', async () => {
         const evaluationSpy = jest.spyOn(defaultProvider, 'resolveBooleanEvaluation');
         await supertest(app.getHttpServer()).get('/controller-context').set('x-user-id', '123').expect(200).expect('true');

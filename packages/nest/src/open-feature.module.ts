@@ -5,8 +5,9 @@ import {
   ValueProvider,
   ClassProvider,
   Provider as NestProvider,
+  ExecutionContext,
 } from '@nestjs/common';
-import { Client, OpenFeature, Provider } from '@openfeature/server-sdk';
+import { Client, OpenFeature, Provider, EvaluationContext } from '@openfeature/server-sdk';
 import { ContextFactory, ContextFactoryToken } from './context-factory';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AsyncLocalStorageTransactionContext } from './evaluation-context-propagator';
@@ -60,17 +61,46 @@ export class OpenFeatureModule {
       global: true,
       module: OpenFeatureModule,
       providers,
-      exports: [...clientValueProviders],
+      exports: [...clientValueProviders, ContextFactoryToken],
     };
   }
 }
 
+/**
+ * Options for the {@link OpenFeatureModule}.
+ */
 export interface OpenFeatureModuleOptions {
+  /**
+   * The provider to be set as OpenFeature default provider.
+   * @see {@link OpenFeature#setProvider}
+   */
   defaultProvider?: Provider;
+  /**
+   * Named providers to set to OpenFeature.
+   * @see {@link OpenFeature#setProvider}
+   */
   providers?: {
     [providerName: string]: Provider;
   };
+  /**
+   * The {@link ContextFactory} for creating an {@link EvaluationContext} from Nest {@link ExecutionContext} information.
+   * This could be header values of a request or something similar.
+   * The context is automatically used for all feature flag evaluations during this request.
+   * @see {@link AsyncLocalStorageTransactionContext}
+   */
   contextFactory?: ContextFactory;
+  /**
+   * If set to false, the global {@link EvaluationContextInterceptor} is disabled.
+   * This means that automatic propagation of the  {@link EvaluationContext} created by the {@link this#contextFactory} is not working.
+   *
+   * To enable it again for specific routes, the interceptor can be added for specific controllers or request handlers like seen below:
+   * ```typescript
+   * @Controller()
+   * @UseInterceptors(EvaluationContextInterceptor)
+   * export class Controller {}
+   * ```
+   * @default true
+   */
   useGlobalInterceptor?: boolean;
 }
 
