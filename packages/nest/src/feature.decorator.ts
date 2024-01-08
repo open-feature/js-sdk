@@ -1,5 +1,5 @@
 import { createParamDecorator, Inject } from '@nestjs/common';
-import { EvaluationContext, FlagValue, JsonValue, OpenFeature } from '@openfeature/server-sdk';
+import { EvaluationContext, FlagValue, JsonValue, OpenFeature, Client } from '@openfeature/server-sdk';
 import { getOpenFeatureClientToken } from './open-feature.module';
 import { from } from 'rxjs';
 
@@ -16,6 +16,12 @@ interface FeatureProps<T extends FlagValue> {
   context?: EvaluationContext;
 }
 
+/**
+ * Returns an OpenFeature client with the given context.
+ * @param {string} clientName The name of the OpenFeature client.
+ * @param {EvaluationContext} context The evaluation context of the client.
+ * @returns {Client} The OpenFeature client.
+ */
 function getClientForEvaluation(clientName?: string, context?: EvaluationContext) {
   return clientName ? OpenFeature.getClient(clientName, context) : OpenFeature.getClient(context);
 }

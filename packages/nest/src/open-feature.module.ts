@@ -75,8 +75,9 @@ export interface OpenFeatureModuleOptions {
 }
 
 /**
- *
- * @param name
+ * Returns an injection token for a (named) OpenFeature client.
+ * @param {string} name The name of the OpenFeature client.
+ * @returns {Client} The injection token.
  */
 export function getOpenFeatureClientToken(name?: string): string {
   return name ? `OpenFeatureClient_${name}` : 'OpenFeatureClient_default';
