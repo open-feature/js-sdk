@@ -1,14 +1,15 @@
-import { defineFeature, loadFeature } from 'jest-cucumber';
 import {
-  JsonValue,
-  JsonObject,
-  EvaluationDetails,
   EvaluationContext,
+  EvaluationDetails,
+  JsonObject,
+  JsonValue,
   ResolutionDetails,
   StandardResolutionReasons,
-  ProviderEvents,
 } from '@openfeature/core';
-import { OpenFeature } from '../..';
+import { defineFeature, loadFeature } from 'jest-cucumber';
+import { InMemoryProvider, OpenFeature, ProviderEvents } from '../../src';
+import flagConfiguration from './flags-config';
+
 // load the feature file.
 const feature = loadFeature('packages/server/e2e/features/evaluation.feature');
 
@@ -16,16 +17,18 @@ const feature = loadFeature('packages/server/e2e/features/evaluation.feature');
 const client = OpenFeature.getClient();
 
 const givenAnOpenfeatureClientIsRegisteredWithCacheDisabled = (
-  given: (stepMatcher: string, stepDefinitionCallback: () => void) => void
+  given: (stepMatcher: string, stepDefinitionCallback: () => void) => void,
 ) => {
-  // TODO: when the FlagdProvider is updated to support caching, we may need to disable it here for this test to work as expected.
+  OpenFeature.setProvider(
+    new InMemoryProvider(flagConfiguration),
+  );
   given('a provider is registered with cache disabled', () => undefined);
 };
 
 defineFeature(feature, (test) => {
   beforeAll((done) => {
     client.addHandler(ProviderEvents.Ready, async () => {
-        done();
+      done();
     });
   });
 
@@ -44,7 +47,7 @@ defineFeature(feature, (test) => {
       async (key: string, defaultValue: string) => {
         flagKey = key;
         value = await client.getBooleanValue(flagKey, defaultValue === 'true');
-      }
+      },
     );
 
     then(/^the resolved boolean value should be "(.*)"$/, (expectedValue: string) => {
@@ -63,7 +66,7 @@ defineFeature(feature, (test) => {
       async (key: string, defaultValue: string) => {
         flagKey = key;
         value = await client.getStringValue(flagKey, defaultValue);
-      }
+      },
     );
 
     then(/^the resolved string value should be "(.*)"$/, (expectedValue: string) => {
@@ -82,7 +85,7 @@ defineFeature(feature, (test) => {
       async (key: string, defaultValue: string) => {
         flagKey = key;
         value = await client.getNumberValue(flagKey, Number.parseInt(defaultValue));
-      }
+      },
     );
 
     then(/^the resolved integer value should be (\d+)$/, (expectedValue: string) => {
@@ -101,7 +104,7 @@ defineFeature(feature, (test) => {
       async (key: string, defaultValue: string) => {
         flagKey = key;
         value = await client.getNumberValue(flagKey, Number.parseFloat(defaultValue));
-      }
+      },
     );
 
     then(/^the resolved float value should be (\d+\.?\d*)$/, (expectedValue: string) => {
@@ -127,7 +130,7 @@ defineFeature(feature, (test) => {
         expect(jsonObject[field1]).toEqual(boolValue === 'true');
         expect(jsonObject[field2]).toEqual(stringValue);
         expect(jsonObject[field3]).toEqual(Number.parseInt(intValue));
-      }
+      },
     );
   });
 
@@ -142,7 +145,7 @@ defineFeature(feature, (test) => {
       async (key: string, defaultValue: string) => {
         flagKey = key;
         details = await client.getBooleanDetails(flagKey, defaultValue === 'true');
-      }
+      },
     );
 
     then(
@@ -151,7 +154,7 @@ defineFeature(feature, (test) => {
         expect(details.value).toEqual(expectedValue === 'true');
         expect(details.variant).toEqual(expectedVariant);
         expect(details.reason).toEqual(expectedReason);
-      }
+      },
     );
   });
 
@@ -166,7 +169,7 @@ defineFeature(feature, (test) => {
       async (key: string, defaultValue: string) => {
         flagKey = key;
         details = await client.getStringDetails(flagKey, defaultValue);
-      }
+      },
     );
 
     then(
@@ -175,7 +178,7 @@ defineFeature(feature, (test) => {
         expect(details.value).toEqual(expectedValue);
         expect(details.variant).toEqual(expectedVariant);
         expect(details.reason).toEqual(expectedReason);
-      }
+      },
     );
   });
 
@@ -190,7 +193,7 @@ defineFeature(feature, (test) => {
       async (key: string, defaultValue: string) => {
         flagKey = key;
         details = await client.getNumberDetails(flagKey, Number.parseInt(defaultValue));
-      }
+      },
     );
 
     then(
@@ -199,7 +202,7 @@ defineFeature(feature, (test) => {
         expect(details.value).toEqual(Number.parseInt(expectedValue));
         expect(details.variant).toEqual(expectedVariant);
         expect(details.reason).toEqual(expectedReason);
-      }
+      },
     );
   });
 
@@ -214,7 +217,7 @@ defineFeature(feature, (test) => {
       async (key: string, defaultValue: string) => {
         flagKey = key;
         details = await client.getNumberDetails(flagKey, Number.parseFloat(defaultValue));
-      }
+      },
     );
 
     then(
@@ -223,7 +226,7 @@ defineFeature(feature, (test) => {
         expect(details.value).toEqual(Number.parseFloat(expectedValue));
         expect(details.variant).toEqual(expectedVariant);
         expect(details.reason).toEqual(expectedReason);
-      }
+      },
     );
   });
 
@@ -246,7 +249,7 @@ defineFeature(feature, (test) => {
         expect(jsonObject[field1]).toEqual(boolValue === 'true');
         expect(jsonObject[field2]).toEqual(stringValue);
         expect(jsonObject[field3]).toEqual(Number.parseInt(intValue));
-      }
+      },
     );
 
     and(
@@ -254,7 +257,7 @@ defineFeature(feature, (test) => {
       (expectedVariant: string, expectedReason: string) => {
         expect(details.variant).toEqual(expectedVariant);
         expect(details.reason).toEqual(expectedReason);
-      }
+      },
     );
   });
 
@@ -275,13 +278,13 @@ defineFeature(feature, (test) => {
         stringValue1: string,
         stringValue2: string,
         intValue: string,
-        boolValue: string
+        boolValue: string,
       ) => {
         context[stringField1] = stringValue1;
         context[stringField2] = stringValue2;
         context[intField] = Number.parseInt(intValue);
         context[boolField] = boolValue === 'true';
-      }
+      },
     );
 
     and(
@@ -289,7 +292,7 @@ defineFeature(feature, (test) => {
       async (key: string, defaultValue: string) => {
         flagKey = key;
         value = await client.getStringValue(flagKey, defaultValue, context);
-      }
+      },
     );
 
     then(/^the resolved string response should be "(.*)"$/, (expectedValue: string) => {
@@ -315,7 +318,7 @@ defineFeature(feature, (test) => {
         flagKey = key;
         fallbackValue = defaultValue;
         details = await client.getStringDetails(flagKey, defaultValue);
-      }
+      },
     );
 
     then(/^the default string value should be returned$/, () => {
@@ -327,7 +330,7 @@ defineFeature(feature, (test) => {
       (errorCode: string) => {
         expect(details.reason).toEqual(StandardResolutionReasons.ERROR);
         expect(details.errorCode).toEqual(errorCode);
-      }
+      },
     );
   });
 
@@ -344,7 +347,7 @@ defineFeature(feature, (test) => {
         flagKey = key;
         fallbackValue = Number.parseInt(defaultValue);
         details = await client.getNumberDetails(flagKey, Number.parseInt(defaultValue));
-      }
+      },
     );
 
     then(/^the default integer value should be returned$/, () => {
@@ -356,7 +359,7 @@ defineFeature(feature, (test) => {
       (errorCode: string) => {
         expect(details.reason).toEqual(StandardResolutionReasons.ERROR);
         expect(details.errorCode).toEqual(errorCode);
-      }
+      },
     );
   });
 });

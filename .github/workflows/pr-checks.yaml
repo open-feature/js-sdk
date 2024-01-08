@@ -65,12 +65,6 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
 
-    services:
-      flagd:
-        image: ghcr.io/open-feature/flagd-testbed:latest
-        ports:
-          - 8013:8013
-
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

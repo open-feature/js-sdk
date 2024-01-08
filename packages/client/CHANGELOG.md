@@ -1,6 +1,25 @@
 # Changelog
 
 
+## [0.4.9](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.8...web-sdk-v0.4.9) (2024-01-08)
+
+
+### ✨ New Features
+
+* add named provider metadata accessor ([#715](https://github.com/open-feature/js-sdk/issues/715)) ([23d14aa](https://github.com/open-feature/js-sdk/commit/23d14aade82d25132714fd3be108cd91c9c15f49))
+* add PROVIDER_CONTEXT_CHANGED event (web-sdk only) ([#731](https://github.com/open-feature/js-sdk/issues/731)) ([7906bbe](https://github.com/open-feature/js-sdk/commit/7906bbedbdb822d39e5c620d6c8f0a5739a19e84))
+
+
+### 🐛 Bug Fixes
+
+* use in memory provider for e2e suites ([#740](https://github.com/open-feature/js-sdk/issues/740)) ([696bf4a](https://github.com/open-feature/js-sdk/commit/696bf4adb82339acf7d619cd5c831d6d11cec7c9))
+
+
+### 🧹 Chore
+
+* **main:** release core 0.0.21 ([#720](https://github.com/open-feature/js-sdk/issues/720)) ([7d1aca4](https://github.com/open-feature/js-sdk/commit/7d1aca4bf85c5ed4335d39542c39c1f9a16ab568))
+* **main:** release core 0.0.22 ([#745](https://github.com/open-feature/js-sdk/issues/745)) ([a0cc855](https://github.com/open-feature/js-sdk/commit/a0cc85546d06ce66f881c5e80122206344f5c710))
+
 ## [0.4.8](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.7...web-sdk-v0.4.8) (2023-12-08)
 
 

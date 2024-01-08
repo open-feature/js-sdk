@@ -1,8 +1,8 @@
 import EventEmitter from 'events';
-import { GenericEventEmitter, Logger, ProviderEvents, ReadyEvent } from '../src';
+import { GenericEventEmitter, Logger, AllProviderEvents, ReadyEvent, AnyProviderEvent } from '../src';
 
 // create concrete class to test the abstract functionality.
-class TestEventEmitter extends GenericEventEmitter {
+class TestEventEmitter extends GenericEventEmitter<AnyProviderEvent> {
   protected readonly eventEmitter = new EventEmitter({ captureRejections: true });
 
   constructor() {
@@ -19,8 +19,8 @@ describe('GenericEventEmitter', () => {
       const emitter = new TestEventEmitter();
 
       const handler1 = jest.fn();
-      emitter.addHandler(ProviderEvents.Ready, handler1);
-      emitter.emit(ProviderEvents.Ready);
+      emitter.addHandler(AllProviderEvents.Ready, handler1);
+      emitter.emit(AllProviderEvents.Ready);
 
       expect(handler1).toHaveBeenCalledTimes(1);
     });
@@ -32,11 +32,11 @@ describe('GenericEventEmitter', () => {
       const handler2 = jest.fn();
       const handler3 = jest.fn();
 
-      emitter.addHandler(ProviderEvents.Ready, handler1);
-      emitter.addHandler(ProviderEvents.Ready, handler2);
-      emitter.addHandler(ProviderEvents.Error, handler3);
+      emitter.addHandler(AllProviderEvents.Ready, handler1);
+      emitter.addHandler(AllProviderEvents.Ready, handler2);
+      emitter.addHandler(AllProviderEvents.Error, handler3);
 
-      emitter.emit(ProviderEvents.Ready);
+      emitter.emit(AllProviderEvents.Ready);
 
       expect(handler1).toHaveBeenCalledTimes(1);
       expect(handler2).toHaveBeenCalledTimes(1);
@@ -56,18 +56,18 @@ describe('GenericEventEmitter', () => {
       const emitter = new TestEventEmitter();
       emitter.setLogger(logger);
 
-      emitter.addHandler(ProviderEvents.Ready, async () => {
+      emitter.addHandler(AllProviderEvents.Ready, async () => {
         throw Error();
       });
-      emitter.emit(ProviderEvents.Ready);
+      emitter.emit(AllProviderEvents.Ready);
     });
 
     it('trigger handler for event type', function () {
       const emitter = new TestEventEmitter();
 
       const handler1 = jest.fn();
-      emitter.addHandler(ProviderEvents.Ready, handler1);
-      emitter.emit(ProviderEvents.Ready);
+      emitter.addHandler(AllProviderEvents.Ready, handler1);
+      emitter.emit(AllProviderEvents.Ready);
 
       expect(handler1).toHaveBeenCalledTimes(1);
     });
@@ -77,8 +77,8 @@ describe('GenericEventEmitter', () => {
       const emitter = new TestEventEmitter();
 
       const handler1 = jest.fn();
-      emitter.addHandler(ProviderEvents.Ready, handler1);
-      emitter.emit(ProviderEvents.Ready, event);
+      emitter.addHandler(AllProviderEvents.Ready, handler1);
+      emitter.emit(AllProviderEvents.Ready, event);
 
       expect(handler1).toHaveBeenNthCalledWith(1, event);
     });
@@ -90,11 +90,11 @@ describe('GenericEventEmitter', () => {
       const handler2 = jest.fn();
       const handler3 = jest.fn();
 
-      emitter.addHandler(ProviderEvents.Ready, handler1);
-      emitter.addHandler(ProviderEvents.Ready, handler2);
-      emitter.addHandler(ProviderEvents.Error, handler3);
+      emitter.addHandler(AllProviderEvents.Ready, handler1);
+      emitter.addHandler(AllProviderEvents.Ready, handler2);
+      emitter.addHandler(AllProviderEvents.Error, handler3);
 
-      emitter.emit(ProviderEvents.Ready);
+      emitter.emit(AllProviderEvents.Ready);
 
       expect(handler1).toHaveBeenCalledTimes(1);
       expect(handler2).toHaveBeenCalledTimes(1);
@@ -107,11 +107,11 @@ describe('GenericEventEmitter', () => {
       const emitter = new TestEventEmitter();
 
       const handler1 = jest.fn();
-      emitter.addHandler(ProviderEvents.Ready, handler1);
+      emitter.addHandler(AllProviderEvents.Ready, handler1);
 
-      emitter.emit(ProviderEvents.Ready);
-      emitter.removeHandler(ProviderEvents.Ready, handler1);
-      emitter.emit(ProviderEvents.Ready);
+      emitter.emit(AllProviderEvents.Ready);
+      emitter.removeHandler(AllProviderEvents.Ready, handler1);
+      emitter.emit(AllProviderEvents.Ready);
 
       expect(handler1).toHaveBeenCalledTimes(1);
     });
@@ -123,12 +123,12 @@ describe('GenericEventEmitter', () => {
 
       const handler1 = jest.fn();
       const handler2 = jest.fn();
-      emitter.addHandler(ProviderEvents.Ready, handler1);
-      emitter.addHandler(ProviderEvents.Error, handler2);
+      emitter.addHandler(AllProviderEvents.Ready, handler1);
+      emitter.addHandler(AllProviderEvents.Error, handler2);
 
-      emitter.removeAllHandlers(ProviderEvents.Ready);
-      emitter.emit(ProviderEvents.Ready);
-      emitter.emit(ProviderEvents.Error);
+      emitter.removeAllHandlers(AllProviderEvents.Ready);
+      emitter.emit(AllProviderEvents.Ready);
+      emitter.emit(AllProviderEvents.Error);
 
       expect(handler1).toHaveBeenCalledTimes(0);
       expect(handler2).toHaveBeenCalledTimes(1);
@@ -139,12 +139,12 @@ describe('GenericEventEmitter', () => {
 
       const handler1 = jest.fn();
       const handler2 = jest.fn();
-      emitter.addHandler(ProviderEvents.Ready, handler1);
-      emitter.addHandler(ProviderEvents.Error, handler2);
+      emitter.addHandler(AllProviderEvents.Ready, handler1);
+      emitter.addHandler(AllProviderEvents.Error, handler2);
 
-      emitter.emit(ProviderEvents.Ready);
-      emitter.removeAllHandlers(ProviderEvents.Ready);
-      emitter.emit(ProviderEvents.Ready);
+      emitter.emit(AllProviderEvents.Ready);
+      emitter.removeAllHandlers(AllProviderEvents.Ready);
+      emitter.emit(AllProviderEvents.Ready);
 
       expect(handler1).toHaveBeenCalledTimes(1);
       expect(handler2).toHaveBeenCalledTimes(0);
@@ -155,14 +155,14 @@ describe('GenericEventEmitter', () => {
 
       const handler1 = jest.fn();
       const handler2 = jest.fn();
-      emitter.addHandler(ProviderEvents.Ready, handler1);
-      emitter.addHandler(ProviderEvents.Error, handler2);
+      emitter.addHandler(AllProviderEvents.Ready, handler1);
+      emitter.addHandler(AllProviderEvents.Error, handler2);
 
-      emitter.emit(ProviderEvents.Ready);
-      emitter.emit(ProviderEvents.Error);
+      emitter.emit(AllProviderEvents.Ready);
+      emitter.emit(AllProviderEvents.Error);
       emitter.removeAllHandlers();
-      emitter.emit(ProviderEvents.Ready);
-      emitter.emit(ProviderEvents.Error);
+      emitter.emit(AllProviderEvents.Ready);
+      emitter.emit(AllProviderEvents.Error);
 
       expect(handler1).toHaveBeenCalledTimes(1);
       expect(handler2).toHaveBeenCalledTimes(1);

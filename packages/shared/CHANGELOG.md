@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.0.22](https://github.com/open-feature/js-sdk/compare/core-v0.0.21...core-v0.0.22) (2024-01-08)
+
+
+### ✨ New Features
+
+* add PROVIDER_CONTEXT_CHANGED event (web-sdk only) ([#731](https://github.com/open-feature/js-sdk/issues/731)) ([7906bbe](https://github.com/open-feature/js-sdk/commit/7906bbedbdb822d39e5c620d6c8f0a5739a19e84))
+
+## [0.0.21](https://github.com/open-feature/js-sdk/compare/core-v0.0.20...core-v0.0.21) (2023-12-18)
+
+
+### ✨ New Features
+
+* add named provider metadata accessor ([#715](https://github.com/open-feature/js-sdk/issues/715)) ([23d14aa](https://github.com/open-feature/js-sdk/commit/23d14aade82d25132714fd3be108cd91c9c15f49))
+
 ## [0.0.20](https://github.com/open-feature/js-sdk/compare/core-v0.0.19...core-v0.0.20) (2023-11-27)
 
 

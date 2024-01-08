@@ -6,14 +6,13 @@ import {
   JsonValue,
   Logger,
   OpenFeatureError,
-  ProviderEvents,
   ResolutionDetails,
   StandardResolutionReasons,
   TypeMismatchError,
   ProviderStatus,
 } from '@openfeature/core';
 import { Provider } from '../provider';
-import { OpenFeatureEventEmitter } from '../../events';
+import { OpenFeatureEventEmitter, ProviderEvents } from '../../events';
 import { FlagConfiguration, Flag } from './flag-configuration';
 import { VariantNotFoundError } from './variant-not-found-error';
 
