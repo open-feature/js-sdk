@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.22](https://github.com/open-feature/js-sdk/compare/core-v0.0.21...core-v0.0.22) (2024-01-08)
+
+
+### ✨ New Features
+
+* add PROVIDER_CONTEXT_CHANGED event (web-sdk only) ([#731](https://github.com/open-feature/js-sdk/issues/731)) ([7906bbe](https://github.com/open-feature/js-sdk/commit/7906bbedbdb822d39e5c620d6c8f0a5739a19e84))
+
 ## [0.0.21](https://github.com/open-feature/js-sdk/compare/core-v0.0.20...core-v0.0.21) (2023-12-18)
 
 
