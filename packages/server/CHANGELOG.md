@@ -3,11 +3,6 @@
 ## [1.9.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.8.0...server-sdk-v1.9.0) (2024-01-08)
 
 
-### ✨ New Features
-
-* add PROVIDER_CONTEXT_CHANGED event (web-sdk only) ([#731](https://github.com/open-feature/js-sdk/issues/731)) ([7906bbe](https://github.com/open-feature/js-sdk/commit/7906bbedbdb822d39e5c620d6c8f0a5739a19e84))
-
-
 ### 🐛 Bug Fixes
 
 * use in memory provider for e2e suites ([#740](https://github.com/open-feature/js-sdk/issues/740)) ([696bf4a](https://github.com/open-feature/js-sdk/commit/696bf4adb82339acf7d619cd5c831d6d11cec7c9))
