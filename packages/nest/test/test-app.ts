@@ -1,25 +1,22 @@
-import { Controller, Get, Injectable } from '@nestjs/common';
-import { Request } from 'express';
+import { Controller, Get, Injectable, UseInterceptors } from '@nestjs/common';
 import { Observable, map } from 'rxjs';
-import {
-  BooleanFeatureFlag,
-  ObjectFeatureFlag,
-  NumberFeatureFlag,
-  FeatureClient,
-  OpenFeatureModule,
-  StringFeatureFlag,
-} from '../src';
-import { Client, EvaluationDetails, FlagValue, InMemoryProvider } from '@openfeature/server-sdk';
+import { BooleanFeatureFlag, ObjectFeatureFlag, NumberFeatureFlag, FeatureClient, StringFeatureFlag } from '../src';
+import { OpenFeatureClient, EvaluationDetails, FlagValue } from '@openfeature/server-sdk';
+import { EvaluationContextInterceptor } from '../src';
 
 @Injectable()
 export class OpenFeatureTestService {
   constructor(
-    @FeatureClient() public defaultClient: Client,
-    @FeatureClient({ name: 'namedClient' }) public namedClient: Client,
+    @FeatureClient() public defaultClient: OpenFeatureClient,
+    @FeatureClient({ name: 'namedClient' }) public namedClient: OpenFeatureClient,
   ) {}
 
   public async serviceMethod(flag: EvaluationDetails<FlagValue>) {
     return flag.value;
+  }
+
+  public async serviceMethodWithDynamicContext(flagKey: string): Promise<boolean> {
+    return this.defaultClient.getBooleanValue(flagKey, false);
   }
 }
 
@@ -76,69 +73,31 @@ export class OpenFeatureController {
     @BooleanFeatureFlag({
       flagKey: 'testBooleanFlag',
       defaultValue: false,
-      contextFactory: (executionContext) => {
-        const request = executionContext.switchToHttp().getRequest<Request>();
-        const userId = request.header('x-user-id');
-        return userId
-          ? {
-              targetingKey: userId,
-            }
-          : undefined;
-      },
     })
     feature: Observable<EvaluationDetails<number>>,
   ) {
     return feature.pipe(map((details) => this.testService.serviceMethod(details)));
   }
+
+  @Get('/dynamic-context-in-service')
+  public async handleDynamicContextInServiceRequest() {
+    return this.testService.serviceMethodWithDynamicContext('testBooleanFlag');
+  }
 }
 
-export function getOpenFeatureTestModule() {
-  return OpenFeatureModule.forRoot({
-    defaultProvider: new InMemoryProvider({
-      testBooleanFlag: {
-        defaultVariant: 'default',
-        variants: { default: true },
-        disabled: false,
-      },
-      testStringFlag: {
-        defaultVariant: 'default',
-        variants: { default: 'expected-string-value-default' },
-        disabled: false,
-      },
-      testNumberFlag: {
-        defaultVariant: 'default',
-        variants: { default: 10 },
-        disabled: false,
-      },
-      testObjectFlag: {
-        defaultVariant: 'default',
-        variants: { default: { client: 'default' } },
-        disabled: false,
-      },
-    }),
-    providers: {
-      namedClient: new InMemoryProvider({
-        testBooleanFlag: {
-          defaultVariant: 'default',
-          variants: { default: true },
-          disabled: false,
-        },
-        testStringFlag: {
-          defaultVariant: 'default',
-          variants: { default: 'expected-string-value-named' },
-          disabled: false,
-        },
-        testNumberFlag: {
-          defaultVariant: 'default',
-          variants: { default: 10 },
-          disabled: false,
-        },
-        testObjectFlag: {
-          defaultVariant: 'default',
-          variants: { default: { client: 'named' } },
-          disabled: false,
-        },
-      }),
-    },
-  });
+@Controller()
+@UseInterceptors(EvaluationContextInterceptor)
+export class OpenFeatureControllerContextScopedController {
+  constructor(private testService: OpenFeatureTestService) {}
+
+  @Get('/controller-context')
+  public async handleDynamicContextRequest(
+    @BooleanFeatureFlag({
+      flagKey: 'testBooleanFlag',
+      defaultValue: false,
+    })
+    feature: Observable<EvaluationDetails<number>>,
+  ) {
+    return feature.pipe(map((details) => this.testService.serviceMethod(details)));
+  }
 }
