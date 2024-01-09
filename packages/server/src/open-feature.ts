@@ -54,6 +54,119 @@ export class OpenFeatureAPI
     return instance;
   }
 
+  /**
+   * Sets the default provider for flag evaluations and returns a promise that resolves when the provider is ready.
+   * This provider will be used by unnamed clients and named clients to which no provider is bound.
+   * Setting a provider supersedes the current provider used in new and existing clients without a name.
+   * @param {Provider} provider The provider responsible for flag evaluations.
+   * @returns {Promise<void>}
+   * @throws Uncaught exceptions thrown by the provider during initialization.
+   */
+  setProviderAndWait(provider: Provider): Promise<void>;
+  /**
+   * Sets the default provider and evaluation context for flag evaluations and returns a promise that resolves when the provider is ready.
+   * This provider will be used by unnamed clients and named clients to which no provider is bound.
+   * Setting a provider supersedes the current provider used in new and existing clients without a name.
+   * @param {Provider} provider The provider responsible for flag evaluations.
+   * @param {EvaluationContext} context The evaluation context to use for flag evaluations.
+   * @returns {Promise<void>}
+   * @throws Uncaught exceptions thrown by the provider during initialization.
+   */
+  setProviderAndWait(provider: Provider, context: EvaluationContext): Promise<void>;
+  /**
+   * Sets the provider that OpenFeature will use for flag evaluations of providers with the given name.
+   * A promise is returned that resolves when the provider is ready.
+   * Setting a provider supersedes the current provider used in new and existing clients with that name.
+   * @param {string} clientName The name to identify the client
+   * @param {Provider} provider The provider responsible for flag evaluations.
+   * @returns {Promise<void>}
+   * @throws Uncaught exceptions thrown by the provider during initialization.
+   */
+  setProviderAndWait(clientName: string, provider: Provider): Promise<void>;
+  /**
+   * Sets the provider and evaluation context for flag evaluations of providers with the given name.
+   * A promise is returned that resolves when the provider is ready.
+   * Setting a provider supersedes the current provider used in new and existing clients with that name.
+   * @param {string} clientName The name to identify the client
+   * @param {Provider} provider The provider responsible for flag evaluations.
+   * @param {EvaluationContext} context The evaluation context to use for flag evaluations.
+   * @returns {Promise<void>}
+   * @throws Uncaught exceptions thrown by the provider during initialization.
+   */
+  setProviderAndWait(clientName: string, provider: Provider, context: EvaluationContext): Promise<void>;
+  async setProviderAndWait(
+    clientOrProvider?: string | Provider,
+    providerContextOrUndefined?: Provider | EvaluationContext,
+    contextOrUndefined?: EvaluationContext,
+  ): Promise<void> {
+    const clientName = stringOrUndefined(clientOrProvider);
+    const provider = clientName
+      ? objectOrUndefined<Provider>(providerContextOrUndefined)
+      : objectOrUndefined<Provider>(clientOrProvider);
+    const context = clientName
+      ? objectOrUndefined<EvaluationContext>(contextOrUndefined)
+      : objectOrUndefined<EvaluationContext>(providerContextOrUndefined);
+    if (context) {
+      this.setContext(context);
+    }
+    await this.setAwaitableProvider(clientName, provider, this.getContext());
+  }
+
+  /**
+   * Sets the default provider for flag evaluations.
+   * This provider will be used by unnamed clients and named clients to which no provider is bound.
+   * Setting a provider supersedes the current provider used in new and existing clients without a name.
+   * @param {Provider} provider The provider responsible for flag evaluations.
+   * @returns {this} OpenFeature API
+   */
+  setProvider(provider: Provider): this;
+  /**
+   * Sets the default provider and evaluation context for flag evaluations.
+   * This provider will be used by unnamed clients and named clients to which no provider is bound.
+   * Settings a provider supersedes the current provider used in new and existing clients without a name.
+   * @param {Provider} provider The provider responsible for flag evaluations.
+   * @param context {EvaluationContext} The evaluation context to use for flag evaluations.
+   * @returns {this} OpenFeature API
+   */
+  setProvider(provider: Provider, context: EvaluationContext): this;
+  /**
+   * Sets the provider for flag evaluations of providers with the given name.
+   * Setting a provider supersedes the current provider used in new and existing clients with that name.
+   * @param {string} clientName The name to identify the client
+   * @param {Provider} provider The provider responsible for flag evaluations.
+   * @returns {this} OpenFeature API
+   */
+  setProvider(clientName: string, provider: Provider): this;
+  /**
+   * Sets the provider and evaluation context flag evaluations of providers with the given name.
+   * Setting a provider supersedes the current provider used in new and existing clients with that name.
+   * @param {string} clientName The name to identify the client
+   * @param {Provider} provider The provider responsible for flag evaluations.
+   * @param context {EvaluationContext} The evaluation context to use for flag evaluations.
+   * @returns {this} OpenFeature API
+   */
+  setProvider(clientName: string, provider: Provider, context: EvaluationContext): this;
+  setProvider(
+    clientOrProvider?: string | Provider,
+    providerContextOrUndefined?: Provider | EvaluationContext,
+    contextOrUndefined?: EvaluationContext,
+  ): this {
+    const clientName = stringOrUndefined(clientOrProvider);
+    const provider = clientName
+      ? objectOrUndefined<Provider>(providerContextOrUndefined)
+      : objectOrUndefined<Provider>(clientOrProvider);
+    const context = clientName
+      ? objectOrUndefined<EvaluationContext>(contextOrUndefined)
+      : objectOrUndefined<EvaluationContext>(providerContextOrUndefined);
+
+    if (context) {
+      this.setContext(context);
+    }
+
+    this.catchPromiseErrors(this.setAwaitableProvider(clientName, provider, this.getContext()));
+    return this;
+  }
+
   setContext(context: EvaluationContext): this {
     this._context = context;
     return this;

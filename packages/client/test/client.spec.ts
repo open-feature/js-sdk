@@ -146,7 +146,7 @@ describe('OpenFeatureClient', () => {
       expect(provider.status).toBe(ProviderStatus.NOT_READY);
       await OpenFeature.setProviderAndWait(provider);
       expect(provider.status).toBe(ProviderStatus.READY);
-      expect(spy).toBeCalled();
+      expect(spy).toHaveBeenCalled();
     });
 
     it('should wait for the provider to fail during initialization', async () => {
@@ -156,7 +156,7 @@ describe('OpenFeatureClient', () => {
       expect(provider.status).toBe(ProviderStatus.NOT_READY);
       await expect(OpenFeature.setProviderAndWait(provider)).rejects.toThrow();
       expect(provider.status).toBe(ProviderStatus.ERROR);
-      expect(spy).toBeCalled();
+      expect(spy).toHaveBeenCalled();
     });
   });
 

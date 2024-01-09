@@ -6,7 +6,6 @@ import { isDefined } from './filter';
 import { EvaluationLifeCycle, BaseHook } from './hooks';
 import { DefaultLogger, Logger, ManageLogger, SafeLogger } from './logger';
 import { CommonProvider, ProviderMetadata, ProviderStatus } from './provider';
-import { objectOrUndefined, stringOrUndefined } from './type-guards';
 import { Paradigm } from './types';
 
 export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProvider, H extends BaseHook = BaseHook>
@@ -111,63 +110,27 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     return this._events.getHandlers(eventType);
   }
 
-  /**
-   * Sets the default provider for flag evaluations and returns a promise that resolves when the provider is ready.
-   * This provider will be used by unnamed clients and named clients to which no provider is bound.
-   * Setting a provider supersedes the current provider used in new and existing clients without a name.
-   * @template P
-   * @param {P} provider The provider responsible for flag evaluations.
-   * @returns {Promise<void>}
-   * @throws Uncaught exceptions thrown by the provider during initialization.
-   */
-  async setProviderAndWait(provider: P): Promise<void>;
-  /**
-   * Sets the provider that OpenFeature will use for flag evaluations of providers with the given name.
-   * A promise is returned that resolves when the provider is ready.
-   * Setting a provider supersedes the current provider used in new and existing clients with that name.
-   * @template P
-   * @param {string} clientName The name to identify the client
-   * @param {P} provider The provider responsible for flag evaluations.
-   * @returns {Promise<void>}
-   * @throws Uncaught exceptions thrown by the provider during initialization.
-   */
-  async setProviderAndWait(clientName: string, provider: P): Promise<void>;
-  async setProviderAndWait(clientOrProvider?: string | P, providerOrUndefined?: P): Promise<void> {
-    await this.setAwaitableProvider(clientOrProvider, providerOrUndefined);
-  }
+  abstract setProviderAndWait(
+    clientOrProvider?: string | P,
+    providerContextOrUndefined?: P | EvaluationContext,
+    contextOrUndefined?: EvaluationContext,
+  ): Promise<void>;
 
-  /**
-   * Sets the default provider for flag evaluations.
-   * This provider will be used by unnamed clients and named clients to which no provider is bound.
-   * Setting a provider supersedes the current provider used in new and existing clients without a name.
-   * @template P
-   * @param {P} provider The provider responsible for flag evaluations.
-   * @returns {this} OpenFeature API
-   */
-  setProvider(provider: P): this;
-  /**
-   * Sets the provider that OpenFeature will use for flag evaluations of providers with the given name.
-   * Setting a provider supersedes the current provider used in new and existing clients with that name.
-   * @template P
-   * @param {string} clientName The name to identify the client
-   * @param {P} provider The provider responsible for flag evaluations.
-   * @returns {this} OpenFeature API
-   */
-  setProvider(clientName: string, provider: P): this;
-  setProvider(clientOrProvider?: string | P, providerOrUndefined?: P): this {
-    const maybePromise = this.setAwaitableProvider(clientOrProvider, providerOrUndefined);
+  abstract setProvider(
+    clientOrProvider?: string | P,
+    providerContextOrUndefined?: P | EvaluationContext,
+    contextOrUndefined?: EvaluationContext,
+  ): this;
+
+  protected catchPromiseErrors(maybePromise: void | Promise<void>): void {
     if (maybePromise) {
       maybePromise.catch(() => {
         /* ignore, errors are emitted via the event emitter */
       });
     }
-    return this;
   }
 
-  private setAwaitableProvider(clientOrProvider?: string | P, providerOrUndefined?: P): Promise<void> | void {
-    const clientName = stringOrUndefined(clientOrProvider);
-    const provider = objectOrUndefined<P>(clientOrProvider) ?? objectOrUndefined<P>(providerOrUndefined);
-
+  protected setAwaitableProvider(clientName?: string, provider?: P, context?: EvaluationContext): Promise<void> | void {
     if (!provider) {
       this._logger.debug('No provider defined, ignoring setProvider call');
       return;
@@ -202,7 +165,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
 
     if (provider?.status === ProviderStatus.NOT_READY && typeof provider.initialize === 'function') {
       initializationPromise = provider
-        .initialize?.(this._context)
+        .initialize?.(context ?? this._context)
         ?.then(() => {
           // fetch the most recent event emitters, some may have been added during init
           this.getAssociatedEventEmitters(clientName).forEach((emitter) => {

@@ -116,7 +116,7 @@ To register a provider and ensure it is ready before further actions are taken, 
 
 ```ts
 await OpenFeature.setProviderAndWait(new MyProvider());
-```  
+```
 
 #### Synchronous
 
@@ -154,13 +154,21 @@ In OpenFeature, we refer to this as [targeting](https://openfeature.dev/specific
 If the flag management system you're using supports targeting, you can provide the input data using the [evaluation context](https://openfeature.dev/docs/reference/concepts/evaluation-context).
 
 ```ts
+// Sets global context during provider registration
+await OpenFeature.setProvider(new MyProvider(), { origin: document.location.host })
+```
+
+Change context after the provider has been registered using `setContext`.
+
+```ts
 // Set a value to the global context
-await OpenFeature.setContext({ origin: document.location.host });
+await OpenFeature.setContext({ targetingKey: localStorage.getItem("targetingKey") });
 ```
 
 Context is global and setting it is `async`.
 Providers may implement an `onContextChanged` method that receives the old context and the newer one.
-This method is used internally by the provider to detect if, given the context change, the flags values cached on client side are invalid. If needed a request will be made to the provider with the new context in order to get the correct flags values.
+This method is used internally by the provider to detect if, given the context change, the flags values cached on client side are invalid.
+If needed a request will be made to the provider with the new context in order to get the correct flags values.
 
 ### Hooks
 
@@ -223,6 +231,24 @@ const clientWithDefault = OpenFeature.getClient();
 // A Client backed by NewCachedProvider
 const clientForCache = OpenFeature.getClient("clientForCache");
 ```
+
+#### Manage evaluation context for named clients
+
+By default, named clients use the global context.
+This can be overridden by explicitly setting context during initialization or by references the name used during provider registration.
+
+```ts
+OpenFeature.setProvider("clientForCache", new NewCachedProvider(), { isCache: true});
+```
+
+Change context after the provider has been registered by using `setContext` with a name.
+
+```ts
+OpenFeature.setContext("clientForCache", { targetingKey: localStorage.getItem("targetingKey") })
+```
+
+Once context has been defined for a named client, it will override the global context for all clients using the associated provider.
+Context can be cleared using for a named provider using `OpenFeature.clearContext("clientForCache")` or call `OpenFeature.clearContexts` to reset all context.
 
 ### Eventing
 
