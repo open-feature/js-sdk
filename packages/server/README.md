@@ -135,6 +135,9 @@ In OpenFeature, we refer to this as [targeting](https://openfeature.dev/specific
 If the flag management system you're using supports targeting, you can provide the input data using the [evaluation context](https://openfeature.dev/docs/reference/concepts/evaluation-context).
 
 ```ts
+// set global context during provider registration
+OpenFeature.setProvider(new MyProvider(), { host: 'localhost' })
+
 // set a value to the global context
 OpenFeature.setContext({ region: "us-east-1" });
 
@@ -151,6 +154,9 @@ const requestContext = {
 
 const boolValue = await client.getBooleanValue('some-flag', false, requestContext);
 ```
+
+Context is merged by the SDK before performing a flag evaluation.
+The merge is order is defined [here](https://openfeature.dev/specification/sections/evaluation-context#requirement-323) in the OpenFeature specification.
 
 ### Hooks
 
