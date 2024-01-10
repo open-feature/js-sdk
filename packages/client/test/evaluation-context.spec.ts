@@ -76,6 +76,28 @@ describe('Evaluation Context', () => {
         expect(OpenFeature.getContext(clientName)).toEqual(globalContext);
       });
 
+      it('should call onContextChange for appropriate provider with appropriate context', async () => {
+        const globalContext: EvaluationContext = { scope: 'global' };
+        const testContext: EvaluationContext = { scope: 'test' };
+        const clientName = 'test';
+        const defaultProvider = new MockProvider();
+        const provider1 = new MockProvider();
+
+        await OpenFeature.setProviderAndWait(defaultProvider);
+        await OpenFeature.setProviderAndWait(clientName, provider1);
+
+        // Spy on context changed handlers of both providers
+        const defaultProviderSpy = jest.spyOn(defaultProvider, 'onContextChange');
+        const provider1Spy = jest.spyOn(provider1, 'onContextChange');
+
+        await OpenFeature.setContext(globalContext);
+        await OpenFeature.setContext(clientName, testContext);
+
+        // provider one should get global and specific context calls
+        expect(defaultProviderSpy).toHaveBeenCalledWith({}, globalContext);
+        expect(provider1Spy).toHaveBeenCalledWith(globalContext, testContext);
+      });
+
       it('should only call a providers onContextChange once when clearing context', async () => {
         const globalContext: EvaluationContext = { scope: 'global' };
         const testContext: EvaluationContext = { scope: 'test' };

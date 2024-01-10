@@ -106,7 +106,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
    * @param {string} clientName The name to identify the client
    * @returns {EvaluationContext} Evaluation context
    */
-  getContext(clientName: string): EvaluationContext;
+  getContext(clientName?: string): EvaluationContext;
   getContext(nameOrUndefined?: string): EvaluationContext {
     const clientName = stringOrUndefined(nameOrUndefined);
     if (clientName) {
