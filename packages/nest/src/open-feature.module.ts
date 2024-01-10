@@ -14,7 +14,7 @@ import { AsyncLocalStorageTransactionContext } from './evaluation-context-propag
 import { EvaluationContextInterceptor } from './evaluation-context-interceptor';
 
 /**
- * NestJS OpenFeatureModule is a wraper for OpenFeature Server-SDK compatible with NestJS.
+ * NestJS OpenFeatureModule is a wrapper for OpenFeature Server-SDK compatible with NestJS.
  */
 @Module({})
 export class OpenFeatureModule {
