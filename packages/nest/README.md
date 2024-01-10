@@ -142,6 +142,6 @@ export class OpenFeatureTestService {
 
 ### Flag evaluation context injection
 
-Whenever a flag evaluation occours, context can be provided with information like user e-mail, role, targeting key, etc in order to trigger specific evaluation rules or logic. The `OpenFeatureModule` provides a way to configure context for each request using the `contextFactory` option.
+Whenever a flag evaluation occurs, context can be provided with information like user e-mail, role, targeting key, etc in order to trigger specific evaluation rules or logic. The `OpenFeatureModule` provides a way to configure context for each request using the `contextFactory` option.
 The `contextFactory` is ran in a NestJS interceptor scope to configure the evaluation context and than it is used in every flag evaluation related to this request.
 By default the interceptor is cofigured globally, but it can be changed by setting the `useGlobalInterceptor` to `false`. In this case it is still possible to configure a `contextFactory` that can be injected into route, module or controller bound interceptors.
