@@ -62,6 +62,7 @@ yarn add @openfeature/nestjs-sdk
 ### Usage
 
 The example bellow shows how to use the `OpenFeatureModule` with OpenFeature's `InMemoryProvider`.
+
 ```ts
 import { Module } from '@nestjs/common';
 import { FlagdProvider } from '@openfeature/flagd-provider';
@@ -115,7 +116,7 @@ export class OpenFeatureController {
 }
 ```
 
-It is also possible to inject the default and a named client into a service via it's constructor.
+It is also possible to inject the default and a named OpenFeature client into a service via it's constructor with Nest dependency injection system.
 
 ```ts
 import { Injectable } from '@nestjs/common';
@@ -127,8 +128,7 @@ export class OpenFeatureTestService {
   constructor(
     @FeatureClient() private defaultClient: Client,
     @FeatureClient({ name: 'differentProvider' }) private namedClient: Client,
-  ) {
-  }
+  ) {}
 
   public async getBoolean() {
     return await this.defaultClient.getBooleanValue('testBooleanFlag', false);
@@ -136,11 +136,9 @@ export class OpenFeatureTestService {
 }
 ```
 
-## Module details
+## Module aditional information
 
-### Configuration
-
-#### Flag evaluation context injection
+### Flag evaluation context injection
 
 Whenever a flag evaluation occours, context can be provided with information like user e-mail, role, targeting key, etc in order to trigger specific evaluation rules or logic. The `OpenFeatureModule` provides a way to configure context for each request using the `contextFactory` option.
 The `contextFactory` is ran in a NestJS interceptor scope to configure the evaluation context and than it is used in every flag evaluation related to this request.
