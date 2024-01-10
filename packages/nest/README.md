@@ -31,7 +31,9 @@ for feature flagging that works with your favorite feature flag management tool.
 
 ## Overview
 
-The OpenFeature NestJS SDK is a package that provides a NestJS wrapper for the [OpenFeature Server SDK](). It's main capabilities are:
+The OpenFeature NestJS SDK is a package that provides a NestJS wrapper for the [OpenFeature Server SDK]().
+
+It's main capabilities are:
 - Provide a NestJS global module to simplify OpenFeature configuration and usage within NestJS;
 - Supply custom parameter decorators (for controllers), that inject observables with feature flags resolution details;
 - Inject context for flag evaluation seamlessly using NestJS interceptors
