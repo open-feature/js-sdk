@@ -12,9 +12,11 @@ class MockProvider implements Provider {
     return Promise.resolve();
   }
 
-  resolveBooleanEvaluation(): ResolutionDetails<boolean> {
-    throw new Error('Not implemented');
-  }
+  resolveBooleanEvaluation = jest.fn((flagKey: string, defaultValue: boolean, context: EvaluationContext ) => {
+    return {
+      value: true
+    }
+  });
 
   resolveNumberEvaluation(): ResolutionDetails<number> {
     throw new Error('Not implemented');
@@ -79,7 +81,7 @@ describe('Evaluation Context', () => {
       it('should call onContextChange for appropriate provider with appropriate context', async () => {
         const globalContext: EvaluationContext = { scope: 'global' };
         const testContext: EvaluationContext = { scope: 'test' };
-        const clientName = 'test';
+        const clientName = 'appropriateProviderTest';
         const defaultProvider = new MockProvider();
         const provider1 = new MockProvider();
 
@@ -96,6 +98,35 @@ describe('Evaluation Context', () => {
         // provider one should get global and specific context calls
         expect(defaultProviderSpy).toHaveBeenCalledWith({}, globalContext);
         expect(provider1Spy).toHaveBeenCalledWith(globalContext, testContext);
+      });
+
+      it('should pass correct context to resolver', async () => {
+        const globalContext: EvaluationContext = { scope: 'global' };
+        const testContext: EvaluationContext = { scope: 'test' };
+        const clientName = 'correctContextTest';
+        const defaultProvider = new MockProvider();
+        const provider1 = new MockProvider();
+
+        await OpenFeature.setProviderAndWait(defaultProvider);
+        await OpenFeature.setProviderAndWait(clientName, provider1);
+
+        // Spy on boolean resolvers of both providers
+        const defaultProviderSpy = jest.spyOn(defaultProvider, 'resolveBooleanEvaluation');
+        const provider1Spy = jest.spyOn(provider1, 'resolveBooleanEvaluation');
+
+        await OpenFeature.setContext(globalContext);
+        await OpenFeature.setContext(clientName, testContext);
+
+        const defaultClient = OpenFeature.getClient();
+        const provider1Client = OpenFeature.getClient(clientName);
+
+        const flagName = 'some-flag';
+        defaultClient.getBooleanValue(flagName, false);
+        provider1Client.getBooleanValue(flagName, false);
+
+        // provider one should get global and specific context
+        expect(defaultProviderSpy).toHaveBeenCalledWith(flagName, false, globalContext, expect.anything());
+        expect(provider1Spy).toHaveBeenCalledWith(flagName, false, testContext, expect.anything());
       });
 
       it('should only call a providers onContextChange once when clearing context', async () => {
