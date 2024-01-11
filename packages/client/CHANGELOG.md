@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.4.11](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.10...web-sdk-v0.4.11) (2024-01-11)
+
+
+### ✨ New Features
+
+* suspense support, client scoping, context-sensitive re-rendering ([#698](https://github.com/open-feature/js-sdk/issues/698)) ([68b0f26](https://github.com/open-feature/js-sdk/commit/68b0f26ccfedc9b1fac32147672f36aa1eb911b2))
+
 ## [0.4.10](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.9...web-sdk-v0.4.10) (2024-01-11)
 
 
