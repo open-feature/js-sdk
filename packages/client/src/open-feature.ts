@@ -90,11 +90,12 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
       const defaultContextNameProviders: NameProviderTuple[] = Array.from(this._clientProviders.entries())
         .filter(([name]) => !this._namedProviderContext.has(name))
         .reduce<NameProviderTuple[]>((acc, [name, provider]) => {
-          acc.push({ name: name, provider });
+          acc.push({ name, provider });
           return acc;
         }, []);
 
       const allProviders: NameProviderTuple[] = [
+        // add in the default (no name)
         { name: undefined, provider: this._defaultProvider },
         ...defaultContextNameProviders,
       ];
