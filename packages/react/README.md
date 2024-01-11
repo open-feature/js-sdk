@@ -129,7 +129,7 @@ function Page() {
 }
 ```
 
-Note that if your provider doesn't support realtime updates, this configuration has no impact.
+Note that if your provider doesn't support updates, this configuration has no impact.
 
 ### Suspense Support
 
