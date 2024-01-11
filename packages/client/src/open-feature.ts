@@ -17,7 +17,7 @@ const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/web-sdk/api');
 type OpenFeatureGlobal = {
   [GLOBAL_OPENFEATURE_API_KEY]?: OpenFeatureAPI;
 };
-type NameProviderTuple = {
+type NameProviderRecord = {
   name?: string;
   provider: Provider;
 }
@@ -87,14 +87,14 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
       this._context = context;
 
       // collect all providers that are using the default context (not mapped to a name)
-      const defaultContextNameProviders: NameProviderTuple[] = Array.from(this._clientProviders.entries())
+      const defaultContextNameProviders: NameProviderRecord[] = Array.from(this._clientProviders.entries())
         .filter(([name]) => !this._namedProviderContext.has(name))
-        .reduce<NameProviderTuple[]>((acc, [name, provider]) => {
+        .reduce<NameProviderRecord[]>((acc, [name, provider]) => {
           acc.push({ name, provider });
           return acc;
         }, []);
 
-      const allProviders: NameProviderTuple[] = [
+      const allProviders: NameProviderRecord[] = [
         // add in the default (no name)
         { name: undefined, provider: this._defaultProvider },
         ...defaultContextNameProviders,
