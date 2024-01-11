@@ -21,6 +21,12 @@
 		"jsdoc"
 	],
 	"rules": {
+		"jsdoc/require-jsdoc": [
+			"warn",
+			{
+				"publicOnly": true
+			}
+		],
 		"jsdoc/check-tag-names": [
 			"warn",
 			{

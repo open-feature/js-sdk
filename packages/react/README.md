@@ -26,22 +26,34 @@
 
 🧪 This SDK is experimental.
 
+## Basic Usage
 
-Here's a basic example of how to use the current API with flagd:
+Here's a basic example of how to use the current API with the in-memory provider:
 
-```js
+```tsx
 import logo from './logo.svg';
 import './App.css';
 import { OpenFeatureProvider, useFeatureFlag, OpenFeature } from '@openfeature/react-sdk';
 import { FlagdWebProvider } from '@openfeature/flagd-web-provider';
 
-const provider = new FlagdWebProvider({
-  host: 'localhost',
-  port: 8013,
-  tls: false,
-  maxRetries: 0,
-});
-OpenFeature.setProvider(provider)
+const flagConfig = {
+  'new-message': {
+    disabled: false,
+    variants: {
+      on: true,
+      off: false,
+    },
+    defaultVariant: "on",
+    contextEvaluator: (context: EvaluationContext) => {
+      if (context.silly) {
+        return 'on';
+      }
+      return 'off'
+    }
+  },
+};
+
+OpenFeature.setProvider(new InMemoryProvider(flagConfig));
 
 function App() {
   return (
@@ -52,7 +64,7 @@ function App() {
 }
 
 function Page() {
-  const booleanFlag = useFeatureFlag('new-welcome-message', false);
+  const booleanFlag = useFeatureFlag('new-message', false);
   return (
     <div className="App">
       <header className="App-header">
@@ -64,4 +76,96 @@ function Page() {
 }
 
 export default App;
+```
+
+### Multiple Providers and Scoping
+
+Multiple providers and scoped clients can be configured by passing a `clientName` to the `OpenFeatureProvider`:
+
+```tsx
+// Flags within this scope will use the a client/provider associated with `myClient`,
+function App() {
+  return (
+    <OpenFeatureProvider clientName={'myClient'}>
+      <Page></Page>
+    </OpenFeatureProvider>
+  );
+}
+```
+
+This is analogous to:
+
+```ts
+OpenFeature.getClient('myClient');
+```
+
+### Re-rendering with Context Changes
+
+By default, if the OpenFeature [evaluation context](https://openfeature.dev/docs/reference/concepts/evaluation-context) is modified, components will be re-rendered.
+This is useful in cases where flag values are dependant on user-attributes or other application state (user logged in, items in card, etc).
+You can disable this feature in the `useFeatureFlag` hook options:
+
+```tsx
+function Page() {
+  const booleanFlag = useFeatureFlag('new-message', false, { updateOnContextChanged: false });
+  return (
+    <MyComponents></MyComponents>
+  )
+}
+```
+
+For more information about how evaluation context works in the React SDK, see the documentation on OpenFeature's [static context SDK paradigm](https://openfeature.dev/specification/glossary/#static-context-paradigm).
+
+### Re-rendering with Flag Configuration Changes
+
+By default, if the underlying provider emits a `ConfigurationChanged` event, components will be re-rendered.
+This is useful if you want your UI to immediately reflect changes in the backend flag configuration.
+You can disable this feature in the `useFeatureFlag` hook options:
+
+```tsx
+function Page() {
+  const booleanFlag = useFeatureFlag('new-message', false, { updateOnConfigurationChanged: false });
+  return (
+    <MyComponents></MyComponents>
+  )
+}
+```
+
+Note that if your provider doesn't support updates, this configuration has no impact.
+
+### Suspense Support
+
+Frequently, providers need to perform some initial startup tasks.
+It may be desireable not to display components with feature flags until this is complete.
+Built-in [suspense](https://react.dev/reference/react/Suspense) support makes this easy: 
+
+```tsx
+function Content() {
+  // cause the "fallback" to be displayed if the component uses feature flags and the provider is not ready
+  return (
+    <Suspense fallback={<Fallback />}>
+      <Message />
+    </Suspense>
+  );
+}
+
+function Message() {
+  // component to render after READY.
+  const { value: showNewMessage } = useFeatureFlag('new-message', false);
+
+  return (
+    <>
+      {showNewMessage ? (
+        <p>Welcome to this OpenFeature-enabled React app!</p>
+      ) : (
+        <p>Welcome to this plain old React app!</p>
+      )}
+    </>
+  );
+}
+
+function Fallback() {
+  // component to render before READY.
+  return <p>Waiting for provider to be ready...</p>;
+}
 ```
