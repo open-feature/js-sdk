@@ -114,6 +114,8 @@ function Page() {
 }
 ```
 
+For more information about how evaluation context works in the React SDK, see the documentation on OpenFeature's [static context SDK paradigm](https://openfeature.dev/specification/glossary/#static-context-paradigm).
+
 ### Re-rendering with Flag Configuration Changes
 
 By default, if the underlying provider emits a `ConfigurationChanged` event, components will be re-rendered.
