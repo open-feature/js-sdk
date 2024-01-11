@@ -12,10 +12,11 @@ class MockProvider implements Provider {
     return Promise.resolve();
   }
 
-  resolveBooleanEvaluation = jest.fn((flagKey: string, defaultValue: boolean, context: EvaluationContext ) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  resolveBooleanEvaluation = jest.fn((flagKey: string, defaultValue: boolean, context: EvaluationContext) => {
     return {
       value: true
-    }
+    };
   });
 
   resolveNumberEvaluation(): ResolutionDetails<number> {
