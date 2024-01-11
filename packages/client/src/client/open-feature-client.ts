@@ -179,7 +179,7 @@ export class OpenFeatureClient implements Client {
     const allHooksReversed = [...allHooks].reverse();
 
     const context = {
-      ...OpenFeature.getContext(),
+      ...OpenFeature.getContext(this?.options?.name),
     };
 
     // this reference cannot change during the course of evaluation
