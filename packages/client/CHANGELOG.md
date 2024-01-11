@@ -1,6 +1,19 @@
 # Changelog
 
 
+## [0.4.10](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.9...web-sdk-v0.4.10) (2024-01-11)
+
+
+### 🐛 Bug Fixes
+
+* some handlers fail to run ([#753](https://github.com/open-feature/js-sdk/issues/753)) ([f4597af](https://github.com/open-feature/js-sdk/commit/f4597af79aaa04e31a61d708f03a5b5adc8a69c5))
+* wrong context passed to named providers ([#752](https://github.com/open-feature/js-sdk/issues/752)) ([b6adbba](https://github.com/open-feature/js-sdk/commit/b6adbbac8ec32b1f07884e0e276ed1f278a1f547))
+
+
+### 🧹 Chore
+
+* **main:** release core 0.0.23 ([#755](https://github.com/open-feature/js-sdk/issues/755)) ([da478cb](https://github.com/open-feature/js-sdk/commit/da478cb0b0696e2c5dd594ccfce8e8236e6695cb))
+
 ## [0.4.9](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.8...web-sdk-v0.4.9) (2024-01-08)
 
 
