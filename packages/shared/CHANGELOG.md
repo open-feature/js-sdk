@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.23](https://github.com/open-feature/js-sdk/compare/core-v0.0.22...core-v0.0.23) (2024-01-11)
+
+
+### 🐛 Bug Fixes
+
+* some handlers fail to run ([#753](https://github.com/open-feature/js-sdk/issues/753)) ([f4597af](https://github.com/open-feature/js-sdk/commit/f4597af79aaa04e31a61d708f03a5b5adc8a69c5))
+
 ## [0.0.22](https://github.com/open-feature/js-sdk/compare/core-v0.0.21...core-v0.0.22) (2024-01-08)
 
 
