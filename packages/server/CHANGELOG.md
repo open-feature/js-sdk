@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.1](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.9.0...server-sdk-v1.9.1) (2024-01-11)
+
+
+### 🧹 Chore
+
+* **main:** release core 0.0.23 ([#755](https://github.com/open-feature/js-sdk/issues/755)) ([da478cb](https://github.com/open-feature/js-sdk/commit/da478cb0b0696e2c5dd594ccfce8e8236e6695cb))
+
 ## [1.9.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.8.0...server-sdk-v1.9.0) (2024-01-08)
 
 
