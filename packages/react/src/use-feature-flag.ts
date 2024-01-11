@@ -1,4 +1,4 @@
-import { Client, EvaluationDetails, FlagEvaluationOptions, FlagValue, OpenFeature, ProviderEvents, ProviderStatus } from '@openfeature/web-sdk';
+import { Client, EvaluationDetails, FlagEvaluationOptions, FlagValue, ProviderEvents, ProviderStatus } from '@openfeature/web-sdk';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useOpenFeatureClient } from './provider';
 
