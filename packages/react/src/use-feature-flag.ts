@@ -1,4 +1,4 @@
-import { Client, EvaluationDetails, FlagEvaluationOptions, FlagValue, ProviderEvents, ProviderStatus } from '@openfeature/web-sdk';
+import { Client, EvaluationDetails, FlagEvaluationOptions, FlagValue, OpenFeature, ProviderEvents, ProviderStatus } from '@openfeature/web-sdk';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useOpenFeatureClient } from './provider';
 
@@ -10,16 +10,25 @@ type ReactFlagEvaluationOptions = {
    */
   suspend?: boolean,
   /**
-   * Update the component if the the provider emits a change event.
-   * Set to false if you never want to update components live, even if flag value changes
+   * Update the component if the provider emits a ConfigurationChanged event.
+   * Set to false to prevent components from re-rendering when flag value changes
    * are received by the associated provider.
    * Defaults to true.
    */
-  updateOnChange?: boolean,
+  updateOnConfigurationChanged?: boolean,
+  /**
+   * Update the component when the OpenFeature context changes.
+   * Set to false to prevent components from re-rendering when attributes which 
+   * may be factors in flag evaluation change.
+   * Defaults to true.
+   */
+  updateOnContextChanged?: boolean,
 } & FlagEvaluationOptions;
 
 const DEFAULT_OPTIONS: ReactFlagEvaluationOptions = {
-  suspend: true
+  updateOnContextChanged: true,
+  updateOnConfigurationChanged: true,
+  suspend: true,
 };
 
 enum SuspendState {
@@ -39,25 +48,34 @@ enum SuspendState {
 export function useFeatureFlag<T extends FlagValue>(flagKey: string, defaultValue: T, options?: ReactFlagEvaluationOptions): EvaluationDetails<T> {
   const defaultedOptions = { ...DEFAULT_OPTIONS, ...options };
   const [, updateState] = useState<object | undefined>();
-  const forceUpdate = () => updateState({});
+  const forceUpdate = () => {
+    updateState({});
+  };
   const client = useOpenFeatureClient();
 
   useEffect(() => {
 
     if (client.providerStatus !== ProviderStatus.READY) {
-      client.addHandler(ProviderEvents.Ready, forceUpdate); // update the UI when the provider is ready
+      // update when the provider is ready
+      client.addHandler(ProviderEvents.Ready, forceUpdate);
       if (defaultedOptions.suspend) {
         suspend(client, updateState);
       }
     }
 
-    if (defaultedOptions.updateOnChange) {
+    if (defaultedOptions.updateOnContextChanged) {
+      // update when the context changes
+      client.addHandler(ProviderEvents.ContextChanged, forceUpdate);
+    }
+
+    if (defaultedOptions.updateOnConfigurationChanged) {
       // update when the provider configuration changes
       client.addHandler(ProviderEvents.ConfigurationChanged, forceUpdate);
     }
     return () => {
-      // cleanup the handlers
+      // cleanup the handlers (we can do this unconditionally with no impact)
       client.removeHandler(ProviderEvents.Ready, forceUpdate);
+      client.removeHandler(ProviderEvents.ContextChanged, forceUpdate);
       client.removeHandler(ProviderEvents.ConfigurationChanged, forceUpdate);
     };
   }, [client]);
