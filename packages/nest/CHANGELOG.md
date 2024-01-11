@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.3-experimental](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.0.2-experimental...nestjs-sdk-v0.0.3-experimental) (2024-01-08)
+
+
+### ✨ New Features
+
+* context propagation for nestjs ([#736](https://github.com/open-feature/js-sdk/issues/736)) ([1fa53c9](https://github.com/open-feature/js-sdk/commit/1fa53c9058904664b95ecf96178e414f1d70b845))
+
 ## [0.0.2-experimental](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.0.1-experimental...nestjs-sdk-v0.0.2-experimental) (2023-12-13)
 
 

@@ -11,18 +11,18 @@ import {
   Logger,
   ManageContext,
   OpenFeatureError,
-  ProviderEvents,
   ResolutionDetails,
   SafeLogger,
   StandardResolutionReasons,
   statusMatchesEvent,
 } from '@openfeature/core';
 import { FlagEvaluationOptions } from '../evaluation';
+import { ProviderEvents } from '../events';
+import { InternalEventEmitter } from '../events/internal/internal-event-emitter';
+import { Hook } from '../hooks';
 import { OpenFeature } from '../open-feature';
 import { Provider } from '../provider';
 import { Client } from './client';
-import { InternalEventEmitter } from '../events/internal/internal-event-emitter';
-import { Hook } from '../hooks';
 
 type OpenFeatureClientOptions = {
   name?: string;
@@ -54,7 +54,7 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
     };
   }
 
-  addHandler<T extends ProviderEvents>(eventType: T, handler: EventHandler<T>): void {
+  addHandler(eventType: ProviderEvents, handler: EventHandler): void {
     this.emitterAccessor().addHandler(eventType, handler);
     const shouldRunNow = statusMatchesEvent(eventType, this._provider.status);
 
@@ -68,7 +68,7 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
     }
   }
 
-  removeHandler<T extends ProviderEvents>(eventType: T, handler: EventHandler<T>) {
+  removeHandler(eventType: ProviderEvents, handler: EventHandler) {
     this.emitterAccessor().removeHandler(eventType, handler);
   }
 

@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.0.23](https://github.com/open-feature/js-sdk/compare/core-v0.0.22...core-v0.0.23) (2024-01-11)
+
+
+### 🐛 Bug Fixes
+
+* some handlers fail to run ([#753](https://github.com/open-feature/js-sdk/issues/753)) ([f4597af](https://github.com/open-feature/js-sdk/commit/f4597af79aaa04e31a61d708f03a5b5adc8a69c5))
+
+## [0.0.22](https://github.com/open-feature/js-sdk/compare/core-v0.0.21...core-v0.0.22) (2024-01-08)
+
+
+### ✨ New Features
+
+* add PROVIDER_CONTEXT_CHANGED event (web-sdk only) ([#731](https://github.com/open-feature/js-sdk/issues/731)) ([7906bbe](https://github.com/open-feature/js-sdk/commit/7906bbedbdb822d39e5c620d6c8f0a5739a19e84))
+
 ## [0.0.21](https://github.com/open-feature/js-sdk/compare/core-v0.0.20...core-v0.0.21) (2023-12-18)
 
 

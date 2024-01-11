@@ -1,20 +1,20 @@
 import { ProviderStatus } from '../provider';
-import { ProviderEvents } from './events';
+import { AllProviderEvents, AnyProviderEvent } from './events';
 
 const eventStatusMap = {
-    [ProviderStatus.READY]: ProviderEvents.Ready,
-    [ProviderStatus.ERROR]: ProviderEvents.Error,
-    [ProviderStatus.STALE]: ProviderEvents.Stale,
+    [ProviderStatus.READY]: AllProviderEvents.Ready,
+    [ProviderStatus.ERROR]: AllProviderEvents.Error,
+    [ProviderStatus.STALE]: AllProviderEvents.Stale,
     [ProviderStatus.NOT_READY]: undefined,
 };
 
 /**
  * Returns true if the provider's status corresponds to the event.
  * If the provider's status is not defined, it matches READY.
- * @param {ProviderEvents} event event to match
+ * @param {AnyProviderEvent} event event to match
  * @param {ProviderStatus} status  status of provider
  * @returns {boolean} boolean indicating if the provider status corresponds to the event.
  */
-export const statusMatchesEvent = (event: ProviderEvents, status?: ProviderStatus): boolean => {
-    return (!status && event === ProviderEvents.Ready) || eventStatusMap[status!] === event;
+export const statusMatchesEvent = <T extends AnyProviderEvent>(event: T, status?: ProviderStatus): boolean => {
+    return (!status && event === AllProviderEvents.Ready) || eventStatusMap[status!] === event;
 };

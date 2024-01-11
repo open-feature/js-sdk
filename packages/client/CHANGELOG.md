@@ -1,6 +1,38 @@
 # Changelog
 
 
+## [0.4.10](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.9...web-sdk-v0.4.10) (2024-01-11)
+
+
+### 🐛 Bug Fixes
+
+* some handlers fail to run ([#753](https://github.com/open-feature/js-sdk/issues/753)) ([f4597af](https://github.com/open-feature/js-sdk/commit/f4597af79aaa04e31a61d708f03a5b5adc8a69c5))
+* wrong context passed to named providers ([#752](https://github.com/open-feature/js-sdk/issues/752)) ([b6adbba](https://github.com/open-feature/js-sdk/commit/b6adbbac8ec32b1f07884e0e276ed1f278a1f547))
+
+
+### 🧹 Chore
+
+* **main:** release core 0.0.23 ([#755](https://github.com/open-feature/js-sdk/issues/755)) ([da478cb](https://github.com/open-feature/js-sdk/commit/da478cb0b0696e2c5dd594ccfce8e8236e6695cb))
+
+## [0.4.9](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.8...web-sdk-v0.4.9) (2024-01-08)
+
+
+### ✨ New Features
+
+* add named provider metadata accessor ([#715](https://github.com/open-feature/js-sdk/issues/715)) ([23d14aa](https://github.com/open-feature/js-sdk/commit/23d14aade82d25132714fd3be108cd91c9c15f49))
+* add PROVIDER_CONTEXT_CHANGED event (web-sdk only) ([#731](https://github.com/open-feature/js-sdk/issues/731)) ([7906bbe](https://github.com/open-feature/js-sdk/commit/7906bbedbdb822d39e5c620d6c8f0a5739a19e84))
+
+
+### 🐛 Bug Fixes
+
+* use in memory provider for e2e suites ([#740](https://github.com/open-feature/js-sdk/issues/740)) ([696bf4a](https://github.com/open-feature/js-sdk/commit/696bf4adb82339acf7d619cd5c831d6d11cec7c9))
+
+
+### 🧹 Chore
+
+* **main:** release core 0.0.21 ([#720](https://github.com/open-feature/js-sdk/issues/720)) ([7d1aca4](https://github.com/open-feature/js-sdk/commit/7d1aca4bf85c5ed4335d39542c39c1f9a16ab568))
+* **main:** release core 0.0.22 ([#745](https://github.com/open-feature/js-sdk/issues/745)) ([a0cc855](https://github.com/open-feature/js-sdk/commit/a0cc85546d06ce66f881c5e80122206344f5c710))
+
 ## [0.4.8](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.7...web-sdk-v0.4.8) (2023-12-08)
 
 

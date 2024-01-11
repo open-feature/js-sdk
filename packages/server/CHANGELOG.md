@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.9.1](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.9.0...server-sdk-v1.9.1) (2024-01-11)
+
+
+### 🧹 Chore
+
+* **main:** release core 0.0.23 ([#755](https://github.com/open-feature/js-sdk/issues/755)) ([da478cb](https://github.com/open-feature/js-sdk/commit/da478cb0b0696e2c5dd594ccfce8e8236e6695cb))
+
+## [1.9.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.8.0...server-sdk-v1.9.0) (2024-01-08)
+
+
+### 🐛 Bug Fixes
+
+* use in memory provider for e2e suites ([#740](https://github.com/open-feature/js-sdk/issues/740)) ([696bf4a](https://github.com/open-feature/js-sdk/commit/696bf4adb82339acf7d619cd5c831d6d11cec7c9))
+
+
+### 🧹 Chore
+
+* **main:** release core 0.0.22 ([#745](https://github.com/open-feature/js-sdk/issues/745)) ([a0cc855](https://github.com/open-feature/js-sdk/commit/a0cc85546d06ce66f881c5e80122206344f5c710))
+
 ## [1.8.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.7.5...server-sdk-v1.8.0) (2024-01-03)
 
 

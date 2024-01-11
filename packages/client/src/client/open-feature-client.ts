@@ -10,7 +10,6 @@ import {
   JsonValue,
   Logger,
   OpenFeatureError,
-  ProviderEvents,
   ProviderStatus,
   ResolutionDetails,
   SafeLogger,
@@ -18,6 +17,7 @@ import {
   statusMatchesEvent
 } from '@openfeature/core';
 import { FlagEvaluationOptions } from '../evaluation';
+import { ProviderEvents } from '../events';
 import { InternalEventEmitter } from '../events/internal/internal-event-emitter';
 import { Hook } from '../hooks';
 import { OpenFeature } from '../open-feature';
@@ -54,7 +54,7 @@ export class OpenFeatureClient implements Client {
     return this.providerAccessor()?.status || ProviderStatus.READY;
   }
 
-  addHandler<T extends ProviderEvents>(eventType: T, handler: EventHandler<T>): void {
+  addHandler(eventType: ProviderEvents, handler: EventHandler): void {
     this.emitterAccessor().addHandler(eventType, handler);
     const shouldRunNow = statusMatchesEvent(eventType, this._provider.status);
 
@@ -68,7 +68,7 @@ export class OpenFeatureClient implements Client {
     }
   }
 
-  removeHandler<T extends ProviderEvents>(notificationType: T, handler: EventHandler<T>): void {
+  removeHandler(notificationType: ProviderEvents, handler: EventHandler): void {
     this.emitterAccessor().removeHandler(notificationType, handler);
   }
 
@@ -179,7 +179,7 @@ export class OpenFeatureClient implements Client {
     const allHooksReversed = [...allHooks].reverse();
 
     const context = {
-      ...OpenFeature.getContext(),
+      ...OpenFeature.getContext(this?.options?.name),
     };
 
     // this reference cannot change during the course of evaluation
