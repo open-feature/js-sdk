@@ -7,7 +7,16 @@ import {
   Provider as NestProvider,
   ExecutionContext,
 } from '@nestjs/common';
-import { Client, OpenFeature, Provider, EvaluationContext } from '@openfeature/server-sdk';
+import {
+  Client,
+  Hook,
+  OpenFeature,
+  Provider,
+  EvaluationContext,
+  ServerProviderEvents,
+  EventHandler,
+  Logger,
+} from '@openfeature/server-sdk';
 import { ContextFactory, ContextFactoryToken } from './context-factory';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AsyncLocalStorageTransactionContext } from './evaluation-context-propagator';
@@ -17,7 +26,18 @@ import { EvaluationContextInterceptor } from './evaluation-context-interceptor';
 export class OpenFeatureModule {
   static forRoot({ useGlobalInterceptor = true, ...options }: OpenFeatureModuleOptions): DynamicModule {
     OpenFeature.setTransactionContextPropagator(new AsyncLocalStorageTransactionContext());
-    const providers: NestProvider[] = [];
+
+    if (options.logger) {
+      OpenFeature.setLogger(options.logger);
+    }
+
+    if (options.hooks) {
+      OpenFeature.addHooks(...options.hooks);
+    }
+
+    options.handlers?.forEach(([event, handler]) => {
+      OpenFeature.addHandler(event, handler);
+    });
 
     const clientValueProviders: NestFactoryProvider<Client>[] = [
       {
@@ -40,13 +60,13 @@ export class OpenFeatureModule {
       });
     }
 
+    const providers: NestProvider[] = [];
     providers.push(...clientValueProviders);
 
     const contextFactoryProvider: ValueProvider = {
       provide: ContextFactoryToken,
       useValue: options?.contextFactory,
     };
-
     providers.push(contextFactoryProvider);
 
     if (useGlobalInterceptor) {
@@ -82,6 +102,26 @@ export interface OpenFeatureModuleOptions {
   providers?: {
     [providerName: string]: Provider;
   };
+  /**
+   * Global {@link Logger} for OpenFeature.
+   * @see {@link OpenFeature#setLogger}
+   */
+  logger?: Logger;
+  /**
+   * Global {@link EvaluationContext} for OpenFeature.
+   * @see {@link OpenFeature#setContext}
+   */
+  context?: EvaluationContext;
+  /**
+   * Global {@link Hook Hooks} for OpenFeature.
+   * @see {@link OpenFeature#addHooks}
+   */
+  hooks?: Hook[];
+  /**
+   * Global {@link EventHandler EventHandlers} for OpenFeature.
+   * @see {@link OpenFeature#addHandler}
+   */
+  handlers?: [ServerProviderEvents, EventHandler][];
   /**
    * The {@link ContextFactory} for creating an {@link EvaluationContext} from Nest {@link ExecutionContext} information.
    * This could be header values of a request or something similar.
