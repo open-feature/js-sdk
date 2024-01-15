@@ -33,7 +33,7 @@ Here's a basic example of how to use the current API with the in-memory provider
 ```tsx
 import logo from './logo.svg';
 import './App.css';
-import { OpenFeatureProvider, useFeatureFlag, OpenFeature } from '@openfeature/react-sdk';
+import { EvaluationContext, OpenFeatureProvider, useFeatureFlag, OpenFeature } from '@openfeature/react-sdk';
 import { FlagdWebProvider } from '@openfeature/flagd-web-provider';
 
 const flagConfig = {
