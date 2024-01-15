@@ -3,8 +3,8 @@ import { ErrorCode } from '../evaluation';
 
 export class InvalidContextError extends OpenFeatureError {
   code: ErrorCode;
-  constructor(message?: string) {
-    super(message);
+  constructor(message?: string, options?: ErrorOptions) {
+    super(message, options);
     Object.setPrototypeOf(this, InvalidContextError.prototype);
     this.name = 'InvalidContextError';
     this.code = ErrorCode.INVALID_CONTEXT;
