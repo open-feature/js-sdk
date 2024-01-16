@@ -33,7 +33,7 @@ Here's a basic example of how to use the current API with the in-memory provider
 ```tsx
 import logo from './logo.svg';
 import './App.css';
-import { EvaluationContext, OpenFeatureProvider, useFeatureFlag, OpenFeature } from '@openfeature/react-sdk';
+import { EvaluationContext, OpenFeatureProvider, useBooleanFlagValue, useBooleanFlagDetails, OpenFeature } from '@openfeature/react-sdk';
 import { FlagdWebProvider } from '@openfeature/flagd-web-provider';
 
 const flagConfig = {
@@ -64,18 +64,31 @@ function App() {
 }
 
 function Page() {
-  const booleanFlag = useFeatureFlag('new-message', false);
+  const newMessage = useBooleanFlagValue('new-message', false);
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        {booleanFlag.value ? <p>Welcome to this OpenFeature-enabled React app!</p> : <p>Welcome to this React app.</p>}
+        {newMessage ? <p>Welcome to this OpenFeature-enabled React app!</p> : <p>Welcome to this React app.</p>}
       </header>
     </div>
   )
 }
 
 export default App;
+```
+
+You use the detailed flag evaluation hooks to evaluate the flag and get additional information about the flag and the evaluation.
+
+```tsx
+import { useBooleanFlagDetails} from '@openfeature/react-sdk';
+
+const {
+    value,
+    variant,
+    reason,
+    flagMetadata
+  } = useBooleanFlagDetails('new-message', false);
 ```
 
 ### Multiple Providers and Scoping
@@ -103,11 +116,11 @@ OpenFeature.getClient('myClient');
 
 By default, if the OpenFeature [evaluation context](https://openfeature.dev/docs/reference/concepts/evaluation-context) is modified, components will be re-rendered.
 This is useful in cases where flag values are dependant on user-attributes or other application state (user logged in, items in card, etc).
-You can disable this feature in the `useFeatureFlag` hook options:
+You can disable this feature in the hook options:
 
 ```tsx
 function Page() {
-  const booleanFlag = useFeatureFlag('new-message', false, { updateOnContextChanged: false });
+  const newMessage = useBooleanFlagValue('new-message', false, { updateOnContextChanged: false });
   return (
     <MyComponents></MyComponents>
   )
@@ -120,11 +133,11 @@ For more information about how evaluation context works in the React SDK, see th
 
 By default, if the underlying provider emits a `ConfigurationChanged` event, components will be re-rendered.
 This is useful if you want your UI to immediately reflect changes in the backend flag configuration.
-You can disable this feature in the `useFeatureFlag` hook options:
+You can disable this feature in the hook options:
 
 ```tsx
 function Page() {
-  const booleanFlag = useFeatureFlag('new-message', false, { updateOnConfigurationChanged: false });
+  const newMessage = useBooleanFlagValue('new-message', false, { updateOnConfigurationChanged: false });
   return (
     <MyComponents></MyComponents>
   )
@@ -151,11 +164,11 @@ function Content() {
 
 function Message() {
   // component to render after READY.
-  const { value: showNewMessage } = useFeatureFlag('new-message', false);
+  const newMessage = useBooleanFlagValue('new-message', false);
 
   return (
     <>
-      {showNewMessage ? (
+      {newMessage ? (
         <p>Welcome to this OpenFeature-enabled React app!</p>
       ) : (
         <p>Welcome to this plain old React app!</p>
