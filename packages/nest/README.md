@@ -7,7 +7,7 @@
   </picture>
 </p>
 
-<h2 align="center">OpenFeature Nest.js SDK</h2>
+<h2 align="center">OpenFeature NestJS SDK</h2>
 
 <!-- x-hide-in-docs-end -->
 <!-- The 'github-badges' class is used in the docs -->
@@ -31,9 +31,10 @@ for feature flagging that works with your favorite feature flag management tool.
 
 ## Overview
 
-The OpenFeature NestJS SDK is a package that provides a NestJS wrapper for the [OpenFeature Server SDK]().
+The OpenFeature NestJS SDK is a package that provides a NestJS wrapper for the [OpenFeature Server SDK](https://openfeature.dev/docs/reference/technologies/server/javascript/).
 
 It's main capabilities are:
+
 - Provide a NestJS global module to simplify OpenFeature configuration and usage within NestJS;
 - Supply custom parameter decorators (for controllers), that inject observables with feature flags resolution details;
 - Inject context for flag evaluation seamlessly using NestJS interceptors
@@ -45,7 +46,7 @@ It's main capabilities are:
 ### Requirements
 
 - Node.js version 16+
-- NestJS
+- NestJS version 8+
 
 ### Install
 
@@ -58,7 +59,7 @@ npm install --save @openfeature/nestjs-sdk
 #### yarn
 
 ```sh
-yarn add @openfeature/nestjs-sdk
+yarn add @openfeature/nestjs-sdk @openfeature/server-sdk @openfeature/core
 ```
 
 ### Usage
@@ -78,14 +79,14 @@ import { InMemoryProvider } from '@openfeature/web-sdk';
         testBooleanFlag: {
           defaultVariant: 'default',
           variants: { default: true },
-          disabled: false
+          disabled: false,
         },
       }),
       providers: {
-        differentProvider: new InMemoryProvider()
-      }
-    })
-  ]
+        differentProvider: new InMemoryProvider(),
+      },
+    }),
+  ],
 })
 export class AppModule {}
 ```
@@ -107,11 +108,11 @@ export class OpenFeatureController {
       flagKey: 'testBooleanFlag',
       defaultValue: false,
     })
-      feature: Observable<EvaluationDetails<boolean>>,
+    feature: Observable<EvaluationDetails<boolean>>,
   ) {
     return feature.pipe(
       map((details) =>
-        details.value ? 'Welcome to this OpenFeature-enabled Nest.js app!' : 'Welcome to this Nest.js app!',
+        details.value ? 'Welcome to this OpenFeature-enabled NestJS app!' : 'Welcome to this NestJS app!',
       ),
     );
   }
