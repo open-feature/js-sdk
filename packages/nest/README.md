@@ -118,7 +118,7 @@ export class OpenFeatureController {
 }
 ```
 
-It is also possible to inject the default and a named OpenFeature client into a service via it's constructor with Nest dependency injection system.
+It is also possible to inject the default or named OpenFeature clients into a service via Nest dependency injection system.
 
 ```ts
 import { Injectable } from '@nestjs/common';
