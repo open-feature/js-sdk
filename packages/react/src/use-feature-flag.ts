@@ -73,7 +73,7 @@ export function useBooleanFlagDetails(flagKey: string, defaultValue: boolean, op
  * @returns { boolean} a EvaluationDetails object for this evaluation
  */
 export function useStringFlagValue<T extends string = string>(flagKey: string, defaultValue: T, options?: ReactFlagEvaluationOptions): T {
-  return useStringFlagDetails(flagKey, defaultValue, options)?.value;
+  return useStringFlagDetails(flagKey, defaultValue, options).value;
 }
 
 /**
