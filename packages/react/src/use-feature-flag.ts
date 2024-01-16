@@ -46,7 +46,7 @@ enum SuspendState {
  * @returns { boolean} a EvaluationDetails object for this evaluation
  */
 export function useBooleanFlagValue(flagKey: string, defaultValue: boolean, options?: ReactFlagEvaluationOptions): boolean {
-  return useBooleanFlagDetails(flagKey, defaultValue, options)?.value;
+  return useBooleanFlagDetails(flagKey, defaultValue, options).value;
 }
 
 /**
