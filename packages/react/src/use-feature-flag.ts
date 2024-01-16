@@ -101,7 +101,7 @@ export function useStringFlagDetails<T extends string = string>(flagKey: string,
  * @returns { boolean} a EvaluationDetails object for this evaluation
  */
 export function useNumberFlagValue<T extends number = number>(flagKey: string, defaultValue: T, options?: ReactFlagEvaluationOptions): T {
-  return useNumberFlagDetails(flagKey, defaultValue, options)?.value;
+  return useNumberFlagDetails(flagKey, defaultValue, options).value;
 }
 
 /**
