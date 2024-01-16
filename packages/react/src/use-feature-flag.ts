@@ -60,7 +60,7 @@ export function useBooleanFlagValue(flagKey: string, defaultValue: boolean, opti
 export function useBooleanFlagDetails(flagKey: string, defaultValue: boolean, options?: ReactFlagEvaluationOptions): EvaluationDetails<boolean> {
   return attachHandlersAndResolve(flagKey, defaultValue, (client) => {
     return client.getBooleanDetails;
-  },  options)
+  },  options);
 }
 
 /**
@@ -88,7 +88,7 @@ export function useStringFlagValue<T extends string = string>(flagKey: string, d
 export function useStringFlagDetails<T extends string = string>(flagKey: string, defaultValue: T, options?: ReactFlagEvaluationOptions): EvaluationDetails<T> {
   return attachHandlersAndResolve(flagKey, defaultValue, (client) => {
     return client.getStringDetails<T>;
-  },  options)
+  },  options);
 }
 
 /**
@@ -116,7 +116,7 @@ export function useNumberFlagValue<T extends number = number>(flagKey: string, d
 export function useNumberFlagDetails<T extends number = number>(flagKey: string, defaultValue: T, options?: ReactFlagEvaluationOptions): EvaluationDetails<T> {
   return attachHandlersAndResolve(flagKey, defaultValue, (client) => {
     return client.getNumberDetails<T>;
-  },  options)
+  },  options);
 }
 
 /**
@@ -144,7 +144,7 @@ export function useObjectFlagValue<T extends JsonValue = JsonValue>(flagKey: str
 export function useObjectFlagDetails<T extends JsonValue = JsonValue>(flagKey: string, defaultValue: T, options?: ReactFlagEvaluationOptions): EvaluationDetails<T> {
   return attachHandlersAndResolve(flagKey, defaultValue, (client) => {
     return client.getObjectDetails<T>;
-  },  options)
+  },  options);
 }
 
 function attachHandlersAndResolve<T extends FlagValue>(flagKey: string, defaultValue: T, resolver: (client: Client) => (flagKey: string, defaultValue: T) => EvaluationDetails<T>, options?: ReactFlagEvaluationOptions): EvaluationDetails<T> {
