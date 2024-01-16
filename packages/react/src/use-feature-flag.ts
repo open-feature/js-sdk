@@ -129,7 +129,7 @@ export function useNumberFlagDetails<T extends number = number>(flagKey: string,
  * @returns { boolean} a EvaluationDetails object for this evaluation
  */
 export function useObjectFlagValue<T extends JsonValue = JsonValue>(flagKey: string, defaultValue: T, options?: ReactFlagEvaluationOptions): T {
-  return useObjectFlagDetails<T>(flagKey, defaultValue, options)?.value;
+  return useObjectFlagDetails<T>(flagKey, defaultValue, options).value;
 }
 
 /**
