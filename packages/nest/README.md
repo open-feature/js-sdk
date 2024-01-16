@@ -63,7 +63,7 @@ yarn add @openfeature/nestjs-sdk
 
 ### Usage
 
-The example bellow shows how to use the `OpenFeatureModule` with OpenFeature's `InMemoryProvider`.
+The example below shows how to use the `OpenFeatureModule` with OpenFeature's `InMemoryProvider`.
 
 ```ts
 import { Module } from '@nestjs/common';
