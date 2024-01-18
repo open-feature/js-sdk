@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.4-experimental](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.0.3-experimental...nestjs-sdk-v0.0.4-experimental) (2024-01-18)
+
+
+### ✨ New Features
+
+* add logger, event handlers and hooks to nest sdk ([#761](https://github.com/open-feature/js-sdk/issues/761)) ([80a9ba1](https://github.com/open-feature/js-sdk/commit/80a9ba1e5120f1adaadb7b98f5f88b9f03b02682))
+
 ## [0.0.3-experimental](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.0.2-experimental...nestjs-sdk-v0.0.3-experimental) (2024-01-08)
 
 
