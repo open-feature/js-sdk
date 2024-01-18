@@ -40,8 +40,6 @@ export class OpenFeatureModule {
       OpenFeature.addHandler(event, handler);
     });
 
-    const providers: Provider[] = [];
-
     const clientValueProviders: NestFactoryProvider<Client>[] = [
       {
         provide: getOpenFeatureClientToken(),
@@ -50,13 +48,11 @@ export class OpenFeatureModule {
     ];
 
     if (options?.defaultProvider) {
-      providers.push(options.defaultProvider);
       OpenFeature.setProvider(options.defaultProvider);
     }
 
     if (options?.providers) {
       Object.entries(options.providers).forEach(([name, provider]) => {
-        providers.push(provider);
         OpenFeature.setProvider(name, provider);
         clientValueProviders.push({
           provide: getOpenFeatureClientToken(name),
@@ -65,7 +61,7 @@ export class OpenFeatureModule {
       });
     }
 
-    const nestProviders: NestProvider[] = [];
+    const nestProviders: NestProvider[] = [ShutdownService];
     nestProviders.push(...clientValueProviders);
 
     const contextFactoryProvider: ValueProvider = {
@@ -81,8 +77,6 @@ export class OpenFeatureModule {
       };
       nestProviders.push(interceptorProvider);
     }
-
-    nestProviders.push({ useValue: new ShutdownService(), provide: 'OFShutdownService' });
 
     return {
       global: true,
