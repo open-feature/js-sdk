@@ -47,7 +47,7 @@
 
 ### Requirements
 
-- ES2015-compatible web browser (Chrome, Edge, Firefox, etc)
+- es2022-compatible web browser (Chrome, Edge, Firefox, etc)
 
 ### Install
 
