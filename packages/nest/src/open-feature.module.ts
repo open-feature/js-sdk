@@ -21,6 +21,7 @@ import { ContextFactory, ContextFactoryToken } from './context-factory';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AsyncLocalStorageTransactionContext } from './evaluation-context-propagator';
 import { EvaluationContextInterceptor } from './evaluation-context-interceptor';
+import { ShutdownService } from './shutdown.service';
 
 @Module({})
 export class OpenFeatureModule {
@@ -39,6 +40,8 @@ export class OpenFeatureModule {
       OpenFeature.addHandler(event, handler);
     });
 
+    const providers: Provider[] = [];
+
     const clientValueProviders: NestFactoryProvider<Client>[] = [
       {
         provide: getOpenFeatureClientToken(),
@@ -47,11 +50,13 @@ export class OpenFeatureModule {
     ];
 
     if (options?.defaultProvider) {
+      providers.push(options.defaultProvider);
       OpenFeature.setProvider(options.defaultProvider);
     }
 
     if (options?.providers) {
       Object.entries(options.providers).forEach(([name, provider]) => {
+        providers.push(provider);
         OpenFeature.setProvider(name, provider);
         clientValueProviders.push({
           provide: getOpenFeatureClientToken(name),
@@ -60,27 +65,29 @@ export class OpenFeatureModule {
       });
     }
 
-    const providers: NestProvider[] = [];
-    providers.push(...clientValueProviders);
+    const nestProviders: NestProvider[] = [];
+    nestProviders.push(...clientValueProviders);
 
     const contextFactoryProvider: ValueProvider = {
       provide: ContextFactoryToken,
       useValue: options?.contextFactory,
     };
-    providers.push(contextFactoryProvider);
+    nestProviders.push(contextFactoryProvider);
 
     if (useGlobalInterceptor) {
       const interceptorProvider: ClassProvider = {
         provide: APP_INTERCEPTOR,
         useClass: EvaluationContextInterceptor,
       };
-      providers.push(interceptorProvider);
+      nestProviders.push(interceptorProvider);
     }
+
+    nestProviders.push({ useValue: new ShutdownService(), provide: 'OFShutdownService' });
 
     return {
       global: true,
       module: OpenFeatureModule,
-      providers,
+      providers: nestProviders,
       exports: [...clientValueProviders, ContextFactoryToken],
     };
   }
