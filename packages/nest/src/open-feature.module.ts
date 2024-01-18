@@ -82,7 +82,7 @@ export class OpenFeatureModule {
       nestProviders.push(interceptorProvider);
     }
 
-    nestProviders.push({ useValue: new ShutdownService(providers) });
+    nestProviders.push({ useValue: new ShutdownService(), provide: 'OFShutdownService' });
 
     return {
       global: true,
