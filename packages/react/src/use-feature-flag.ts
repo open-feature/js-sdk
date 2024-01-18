@@ -1,4 +1,4 @@
-import { Client, EvaluationDetails, FlagEvaluationOptions, FlagValue, ProviderEvents, ProviderStatus } from '@openfeature/web-sdk';
+import { Client, EvaluationDetails, FlagEvaluationOptions, FlagValue, JsonValue, ProviderEvents, ProviderStatus } from '@openfeature/web-sdk';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useOpenFeatureClient } from './provider';
 
@@ -38,14 +38,116 @@ enum SuspendState {
 }
 
 /**
+ * Evaluates a feature flag, returning a boolean.
+ * By default, components will re-render when the flag value changes.
+ * @param {string} flagKey the flag identifier
+ * @param {boolean} defaultValue the default value
+ * @param {ReactFlagEvaluationOptions} options options for this evaluation
+ * @returns { boolean} a EvaluationDetails object for this evaluation
+ */
+export function useBooleanFlagValue(flagKey: string, defaultValue: boolean, options?: ReactFlagEvaluationOptions): boolean {
+  return useBooleanFlagDetails(flagKey, defaultValue, options).value;
+}
+
+/**
  * Evaluates a feature flag, returning evaluation details.
- * @param {string}flagKey the flag identifier
+ * By default, components will re-render when the flag value changes.
+ * @param {string} flagKey the flag identifier
+ * @param {boolean} defaultValue the default value
+ * @param {ReactFlagEvaluationOptions} options options for this evaluation
+ * @returns { EvaluationDetails<boolean>} a EvaluationDetails object for this evaluation
+ */
+export function useBooleanFlagDetails(flagKey: string, defaultValue: boolean, options?: ReactFlagEvaluationOptions): EvaluationDetails<boolean> {
+  return attachHandlersAndResolve(flagKey, defaultValue, (client) => {
+    return client.getBooleanDetails;
+  },  options);
+}
+
+/**
+ * Evaluates a feature flag, returning a string.
+ * By default, components will re-render when the flag value changes.
+ * @param {string} flagKey the flag identifier
+ * @template {string} [T=string] A optional generic argument constraining the string
  * @param {T} defaultValue the default value
  * @param {ReactFlagEvaluationOptions} options options for this evaluation
- * @template T flag type
+ * @returns { boolean} a EvaluationDetails object for this evaluation
+ */
+export function useStringFlagValue<T extends string = string>(flagKey: string, defaultValue: T, options?: ReactFlagEvaluationOptions): T {
+  return useStringFlagDetails(flagKey, defaultValue, options).value;
+}
+
+/**
+ * Evaluates a feature flag, returning evaluation details.
+ * By default, components will re-render when the flag value changes.
+ * @param {string} flagKey the flag identifier
+ * @template {string} [T=string] A optional generic argument constraining the string
+ * @param {T} defaultValue the default value
+ * @param {ReactFlagEvaluationOptions} options options for this evaluation
+ * @returns { EvaluationDetails<string>} a EvaluationDetails object for this evaluation
+ */
+export function useStringFlagDetails<T extends string = string>(flagKey: string, defaultValue: T, options?: ReactFlagEvaluationOptions): EvaluationDetails<T> {
+  return attachHandlersAndResolve(flagKey, defaultValue, (client) => {
+    return client.getStringDetails<T>;
+  },  options);
+}
+
+/**
+ * Evaluates a feature flag, returning a number.
+ * By default, components will re-render when the flag value changes.
+ * @param {string} flagKey the flag identifier
+ * @template {number} [T=number] A optional generic argument constraining the number
+ * @param {T} defaultValue the default value
+ * @param {ReactFlagEvaluationOptions} options options for this evaluation
+ * @returns { boolean} a EvaluationDetails object for this evaluation
+ */
+export function useNumberFlagValue<T extends number = number>(flagKey: string, defaultValue: T, options?: ReactFlagEvaluationOptions): T {
+  return useNumberFlagDetails(flagKey, defaultValue, options).value;
+}
+
+/**
+ * Evaluates a feature flag, returning evaluation details.
+ * By default, components will re-render when the flag value changes.
+ * @param {string} flagKey the flag identifier
+ * @template {number} [T=number] A optional generic argument constraining the number
+ * @param {T} defaultValue the default value
+ * @param {ReactFlagEvaluationOptions} options options for this evaluation
+ * @returns { EvaluationDetails<number>} a EvaluationDetails object for this evaluation
+ */
+export function useNumberFlagDetails<T extends number = number>(flagKey: string, defaultValue: T, options?: ReactFlagEvaluationOptions): EvaluationDetails<T> {
+  return attachHandlersAndResolve(flagKey, defaultValue, (client) => {
+    return client.getNumberDetails<T>;
+  },  options);
+}
+
+/**
+ * Evaluates a feature flag, returning an object.
+ * By default, components will re-render when the flag value changes.
+ * @param {string} flagKey the flag identifier
+ * @template {JsonValue} [T=JsonValue] A optional generic argument describing the structure
+ * @param {T} defaultValue the default value
+ * @param {ReactFlagEvaluationOptions} options options for this evaluation
+ * @returns { boolean} a EvaluationDetails object for this evaluation
+ */
+export function useObjectFlagValue<T extends JsonValue = JsonValue>(flagKey: string, defaultValue: T, options?: ReactFlagEvaluationOptions): T {
+  return useObjectFlagDetails<T>(flagKey, defaultValue, options).value;
+}
+
+/**
+ * Evaluates a feature flag, returning evaluation details.
+ * By default, components will re-render when the flag value changes.
+ * @param {string} flagKey the flag identifier
+ * @param {T} defaultValue the default value
+ * @template {JsonValue} [T=JsonValue] A optional generic argument describing the structure
+ * @param {ReactFlagEvaluationOptions} options options for this evaluation
  * @returns { EvaluationDetails<T>} a EvaluationDetails object for this evaluation
  */
-export function useFeatureFlag<T extends FlagValue>(flagKey: string, defaultValue: T, options?: ReactFlagEvaluationOptions): EvaluationDetails<T> {
+export function useObjectFlagDetails<T extends JsonValue = JsonValue>(flagKey: string, defaultValue: T, options?: ReactFlagEvaluationOptions): EvaluationDetails<T> {
+  return attachHandlersAndResolve(flagKey, defaultValue, (client) => {
+    return client.getObjectDetails<T>;
+  },  options);
+}
+
+function attachHandlersAndResolve<T extends FlagValue>(flagKey: string, defaultValue: T, resolver: (client: Client) => (flagKey: string, defaultValue: T) => EvaluationDetails<T>, options?: ReactFlagEvaluationOptions): EvaluationDetails<T> {
   const defaultedOptions = { ...DEFAULT_OPTIONS, ...options };
   const [, updateState] = useState<object | undefined>();
   const forceUpdate = () => {
@@ -80,19 +182,7 @@ export function useFeatureFlag<T extends FlagValue>(flagKey: string, defaultValu
     };
   }, [client]);
 
-  return getFlag(client, flagKey, defaultValue);
-}
-
-function getFlag<T extends FlagValue>(client: Client, flagKey: string, defaultValue: T): EvaluationDetails<T> {
-  if (typeof defaultValue === 'boolean') {
-    return client.getBooleanDetails(flagKey, defaultValue) as EvaluationDetails<T>;
-  } else if (typeof defaultValue === 'string') {
-    return client.getStringDetails(flagKey, defaultValue) as EvaluationDetails<T>;
-  } else if (typeof defaultValue === 'number') {
-    return client.getNumberDetails(flagKey, defaultValue) as EvaluationDetails<T>;
-  } else {
-    return client.getObjectDetails(flagKey, defaultValue) as EvaluationDetails<T>;
-  }
+  return resolver(client).call(client, flagKey, defaultValue);
 }
 
 /**
