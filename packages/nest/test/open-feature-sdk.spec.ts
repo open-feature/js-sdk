@@ -7,7 +7,6 @@ import { OpenFeatureModule } from '../src';
 import { defaultProvider, providers } from './fixtures';
 
 describe('OpenFeature SDK', () => {
-
   describe('With global context interceptor', () => {
     let moduleRef: TestingModule;
     let app: INestApplication;
