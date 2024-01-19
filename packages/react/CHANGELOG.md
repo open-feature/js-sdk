@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.1.0-experimental](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.0.6-experimental...react-sdk-v0.1.0-experimental) (2024-01-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove generic hook, add specific type hooks ([#766](https://github.com/open-feature/js-sdk/issues/766))
+
+### ✨ New Features
+
+* remove generic hook, add specific type hooks ([#766](https://github.com/open-feature/js-sdk/issues/766)) ([d1d02fa](https://github.com/open-feature/js-sdk/commit/d1d02fa59de5b5b1b8866c0b5d3de1a5bc0c5a04))
+
+
+### 🧹 Chore
+
+* fix react-sdk REAMDE example, add missing `EvaluationContext` ([#762](https://github.com/open-feature/js-sdk/issues/762)) ([1e13333](https://github.com/open-feature/js-sdk/commit/1e1333381909b790d0c4fc7590613b2ae6f1aa2e))
+
 ## [0.0.6-experimental](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.0.5-experimental...react-sdk-v0.0.6-experimental) (2024-01-11)
 
 
