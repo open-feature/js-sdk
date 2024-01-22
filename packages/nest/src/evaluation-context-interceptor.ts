@@ -4,7 +4,8 @@ import { Observable } from 'rxjs';
 import { OpenFeature } from '@openfeature/server-sdk';
 import { OpenFeatureModule } from './open-feature.module';
 
-/** NestJS interceptor used in {@link OpenFeatureModule}
+/** 
+ *  NestJS interceptor used in {@link OpenFeatureModule}
  *  to configure flag evaluation context.
  *
  *  This interceptor is configured globally by default.
