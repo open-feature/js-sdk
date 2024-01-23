@@ -19,6 +19,12 @@
   <a href="https://codecov.io/gh/open-feature/js-sdk">
     <img alt="codecov" src="https://codecov.io/gh/open-feature/js-sdk/branch/main/graph/badge.svg?token=3DC5XOEHMY" />
   </a>
+  <br/>
+    <!-- x-release-please-start-version -->
+  <a href="https://github.com/open-feature/js-sdk/releases/tag/nestjs-sdk-v0.1.0">
+    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v0.1.0&color=blue&style=for-the-badge" />
+  </a>
+  <!-- x-release-please-end -->
 </p>
 <!-- x-hide-in-docs-start -->
 
@@ -27,8 +33,6 @@ for feature flagging that works with your favorite feature flag management tool.
 
 <!-- x-hide-in-docs-end -->
 
-🧪 This SDK is experimental.
-
 ## Overview
 
 The OpenFeature NestJS SDK is a package that provides a NestJS wrapper for the [OpenFeature Server SDK](https://openfeature.dev/docs/reference/technologies/server/javascript/).
@@ -36,10 +40,10 @@ The OpenFeature NestJS SDK is a package that provides a NestJS wrapper for the [
 It's main capabilities are:
 
 - Provide a NestJS global module to simplify OpenFeature configuration and usage within NestJS;
-- Injecting feature flags directly into controller route handlers by using decorators
-- Injecting transaction evaluation context for flag evaluations directly from [execution context](https://docs.nestjs.com/fundamentals/execution-context) (HTTP header values, client IPs, etc.)
-- Injecting OpenFeature clients into NestJS services and controllers by using decorators
-- Setting up logging, event handling, hooks and providers directly when registering the module
+- Injecting feature flags directly into controller route handlers by using decorators;
+- Injecting transaction evaluation context for flag evaluations directly from [execution context](https://docs.nestjs.com/fundamentals/execution-context) (HTTP header values, client IPs, etc.);
+- Injecting OpenFeature clients into NestJS services and controllers by using decorators;
+- Setting up logging, event handling, hooks and providers directly when registering the module.
 
 ## 🚀 Quick start
 
