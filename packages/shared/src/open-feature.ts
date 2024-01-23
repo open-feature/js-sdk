@@ -109,6 +109,13 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
   }
 
   /**
+   * Removes all event handlers.
+   */
+  clearHandlers(): void {
+    this._events.removeAllHandlers();
+  }
+
+  /**
    * Gets the current handlers for the given provider event type.
    * @param {AnyProviderEvent} eventType The provider event type to get the current handlers for
    * @returns {EventHandler[]} The handlers currently attached to the given provider event type
