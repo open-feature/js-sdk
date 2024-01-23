@@ -36,10 +36,10 @@ The OpenFeature NestJS SDK is a package that provides a NestJS wrapper for the [
 It's main capabilities are:
 
 - Provide a NestJS global module to simplify OpenFeature configuration and usage within NestJS;
-- Supply custom parameter decorators (for controllers), that inject observables with feature flags resolution details;
-- Inject context for flag evaluation seamlessly using NestJS interceptors
-- Provide decorators for OpenFeature Client injection into NestJS services and controllers
-- TODO: map other features
+- Injecting feature flags directly into controller route handlers by using decorators
+- Injecting transaction evaluation context for flag evaluations directly from [execution context](https://docs.nestjs.com/fundamentals/execution-context) (HTTP header values, client IPs, etc.)
+- Injecting OpenFeature clients into NestJS services and controllers by using decorators
+- Setting up logging, event handling, hooks and providers directly when registering the module
 
 ## 🚀 Quick start
 
