@@ -15,16 +15,14 @@
   <a href="https://github.com/open-feature/spec/releases/tag/v0.7.0">
     <img alt="Specification" src="https://img.shields.io/static/v1?label=specification&message=v0.7.0&color=yellow&style=for-the-badge" />
   </a>
-  <br/>
-  <a href="https://codecov.io/gh/open-feature/js-sdk">
-    <img alt="codecov" src="https://codecov.io/gh/open-feature/js-sdk/branch/main/graph/badge.svg?token=3DC5XOEHMY" />
-  </a>
-  <br/>
     <!-- x-release-please-start-version -->
   <a href="https://github.com/open-feature/js-sdk/releases/tag/nestjs-sdk-v0.1.0">
     <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v0.1.0&color=blue&style=for-the-badge" />
   </a>
   <!-- x-release-please-end -->
+  <a href="https://codecov.io/gh/open-feature/js-sdk">
+    <img alt="codecov" src="https://codecov.io/gh/open-feature/js-sdk/branch/main/graph/badge.svg?token=3DC5XOEHMY" />
+  </a>
 </p>
 <!-- x-hide-in-docs-start -->
 
