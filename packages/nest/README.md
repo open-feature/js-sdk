@@ -39,7 +39,7 @@ It's main capabilities are:
 - Supply custom parameter decorators (for controllers), that inject observables with feature flags resolution details;
 - Inject context for flag evaluation seamlessly using NestJS interceptors
 - Provide decorators for OpenFeature Client injection into NestJS services and controllers
-- TODO: map other features
+- Setting up logging, event handling, hooks and providers directly when registering the module
 
 ## 🚀 Quick start
 
