@@ -56,11 +56,11 @@ It's main capabilities are:
 npm install --save @openfeature/nestjs-sdk
 ```
 
-#### yarn
+#### Required peer dependencies
 
-```sh
-yarn add @openfeature/nestjs-sdk @openfeature/server-sdk @openfeature/core
-```
+The OpenFeature SDK is required as peer dependency.
+
+The minimum required version of `@openfeature/server-sdk` currently is `1.7.5`.
 
 ### Usage
 
