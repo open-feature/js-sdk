@@ -37,7 +37,7 @@ It's main capabilities are:
 
 - Provide a NestJS global module to simplify OpenFeature configuration and usage within NestJS;
 - Supply custom parameter decorators (for controllers), that inject observables with feature flags resolution details;
-- Inject context for flag evaluation seamlessly using NestJS interceptors
+- Injecting transaction evaluation context for flag evaluations directly from [execution context](https://docs.nestjs.com/fundamentals/execution-context) (HTTP header values, client IPs, etc.)
 - Provide decorators for OpenFeature Client injection into NestJS services and controllers
 - Setting up logging, event handling, hooks and providers directly when registering the module
 
