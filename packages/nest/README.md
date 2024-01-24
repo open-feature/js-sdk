@@ -7,7 +7,7 @@
   </picture>
 </p>
 
-<h2 align="center">OpenFeature Nest.js SDK</h2>
+<h2 align="center">OpenFeature NestJS SDK</h2>
 
 <!-- x-hide-in-docs-end -->
 <!-- The 'github-badges' class is used in the docs -->
@@ -15,7 +15,11 @@
   <a href="https://github.com/open-feature/spec/releases/tag/v0.7.0">
     <img alt="Specification" src="https://img.shields.io/static/v1?label=specification&message=v0.7.0&color=yellow&style=for-the-badge" />
   </a>
-  <br/>
+    <!-- x-release-please-start-version -->
+  <a href="https://github.com/open-feature/js-sdk/releases/tag/nestjs-sdk-v0.1.0">
+    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v0.1.0&color=blue&style=for-the-badge" />
+  </a>
+  <!-- x-release-please-end -->
   <a href="https://codecov.io/gh/open-feature/js-sdk">
     <img alt="codecov" src="https://codecov.io/gh/open-feature/js-sdk/branch/main/graph/badge.svg?token=3DC5XOEHMY" />
   </a>
@@ -25,11 +29,49 @@
 [OpenFeature](https://openfeature.dev) is an open specification that provides a vendor-agnostic, community-driven API
 for feature flagging that works with your favorite feature flag management tool.
 
-🧪 This SDK is experimental.
+<!-- x-hide-in-docs-end -->
 
-#### Here's a basic example of how to use the OpenFeature NestJS API with `InMemoryProvider`.
+## Overview
 
-#### Registering the Nest.js SDK module in the App Module:
+The OpenFeature NestJS SDK is a package that provides a NestJS wrapper for the [OpenFeature Server SDK](https://openfeature.dev/docs/reference/technologies/server/javascript/).
+
+Capabilities include:
+
+- Provide a NestJS global module to simplify OpenFeature configuration and usage within NestJS;
+- Injecting feature flags directly into controller route handlers by using decorators;
+- Injecting transaction evaluation context for flag evaluations directly from [execution context](https://docs.nestjs.com/fundamentals/execution-context) (HTTP header values, client IPs, etc.);
+- Injecting OpenFeature clients into NestJS services and controllers by using decorators;
+- Setting up logging, event handling, hooks and providers directly when registering the module.
+
+## 🚀 Quick start
+
+### Requirements
+
+- Node.js version 16+
+- NestJS version 8+
+
+### Install
+
+#### npm
+
+```sh
+npm install --save @openfeature/nestjs-sdk
+```
+
+#### Required peer dependencies
+
+The following list contains the peer dependencies of `@openfeature/nestjs-sdk` with it's expected and compatible versions:
+
+* `@openfeature/server-sdk`: >=1.7.5
+* `@nestjs/common`: ^8.0.0 || ^9.0.0 || ^10.0.0
+* `@nestjs/core`: ^8.0.0 || ^9.0.0 || ^10.0.0
+* `rxjs`: ^6.0.0 || ^7.0.0 || ^8.0.0
+
+The minimum required version of `@openfeature/server-sdk` currently is `1.7.5`.
+
+### Usage
+
+The example below shows how to use the `OpenFeatureModule` with OpenFeature's `InMemoryProvider`.
 
 ```ts
 import { Module } from '@nestjs/common';
@@ -44,24 +86,19 @@ import { InMemoryProvider } from '@openfeature/web-sdk';
         testBooleanFlag: {
           defaultVariant: 'default',
           variants: { default: true },
-          disabled: false
+          disabled: false,
         },
-        companyName: {
-          defaultVariant: 'default',
-          variants: { default: "BigCorp" },
-          disabled: false
-        }
       }),
       providers: {
-        differentProvider: new InMemoryProvider()
-      }
-    })
-  ]
+        differentProvider: new InMemoryProvider(),
+      },
+    }),
+  ],
 })
 export class AppModule {}
 ```
 
-#### Injecting a feature flag with header value in evaluation context into an endpoint handler method
+With the `OpenFeatureModule` configured, it's possible to inject flag evaluation details into route handlers like in the following code snippet.
 
 ```ts
 import { Controller, ExecutionContext, Get } from '@nestjs/common';
@@ -70,19 +107,6 @@ import { BooleanFeatureFlag } from '@openfeature/nestjs-sdk';
 import { EvaluationDetails } from '@openfeature/server-sdk';
 import { Request } from 'express';
 
-function getContext(executionContext: ExecutionContext) {
-  const request = executionContext.switchToHttp().getRequest<Request>();
-  const userId = request.header('x-user-id');
-
-  if (!userId) {
-    return undefined;
-  }
-
-  return {
-    targetingKey: userId,
-  };
-}
-
 @Controller()
 export class OpenFeatureController {
   @Get('/welcome')
@@ -90,20 +114,19 @@ export class OpenFeatureController {
     @BooleanFeatureFlag({
       flagKey: 'testBooleanFlag',
       defaultValue: false,
-      contextFactory: getContext,
     })
-      feature: Observable<EvaluationDetails<boolean>>,
+    feature: Observable<EvaluationDetails<boolean>>,
   ) {
     return feature.pipe(
       map((details) =>
-        details.value ? 'Welcome to this OpenFeature-enabled Nest.js app!' : 'Welcome to this Nest.js app!',
+        details.value ? 'Welcome to this OpenFeature-enabled NestJS app!' : 'Welcome to this NestJS app!',
       ),
     );
   }
 }
 ```
 
-#### Injecting the default and a named client into a service:
+It is also possible to inject the default or named OpenFeature clients into a service via Nest dependency injection system.
 
 ```ts
 import { Injectable } from '@nestjs/common';
@@ -114,15 +137,19 @@ import { FeatureClient } from '@openfeature/nestjs-sdk';
 export class OpenFeatureTestService {
   constructor(
     @FeatureClient() private defaultClient: Client,
-    @FeatureClient({ name: 'differentServer' }) private namedClient: Client,
-  ) {
-  }
+    @FeatureClient({ name: 'differentProvider' }) private namedClient: Client,
+  ) {}
 
-  public async getMessage() {
-    const companyName = await this.defaultClient.getStringValue('companyName', 'Unknown Company');
-    return `Hey User from ${companyName}`;
+  public async getBoolean() {
+    return await this.defaultClient.getBooleanValue('testBooleanFlag', false);
   }
 }
 ```
 
+## Module aditional information
 
+### Flag evaluation context injection
+
+Whenever a flag evaluation occurs, context can be provided with information like user e-mail, role, targeting key, etc in order to trigger specific evaluation rules or logic. The `OpenFeatureModule` provides a way to configure context for each request using the `contextFactory` option.
+The `contextFactory` is ran in a NestJS interceptor scope to configure the evaluation context and than it is used in every flag evaluation related to this request.
+By default, the interceptor is configured globally, but it can be changed by setting the `useGlobalInterceptor` to `false`. In this case, it is still possible to configure a `contextFactory` that can be injected into route, module or controller bound interceptors.
