@@ -60,7 +60,12 @@ npm install --save @openfeature/nestjs-sdk
 
 #### Required peer dependencies
 
-The OpenFeature SDK is required as peer dependency.
+The following list contains the peer dependencies of `@openfeature/nestjs-sdk` with it's expected and compatible versions:
+
+* `@openfeature/server-sdk`: >=1.7.5
+* `@nestjs/common`: ^8.0.0 || ^9.0.0 || ^10.0.0
+* `@nestjs/core`: ^8.0.0 || ^9.0.0 || ^10.0.0
+* `rxjs`: ^6.0.0 || ^7.0.0
 
 The minimum required version of `@openfeature/server-sdk` currently is `1.7.5`.
 
