@@ -98,7 +98,7 @@ import { InMemoryProvider } from '@openfeature/web-sdk';
 export class AppModule {}
 ```
 
-With the `OpenFeatureModule` configured it is now possible to inject flag evaluation details into route handlers like in the following code snippet.
+With the `OpenFeatureModule` configured, it's possible to inject flag evaluation details into route handlers like in the following code snippet.
 
 ```ts
 import { Controller, ExecutionContext, Get } from '@nestjs/common';
