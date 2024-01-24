@@ -17,6 +17,11 @@ const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/web-sdk/api');
 type OpenFeatureGlobal = {
   [GLOBAL_OPENFEATURE_API_KEY]?: OpenFeatureAPI;
 };
+type NameProviderRecord = {
+  name?: string;
+  provider: Provider;
+}
+
 const _globalThis = globalThis as OpenFeatureGlobal;
 
 export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> implements ManageContext<Promise<void>> {
@@ -81,16 +86,23 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
       const oldContext = this._context;
       this._context = context;
 
-      const providersWithoutContextOverride = Array.from(this._clientProviders.entries())
+      // collect all providers that are using the default context (not mapped to a name)
+      const defaultContextNameProviders: NameProviderRecord[] = Array.from(this._clientProviders.entries())
         .filter(([name]) => !this._namedProviderContext.has(name))
-        .reduce<Provider[]>((acc, [, provider]) => {
-          acc.push(provider);
+        .reduce<NameProviderRecord[]>((acc, [name, provider]) => {
+          acc.push({ name, provider });
           return acc;
         }, []);
 
-      const allProviders = [this._defaultProvider, ...providersWithoutContextOverride];
+      const allProviders: NameProviderRecord[] = [
+        // add in the default (no name)
+        { name: undefined, provider: this._defaultProvider },
+        ...defaultContextNameProviders,
+      ];
       await Promise.all(
-        allProviders.map((provider) => this.runProviderContextChangeHandler(undefined, provider, oldContext, context)),
+        allProviders.map((tuple) =>
+          this.runProviderContextChangeHandler(tuple.name, tuple.provider, oldContext, context),
+        ),
       );
     }
   }
@@ -106,7 +118,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
    * @param {string} clientName The name to identify the client
    * @returns {EvaluationContext} Evaluation context
    */
-  getContext(clientName: string): EvaluationContext;
+  getContext(clientName?: string): EvaluationContext;
   getContext(nameOrUndefined?: string): EvaluationContext {
     const clientName = stringOrUndefined(nameOrUndefined);
     if (clientName) {
@@ -196,19 +208,25 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
     oldContext: EvaluationContext,
     newContext: EvaluationContext,
   ): Promise<void> {
-      const providerName = provider.metadata.name;
-      return provider.onContextChange?.(oldContext, newContext).then(() => {
-        this.getAssociatedEventEmitters(clientName).forEach((emitter) => {
-          emitter?.emit(ProviderEvents.ContextChanged, { clientName, providerName });
-        });
-        this._events?.emit(ProviderEvents.ContextChanged, { clientName, providerName });
-      }).catch((err) => {
-        this._logger?.error(`Error running ${provider.metadata.name}'s context change handler:`, err);
-        this.getAssociatedEventEmitters(clientName).forEach((emitter) => {
-          emitter?.emit(ProviderEvents.Error, { clientName, providerName, message: err?.message, });
-        });
-        this._events?.emit(ProviderEvents.Error, { clientName, providerName, message: err?.message, });
+    const providerName = provider.metadata.name;
+    try {
+      await provider.onContextChange?.(oldContext, newContext);
+
+      // only run the event handlers if the onContextChange method succeeded
+      this.getAssociatedEventEmitters(clientName).forEach((emitter) => {
+        emitter?.emit(ProviderEvents.ContextChanged, { clientName, providerName });
       });
+      this._events?.emit(ProviderEvents.ContextChanged, { clientName, providerName });
+    } catch (err) {
+      // run error handlers instead
+      const error = err as Error | undefined;
+      const message = `Error running ${provider?.metadata?.name}'s context change handler: ${error?.message}`;
+      this._logger?.error(`${message}`, err);
+      this.getAssociatedEventEmitters(clientName).forEach((emitter) => {
+        emitter?.emit(ProviderEvents.Error, { clientName, providerName, message });
+      });
+      this._events?.emit(ProviderEvents.Error, { clientName, providerName, message });
+    }
   }
 }
 

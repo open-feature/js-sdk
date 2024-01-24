@@ -1,6 +1,6 @@
 {
   "name": "@openfeature/core",
-  "version": "0.0.22",
+  "version": "0.0.23",
   "description": "Shared OpenFeature JS components (server and web)",
   "main": "./dist/cjs/index.js",
   "files": [
@@ -19,8 +19,8 @@
     "lint": "eslint ./",
     "clean": "shx rm -rf ./dist",
     "type": "tsc --project ./tsconfig.json --declaration --emitDeclarationOnly",
-    "build:esm": "esbuild src/index.ts --bundle --external:events --sourcemap --target=es2016 --format=esm --outfile=./dist/esm/index.js --analyze",
-    "build:cjs": "esbuild src/index.ts --bundle --external:events --sourcemap --target=es2016 --format=cjs --outfile=./dist/cjs/index.js --analyze",
+    "build:esm": "esbuild src/index.ts --bundle --external:events --sourcemap --target=es2022 --format=esm --outfile=./dist/esm/index.js --analyze",
+    "build:cjs": "esbuild src/index.ts --bundle --external:events --sourcemap --target=es2022 --format=cjs --outfile=./dist/cjs/index.js --analyze",
     "build:rollup-types": "rollup -c ../../rollup.config.mjs",
     "build": "npm run clean && npm run build:esm && npm run build:cjs && npm run build:rollup-types",
     "postbuild": "shx cp ./../../package.esm.json ./dist/esm/package.json",
