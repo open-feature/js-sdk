@@ -13,10 +13,8 @@ class TestEventEmitter extends GenericEventEmitter<AnyProviderEvent> {
   }
 }
 
-/**
- * a little function to make sure we're at least waiting for the event loop 
- * to clear before we start making assertions
- */
+// a little function to make sure we're at least waiting for the event loop 
+// to clear before we start making assertions
 const wait = (millis = 0) => {
   return new Promise(resolve => {setTimeout(resolve, millis);});
 };
