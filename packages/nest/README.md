@@ -63,7 +63,7 @@ npm install --save @openfeature/nestjs-sdk
 
 #### Required peer dependencies
 
-The following list contains the peer dependencies of `@openfeature/nestjs-sdk` with it's expected and compatible versions:
+The following list contains the peer dependencies of `@openfeature/nestjs-sdk` with its expected and compatible versions:
 
 * `@openfeature/server-sdk`: >=1.7.5
 * `@nestjs/common`: ^8.0.0 || ^9.0.0 || ^10.0.0
@@ -78,9 +78,7 @@ The example below shows how to use the `OpenFeatureModule` with OpenFeature's `I
 
 ```ts
 import { Module } from '@nestjs/common';
-import { FlagdProvider } from '@openfeature/flagd-provider';
-import { OpenFeatureModule } from '@openfeature/nestjs-sdk';
-import { InMemoryProvider } from '@openfeature/web-sdk';
+import { OpenFeatureModule, InMemoryProvider } from '@openfeature/nestjs-sdk';
 
 @Module({
   imports: [
@@ -106,8 +104,7 @@ With the `OpenFeatureModule` configured, it's possible to inject flag evaluation
 ```ts
 import { Controller, ExecutionContext, Get } from '@nestjs/common';
 import { map, Observable } from 'rxjs';
-import { BooleanFeatureFlag } from '@openfeature/nestjs-sdk';
-import { EvaluationDetails } from '@openfeature/server-sdk';
+import { BooleanFeatureFlag, EvaluationDetails } from '@openfeature/nestjs-sdk';
 import { Request } from 'express';
 
 @Controller()
@@ -133,8 +130,7 @@ It is also possible to inject the default or named OpenFeature clients into a se
 
 ```ts
 import { Injectable } from '@nestjs/common';
-import { Client } from '@openfeature/server-sdk';
-import { FeatureClient } from '@openfeature/nestjs-sdk';
+import { FeatureClient, Client } from '@openfeature/nestjs-sdk';
 
 @Injectable()
 export class OpenFeatureTestService {
