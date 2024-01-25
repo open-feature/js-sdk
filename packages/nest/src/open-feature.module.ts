@@ -23,6 +23,9 @@ import { AsyncLocalStorageTransactionContext } from './evaluation-context-propag
 import { EvaluationContextInterceptor } from './evaluation-context-interceptor';
 import { ShutdownService } from './shutdown.service';
 
+/**
+ * OpenFeatureModule is a NestJS wrapper for OpenFeature Server-SDK.
+ */
 @Module({})
 export class OpenFeatureModule {
   static forRoot({ useGlobalInterceptor = true, ...options }: OpenFeatureModuleOptions): DynamicModule {
