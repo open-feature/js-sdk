@@ -15,19 +15,22 @@
   <a href="https://github.com/open-feature/spec/releases/tag/v0.7.0">
     <img alt="Specification" src="https://img.shields.io/static/v1?label=specification&message=v0.7.0&color=yellow&style=for-the-badge" />
   </a>
-    <!-- x-release-please-start-version -->
-  <a href="https://github.com/open-feature/js-sdk/releases/tag/nestjs-sdk-v0.1.0">
-    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v0.1.0&color=blue&style=for-the-badge" />
+  <!-- x-release-please-start-version -->
+  <a href="https://github.com/open-feature/js-sdk/releases/tag/nestjs-sdk-v0.0.4-experimental">
+    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v0.0.4-experimental&color=blue&style=for-the-badge" />
   </a>
   <!-- x-release-please-end -->
+  <br/>
   <a href="https://codecov.io/gh/open-feature/js-sdk">
     <img alt="codecov" src="https://codecov.io/gh/open-feature/js-sdk/branch/main/graph/badge.svg?token=3DC5XOEHMY" />
+  </a>
+  <a href="https://www.npmjs.com/package/@openfeature/nestjs-sdk">
+    <img alt="NPM Download" src="https://img.shields.io/npm/dm/%40openfeature%2Fnestjs-sdk" />
   </a>
 </p>
 <!-- x-hide-in-docs-start -->
 
-[OpenFeature](https://openfeature.dev) is an open specification that provides a vendor-agnostic, community-driven API
-for feature flagging that works with your favorite feature flag management tool.
+[OpenFeature](https://openfeature.dev) is an open specification that provides a vendor-agnostic, community-driven API for feature flagging that works with your favorite feature flag management tool or in-house solution.
 
 <!-- x-hide-in-docs-end -->
 
@@ -37,11 +40,11 @@ The OpenFeature NestJS SDK is a package that provides a NestJS wrapper for the [
 
 Capabilities include:
 
-- Provide a NestJS global module to simplify OpenFeature configuration and usage within NestJS;
-- Injecting feature flags directly into controller route handlers by using decorators;
-- Injecting transaction evaluation context for flag evaluations directly from [execution context](https://docs.nestjs.com/fundamentals/execution-context) (HTTP header values, client IPs, etc.);
-- Injecting OpenFeature clients into NestJS services and controllers by using decorators;
-- Setting up logging, event handling, hooks and providers directly when registering the module.
+- Providing a NestJS global module to simplify OpenFeature configuration and usage within NestJS
+- Setting up logging, event handling, hooks and providers directly when registering the module
+- Injecting feature flags directly into controller route handlers by using decorators
+- Injecting transaction evaluation context for flag evaluations directly from [execution context](https://docs.nestjs.com/fundamentals/execution-context) (HTTP header values, client IPs, etc.)
+- Injecting OpenFeature clients into NestJS services and controllers by using decorators
 
 ## 🚀 Quick start
 
@@ -146,10 +149,10 @@ export class OpenFeatureTestService {
 }
 ```
 
-## Module aditional information
+## Module additional information
 
 ### Flag evaluation context injection
 
-Whenever a flag evaluation occurs, context can be provided with information like user e-mail, role, targeting key, etc in order to trigger specific evaluation rules or logic. The `OpenFeatureModule` provides a way to configure context for each request using the `contextFactory` option.
-The `contextFactory` is ran in a NestJS interceptor scope to configure the evaluation context and than it is used in every flag evaluation related to this request.
+Whenever a flag evaluation occurs, context can be provided with information like user e-mail, role, targeting key, etc. in order to trigger specific evaluation rules or logic. The `OpenFeatureModule` provides a way to configure context for each request using the `contextFactory` option.
+The `contextFactory` is run in a NestJS interceptor scope to configure the evaluation context, and then it is used in every flag evaluation related to this request.
 By default, the interceptor is configured globally, but it can be changed by setting the `useGlobalInterceptor` to `false`. In this case, it is still possible to configure a `contextFactory` that can be injected into route, module or controller bound interceptors.
