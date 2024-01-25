@@ -18,8 +18,8 @@ class TestEventEmitter extends GenericEventEmitter<AnyProviderEvent> {
  * to clear before we start making assertions
  */
 const wait = (millis = 0) => {
-  return new Promise(resolve => {setTimeout(resolve, millis)});
-}
+  return new Promise(resolve => {setTimeout(resolve, millis);});
+};
 
 describe('GenericEventEmitter', () => {
   describe('addHandler should', function () {
