@@ -170,7 +170,6 @@ describe('GenericEventEmitter', () => {
       await wait();
 
       expect(handler).toHaveBeenCalledTimes(0);
-      expect(handler).toHaveBeenCalledTimes(0);
     });
 
     it('remove all handlers only for event type', async function () {
