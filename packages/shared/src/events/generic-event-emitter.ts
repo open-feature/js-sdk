@@ -11,12 +11,12 @@ export abstract class GenericEventEmitter<E extends AnyProviderEvent, Additional
 {
   protected abstract readonly eventEmitter: PlatformEventEmitter;
 
-  private readonly _handlers: { [key in AnyProviderEvent]: WeakMap<EventHandler, EventHandler>} = {
-    [AllProviderEvents.ConfigurationChanged]: new WeakMap<EventHandler, EventHandler>(),
-    [AllProviderEvents.ContextChanged]: new WeakMap<EventHandler, EventHandler>(),
-    [AllProviderEvents.Ready]: new WeakMap<EventHandler, EventHandler>(),
-    [AllProviderEvents.Error]: new WeakMap<EventHandler, EventHandler>(),
-    [AllProviderEvents.Stale]: new WeakMap<EventHandler, EventHandler>(),
+  private readonly _handlers: { [key in AnyProviderEvent]: WeakMap<EventHandler, EventHandler[]>} = {
+    [AllProviderEvents.ConfigurationChanged]: new WeakMap<EventHandler, EventHandler[]>(),
+    [AllProviderEvents.ContextChanged]: new WeakMap<EventHandler, EventHandler[]>(),
+    [AllProviderEvents.Ready]: new WeakMap<EventHandler, EventHandler[]>(),
+    [AllProviderEvents.Error]: new WeakMap<EventHandler, EventHandler[]>(),
+    [AllProviderEvents.Stale]: new WeakMap<EventHandler, EventHandler[]>(),
   };
   private _eventLogger?: Logger;
 
@@ -34,20 +34,25 @@ export abstract class GenericEventEmitter<E extends AnyProviderEvent, Additional
       await handler(details);    
     };
     // The async handler has to be written to the map, because we need to get the wrapper function when deleting a listener
-    this._handlers[eventType].set(handler, asyncHandler);
+    const existingAsyncHandlers = this._handlers[eventType].get(handler);
+
+    // we allow duplicate event handlers, similar to node,
+    // see: https://nodejs.org/api/events.html#emitteroneventname-listener
+    // and https://nodejs.org/api/events.html#emitterremovelistenereventname-listener
+    this._handlers[eventType].set(handler, [...(existingAsyncHandlers || []), asyncHandler]);
     this.eventEmitter.on(eventType, asyncHandler);
   }
 
   removeHandler(eventType: AnyProviderEvent, handler: EventHandler): void {
     // Get the wrapper function for this handler, to delete it from the event emitter
-    const asyncHandler = this._handlers[eventType].get(handler) as EventHandler | undefined;
+    const existingAsyncHandlers = this._handlers[eventType].get(handler);
 
-    if (!asyncHandler) {
-      this._logger?.debug(`no such handler found: ${handler?.name}`);
-      return;
+    if (existingAsyncHandlers) {
+      const removedAsyncHandler = existingAsyncHandlers.pop();
+      if (removedAsyncHandler) {
+        this.eventEmitter.removeListener(eventType, removedAsyncHandler);
+      }
     }
-
-    this.eventEmitter.removeListener(eventType, asyncHandler);
   }
 
   removeAllHandlers(eventType?: AnyProviderEvent): void {

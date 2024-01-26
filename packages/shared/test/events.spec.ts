@@ -172,6 +172,37 @@ describe('GenericEventEmitter', () => {
       expect(handler).toHaveBeenCalledTimes(0);
     });
 
+    it('overwrite same handler when assigned to same events', async function () {
+      const emitter = new TestEventEmitter();
+
+      const handler = jest.fn();
+      emitter.addHandler(AllProviderEvents.Stale, handler);
+      emitter.addHandler(AllProviderEvents.Stale, handler);
+
+      emitter.removeHandler(AllProviderEvents.Stale, handler);
+      emitter.removeHandler(AllProviderEvents.Stale, handler);
+
+      emitter.emit(AllProviderEvents.Stale);
+
+      await wait();
+
+      expect(handler).toHaveBeenCalledTimes(0);
+    });
+
+    it('allow duplicate event handlers and call them', async function () {
+      const emitter = new TestEventEmitter();
+
+      const handler = jest.fn();
+      emitter.addHandler(AllProviderEvents.Stale, handler);
+      emitter.addHandler(AllProviderEvents.Stale, handler);
+
+      emitter.emit(AllProviderEvents.Stale);
+
+      await wait();
+
+      expect(handler).toHaveBeenCalledTimes(2);
+    });
+
     it('remove all handlers only for event type', async function () {
       const emitter = new TestEventEmitter();
 
