@@ -5,10 +5,16 @@ import { useOpenFeatureClient } from './provider';
 type ReactFlagEvaluationOptions = {
   /**
    * Suspend flag evaluations while the provider is not ready.
-   * Set to false if you don't want to use React Suspense API.
+   * Set to false if you don't want to show suspense fallbacks util the provider is initialized.
    * Defaults to true.
    */
-  suspend?: boolean,
+  suspendUntilReady?: boolean,
+  /**
+   * Suspend flag evaluations while the provider's context is being reconciled.
+   * Set to true if you want to show suspense fallbacks while flags are re-evaluated after context changes.
+   * Defaults to false.
+   */
+  suspendWhileStale?: boolean,
   /**
    * Update the component if the provider emits a ConfigurationChanged event.
    * Set to false to prevent components from re-rendering when flag value changes
@@ -28,7 +34,8 @@ type ReactFlagEvaluationOptions = {
 const DEFAULT_OPTIONS: ReactFlagEvaluationOptions = {
   updateOnContextChanged: true,
   updateOnConfigurationChanged: true,
-  suspend: true,
+  suspendUntilReady: true,
+  suspendWhileStale: false,
 };
 
 enum SuspendState {
@@ -150,37 +157,48 @@ export function useObjectFlagDetails<T extends JsonValue = JsonValue>(flagKey: s
 function attachHandlersAndResolve<T extends FlagValue>(flagKey: string, defaultValue: T, resolver: (client: Client) => (flagKey: string, defaultValue: T) => EvaluationDetails<T>, options?: ReactFlagEvaluationOptions): EvaluationDetails<T> {
   const defaultedOptions = { ...DEFAULT_OPTIONS, ...options };
   const [, updateState] = useState<object | undefined>();
+  const client = useOpenFeatureClient();
   const forceUpdate = () => {
     updateState({});
   };
-  const client = useOpenFeatureClient();
+  const suspendRef = () => {
+    suspend(client, updateState, ProviderEvents.ContextChanged, ProviderEvents.ConfigurationChanged, ProviderEvents.Ready);
+  };
 
   useEffect(() => {
-
-    if (client.providerStatus !== ProviderStatus.READY) {
+    if (client.providerStatus === ProviderStatus.NOT_READY) {
       // update when the provider is ready
       client.addHandler(ProviderEvents.Ready, forceUpdate);
-      if (defaultedOptions.suspend) {
-        suspend(client, updateState);
+      if (defaultedOptions.suspendUntilReady) {
+        suspend(client, updateState, ProviderEvents.Ready);
       }
     }
 
     if (defaultedOptions.updateOnContextChanged) {
       // update when the context changes
       client.addHandler(ProviderEvents.ContextChanged, forceUpdate);
+      if (defaultedOptions.suspendWhileStale) {
+        client.addHandler(ProviderEvents.Stale, suspendRef);
+      }
     }
-
+    return () => {
+      // cleanup the handlers
+      client.removeHandler(ProviderEvents.Ready, forceUpdate);
+      client.removeHandler(ProviderEvents.ContextChanged, forceUpdate);
+      client.removeHandler(ProviderEvents.Stale, suspendRef);
+    };
+  }, []);
+  
+  useEffect(() => {
     if (defaultedOptions.updateOnConfigurationChanged) {
       // update when the provider configuration changes
       client.addHandler(ProviderEvents.ConfigurationChanged, forceUpdate);
     }
     return () => {
-      // cleanup the handlers (we can do this unconditionally with no impact)
-      client.removeHandler(ProviderEvents.Ready, forceUpdate);
-      client.removeHandler(ProviderEvents.ContextChanged, forceUpdate);
+      // cleanup the handlers
       client.removeHandler(ProviderEvents.ConfigurationChanged, forceUpdate);
     };
-  }, [client]);
+  }, []);
 
   return resolver(client).call(client, flagKey, defaultValue);
 }
@@ -189,21 +207,24 @@ function attachHandlersAndResolve<T extends FlagValue>(flagKey: string, defaultV
  * Suspend function. If this runs, components using the calling hook will be suspended.
  * @param {Client} client the OpenFeature client
  * @param {Function} updateState the state update function
+ * @param {ProviderEvents[]} resumeEvents list of events which will resume the suspend
  */
-function suspend(client: Client, updateState: Dispatch<SetStateAction<object | undefined>>) {
+function suspend(client: Client, updateState: Dispatch<SetStateAction<object | undefined>>, ...resumeEvents: ProviderEvents[]) {
+
   let suspendResolver: () => void;
-  let suspendRejecter: () => void;
+  
   const suspendPromise = new Promise<void>((resolve) => {
     suspendResolver = () => {
       resolve();
-      client.removeHandler(ProviderEvents.Ready, suspendResolver); // remove handler once it's run
+      resumeEvents.forEach((e) => {
+        client.removeHandler(e, suspendResolver); // remove handlers once they've run
+      });
+      client.removeHandler(ProviderEvents.Error, suspendResolver);
     };
-    suspendRejecter = () => {
-      resolve(); // we still resolve here, since we don't want to throw errors
-      client.removeHandler(ProviderEvents.Error, suspendRejecter); // remove handler once it's run
-    };
-    client.addHandler(ProviderEvents.Ready, suspendResolver);
-    client.addHandler(ProviderEvents.Error, suspendRejecter);
+    resumeEvents.forEach((e) => {
+      client.addHandler(e, suspendResolver);
+    });
+    client.addHandler(ProviderEvents.Error, suspendResolver); // we never want to throw, resolve with errors - we may make this configurable later
   });
   updateState(suspenseWrapper(suspendPromise));
 }
