@@ -172,7 +172,7 @@ describe('GenericEventEmitter', () => {
       expect(handler).toHaveBeenCalledTimes(0);
     });
 
-    it('overwrite same handler when assigned to same events', async function () {
+    it('allow addition/removal of duplicate handlers', async function () {
       const emitter = new TestEventEmitter();
 
       const handler = jest.fn();
