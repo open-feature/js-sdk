@@ -38,7 +38,7 @@
 
 ## Overview
 
-The OpenFeature React SDK is a package that adds React-specific functionality to the [OpenFeature Web SDK](https://openfeature.dev/docs/reference/technologies/client/web).
+The OpenFeature React SDK adds React-specific functionality to the [OpenFeature Web SDK](https://openfeature.dev/docs/reference/technologies/client/web).
 
 In addition to the feature provided by the [web sdk](https://openfeature.dev/docs/reference/technologies/client/web), additional capabilities include:
 
