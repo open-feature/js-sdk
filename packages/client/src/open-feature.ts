@@ -6,7 +6,8 @@ import {
   objectOrUndefined,
   stringOrUndefined,
 } from '@openfeature/core';
-import { Client, OpenFeatureClient } from './client';
+import { Client } from './client';
+import { OpenFeatureClient } from './client/internal/open-feature-client';
 import { OpenFeatureEventEmitter, ProviderEvents } from './events';
 import { Hook } from './hooks';
 import { NOOP_PROVIDER, Provider } from './provider';
@@ -20,7 +21,7 @@ type OpenFeatureGlobal = {
 type NameProviderRecord = {
   name?: string;
   provider: Provider;
-}
+};
 
 const _globalThis = globalThis as OpenFeatureGlobal;
 

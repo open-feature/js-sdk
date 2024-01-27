@@ -7,12 +7,12 @@ import {
   JsonObject,
   JsonValue,
   OpenFeature,
-  OpenFeatureClient,
   Provider,
   ProviderStatus,
   ResolutionDetails,
   StandardResolutionReasons,
 } from '../src';
+import { OpenFeatureClient } from '../src/client/internal/open-feature-client';
 
 const BOOLEAN_VALUE = true;
 const STRING_VALUE = 'val';
@@ -128,12 +128,15 @@ describe('OpenFeatureClient', () => {
       resolveBooleanEvaluation(): ResolutionDetails<boolean> {
         throw new Error('Method not implemented.');
       }
+
       resolveStringEvaluation(): ResolutionDetails<string> {
         throw new Error('Method not implemented.');
       }
+
       resolveNumberEvaluation(): ResolutionDetails<number> {
         throw new Error('Method not implemented.');
       }
+
       resolveObjectEvaluation<T extends JsonValue>(): ResolutionDetails<T> {
         throw new Error('Method not implemented.');
       }
@@ -229,7 +232,7 @@ describe('OpenFeatureClient', () => {
                 numberFlag,
                 defaultNumberValue,
                 {},
-                {}
+                {},
               );
             });
           });
@@ -241,7 +244,7 @@ describe('OpenFeatureClient', () => {
               const defaultNumberValue = 4096;
               const value: MyRestrictedNumber = client.getNumberValue<MyRestrictedNumber>(
                 numberFlag,
-                defaultNumberValue
+                defaultNumberValue,
               );
 
               expect(value).toEqual(NUMBER_VALUE);
@@ -249,7 +252,7 @@ describe('OpenFeatureClient', () => {
                 numberFlag,
                 defaultNumberValue,
                 {},
-                {}
+                {},
               );
             });
           });
@@ -326,7 +329,7 @@ describe('OpenFeatureClient', () => {
               booleanFlag,
               defaultBooleanValue,
               {},
-              {}
+              {},
             );
           });
         });
@@ -375,50 +378,50 @@ describe('OpenFeatureClient', () => {
         // No generic information exists at runtime, but this test has some value in ensuring the generic args still exist in the typings.
         const client = OpenFeature.getClient();
         const details: ResolutionDetails<JsonValue> = client.getObjectDetails('flag', { key: 'value' });
-  
+
         expect(details).toBeDefined();
       });
     });
   });
-  
+
   describe('Evaluation details structure', () => {
     const flagKey = 'number-details';
     const defaultValue = 1970;
     let details: EvaluationDetails<number>;
-  
+
     describe('Normal execution', () => {
       beforeEach(() => {
         const client = OpenFeature.getClient();
         details = client.getNumberDetails(flagKey, defaultValue);
-  
+
         expect(details).toBeDefined();
       });
-  
+
       describe('Requirement 1.4.2, 1.4.3', () => {
         it('should contain flag value', () => {
           expect(details.value).toEqual(NUMBER_VALUE);
         });
       });
-  
+
       describe('Requirement 1.4.4', () => {
         it('should contain flag key', () => {
           expect(details.flagKey).toEqual(flagKey);
         });
       });
-  
+
       describe('Requirement 1.4.5', () => {
         it('should contain flag variant', () => {
           expect(details.variant).toEqual(NUMBER_VARIANT);
         });
       });
-  
+
       describe('Requirement 1.4.6', () => {
         it('should contain reason', () => {
           expect(details.reason).toEqual(REASON);
         });
       });
     });
-  
+
     describe('Abnormal execution', () => {
       const NON_OPEN_FEATURE_ERROR_MESSAGE = 'A null dereference or something, I dunno.';
       const OPEN_FEATURE_ERROR_MESSAGE = "This ain't the flag you're looking for.";
@@ -438,14 +441,14 @@ describe('OpenFeatureClient', () => {
       } as unknown as Provider;
       const defaultNumberValue = 123;
       const defaultStringValue = 'hey!';
-  
+
       beforeEach(() => {
         OpenFeature.setProvider(errorProvider);
         client = OpenFeature.getClient();
         nonOpenFeatureErrorDetails = client.getNumberDetails('some-flag', defaultNumberValue);
         openFeatureErrorDetails = client.getStringDetails('some-flag', defaultStringValue);
       });
-  
+
       describe('Requirement 1.4.7', () => {
         describe('OpenFeatureError', () => {
           it('should contain error code', () => {
@@ -453,7 +456,7 @@ describe('OpenFeatureClient', () => {
             expect(openFeatureErrorDetails.errorCode).toEqual(ErrorCode.FLAG_NOT_FOUND); // should get code from thrown OpenFeatureError
           });
         });
-  
+
         describe('Non-OpenFeatureError', () => {
           it('should contain error code', () => {
             expect(nonOpenFeatureErrorDetails.errorCode).toBeTruthy();
@@ -461,30 +464,30 @@ describe('OpenFeatureClient', () => {
           });
         });
       });
-  
+
       describe('Requirement 1.4.8', () => {
         it('should contain error reason', () => {
           expect(nonOpenFeatureErrorDetails.reason).toEqual(StandardResolutionReasons.ERROR);
           expect(openFeatureErrorDetails.reason).toEqual(StandardResolutionReasons.ERROR);
         });
       });
-  
+
       describe('Requirement 1.4.9', () => {
         it('must not throw, must return default', () => {
           nonOpenFeatureErrorDetails = client.getNumberDetails('some-flag', defaultNumberValue);
-  
+
           expect(nonOpenFeatureErrorDetails).toBeTruthy();
           expect(nonOpenFeatureErrorDetails.value).toEqual(defaultNumberValue);
         });
       });
-  
+
       describe('Requirement 1.4.12', () => {
         describe('OpenFeatureError', () => {
           it('should contain "error" message', () => {
             expect(openFeatureErrorDetails.errorMessage).toEqual(OPEN_FEATURE_ERROR_MESSAGE);
           });
         });
-  
+
         describe('Non-OpenFeatureError', () => {
           it('should contain "error" message', () => {
             expect(nonOpenFeatureErrorDetails.errorMessage).toEqual(NON_OPEN_FEATURE_ERROR_MESSAGE);
@@ -492,14 +495,14 @@ describe('OpenFeatureClient', () => {
         });
       });
     });
-  
+
     describe('Requirement 1.4.13, Requirement 1.4.14', () => {
       it('should return immutable `flag metadata` as defined by the provider', () => {
         const flagMetadata = {
           url: 'https://test.dev',
           version: '1',
         };
-  
+
         const flagMetadataProvider = {
           metadata: {
             name: 'flag-metadata',
@@ -511,14 +514,14 @@ describe('OpenFeatureClient', () => {
             };
           }),
         } as unknown as Provider;
-  
+
         OpenFeature.setProvider(flagMetadataProvider);
         const client = OpenFeature.getClient();
         const response = client.getBooleanDetails('some-flag', false);
         expect(response.flagMetadata).toBe(flagMetadata);
         expect(Object.isFrozen(response.flagMetadata)).toBeTruthy();
       });
-  
+
       it('should return empty `flag metadata` because it was not set by the provider', () => {
         // The mock provider doesn't contain flag metadata
         OpenFeature.setProvider(MOCK_PROVIDER);
@@ -530,15 +533,14 @@ describe('OpenFeatureClient', () => {
   });
 
   describe('providerStatus', () => {
-    it('should return current provider status', ()=> {
-      OpenFeature.setProvider({ ...MOCK_PROVIDER, status: ProviderStatus.STALE});
+    it('should return current provider status', () => {
+      OpenFeature.setProvider({ ...MOCK_PROVIDER, status: ProviderStatus.STALE });
       expect(OpenFeature.getClient().providerStatus).toEqual(ProviderStatus.STALE);
     });
 
-    it('should return READY if not defined', ()=> {
+    it('should return READY if not defined', () => {
       OpenFeature.setProvider(MOCK_PROVIDER);
       expect(OpenFeature.getClient().providerStatus).toEqual(ProviderStatus.READY);
     });
   });
 });
-

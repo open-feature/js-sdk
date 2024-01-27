@@ -8,7 +8,6 @@ import {
   JsonObject,
   JsonValue,
   OpenFeature,
-  OpenFeatureClient,
   Provider,
   ProviderStatus,
   ResolutionDetails,
@@ -16,6 +15,7 @@ import {
   TransactionContext,
   TransactionContextPropagator,
 } from '../src';
+import { OpenFeatureClient } from '../src/client/internal/open-feature-client';
 
 const BOOLEAN_VALUE = true;
 const STRING_VALUE = 'val';
@@ -203,7 +203,7 @@ describe('OpenFeatureClient', () => {
             const defaultStringValue = 'other';
             const value: MyRestrictedString = await client.getStringValue<MyRestrictedString>(
               stringFlag,
-              defaultStringValue
+              defaultStringValue,
             );
 
             expect(value).toEqual(STRING_VALUE);
@@ -231,7 +231,7 @@ describe('OpenFeatureClient', () => {
             const defaultNumberValue = 4096;
             const value: MyRestrictedNumber = await client.getNumberValue<MyRestrictedNumber>(
               numberFlag,
-              defaultNumberValue
+              defaultNumberValue,
             );
 
             expect(value).toEqual(NUMBER_VALUE);
@@ -534,7 +534,7 @@ describe('OpenFeatureClient', () => {
           flagKey,
           defaultValue,
           expect.objectContaining({ transformed: false }),
-          {}
+          {},
         );
       });
     });
@@ -570,7 +570,7 @@ describe('OpenFeatureClient', () => {
           expect.objectContaining({
             targetingKey: TARGETING_KEY,
           }),
-          expect.anything()
+          expect.anything(),
         );
       });
     });
@@ -596,7 +596,7 @@ describe('OpenFeatureClient', () => {
           expect.objectContaining({
             ...context,
           }),
-          expect.anything()
+          expect.anything(),
         );
       });
     });
@@ -666,7 +666,7 @@ describe('OpenFeatureClient', () => {
             ...invocationContext,
             ...beforeHookContext,
           }),
-          expect.anything()
+          expect.anything(),
         );
       });
     });
@@ -686,7 +686,7 @@ describe('OpenFeatureClient', () => {
     const client = OpenFeature.getClient();
 
     expect(await client.addHooks().clearHooks().setContext({}).setLogger(console).getBooleanValue('test', true)).toBe(
-      true
+      true,
     );
   });
 });

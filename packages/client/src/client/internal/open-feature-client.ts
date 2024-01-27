@@ -14,15 +14,15 @@ import {
   ResolutionDetails,
   SafeLogger,
   StandardResolutionReasons,
-  statusMatchesEvent
+  statusMatchesEvent,
 } from '@openfeature/core';
-import { FlagEvaluationOptions } from '../evaluation';
-import { ProviderEvents } from '../events';
-import { InternalEventEmitter } from '../events/internal/internal-event-emitter';
-import { Hook } from '../hooks';
-import { OpenFeature } from '../open-feature';
-import { Provider } from '../provider';
-import { Client } from './client';
+import { FlagEvaluationOptions } from '../../evaluation';
+import { ProviderEvents } from '../../events';
+import { InternalEventEmitter } from '../../events/internal/internal-event-emitter';
+import { Hook } from '../../hooks';
+import { OpenFeature } from '../../open-feature';
+import { Provider } from '../../provider';
+import { Client } from '../client';
 
 type OpenFeatureClientOptions = {
   name?: string;
