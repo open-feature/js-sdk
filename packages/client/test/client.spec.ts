@@ -14,7 +14,7 @@ import {
   ResolutionDetails,
   StandardResolutionReasons,
 } from '../src';
-import { OpenFeatureClient } from '../src/client/open-feature-client';
+import { OpenFeatureClient } from '../src/client/internal/open-feature-client';
 
 const BOOLEAN_VALUE = true;
 const STRING_VALUE = 'val';
@@ -130,12 +130,15 @@ describe('OpenFeatureClient', () => {
       resolveBooleanEvaluation(): ResolutionDetails<boolean> {
         throw new Error('Method not implemented.');
       }
+
       resolveStringEvaluation(): ResolutionDetails<string> {
         throw new Error('Method not implemented.');
       }
+
       resolveNumberEvaluation(): ResolutionDetails<number> {
         throw new Error('Method not implemented.');
       }
+
       resolveObjectEvaluation<T extends JsonValue>(): ResolutionDetails<T> {
         throw new Error('Method not implemented.');
       }
@@ -236,7 +239,7 @@ describe('OpenFeatureClient', () => {
                 numberFlag,
                 defaultNumberValue,
                 {},
-                {}
+                {},
               );
             });
           });
@@ -248,7 +251,7 @@ describe('OpenFeatureClient', () => {
               const defaultNumberValue = 4096;
               const value: MyRestrictedNumber = client.getNumberValue<MyRestrictedNumber>(
                 numberFlag,
-                defaultNumberValue
+                defaultNumberValue,
               );
 
               expect(value).toEqual(NUMBER_VALUE);
@@ -256,7 +259,7 @@ describe('OpenFeatureClient', () => {
                 numberFlag,
                 defaultNumberValue,
                 {},
-                {}
+                {},
               );
             });
           });
@@ -333,7 +336,7 @@ describe('OpenFeatureClient', () => {
               booleanFlag,
               defaultBooleanValue,
               {},
-              {}
+              {},
             );
           });
         });
@@ -634,4 +637,3 @@ describe('OpenFeatureClient', () => {
     });
   });
 });
-
