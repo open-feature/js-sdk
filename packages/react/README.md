@@ -40,7 +40,7 @@
 
 The OpenFeature React SDK adds React-specific functionality to the [OpenFeature Web SDK](https://openfeature.dev/docs/reference/technologies/client/web).
 
-In addition to the feature provided by the [web sdk](https://openfeature.dev/docs/reference/technologies/client/web), additional capabilities include:
+In addition to the feature provided by the [web sdk](https://openfeature.dev/docs/reference/technologies/client/web), capabilities include:
 
 - [Multiple Providers and Scoping](#multiple-providers-and-scoping)
 - [Re-rendering with Context Changes](#re-rendering-with-context-changes)
