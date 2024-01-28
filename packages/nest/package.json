@@ -46,8 +46,9 @@
   "homepage": "https://github.com/open-feature/js-sdk#readme",
   "peerDependencies": {
     "@nestjs/common": "^8.0.0 || ^9.0.0 || ^10.0.0",
-    "@openfeature/server-sdk": ">=1.7.5",
-    "rxjs": "^6.0.0 || ^7.0.0"
+    "@nestjs/core": "^8.0.0 || ^9.0.0 || ^10.0.0",
+    "rxjs": "^6.0.0 || ^7.0.0 || 8.0.0",
+    "@openfeature/server-sdk": ">=1.7.5"
   },
   "devDependencies": {
     "@nestjs/common": "^10.2.10",

@@ -13,19 +13,27 @@ class TestEventEmitter extends GenericEventEmitter<AnyProviderEvent> {
   }
 }
 
+// a little function to make sure we're at least waiting for the event loop 
+// to clear before we start making assertions
+const wait = (millis = 0) => {
+  return new Promise(resolve => {setTimeout(resolve, millis);});
+};
+
 describe('GenericEventEmitter', () => {
   describe('addHandler should', function () {
-    it('attach handler for event type', function () {
+    it('attach handler for event type', async function () {
       const emitter = new TestEventEmitter();
 
       const handler1 = jest.fn();
       emitter.addHandler(AllProviderEvents.Ready, handler1);
       emitter.emit(AllProviderEvents.Ready);
 
+      await wait();
+
       expect(handler1).toHaveBeenCalledTimes(1);
     });
 
-    it('attach several handlers for event type', function () {
+    it('attach several handlers for event type', async function () {
       const emitter = new TestEventEmitter();
 
       const handler1 = jest.fn();
@@ -37,6 +45,8 @@ describe('GenericEventEmitter', () => {
       emitter.addHandler(AllProviderEvents.Error, handler3);
 
       emitter.emit(AllProviderEvents.Ready);
+
+      await wait();
 
       expect(handler1).toHaveBeenCalledTimes(1);
       expect(handler2).toHaveBeenCalledTimes(1);
@@ -62,17 +72,19 @@ describe('GenericEventEmitter', () => {
       emitter.emit(AllProviderEvents.Ready);
     });
 
-    it('trigger handler for event type', function () {
+    it('trigger handler for event type', async function () {
       const emitter = new TestEventEmitter();
 
       const handler1 = jest.fn();
       emitter.addHandler(AllProviderEvents.Ready, handler1);
       emitter.emit(AllProviderEvents.Ready);
 
+      await wait();
+
       expect(handler1).toHaveBeenCalledTimes(1);
     });
 
-    it('trigger handler for event type with event data', function () {
+    it('trigger handler for event type with event data', async function () {
       const event: ReadyEvent = { message: 'message' };
       const emitter = new TestEventEmitter();
 
@@ -80,10 +92,12 @@ describe('GenericEventEmitter', () => {
       emitter.addHandler(AllProviderEvents.Ready, handler1);
       emitter.emit(AllProviderEvents.Ready, event);
 
+      await wait();
+
       expect(handler1).toHaveBeenNthCalledWith(1, event);
     });
 
-    it('trigger several handlers for event type', function () {
+    it('trigger several handlers for event type', async function () {
       const emitter = new TestEventEmitter();
 
       const handler1 = jest.fn();
@@ -96,6 +110,8 @@ describe('GenericEventEmitter', () => {
 
       emitter.emit(AllProviderEvents.Ready);
 
+      await wait();
+
       expect(handler1).toHaveBeenCalledTimes(1);
       expect(handler2).toHaveBeenCalledTimes(1);
       expect(handler3).not.toHaveBeenCalled();
@@ -103,7 +119,7 @@ describe('GenericEventEmitter', () => {
   });
 
   describe('removeHandler should', () => {
-    it('remove single handler', function () {
+    it('remove single handler', async function () {
       const emitter = new TestEventEmitter();
 
       const handler1 = jest.fn();
@@ -113,12 +129,14 @@ describe('GenericEventEmitter', () => {
       emitter.removeHandler(AllProviderEvents.Ready, handler1);
       emitter.emit(AllProviderEvents.Ready);
 
+      await wait();
+
       expect(handler1).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('removeAllHandlers should', () => {
-    it('remove all handlers for event type', function () {
+    it('remove all handlers for event type', async function () {
       const emitter = new TestEventEmitter();
 
       const handler1 = jest.fn();
@@ -130,11 +148,62 @@ describe('GenericEventEmitter', () => {
       emitter.emit(AllProviderEvents.Ready);
       emitter.emit(AllProviderEvents.Error);
 
+      await wait();
+
       expect(handler1).toHaveBeenCalledTimes(0);
       expect(handler2).toHaveBeenCalledTimes(1);
     });
 
-    it('remove all handlers only for event type', function () {
+    it('remove same handler when assigned to multiple events', async function () {
+      const emitter = new TestEventEmitter();
+
+      const handler = jest.fn();
+      emitter.addHandler(AllProviderEvents.Stale, handler);
+      emitter.addHandler(AllProviderEvents.ContextChanged, handler);
+
+      emitter.removeHandler(AllProviderEvents.Stale, handler);
+      emitter.removeHandler(AllProviderEvents.ContextChanged, handler);
+
+      emitter.emit(AllProviderEvents.Stale);
+      emitter.emit(AllProviderEvents.ContextChanged);
+
+      await wait();
+
+      expect(handler).toHaveBeenCalledTimes(0);
+    });
+
+    it('allow addition/removal of duplicate handlers', async function () {
+      const emitter = new TestEventEmitter();
+
+      const handler = jest.fn();
+      emitter.addHandler(AllProviderEvents.Stale, handler);
+      emitter.addHandler(AllProviderEvents.Stale, handler);
+
+      emitter.removeHandler(AllProviderEvents.Stale, handler);
+      emitter.removeHandler(AllProviderEvents.Stale, handler);
+
+      emitter.emit(AllProviderEvents.Stale);
+
+      await wait();
+
+      expect(handler).toHaveBeenCalledTimes(0);
+    });
+
+    it('allow duplicate event handlers and call them', async function () {
+      const emitter = new TestEventEmitter();
+
+      const handler = jest.fn();
+      emitter.addHandler(AllProviderEvents.Stale, handler);
+      emitter.addHandler(AllProviderEvents.Stale, handler);
+
+      emitter.emit(AllProviderEvents.Stale);
+
+      await wait();
+
+      expect(handler).toHaveBeenCalledTimes(2);
+    });
+
+    it('remove all handlers only for event type', async function () {
       const emitter = new TestEventEmitter();
 
       const handler1 = jest.fn();
@@ -146,11 +215,13 @@ describe('GenericEventEmitter', () => {
       emitter.removeAllHandlers(AllProviderEvents.Ready);
       emitter.emit(AllProviderEvents.Ready);
 
+      await wait();
+
       expect(handler1).toHaveBeenCalledTimes(1);
       expect(handler2).toHaveBeenCalledTimes(0);
     });
 
-    it('remove all handlers if no event type is given', function () {
+    it('remove all handlers if no event type is given', async function () {
       const emitter = new TestEventEmitter();
 
       const handler1 = jest.fn();
@@ -163,6 +234,8 @@ describe('GenericEventEmitter', () => {
       emitter.removeAllHandlers();
       emitter.emit(AllProviderEvents.Ready);
       emitter.emit(AllProviderEvents.Error);
+
+      await wait();
 
       expect(handler1).toHaveBeenCalledTimes(1);
       expect(handler2).toHaveBeenCalledTimes(1);
