@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.24](https://github.com/open-feature/js-sdk/compare/core-v0.0.23...core-v0.0.24) (2024-01-27)
+
+
+### ✨ New Features
+
+* adds ErrorOptions to Error constructor ([#765](https://github.com/open-feature/js-sdk/issues/765)) ([2f59a9f](https://github.com/open-feature/js-sdk/commit/2f59a9f5a81135d81d3c6cd7a14863dc21b012b4))
+
+
+### 🐛 Bug Fixes
+
+* event-handler leakage ([#788](https://github.com/open-feature/js-sdk/issues/788)) ([69c7f05](https://github.com/open-feature/js-sdk/commit/69c7f05eb48341a3b3fa3c584ccf641201bb0c6e))
+
 ## [0.0.23](https://github.com/open-feature/js-sdk/compare/core-v0.0.22...core-v0.0.23) (2024-01-11)
 
 
