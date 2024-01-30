@@ -2,6 +2,6 @@
   "packages/nest": "0.0.4-experimental",
   "packages/react": "0.1.0-experimental",
   "packages/client": "0.4.10",
-  "packages/server": "1.9.1",
+  "packages/server": "1.10.0",
   "packages/shared": "0.0.24"
 }
