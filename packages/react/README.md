@@ -15,26 +15,66 @@
   <a href="https://github.com/open-feature/spec/releases/tag/v0.7.0">
     <img alt="Specification" src="https://img.shields.io/static/v1?label=specification&message=v0.7.0&color=yellow&style=for-the-badge" />
   </a>
+  <!-- x-release-please-start-version -->
+  <a href="https://github.com/open-feature/js-sdk/releases/tag/react-sdk-v0.1.0-experimental">
+    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v0.1.0-experimental&color=blue&style=for-the-badge" />
+  </a>
+  <!-- x-release-please-end -->
   <br/>
   <a href="https://codecov.io/gh/open-feature/js-sdk">
     <img alt="codecov" src="https://codecov.io/gh/open-feature/js-sdk/branch/main/graph/badge.svg?token=3DC5XOEHMY" />
   </a>
+  <a href="https://www.npmjs.com/package/@openfeature/react-sdk">
+    <img alt="NPM Download" src="https://img.shields.io/npm/dm/%40openfeature%2Freact-sdk" />
+  </a>
 </p>
 <!-- x-hide-in-docs-start -->
 
-[OpenFeature](https://openfeature.dev) is an open specification that provides a vendor-agnostic, community-driven API for feature flagging that works with your favorite feature flag management tool.
+[OpenFeature](https://openfeature.dev) is an open specification that provides a vendor-agnostic, community-driven API for feature flagging that works with your favorite feature flag management tool or in-house solution.
+
+<!-- x-hide-in-docs-end -->
 
 🧪 This SDK is experimental.
 
-## Basic Usage
+## Overview
 
-Here's a basic example of how to use the current API with the in-memory provider:
+The OpenFeature React SDK adds React-specific functionality to the [OpenFeature Web SDK](https://openfeature.dev/docs/reference/technologies/client/web).
+
+In addition to the feature provided by the [web sdk](https://openfeature.dev/docs/reference/technologies/client/web), capabilities include:
+
+- [Multiple Providers and Scoping](#multiple-providers-and-scoping)
+- [Re-rendering with Context Changes](#re-rendering-with-context-changes)
+- [Re-rendering with Flag Configuration Changes](#re-rendering-with-flag-configuration-changes)
+- [Suspense Support](#suspense-support)
+
+## 🚀 Quick start
+
+### Requirements
+
+- ES2022-compatible web browser (Chrome, Edge, Firefox, etc)
+- React version 16.8+
+
+### Install
+
+#### npm
+
+```sh
+npm install --save @openfeature/react-sdk
+```
+
+#### Required peer dependencies
+
+The following list contains the peer dependencies of `@openfeature/react-sdk` with its expected and compatible versions:
+
+* `@openfeature/web-sdk`: >=0.4.10
+* `react`: >=16.8.0
+
+### Usage
+
+The example below shows how to use the `OpenFeatureProvider` with OpenFeature's `InMemoryProvider`.
 
 ```tsx
-import logo from './logo.svg';
-import './App.css';
-import { EvaluationContext, OpenFeatureProvider, useBooleanFlagValue, useBooleanFlagDetails, OpenFeature } from '@openfeature/react-sdk';
-import { FlagdWebProvider } from '@openfeature/flagd-web-provider';
+import { EvaluationContext, OpenFeatureProvider, useBooleanFlagValue, useBooleanFlagDetails, OpenFeature, InMemoryProvider } from '@openfeature/react-sdk';
 
 const flagConfig = {
   'new-message': {
@@ -68,7 +108,6 @@ function Page() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
         {newMessage ? <p>Welcome to this OpenFeature-enabled React app!</p> : <p>Welcome to this React app.</p>}
       </header>
     </div>
@@ -81,14 +120,14 @@ export default App;
 You use the detailed flag evaluation hooks to evaluate the flag and get additional information about the flag and the evaluation.
 
 ```tsx
-import { useBooleanFlagDetails} from '@openfeature/react-sdk';
+import { useBooleanFlagDetails } from '@openfeature/react-sdk';
 
 const {
-    value,
-    variant,
-    reason,
-    flagMetadata
-  } = useBooleanFlagDetails('new-message', false);
+  value,
+  variant,
+  reason,
+  flagMetadata
+} = useBooleanFlagDetails('new-message', false);
 ```
 
 ### Multiple Providers and Scoping
@@ -182,3 +221,7 @@ function Fallback() {
   return <p>Waiting for provider to be ready...</p>;
 }
 ```
+
+## Resources
+
+ - [Example repo](https://github.com/open-feature/react-test-app)
