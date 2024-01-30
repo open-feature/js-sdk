@@ -1,6 +1,18 @@
 # Changelog
 
 
+## [0.4.11](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.10...web-sdk-v0.4.11) (2024-01-30)
+
+
+### ✨ New Features
+
+* adds ErrorOptions to Error constructor ([#765](https://github.com/open-feature/js-sdk/issues/765)) ([2f59a9f](https://github.com/open-feature/js-sdk/commit/2f59a9f5a81135d81d3c6cd7a14863dc21b012b4))
+
+
+### 🧹 Chore
+
+* **main:** release core 0.0.24 ([#770](https://github.com/open-feature/js-sdk/issues/770)) ([12b3b35](https://github.com/open-feature/js-sdk/commit/12b3b352760006ce7ccf5e53b4e326aedf8953bc))
+
 ## [0.4.10](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.9...web-sdk-v0.4.10) (2024-01-11)
 
 
