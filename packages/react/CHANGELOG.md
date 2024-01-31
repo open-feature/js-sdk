@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.1.1-experimental](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.1.0-experimental...react-sdk-v0.1.1-experimental) (2024-01-31)
+
+
+### ✨ New Features
+
+* adds ErrorOptions to Error constructor ([#765](https://github.com/open-feature/js-sdk/issues/765)) ([2f59a9f](https://github.com/open-feature/js-sdk/commit/2f59a9f5a81135d81d3c6cd7a14863dc21b012b4))
+
+
+### 🐛 Bug Fixes
+
+* removed duped core types ([#800](https://github.com/open-feature/js-sdk/issues/800)) ([7cc1e09](https://github.com/open-feature/js-sdk/commit/7cc1e09a1118d0c541aeb5e43da74eb3983950a3))
+
+
+### 📚 Documentation
+
+* update react readme ([#792](https://github.com/open-feature/js-sdk/issues/792)) ([1666597](https://github.com/open-feature/js-sdk/commit/16665978394718558e3c43601737358098305a40))
+
 ## [0.1.0-experimental](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.0.6-experimental...react-sdk-v0.1.0-experimental) (2024-01-18)
 
 
