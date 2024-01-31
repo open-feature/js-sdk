@@ -1,4 +1,4 @@
-export * from './event-emitter';
+export * from './provider-event-emitter';
 export * from './event-utils';
 export * from './eventing';
 export * from './events';

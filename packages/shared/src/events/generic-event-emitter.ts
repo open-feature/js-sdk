@@ -1,5 +1,5 @@
 import { Logger, ManageLogger, SafeLogger } from '../logger';
-import { ProviderEventEmitter } from './event-emitter';
+import { ProviderEventEmitter } from './provider-event-emitter';
 import { EventContext, EventDetails, EventHandler } from './eventing';
 import { AllProviderEvents, AnyProviderEvent } from './events';
 
