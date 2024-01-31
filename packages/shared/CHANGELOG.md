@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.25](https://github.com/open-feature/js-sdk/compare/core-v0.0.24...core-v0.0.25) (2024-01-31)
+
+
+### ✨ New Features
+
+* use interface for events ([#798](https://github.com/open-feature/js-sdk/issues/798)) ([b47b1dc](https://github.com/open-feature/js-sdk/commit/b47b1dce5b691f16d877bcac2189d95dda9d6d15))
+
+
+### 🐛 Bug Fixes
+
+* removed duped core types ([#800](https://github.com/open-feature/js-sdk/issues/800)) ([7cc1e09](https://github.com/open-feature/js-sdk/commit/7cc1e09a1118d0c541aeb5e43da74eb3983950a3))
+
 ## [0.0.24](https://github.com/open-feature/js-sdk/compare/core-v0.0.23...core-v0.0.24) (2024-01-27)
 
 
