@@ -35,6 +35,11 @@ type OpenFeatureClientOptions = {
   version?: string;
 };
 
+/**
+ * This implementation of the {@link Client} is meant to only be instantiated by the SDK.
+ * It should not be used outside the SDK and so should not be exported.
+ * @internal
+ */
 export class OpenFeatureClient implements Client {
   private _hooks: Hook[] = [];
   private _clientLogger?: Logger;
