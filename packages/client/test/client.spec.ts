@@ -146,7 +146,7 @@ describe('OpenFeatureClient', () => {
       expect(provider.status).toBe(ProviderStatus.NOT_READY);
       await OpenFeature.setProviderAndWait(provider);
       expect(provider.status).toBe(ProviderStatus.READY);
-      expect(spy).toBeCalled();
+      expect(spy).toHaveBeenCalled();
     });
 
     it('should wait for the provider to fail during initialization', async () => {
@@ -156,7 +156,7 @@ describe('OpenFeatureClient', () => {
       expect(provider.status).toBe(ProviderStatus.NOT_READY);
       await expect(OpenFeature.setProviderAndWait(provider)).rejects.toThrow();
       expect(provider.status).toBe(ProviderStatus.ERROR);
-      expect(spy).toBeCalled();
+      expect(spy).toHaveBeenCalled();
     });
   });
 
@@ -167,10 +167,15 @@ describe('OpenFeatureClient', () => {
   });
 
   describe('Requirement 1.2.1', () => {
-    const NAME = 'my-client';
-    const client = OpenFeature.getClient(NAME);
-    it('should have metadata accessor with name', () => {
-      expect(client.metadata.name).toEqual(NAME);
+    const domain = 'my-domain';
+    const client = OpenFeature.getClient(domain);
+
+    it('should have metadata accessor with name for backwards compatibility', () => {
+      expect(client.metadata.name).toEqual(domain);
+    });
+
+    it('should have metadata accessor with domain', () => {
+      expect(client.metadata.domain).toEqual(domain);
     });
   });
 

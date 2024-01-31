@@ -92,7 +92,7 @@ See [here](https://open-feature.github.io/js-sdk/modules/_openfeature_server_sdk
 | ✅      | [Targeting](#targeting)         | Contextually-aware flag evaluation using [evaluation context](https://openfeature.dev/docs/reference/concepts/evaluation-context). |
 | ✅      | [Hooks](#hooks)                 | Add functionality to various stages of the flag evaluation life-cycle.                                                             |
 | ✅      | [Logging](#logging)             | Integrate with popular logging packages.                                                                                           |
-| ✅      | [Named clients](#named-clients) | Utilize multiple providers in a single application.                                                                                |
+| ✅      | [Domains](#domains) | Logically bind clients with providers application.                                                                                |
 | ✅      | [Eventing](#eventing)           | React to state changes in the provider or flag management system.                                                                  |
 | ✅      | [Shutdown](#shutdown)           | Gracefully clean up a provider during application shutdown.                                                                        |
 | ✅      | [Extending](#extending)         | Extend OpenFeature with custom providers and hooks.                                                                                |
@@ -194,11 +194,11 @@ const client = OpenFeature.getClient();
 client.setLogger(logger);
 ```
 
-### Named clients
+### Domains
 
-Clients can be given a name.
-A name is a logical identifier which can be used to associate clients with a particular provider.
-If a name has no associated provider, the global provider is used.
+Clients can be assigned to a domain.
+A domain is a logical identifier which can be used to associate clients with a particular provider.
+If a domain has no associated provider, the global provider is used.
 
 ```ts
 import { OpenFeature, InMemoryProvider } from "@openfeature/server-sdk";
@@ -216,16 +216,16 @@ const myFlags = {
 
 // Registering the default provider
 OpenFeature.setProvider(InMemoryProvider(myFlags));
-// Registering a named provider
-OpenFeature.setProvider("otherClient", new InMemoryProvider(someOtherFlags));
+// Registering a provider to a domain
+OpenFeature.setProvider("domain1", new InMemoryProvider(someOtherFlags));
 
-// A Client backed by default provider
+// A Client bound to the default provider
 const clientWithDefault = OpenFeature.getClient();
-// A Client backed by NewCachedProvider
-const clientForCache = OpenFeature.getClient("otherClient");
+// A Client bound to the NewCachedProvider
+const clientForCache = OpenFeature.getClient("domain1");
 ```
 
-Named providers can be set in an awaitable or synchronous way.
+Domains can be defined on a provider during registration.
 For more details, please refer to the [providers](#providers) section.
 
 ### Eventing
