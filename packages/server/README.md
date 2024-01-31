@@ -302,7 +302,7 @@ class MyProvider implements Provider {
   }
 
   status?: ProviderStatus | undefined;
-  events?: OpenFeatureEventEmitter | undefined;
+  events?: OpenFeatureEventEmitter | undefined; // implement with "new OpenFeatureEventEmitter()", and use "emit()" to emit events
 
   initialize?(context?: EvaluationContext | undefined): Promise<void> {
     // code to initialize your provider
