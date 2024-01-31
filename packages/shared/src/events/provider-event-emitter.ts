@@ -16,7 +16,7 @@ export interface ProviderEventEmitter<E extends AnyProviderEvent, AdditionalCont
 
   removeHandler(eventType: AnyProviderEvent, handler: EventHandler): void;
 
-  removeAllHandlers(eventType?: AnyProviderEvent): void ;
+  removeAllHandlers(eventType?: AnyProviderEvent): void;
 
   getHandlers(eventType: AnyProviderEvent): EventHandler[];
 }
