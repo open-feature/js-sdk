@@ -287,7 +287,12 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     Object.values<AllProviderEvents>(AllProviderEvents).forEach(
       (eventType) =>
         clientProvider.events?.addHandler(eventType, async (details) => {
-          newEmitter.emit(eventType, { ...details, clientName: domain, providerName: clientProvider.metadata.name });
+          newEmitter.emit(eventType, {
+            ...details,
+            clientName: domain,
+            domain,
+            providerName: clientProvider.metadata.name,
+          });
         }),
     );
 
@@ -313,11 +318,11 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
   private transferListeners(
     oldProvider: P,
     newProvider: P,
-    clientName: string | undefined,
+    domain: string | undefined,
     emitters: (GenericEventEmitter<AnyProviderEvent> | undefined)[],
   ) {
     this._clientEventHandlers
-      .get(clientName)
+      .get(domain)
       ?.forEach((eventHandler) => oldProvider.events?.removeHandler(...eventHandler));
 
     // iterate over the event types
@@ -325,15 +330,20 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
       const handler = async (details?: EventDetails) => {
         // on each event type, fire the associated handlers
         emitters.forEach((emitter) => {
-          emitter?.emit(eventType, { ...details, clientName, providerName: newProvider.metadata.name });
+          emitter?.emit(eventType, { ...details, clientName: domain, domain, providerName: newProvider.metadata.name });
         });
-        this._events.emit(eventType, { ...details, clientName, providerName: newProvider.metadata.name });
+        this._events.emit(eventType, {
+          ...details,
+          clientName: domain,
+          domain,
+          providerName: newProvider.metadata.name,
+        });
       };
 
       return [eventType, handler];
     });
 
-    this._clientEventHandlers.set(clientName, newClientHandlers);
+    this._clientEventHandlers.set(domain, newClientHandlers);
     newClientHandlers.forEach((eventHandler) => newProvider.events?.addHandler(...eventHandler));
   }
 

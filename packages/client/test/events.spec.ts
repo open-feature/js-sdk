@@ -660,9 +660,9 @@ describe('Events', () => {
             try {
               runCount++;
               // one run should be global
-              if (details?.clientName === undefined) {
+              if (details?.domain === undefined) {
                 expect(details?.providerName).toEqual(OpenFeature.getProviderMetadata().name);
-              } else if (details?.clientName === domain) {
+              } else if (details?.domain === domain) {
                 // one run should be for client
                 expect(details?.clientName).toEqual(domain);
                 expect(details?.providerName).toEqual(provider.metadata.name);

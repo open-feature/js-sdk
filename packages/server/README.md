@@ -86,16 +86,16 @@ See [here](https://open-feature.github.io/js-sdk/modules/_openfeature_server_sdk
 
 ## 🌟 Features
 
-| Status | Features                        | Description                                                                                                                        |
-| ------ | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| ✅      | [Providers](#providers)         | Integrate with a commercial, open source, or in-house feature management tool.                                                     |
-| ✅      | [Targeting](#targeting)         | Contextually-aware flag evaluation using [evaluation context](https://openfeature.dev/docs/reference/concepts/evaluation-context). |
-| ✅      | [Hooks](#hooks)                 | Add functionality to various stages of the flag evaluation life-cycle.                                                             |
-| ✅      | [Logging](#logging)             | Integrate with popular logging packages.                                                                                           |
-| ✅      | [Domains](#domains) | Logically bind clients with providers application.                                                                                |
-| ✅      | [Eventing](#eventing)           | React to state changes in the provider or flag management system.                                                                  |
-| ✅      | [Shutdown](#shutdown)           | Gracefully clean up a provider during application shutdown.                                                                        |
-| ✅      | [Extending](#extending)         | Extend OpenFeature with custom providers and hooks.                                                                                |
+| Status | Features                | Description                                                                                                                        |
+| ------ | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| ✅      | [Providers](#providers) | Integrate with a commercial, open source, or in-house feature management tool.                                                     |
+| ✅      | [Targeting](#targeting) | Contextually-aware flag evaluation using [evaluation context](https://openfeature.dev/docs/reference/concepts/evaluation-context). |
+| ✅      | [Hooks](#hooks)         | Add functionality to various stages of the flag evaluation life-cycle.                                                             |
+| ✅      | [Logging](#logging)     | Integrate with popular logging packages.                                                                                           |
+| ✅      | [Domains](#domains)     | Logically bind clients with providers application.                                                                                 |
+| ✅      | [Eventing](#eventing)   | React to state changes in the provider or flag management system.                                                                  |
+| ✅      | [Shutdown](#shutdown)   | Gracefully clean up a provider during application shutdown.                                                                        |
+| ✅      | [Extending](#extending) | Extend OpenFeature with custom providers and hooks.                                                                                |
 
 <sub>Implemented: ✅ | In-progress: ⚠️ | Not implemented yet: ❌</sub>
 
@@ -126,7 +126,7 @@ OpenFeature.setProvider(new MyProvider());
 Once the provider has been registered, the status can be tracked using [events](#eventing).
 
 In some situations, it may be beneficial to register multiple providers in the same application.
-This is possible using [named clients](#named-clients), which is covered in more details below.
+This is possible using [domains](#domains), which is covered in more details below.
 
 ### Targeting
 
@@ -217,12 +217,12 @@ const myFlags = {
 // Registering the default provider
 OpenFeature.setProvider(InMemoryProvider(myFlags));
 // Registering a provider to a domain
-OpenFeature.setProvider("domain1", new InMemoryProvider(someOtherFlags));
+OpenFeature.setProvider("in-memory", new InMemoryProvider(someOtherFlags));
 
 // A Client bound to the default provider
 const clientWithDefault = OpenFeature.getClient();
-// A Client bound to the NewCachedProvider
-const clientForCache = OpenFeature.getClient("domain1");
+// A Client bound to the InMemoryProvider provider
+const domainScopedClient = OpenFeature.getClient("in-memory");
 ```
 
 Domains can be defined on a provider during registration.

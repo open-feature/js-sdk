@@ -1,7 +1,7 @@
 import { FlagNotFoundError, InMemoryProvider, ProviderEvents, StandardResolutionReasons, TypeMismatchError } from '../src';
 import { VariantFoundError } from '../src/provider/in-memory-provider/variant-not-found-error';
 
-describe(InMemoryProvider, () => {
+describe('in-memory provider', () => {
   describe('boolean flags', () => {
     const provider = new InMemoryProvider({});
     it('resolves to default variant with reason static', async () => {
@@ -146,7 +146,9 @@ describe(InMemoryProvider, () => {
 
       provider.putConfiguration(StringFlagSpec);
 
-      await expect(provider.resolveStringEvaluation('another-string-flag', itsDefault)).rejects.toThrow(FlagNotFoundError);
+      await expect(provider.resolveStringEvaluation('another-string-flag', itsDefault)).rejects.toThrow(
+        FlagNotFoundError,
+      );
     });
 
     it('resolves to default value with reason disabled if flag is disabled', async () => {
@@ -257,7 +259,9 @@ describe(InMemoryProvider, () => {
       };
       provider.putConfiguration(numberFlagSpec);
 
-      await expect(provider.resolveNumberEvaluation('another-number-flag', defaultNumber)).rejects.toThrow(FlagNotFoundError);
+      await expect(provider.resolveNumberEvaluation('another-number-flag', defaultNumber)).rejects.toThrow(
+        FlagNotFoundError,
+      );
     });
 
     it('resolves to default value with reason disabled if flag is disabled', async () => {
@@ -372,7 +376,9 @@ describe(InMemoryProvider, () => {
       };
       provider.putConfiguration(ObjectFlagSpec);
 
-      await expect(provider.resolveObjectEvaluation('another-number-flag', defaultObject)).rejects.toThrow(FlagNotFoundError);
+      await expect(provider.resolveObjectEvaluation('another-number-flag', defaultObject)).rejects.toThrow(
+        FlagNotFoundError,
+      );
     });
 
     it('resolves to default value with reason disabled if flag is disabled', async () => {

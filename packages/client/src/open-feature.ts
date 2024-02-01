@@ -214,18 +214,18 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
 
       // only run the event handlers if the onContextChange method succeeded
       this.getAssociatedEventEmitters(domain).forEach((emitter) => {
-        emitter?.emit(ProviderEvents.ContextChanged, { clientName: domain, providerName });
+        emitter?.emit(ProviderEvents.ContextChanged, { clientName: domain, domain, providerName });
       });
-      this._events?.emit(ProviderEvents.ContextChanged, { clientName: domain, providerName });
+      this._events?.emit(ProviderEvents.ContextChanged, { clientName: domain, domain, providerName });
     } catch (err) {
       // run error handlers instead
       const error = err as Error | undefined;
       const message = `Error running ${provider?.metadata?.name}'s context change handler: ${error?.message}`;
       this._logger?.error(`${message}`, err);
       this.getAssociatedEventEmitters(domain).forEach((emitter) => {
-        emitter?.emit(ProviderEvents.Error, { clientName: domain, providerName, message });
+        emitter?.emit(ProviderEvents.Error, { clientName: domain, domain, providerName, message });
       });
-      this._events?.emit(ProviderEvents.Error, { clientName: domain, providerName, message });
+      this._events?.emit(ProviderEvents.Error, { clientName: domain, domain, providerName, message });
     }
   }
 }

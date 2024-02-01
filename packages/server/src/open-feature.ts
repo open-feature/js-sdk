@@ -114,7 +114,7 @@ export class OpenFeatureAPI
       () => this.getProviderForClient(domain),
       () => this.buildAndCacheEventEmitterForClient(domain),
       () => this._logger,
-      { name: domain, version },
+      { domain, version },
       context,
     );
   }

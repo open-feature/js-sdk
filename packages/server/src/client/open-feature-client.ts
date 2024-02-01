@@ -53,8 +53,8 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
   get metadata(): ClientMetadata {
     return {
       // Use domain if name is not provided
-      name: this.options.name ?? this.options.domain,
-      domain: this.options.domain,
+      name: this.options.domain ?? this.options.name,
+      domain: this.options.domain ?? this.options.name,
       version: this.options.version,
       providerMetadata: this.providerAccessor().metadata,
     };
