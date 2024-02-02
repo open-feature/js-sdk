@@ -1,4 +1,5 @@
 import { Logger, ManageLogger, SafeLogger } from '../logger';
+import { ProviderEventEmitter } from './provider-event-emitter';
 import { EventContext, EventDetails, EventHandler } from './eventing';
 import { AllProviderEvents, AnyProviderEvent } from './events';
 
@@ -7,7 +8,7 @@ import { AllProviderEvents, AnyProviderEvent } from './events';
  * in the event details.
  */
 export abstract class GenericEventEmitter<E extends AnyProviderEvent, AdditionalContext extends Record<string, unknown> = Record<string, unknown>>
-  implements ManageLogger<GenericEventEmitter<E, AdditionalContext>>
+  implements ProviderEventEmitter<E>, ManageLogger<GenericEventEmitter<E, AdditionalContext>>
 {
   protected abstract readonly eventEmitter: PlatformEventEmitter;
 

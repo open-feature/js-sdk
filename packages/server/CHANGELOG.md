@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.11.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.10.0...server-sdk-v1.11.0) (2024-01-31)
+
+
+### ✨ New Features
+
+* use interface for events ([#798](https://github.com/open-feature/js-sdk/issues/798)) ([b47b1dc](https://github.com/open-feature/js-sdk/commit/b47b1dce5b691f16d877bcac2189d95dda9d6d15))
+
+
+### 🐛 Bug Fixes
+
+* removed duped core types ([#800](https://github.com/open-feature/js-sdk/issues/800)) ([7cc1e09](https://github.com/open-feature/js-sdk/commit/7cc1e09a1118d0c541aeb5e43da74eb3983950a3))
+
+
+### 🧹 Chore
+
+* **main:** release core 0.0.25 ([#801](https://github.com/open-feature/js-sdk/issues/801)) ([53a89ab](https://github.com/open-feature/js-sdk/commit/53a89ab0ce9ec2b95a394e5b6c6569177abf5141))
+
 ## [1.10.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.9.1...server-sdk-v1.10.0) (2024-01-30)
 
 

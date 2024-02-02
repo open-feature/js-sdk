@@ -16,8 +16,8 @@
     <img alt="Specification" src="https://img.shields.io/static/v1?label=specification&message=v0.7.0&color=yellow&style=for-the-badge" />
   </a>
   <!-- x-release-please-start-version -->
-  <a href="https://github.com/open-feature/js-sdk/releases/tag/web-sdk-v0.4.11">
-    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v0.4.11&color=blue&style=for-the-badge" />
+  <a href="https://github.com/open-feature/js-sdk/releases/tag/web-sdk-v0.4.12">
+    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v0.4.12&color=blue&style=for-the-badge" />
   </a>
   <!-- x-release-please-end -->
   <br/>
@@ -270,43 +270,52 @@ This can be a new repository or included in [the existing contrib repository](ht
 You’ll then need to write the provider by implementing the [Provider interface](./src/provider/provider.ts) exported by the OpenFeature SDK.
 
 ```ts
-import { JsonValue, Provider, ResolutionDetails } from '@openfeature/web-sdk';
+import {
+  AnyProviderEvent,
+  EvaluationContext,
+  Hook,
+  JsonValue,
+  Logger,
+  Provider,
+  ProviderEventEmitter,
+  ProviderStatus,
+  ResolutionDetails
+} from '@openfeature/web-sdk';
 
 // implement the provider interface
 class MyProvider implements Provider {
   // Adds runtime validation that the provider is used with the expected SDK
-  public readonly runsOn = 'client';
-
+  public readonly runsOn = 'server';
   readonly metadata = {
     name: 'My Provider',
   } as const;
-
   // Optional provider managed hooks
-  hooks?: Hook<FlagValue>[];
-
+  hooks?: Hook[];
   resolveBooleanEvaluation(flagKey: string, defaultValue: boolean, context: EvaluationContext, logger: Logger): ResolutionDetails<boolean> {
     // code to evaluate a boolean
   }
-
   resolveStringEvaluation(flagKey: string, defaultValue: string, context: EvaluationContext, logger: Logger): ResolutionDetails<string> {
     // code to evaluate a string
   }
-
   resolveNumberEvaluation(flagKey: string, defaultValue: number, context: EvaluationContext, logger: Logger): ResolutionDetails<number> {
     // code to evaluate a number
   }
-
   resolveObjectEvaluation<T extends JsonValue>(flagKey: string, defaultValue: T, context: EvaluationContext, logger: Logger): ResolutionDetails<T> {
     // code to evaluate an object
   }
 
+  onContextChange?(oldContext: EvaluationContext, newContext: EvaluationContext): Promise<void> {
+    // reconcile the provider's cached flags, if applicable
+  }
+
   status?: ProviderStatus | undefined;
-  events?: OpenFeatureEventEmitter | undefined;
+
+  // implement with "new OpenFeatureEventEmitter()", and use "emit()" to emit events
+  events?: ProviderEventEmitter<AnyProviderEvent> | undefined; 
 
   initialize?(context?: EvaluationContext | undefined): Promise<void> {
     // code to initialize your provider
   }
-
   onClose?(): Promise<void> {
     // code to shut down your provider
   }
