@@ -618,6 +618,7 @@ describe('Events', () => {
           const handler = (details?: EventDetails) => {
             try {
               expect(details?.clientName).toEqual(domain);
+              expect(details?.domain).toEqual(domain);
               expect(details?.providerName).toEqual(provider.metadata.name);
               done();
             } catch (e) {
@@ -637,6 +638,7 @@ describe('Events', () => {
           const handler = (details?: EventDetails) => {
             try {
               expect(details?.clientName).toEqual(domain);
+              expect(details?.domain).toEqual(domain);
               expect(details?.providerName).toEqual(provider.metadata.name);
               done();
             } catch (e) {
@@ -665,6 +667,7 @@ describe('Events', () => {
               } else if (details?.domain === domain) {
                 // one run should be for client
                 expect(details?.clientName).toEqual(domain);
+                expect(details?.domain).toEqual(domain);
                 expect(details?.providerName).toEqual(provider.metadata.name);
               }
               if (runCount == 2) {
@@ -688,6 +691,7 @@ describe('Events', () => {
             try {
               // expect only one error run, because only one provider throws
               expect(details?.clientName).toEqual(domain);
+              expect(details?.domain).toEqual(domain);
               expect(details?.providerName).toEqual(provider.metadata.name);
               expect(details?.message).toBeTruthy();
               done();
@@ -712,6 +716,7 @@ describe('Events', () => {
         const handler = (details?: EventDetails) => {
           try {
             expect(details?.clientName).toEqual(domain);
+            expect(details?.domain).toEqual(domain);
             expect(details?.providerName).toEqual(provider.metadata.name);
             done();
           } catch (e) {
@@ -732,6 +737,7 @@ describe('Events', () => {
         const handler = (details?: EventDetails) => {
           try {
             expect(details?.clientName).toEqual(domain);
+            expect(details?.domain).toEqual(domain);
             expect(details?.providerName).toEqual(provider.metadata.name);
             expect(details?.message).toBeTruthy();
             done();
