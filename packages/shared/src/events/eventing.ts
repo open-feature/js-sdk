@@ -1,3 +1,4 @@
+import { ErrorCode } from '../evaluation';
 import { AllProviderEvents, AnyProviderEvent } from './events';
 
 export type EventMetadata = {
@@ -18,9 +19,11 @@ type CommonEventProps = {
   metadata?: EventMetadata;
 };
 
+
 export type ReadyEvent = CommonEventProps;
 export type ErrorEvent = CommonEventProps;
 export type StaleEvent = CommonEventProps;
+export type ReconcilingEvent = CommonEventProps & { errorCode: ErrorCode };
 export type ConfigChangeEvent = CommonEventProps & { flagsChanged?: string[] };
 
 type EventMap = {
@@ -29,6 +32,7 @@ type EventMap = {
   [AllProviderEvents.Stale]: StaleEvent;
   [AllProviderEvents.ContextChanged]: CommonEventProps;
   [AllProviderEvents.ConfigurationChanged]: ConfigChangeEvent;
+  [AllProviderEvents.Reconciling]: ReconcilingEvent;
 };
 
 export type EventContext<  U extends Record<string, unknown> = Record<string, unknown>

@@ -52,6 +52,11 @@ export enum ClientProviderEvents {
   ContextChanged = 'PROVIDER_CONTEXT_CHANGED',
 
   /**
+   * The context associated with the provider has changed, and the provider has not yet reconciled its associated state.
+   */
+  Reconciling = 'PROVIDER_RECONCILING',
+
+  /**
    * The provider's cached state is no longer valid and may not be up-to-date with the source of truth.
    */
   Stale = 'PROVIDER_STALE',

@@ -18,6 +18,7 @@ export abstract class GenericEventEmitter<E extends AnyProviderEvent, Additional
     [AllProviderEvents.Ready]: new WeakMap<EventHandler, EventHandler[]>(),
     [AllProviderEvents.Error]: new WeakMap<EventHandler, EventHandler[]>(),
     [AllProviderEvents.Stale]: new WeakMap<EventHandler, EventHandler[]>(),
+    [AllProviderEvents.Reconciling]: new WeakMap<EventHandler, EventHandler[]>(),
   };
   private _eventLogger?: Logger;
 

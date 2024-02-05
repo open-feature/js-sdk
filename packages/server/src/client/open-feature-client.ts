@@ -11,6 +11,8 @@ import {
   Logger,
   ManageContext,
   OpenFeatureError,
+  ProviderFatalError,
+  ProviderNotReadyError,
   ResolutionDetails,
   SafeLogger,
   StandardResolutionReasons,
@@ -21,7 +23,7 @@ import { ProviderEvents } from '../events';
 import { InternalEventEmitter } from '../events/internal/internal-event-emitter';
 import { Hook } from '../hooks';
 import { OpenFeature } from '../open-feature';
-import { Provider } from '../provider';
+import { Provider, ProviderStatus } from '../provider';
 import { Client } from './client';
 
 type OpenFeatureClientOptions = {
@@ -42,6 +44,7 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
     // we always want the client to use the current provider,
     // so pass a function to always access the currently registered one.
     private readonly providerAccessor: () => Provider,
+    private readonly providerStatusAccessor: () => ProviderStatus,
     private readonly emitterAccessor: () => InternalEventEmitter,
     private readonly globalLogger: () => Logger,
     private readonly options: OpenFeatureClientOptions,
@@ -60,9 +63,13 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
     };
   }
 
+  get providerStatus(): ProviderStatus {
+    return this.providerStatusAccessor();
+  }
+
   addHandler(eventType: ProviderEvents, handler: EventHandler): void {
     this.emitterAccessor().addHandler(eventType, handler);
-    const shouldRunNow = statusMatchesEvent(eventType, this._provider.status);
+    const shouldRunNow = statusMatchesEvent(eventType, this._providerStatus);
 
     if (shouldRunNow) {
       // run immediately, we're in the matching state
@@ -255,6 +262,13 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
     try {
       const frozenContext = await this.beforeHooks(allHooks, hookContext, options);
 
+      // short circuit evaluation entirely if provider is in a bad state
+      if (this.providerStatus === ProviderStatus.NOT_READY) {
+        throw new ProviderNotReadyError('provider has not yet initialized');
+      } else if (this.providerStatus === ProviderStatus.FATAL) {
+        throw new ProviderFatalError('provider is in an irrecoverable error state');
+      }
+
       // run the referenced resolver, binding the provider.
       const resolution = await resolver.call(this._provider, flagKey, defaultValue, frozenContext, this._logger);
 
@@ -346,6 +360,10 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
 
   private get _provider(): Provider {
     return this.providerAccessor();
+  }
+
+  private get _providerStatus(): ProviderStatus {
+    return this.providerStatusAccessor();
   }
 
   private get _logger() {

@@ -1,5 +1,5 @@
-import { GeneralError } from './errors';
-import { EvaluationContext } from './evaluation';
+import { GeneralError, OpenFeatureError } from './errors';
+import { ErrorCode, EvaluationContext } from './evaluation';
 import {
   AllProviderEvents,
   AnyProviderEvent,
@@ -12,15 +12,74 @@ import {
 import { isDefined } from './filter';
 import { BaseHook, EvaluationLifeCycle } from './hooks';
 import { DefaultLogger, Logger, ManageLogger, SafeLogger } from './logger';
-import { CommonProvider, ProviderMetadata, ProviderStatus } from './provider';
+import { ClientProviderStatus, CommonProvider, ProviderMetadata, ServerProviderStatus } from './provider';
 import { objectOrUndefined, stringOrUndefined } from './type-guards';
 import { Paradigm } from './types';
 
-export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProvider, H extends BaseHook = BaseHook>
-  implements Eventing, EvaluationLifeCycle<OpenFeatureCommonAPI<P>>, ManageLogger<OpenFeatureCommonAPI<P>>
+type AnyProviderStatus = ClientProviderStatus | ServerProviderStatus;
+
+/**
+ * A provider and its current status.
+ * For internal use only.
+ */
+export class ProviderWrapper<P extends CommonProvider<AnyProviderStatus>, S extends AnyProviderStatus> {
+  private _pendingContextChanges = 0;
+
+  constructor(private _provider: P, private _status: S, _statusEnumType: typeof ClientProviderStatus | typeof ServerProviderStatus) {
+    // update the providers status with events
+    _provider.events?.addHandler(AllProviderEvents.Ready, () => {
+      // These casts are due to the face we don't "know" what status enum we are dealing with here (client or server).
+      // We could abstract this an implement it in the client/server libs to fix this, but the value is low.
+      this._status = _statusEnumType.READY as S;
+    });
+    _provider.events?.addHandler(AllProviderEvents.Stale, () => {
+      this._status = _statusEnumType.STALE as S;
+    });
+    _provider.events?.addHandler(AllProviderEvents.Error, (details) => {
+      if (details?.errorCode === ErrorCode.PROVIDER_FATAL) {
+        this._status = _statusEnumType.FATAL as S;
+      } else {
+        this._status = _statusEnumType.ERROR as S;
+      }
+    });
+  }
+
+  get provider(): P {
+    return this._provider;
+  }
+
+  set provider(provider: P) {
+    this._provider = provider;
+  } 
+
+  get status(): S {
+    return this._status;
+  }
+
+  set status(status: S) {
+    this._status = status;
+  }
+
+  get allContextChangesSettled() {
+    return this._pendingContextChanges === 0;
+  }
+
+  incrementPendingContextChanges() {
+    this._pendingContextChanges++;
+  }
+
+  decrementPendingContextChanges() {
+    this._pendingContextChanges--;
+  }
+}
+
+export abstract class OpenFeatureCommonAPI<S extends AnyProviderStatus, P extends CommonProvider<S> = CommonProvider<S>, H extends BaseHook = BaseHook>
+  implements Eventing, EvaluationLifeCycle<OpenFeatureCommonAPI<S, P>>, ManageLogger<OpenFeatureCommonAPI<S, P>>
 {
+  protected abstract readonly _statusEnumType: typeof ClientProviderStatus | typeof ServerProviderStatus; // an accessor 
   protected abstract _createEventEmitter(): GenericEventEmitter<AnyProviderEvent>;
-  protected abstract _defaultProvider: P;
+  protected abstract _defaultProvider: ProviderWrapper<P, AnyProviderStatus>;
+  protected abstract _domainScopedProviders: Map<string, ProviderWrapper<P, AnyProviderStatus>>;
   protected abstract readonly _events: GenericEventEmitter<AnyProviderEvent>;
 
   protected _hooks: H[] = [];
@@ -28,7 +87,6 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
   protected _logger: Logger = new DefaultLogger();
 
   private readonly _clientEventHandlers: Map<string | undefined, [AnyProviderEvent, EventHandler][]> = new Map();
-  protected _domainScopedProviders: Map<string, P> = new Map();
   protected _domainScopedContext: Map<string, EvaluationContext> = new Map();
   protected _clientEvents: Map<string | undefined, GenericEventEmitter<AnyProviderEvent>> = new Map();
   protected _runsOn: Paradigm;
@@ -84,8 +142,9 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
   addHandler<T extends AnyProviderEvent>(eventType: T, handler: EventHandler): void {
     [...new Map([[undefined, this._defaultProvider]]), ...this._domainScopedProviders].forEach((keyProviderTuple) => {
       const domain = keyProviderTuple[0];
-      const provider = keyProviderTuple[1];
-      const shouldRunNow = statusMatchesEvent(eventType, keyProviderTuple[1].status);
+      const provider = keyProviderTuple[1].provider;
+      const status = keyProviderTuple[1].status;
+      const shouldRunNow = statusMatchesEvent(eventType, status);
 
       if (shouldRunNow) {
         // run immediately, we're in the matching state
@@ -204,20 +263,14 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
 
     const emitters = this.getAssociatedEventEmitters(domain);
 
-    // warn of improper implementations
-    if (typeof provider.initialize === 'function' && provider.status === undefined) {
-      const activeLogger = this._logger || console;
-      activeLogger.warn(
-        `Provider ${providerName} implements 'initialize' but not 'status'. Please implement 'status'.`,
-      );
-    }
-
     let initializationPromise: Promise<void> | void = undefined;
+    const wrappedProvider = new ProviderWrapper<P, AnyProviderStatus>(provider, this._statusEnumType.NOT_READY, this._statusEnumType);
 
-    if (provider?.status === ProviderStatus.NOT_READY && typeof provider.initialize === 'function') {
+    if (typeof provider.initialize === 'function') {
       initializationPromise = provider
         .initialize?.(domain ? this._domainScopedContext.get(domain) ?? this._context : this._context)
         ?.then(() => {
+          wrappedProvider.status = this._statusEnumType.READY;
           // fetch the most recent event emitters, some may have been added during init
           this.getAssociatedEventEmitters(domain).forEach((emitter) => {
             emitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
@@ -225,6 +278,12 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
           this._events?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
         })
         ?.catch((error) => {
+          // if this is a fatal error, transition to FATAL status
+          if ((error as OpenFeatureError)?.code === ErrorCode.PROVIDER_FATAL) {
+            wrappedProvider.status = this._statusEnumType.FATAL;
+          } else {
+            wrappedProvider.status = this._statusEnumType.ERROR;
+          }
           this.getAssociatedEventEmitters(domain).forEach((emitter) => {
             emitter?.emit(AllProviderEvents.Error, {
               clientName: domain,
@@ -243,6 +302,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
           throw error;
         });
     } else {
+      wrappedProvider.status = this._statusEnumType.READY;
       emitters.forEach((emitter) => {
         emitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
       });
@@ -250,27 +310,32 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     }
 
     if (domain) {
-      this._domainScopedProviders.set(domain, provider);
+      this._domainScopedProviders.set(domain, wrappedProvider);
     } else {
-      this._defaultProvider = provider;
+      this._defaultProvider = wrappedProvider;
     }
 
     this.transferListeners(oldProvider, provider, domain, emitters);
 
+    const allProviders = [
+      ...[...this._domainScopedProviders.values()].map((wrappers) => wrappers.provider),
+      this._defaultProvider.provider,
+    ];
+
     // Do not close a provider that is bound to any client
-    if (![...this._domainScopedProviders.values(), this._defaultProvider].includes(oldProvider)) {
+    if (!allProviders.includes(oldProvider)) {
       oldProvider?.onClose?.();
     }
 
     return initializationPromise;
   }
 
-  protected getProviderForClient(domain?: string): P {
-    if (!domain) {
-      return this._defaultProvider;
+  protected getProviderForClient(name?: string): P {
+    if (!name) {
+      return this._defaultProvider.provider;
     }
 
-    return this._domainScopedProviders.get(domain) ?? this._defaultProvider;
+    return this._domainScopedProviders.get(name)?.provider ?? this._defaultProvider.provider;
   }
 
   protected buildAndCacheEventEmitterForClient(domain?: string): GenericEventEmitter<AnyProviderEvent> {
@@ -349,19 +414,19 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
 
   async close(): Promise<void> {
     try {
-      await this?._defaultProvider?.onClose?.();
+      await this?._defaultProvider.provider?.onClose?.();
     } catch (err) {
-      this.handleShutdownError(this._defaultProvider, err);
+      this.handleShutdownError(this._defaultProvider.provider, err);
     }
 
-    const providers = Array.from(this._domainScopedProviders);
+    const wrappers = Array.from(this._domainScopedProviders);
 
     await Promise.all(
-      providers.map(async ([, provider]) => {
+      wrappers.map(async ([, wrapper]) => {
         try {
-          await provider.onClose?.();
+          await wrapper?.provider.onClose?.();
         } catch (err) {
-          this.handleShutdownError(provider, err);
+          this.handleShutdownError(wrapper?.provider, err);
         }
       }),
     );
@@ -374,7 +439,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
       this._logger.error('Unable to cleanly close providers. Resetting to the default configuration.');
     } finally {
       this._domainScopedProviders.clear();
-      this._defaultProvider = defaultProvider;
+      this._defaultProvider = new ProviderWrapper<P, AnyProviderStatus>(defaultProvider, this._statusEnumType.NOT_READY, this._statusEnumType);
     }
   }
 

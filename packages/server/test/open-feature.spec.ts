@@ -7,7 +7,6 @@ const mockProvider = (config?: { initialStatus?: ProviderStatus; runsOn?: Paradi
       name: 'mock-events-success',
     },
     runsOn: config?.runsOn || 'server',
-    status: config?.initialStatus || ProviderStatus.NOT_READY,
     initialize: jest.fn(() => {
       return Promise.resolve('started');
     }),
@@ -55,13 +54,6 @@ describe('OpenFeature', () => {
         OpenFeature.setProvider(provider);
         expect(OpenFeature.providerMetadata.name).toBe('mock-events-success');
         expect(provider.initialize).toHaveBeenCalled();
-      });
-
-      it('should not invoke initialize function if the provider is not in state NOT_READY', () => {
-        const provider = mockProvider({ initialStatus: ProviderStatus.READY });
-        OpenFeature.setProvider(provider);
-        expect(OpenFeature.providerMetadata.name).toBe('mock-events-success');
-        expect(provider.initialize).not.toHaveBeenCalled();
       });
     });
 
@@ -123,13 +115,13 @@ describe('OpenFeature', () => {
     it('should not close provider if it is used by another client', async () => {
       const provider1 = { ...mockProvider(), onClose: jest.fn() };
 
-      OpenFeature.setProvider('domain1', provider1);
-      OpenFeature.setProvider('domain2', provider1);
+      await OpenFeature.setProviderAndWait('domain1', provider1);
+      await OpenFeature.setProviderAndWait('domain2', provider1);
 
-      OpenFeature.setProvider('domain1', { ...provider1 });
+      await OpenFeature.setProviderAndWait('domain1', { ...provider1 });
       expect(provider1.onClose).not.toHaveBeenCalled();
 
-      OpenFeature.setProvider('domain2', { ...provider1 });
+      await OpenFeature.setProviderAndWait('domain2', { ...provider1 });
       expect(provider1.onClose).toHaveBeenCalledTimes(1);
     });
 

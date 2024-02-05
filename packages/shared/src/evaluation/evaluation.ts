@@ -88,6 +88,11 @@ export enum ErrorCode {
   PROVIDER_NOT_READY = 'PROVIDER_NOT_READY',
 
   /**
+   * The provider has entered an irrecoverable error state.
+   */
+  PROVIDER_FATAL = 'PROVIDER_FATAL',
+
+  /**
    * The flag could not be found.
    */
   FLAG_NOT_FOUND = 'FLAG_NOT_FOUND',

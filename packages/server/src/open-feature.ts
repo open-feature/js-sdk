@@ -1,20 +1,22 @@
-import { NOOP_PROVIDER, Provider } from './provider';
 import {
+  EvaluationContext,
   ManageContext,
   OpenFeatureCommonAPI,
-  EvaluationContext,
+  ProviderWrapper,
   objectOrUndefined,
   stringOrUndefined,
 } from '@openfeature/core';
+import { Client, OpenFeatureClient } from './client';
+import { OpenFeatureEventEmitter } from './events';
+import { Hook } from './hooks';
+import { NOOP_PROVIDER, Provider, ProviderStatus } from './provider';
 import {
   ManageTransactionContextPropagator,
   NOOP_TRANSACTION_CONTEXT_PROPAGATOR,
   TransactionContext,
   TransactionContextPropagator,
 } from './transaction-context';
-import { Client, OpenFeatureClient } from './client';
-import { OpenFeatureEventEmitter } from './events';
-import { Hook } from './hooks';
+import { ServerProviderStatus } from '@openfeature/core';
 
 // use a symbol as a key for the global singleton
 const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/js-sdk/api');
@@ -25,11 +27,13 @@ type OpenFeatureGlobal = {
 const _globalThis = globalThis as OpenFeatureGlobal;
 
 export class OpenFeatureAPI
-  extends OpenFeatureCommonAPI<Provider, Hook>
-  implements ManageContext<OpenFeatureAPI>, ManageTransactionContextPropagator<OpenFeatureCommonAPI<Provider>>
+  extends OpenFeatureCommonAPI<ServerProviderStatus, Provider, Hook>
+  implements ManageContext<OpenFeatureAPI>, ManageTransactionContextPropagator<OpenFeatureCommonAPI<ServerProviderStatus, Provider>>
 {
+  protected _statusEnumType: typeof ProviderStatus = ProviderStatus;
   protected _events = new OpenFeatureEventEmitter();
-  protected _defaultProvider: Provider = NOOP_PROVIDER;
+  protected _defaultProvider: ProviderWrapper<Provider, ServerProviderStatus> = new ProviderWrapper(NOOP_PROVIDER, ProviderStatus.NOT_READY, this._statusEnumType);
+  protected _domainScopedProviders: Map<string, ProviderWrapper<Provider, ServerProviderStatus>> = new Map();
   protected _createEventEmitter = () => new OpenFeatureEventEmitter();
 
   private _transactionContextPropagator: TransactionContextPropagator = NOOP_TRANSACTION_CONTEXT_PROPAGATOR;
@@ -52,6 +56,14 @@ export class OpenFeatureAPI
     const instance = new OpenFeatureAPI();
     _globalThis[GLOBAL_OPENFEATURE_API_KEY] = instance;
     return instance;
+  }
+
+  private getProviderStatus(name?: string): ProviderStatus {
+    if (!name) {
+      return this._defaultProvider.status;
+    }
+
+    return this._domainScopedProviders.get(name)?.status ?? this._defaultProvider.status;
   }
 
   setContext(context: EvaluationContext): this {
@@ -112,6 +124,7 @@ export class OpenFeatureAPI
 
     return new OpenFeatureClient(
       () => this.getProviderForClient(domain),
+      () => this.getProviderStatus(domain),
       () => this.buildAndCacheEventEmitterForClient(domain),
       () => this._logger,
       { domain, version },
@@ -129,7 +142,7 @@ export class OpenFeatureAPI
 
   setTransactionContextPropagator(
     transactionContextPropagator: TransactionContextPropagator,
-  ): OpenFeatureCommonAPI<Provider> {
+  ): OpenFeatureCommonAPI<ServerProviderStatus, Provider> {
     const baseMessage = 'Invalid TransactionContextPropagator, will not be set: ';
     if (typeof transactionContextPropagator?.getTransactionContext !== 'function') {
       this._logger.error(`${baseMessage}: getTransactionContext is not a function.`);

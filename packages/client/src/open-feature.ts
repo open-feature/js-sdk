@@ -1,15 +1,17 @@
 import {
+  ClientProviderStatus,
   EvaluationContext,
   GenericEventEmitter,
   ManageContext,
   OpenFeatureCommonAPI,
+  ProviderWrapper,
   objectOrUndefined,
   stringOrUndefined,
 } from '@openfeature/core';
 import { Client, OpenFeatureClient } from './client';
 import { OpenFeatureEventEmitter, ProviderEvents } from './events';
 import { Hook } from './hooks';
-import { NOOP_PROVIDER, Provider } from './provider';
+import { NOOP_PROVIDER, Provider, ProviderStatus } from './provider';
 
 // use a symbol as a key for the global singleton
 const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/web-sdk/api');
@@ -19,14 +21,16 @@ type OpenFeatureGlobal = {
 };
 type DomainRecord = {
   domain?: string;
-  provider: Provider;
+  record: ProviderWrapper<Provider, ClientProviderStatus>;
 };
 
 const _globalThis = globalThis as OpenFeatureGlobal;
 
-export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> implements ManageContext<Promise<void>> {
+export class OpenFeatureAPI extends OpenFeatureCommonAPI<ClientProviderStatus, Provider, Hook> implements ManageContext<Promise<void>> {
+  protected _statusEnumType: typeof ProviderStatus = ProviderStatus;
   protected _events: GenericEventEmitter<ProviderEvents> = new OpenFeatureEventEmitter();
-  protected _defaultProvider: Provider = NOOP_PROVIDER;
+  protected _defaultProvider: ProviderWrapper<Provider, ClientProviderStatus> = new ProviderWrapper(NOOP_PROVIDER, ProviderStatus.NOT_READY, this._statusEnumType);
+  protected _domainScopedProviders: Map<string, ProviderWrapper<Provider, ClientProviderStatus>> = new Map();
   protected _createEventEmitter = () => new OpenFeatureEventEmitter();
 
   private constructor() {
@@ -47,6 +51,14 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
     const instance = new OpenFeatureAPI();
     _globalThis[GLOBAL_OPENFEATURE_API_KEY] = instance;
     return instance;
+  }
+
+  private getProviderStatus(name?: string): ProviderStatus {
+    if (!name) {
+      return this._defaultProvider.status;
+    }
+
+    return this._domainScopedProviders.get(name)?.status ?? this._defaultProvider.status;
   }
 
   /**
@@ -73,11 +85,11 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
     const context = objectOrUndefined<T>(domainOrContext) ?? objectOrUndefined(contextOrUndefined) ?? {};
 
     if (domain) {
-      const provider = this._domainScopedProviders.get(domain);
-      if (provider) {
+      const record = this._domainScopedProviders.get(domain);
+      if (record) {
         const oldContext = this.getContext(domain);
         this._domainScopedContext.set(domain, context);
-        await this.runProviderContextChangeHandler(domain, provider, oldContext, context);
+        await this.runProviderContextChangeHandler(domain, record, oldContext, context);
       } else {
         this._domainScopedContext.set(domain, context);
       }
@@ -88,19 +100,19 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
       // collect all providers that are using the default context (not bound to a domain)
       const unboundProviders: DomainRecord[] = Array.from(this._domainScopedProviders.entries())
         .filter(([domain]) => !this._domainScopedContext.has(domain))
-        .reduce<DomainRecord[]>((acc, [domain, provider]) => {
-          acc.push({ domain, provider });
+        .reduce<DomainRecord[]>((acc, [domain, record]) => {
+          acc.push({ domain, record });
           return acc;
         }, []);
 
-      const allProviders: DomainRecord[] = [
+      const allDomainRecords: DomainRecord[] = [
         // add in the default (no domain)
-        { domain: undefined, provider: this._defaultProvider },
+        { domain: undefined, record: this._defaultProvider },
         ...unboundProviders,
       ];
       await Promise.all(
-        allProviders.map((tuple) =>
-          this.runProviderContextChangeHandler(tuple.domain, tuple.provider, oldContext, context),
+        allDomainRecords.map((dm) =>
+          this.runProviderContextChangeHandler(dm.domain, dm.record, oldContext, context),
         ),
       );
     }
@@ -143,12 +155,12 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
   async clearContext(domainOrUndefined?: string): Promise<void> {
     const domain = stringOrUndefined(domainOrUndefined);
     if (domain) {
-      const provider = this._domainScopedProviders.get(domain);
-      if (provider) {
+      const record = this._domainScopedProviders.get(domain);
+      if (record) {
         const oldContext = this.getContext(domain);
         this._domainScopedContext.delete(domain);
         const newContext = this.getContext();
-        await this.runProviderContextChangeHandler(domain, provider, oldContext, newContext);
+        await this.runProviderContextChangeHandler(domain, record, oldContext, newContext);
       } else {
         this._domainScopedContext.delete(domain);
       }
@@ -186,6 +198,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
       // functions are passed here to make sure that these values are always up to date,
       // and so we don't have to make these public properties on the API class.
       () => this.getProviderForClient(domain),
+      () => this.getProviderStatus(domain),
       () => this.buildAndCacheEventEmitterForClient(domain),
       () => this._logger,
       { domain, version },
@@ -203,28 +216,44 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
 
   private async runProviderContextChangeHandler(
     domain: string | undefined,
-    provider: Provider,
+    wrapper: ProviderWrapper<Provider, ClientProviderStatus>,
     oldContext: EvaluationContext,
     newContext: EvaluationContext,
   ): Promise<void> {
-    const providerName = provider.metadata.name;
+    const providerName = wrapper.provider?.metadata?.name || 'unnamed-provider';
+    
     try {
-      await provider.onContextChange?.(oldContext, newContext);
-
-      // only run the event handlers if the onContextChange method succeeded
-      this.getAssociatedEventEmitters(domain).forEach((emitter) => {
-        emitter?.emit(ProviderEvents.ContextChanged, { clientName: domain, domain, providerName });
-      });
-      this._events?.emit(ProviderEvents.ContextChanged, { clientName: domain, domain, providerName });
+      if (typeof wrapper.provider.onContextChange === 'function') {
+        wrapper.incrementPendingContextChanges();
+        wrapper.status = this._statusEnumType.RECONCILING;
+        this.getAssociatedEventEmitters(domain).forEach((emitter) => {
+          emitter?.emit(ProviderEvents.Reconciling, { domain, providerName });
+        });
+        this._events?.emit(ProviderEvents.Reconciling, { domain, providerName });
+        await wrapper.provider.onContextChange(oldContext, newContext);
+        wrapper.decrementPendingContextChanges();
+      }
+      // only run the event handlers, and update the state if the onContextChange method succeeded
+      wrapper.status = this._statusEnumType.READY;
+      if (wrapper.allContextChangesSettled) {
+        this.getAssociatedEventEmitters(domain).forEach((emitter) => {
+          emitter?.emit(ProviderEvents.ContextChanged, { clientName: domain, domain, providerName });
+        });
+        this._events?.emit(ProviderEvents.ContextChanged, { clientName: domain, domain, providerName });
+      }
     } catch (err) {
       // run error handlers instead
-      const error = err as Error | undefined;
-      const message = `Error running ${provider?.metadata?.name}'s context change handler: ${error?.message}`;
-      this._logger?.error(`${message}`, err);
-      this.getAssociatedEventEmitters(domain).forEach((emitter) => {
-        emitter?.emit(ProviderEvents.Error, { clientName: domain, domain, providerName, message });
-      });
-      this._events?.emit(ProviderEvents.Error, { clientName: domain, domain, providerName, message });
+      wrapper.decrementPendingContextChanges();
+      wrapper.status = this._statusEnumType.ERROR;
+      if (wrapper.allContextChangesSettled) {
+        const error = err as Error | undefined;
+        const message = `Error running ${providerName}'s context change handler: ${error?.message}`;
+        this._logger?.error(`${message}`, err);
+        this.getAssociatedEventEmitters(domain).forEach((emitter) => {
+          emitter?.emit(ProviderEvents.Error, { clientName: domain, domain, providerName, message });
+        });
+        this._events?.emit(ProviderEvents.Error, { clientName: domain, domain, providerName, message });
+      }
     }
   }
 }

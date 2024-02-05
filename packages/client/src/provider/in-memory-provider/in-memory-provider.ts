@@ -9,7 +9,6 @@ import {
   ResolutionDetails,
   StandardResolutionReasons,
   TypeMismatchError,
-  ProviderStatus,
 } from '@openfeature/core';
 import { Provider } from '../provider';
 import { OpenFeatureEventEmitter, ProviderEvents } from '../../events';
@@ -22,7 +21,6 @@ import { VariantNotFoundError } from './variant-not-found-error';
 export class InMemoryProvider implements Provider {
   public readonly events = new OpenFeatureEventEmitter();
   public readonly runsOn = 'client';
-  status: ProviderStatus = ProviderStatus.NOT_READY;
   readonly metadata = {
     name: 'in-memory',
   } as const;
@@ -35,18 +33,12 @@ export class InMemoryProvider implements Provider {
 
   async initialize(context?: EvaluationContext | undefined): Promise<void> {
     try {
-
       for (const key in this._flagConfiguration) {
         this.resolveFlagWithReason(key, context);
       }
-
       this._context = context;
-      // set the provider's state, but don't emit events manually;
-      // the SDK does this based on the resolution/rejection of the init promise
-      this.status = ProviderStatus.READY;
-    } catch (error) {
-      this.status = ProviderStatus.ERROR;
-      throw error;
+    } catch (err) {
+      throw new Error('initialization failure', { cause: err });
     }
   }
 
@@ -59,16 +51,10 @@ export class InMemoryProvider implements Provider {
       .filter(([key, value]) => this._flagConfiguration[key] !== value)
       .map(([key]) => key);
 
-    this.status = ProviderStatus.STALE;
-    this.events.emit(ProviderEvents.Stale);
-
     this._flagConfiguration = { ...flagConfiguration };
-    this.events.emit(ProviderEvents.ConfigurationChanged, { flagsChanged });
-
     try {
       await this.initialize(this._context);
-      // we need to emit our own events in this case, since it's not part of the init flow.
-      this.events.emit(ProviderEvents.Ready);
+      this.events.emit(ProviderEvents.ConfigurationChanged, { flagsChanged });
     } catch (err) {
       this.events.emit(ProviderEvents.Error);
       throw err;
@@ -165,9 +151,7 @@ export class InMemoryProvider implements Provider {
 
     const value = variant && flagSpec?.variants[variant];
 
-    const evalReason = isContextEval ? StandardResolutionReasons.TARGETING_MATCH : StandardResolutionReasons.STATIC;
-
-    const reason = this.status === ProviderStatus.STALE ? StandardResolutionReasons.CACHED : evalReason;
+    const reason = isContextEval ? StandardResolutionReasons.TARGETING_MATCH : StandardResolutionReasons.STATIC;
 
     return {
       value: value as T,
