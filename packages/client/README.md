@@ -283,7 +283,7 @@ import {
 // implement the provider interface
 class MyProvider implements Provider {
   // Adds runtime validation that the provider is used with the expected SDK
-  public readonly runsOn = 'server';
+  public readonly runsOn = 'client';
   readonly metadata = {
     name: 'My Provider',
   } as const;
