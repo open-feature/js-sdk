@@ -159,12 +159,13 @@ await OpenFeature.setContext({ origin: document.location.host });
 ```
 
 Context is global and setting it is `async`.
-Providers may implement an `onContextChanged` method that receives the old context and the newer one.
-This method is used internally by the provider to detect if, given the context change, the flags values cached on client side are invalid. If needed a request will be made to the provider with the new context in order to get the correct flags values.
+Providers may implement an `onContextChanged` method that receives the old and newer contexts.
+Given a context change, providers can use this method internally to detect if the flag values cached on the client are still valid.
+If needed, a request will be made to the provider with the new context in order to get the correct flag values.
 
 ### Hooks
 
-[Hooks](https://openfeature.dev/docs/reference/concepts/hooks) allow for custom logic to be added at well-defined points of the flag evaluation life-cycle
+[Hooks](https://openfeature.dev/docs/reference/concepts/hooks) allow for custom logic to be added at well-defined points of the flag evaluation life-cycle.
 Look [here](https://openfeature.dev/ecosystem/?instant_search%5BrefinementList%5D%5Btype%5D%5B0%5D=Hook&instant_search%5BrefinementList%5D%5Bcategory%5D%5B0%5D=Client-side&instant_search%5BrefinementList%5D%5Btechnology%5D%5B0%5D=JavaScript) for a complete list of available hooks.
 If the hook you're looking for hasn't been created yet, see the [develop a hook](#develop-a-hook) section to learn how to build it yourself.
 
@@ -186,7 +187,7 @@ const boolValue = client.getBooleanValue("bool-flag", false, { hooks: [new Examp
 
 ### Logging
 
-The JS SDK will log warnings and errors to the console by default.
+The Web SDK will log warnings and errors to the console by default.
 This behavior can be overridden by passing a custom logger either globally or per client.
 A custom logger must implement the [Logger interface](../shared/src/logger/logger.ts).
 
