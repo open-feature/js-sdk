@@ -3,7 +3,7 @@ import { ProviderMetadata } from '../provider/provider';
 
 export interface ClientMetadata extends Metadata {
   /**
-   * @deprecated Use `domain` instead.
+   * @deprecated alias of "domain", use domain instead
    */
   readonly name?: string;
   readonly domain?: string;
