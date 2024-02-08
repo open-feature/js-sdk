@@ -95,7 +95,7 @@ See [here](https://open-feature.github.io/js-sdk/modules/_openfeature_web_sdk.ht
 | ✅      | [Targeting](#targeting-and-context) | Contextually-aware flag evaluation using [evaluation context](https://openfeature.dev/docs/reference/concepts/evaluation-context). |
 | ✅      | [Hooks](#hooks)                     | Add functionality to various stages of the flag evaluation life-cycle.                                                             |
 | ✅      | [Logging](#logging)                 | Integrate with popular logging packages.                                                                                           |
-| ✅      | [Domains](#domains)                 | Logically bind clients with providers  application.                                                                                |
+| ✅      | [Domains](#domains)                 | Logically bind clients with providers.                                                                                             |
 | ✅      | [Eventing](#eventing)               | React to state changes in the provider or flag management system.                                                                  |
 | ✅      | [Shutdown](#shutdown)               | Gracefully clean up a provider during application shutdown.                                                                        |
 | ✅      | [Extending](#extending)             | Extend OpenFeature with custom providers and hooks.                                                                                |
