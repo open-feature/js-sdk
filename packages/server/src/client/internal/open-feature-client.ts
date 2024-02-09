@@ -9,27 +9,31 @@ import {
   HookContext,
   JsonValue,
   Logger,
-  ManageContext,
   OpenFeatureError,
   ResolutionDetails,
   SafeLogger,
   StandardResolutionReasons,
   statusMatchesEvent,
 } from '@openfeature/core';
-import { FlagEvaluationOptions } from '../evaluation';
-import { ProviderEvents } from '../events';
-import { InternalEventEmitter } from '../events/internal/internal-event-emitter';
-import { Hook } from '../hooks';
-import { OpenFeature } from '../open-feature';
-import { Provider } from '../provider';
-import { Client } from './client';
+import { FlagEvaluationOptions } from '../../evaluation';
+import { ProviderEvents } from '../../events';
+import { InternalEventEmitter } from '../../events/internal/internal-event-emitter';
+import { Hook } from '../../hooks';
+import { OpenFeature } from '../../open-feature';
+import { Provider } from '../../provider';
+import { Client } from '../client';
 
 type OpenFeatureClientOptions = {
   name?: string;
   version?: string;
 };
 
-export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClient> {
+/**
+ * This implementation of the {@link Client} is meant to only be instantiated by the SDK.
+ * It should not be used outside the SDK and so should not be exported.
+ * @internal
+ */
+export class OpenFeatureClient implements Client {
   private _context: EvaluationContext;
   private _hooks: Hook[] = [];
   private _clientLogger?: Logger;

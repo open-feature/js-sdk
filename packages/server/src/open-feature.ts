@@ -12,7 +12,8 @@ import {
   TransactionContext,
   TransactionContextPropagator,
 } from './transaction-context';
-import { Client, OpenFeatureClient } from './client';
+import { Client } from './client';
+import { OpenFeatureClient } from './client/internal/open-feature-client';
 import { OpenFeatureEventEmitter } from './events';
 import { Hook } from './hooks';
 
