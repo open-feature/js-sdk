@@ -154,7 +154,7 @@ const boolValue = await client.getBooleanValue('some-flag', false, requestContex
 
 ### Hooks
 
-[Hooks](https://openfeature.dev/docs/reference/concepts/hooks) allow for custom logic to be added at well-defined points of the flag evaluation life-cycle
+[Hooks](https://openfeature.dev/docs/reference/concepts/hooks) allow for custom logic to be added at well-defined points of the flag evaluation life-cycle.
 Look [here](https://openfeature.dev/ecosystem/?instant_search%5BrefinementList%5D%5Btype%5D%5B0%5D=Hook&instant_search%5BrefinementList%5D%5Bcategory%5D%5B0%5D=Server-side&instant_search%5BrefinementList%5D%5Btechnology%5D%5B0%5D=JavaScript) for a complete list of available hooks.
 If the hook you're looking for hasn't been created yet, see the [develop a hook](#develop-a-hook) section to learn how to build it yourself.
 
@@ -176,7 +176,7 @@ const boolValue = await client.getBooleanValue("bool-flag", false, { hooks: [new
 
 ### Logging
 
-The JS SDK will log warning and errors to the console by default.
+The Node.JS SDK will log warnings and errors to the console by default.
 This behavior can be overridden by passing a custom logger either globally or per client.
 A custom logger must implement the [Logger interface](../shared/src/logger/logger.ts).
 
