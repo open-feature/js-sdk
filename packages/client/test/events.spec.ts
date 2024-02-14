@@ -507,14 +507,17 @@ describe('Events', () => {
     it('It defines a mechanism for signalling `PROVIDER_CONFIGURATION_CHANGED`', (done) => {
       const provider = new MockProvider();
       const client = OpenFeature.getClient(domain);
+      const changedFlag = 'fake-flag';
 
-      client.addHandler(ProviderEvents.ConfigurationChanged, () => {
+      client.addHandler(ProviderEvents.ConfigurationChanged, (details) => {
+        expect(details?.flagsChanged?.length).toEqual(1);
+        expect(details?.flagsChanged).toEqual([changedFlag]);
         done();
       });
 
       OpenFeature.setProvider(domain, provider);
       // emit a change event from the mock provider
-      provider.events?.emit(ProviderEvents.ConfigurationChanged);
+      provider.events?.emit(ProviderEvents.ConfigurationChanged, { flagsChanged: [changedFlag] });
     });
   });
 
