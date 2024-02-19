@@ -28,7 +28,6 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<Provider, Hook> impleme
   protected _events: GenericEventEmitter<ProviderEvents> = new OpenFeatureEventEmitter();
   protected _defaultProvider: Provider = NOOP_PROVIDER;
   protected _createEventEmitter = () => new OpenFeatureEventEmitter();
-  protected _domainScopedContext: Map<string, EvaluationContext> = new Map();
 
   private constructor() {
     super('client');

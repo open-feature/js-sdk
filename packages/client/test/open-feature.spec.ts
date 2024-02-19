@@ -235,5 +235,30 @@ describe('OpenFeature', () => {
       await OpenFeature.close();
       expect(provider3.onClose).toHaveBeenCalled();
     });
+
+    describe('context during initialization', () => {
+      it('should use the context set in the domain', async () => {
+        const domain = 'test';
+        await OpenFeature.setContext(domain, { user: 'mike' });
+
+        const provider = mockProvider();
+        const spy = jest.spyOn(provider, 'initialize');
+        OpenFeature.setProvider(domain, provider);
+
+        expect(spy).toHaveBeenCalledWith({ user: 'mike' });
+      });
+
+      it('should use the default context', async () => {
+        const domain = 'test';
+        await OpenFeature.setContext(domain, { user: 'mike' });
+        await OpenFeature.setContext({ name: 'todd' });
+
+        const provider = mockProvider();
+        const spy = jest.spyOn(provider, 'initialize');
+        OpenFeature.setProvider(provider);
+
+        expect(spy).toHaveBeenCalledWith({ name: 'todd' });
+      });
+    });
   });
 });

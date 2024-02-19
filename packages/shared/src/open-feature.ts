@@ -29,6 +29,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
 
   private readonly _clientEventHandlers: Map<string | undefined, [AnyProviderEvent, EventHandler][]> = new Map();
   protected _domainScopedProviders: Map<string, P> = new Map();
+  protected _domainScopedContext: Map<string, EvaluationContext> = new Map();
   protected _clientEvents: Map<string | undefined, GenericEventEmitter<AnyProviderEvent>> = new Map();
   protected _runsOn: Paradigm;
 
@@ -215,7 +216,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
 
     if (provider?.status === ProviderStatus.NOT_READY && typeof provider.initialize === 'function') {
       initializationPromise = provider
-        .initialize?.(this._context)
+        .initialize?.(domain ? this._domainScopedContext.get(domain) ?? this._context : this._context)
         ?.then(() => {
           // fetch the most recent event emitters, some may have been added during init
           this.getAssociatedEventEmitters(domain).forEach((emitter) => {
@@ -284,16 +285,15 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     this._clientEvents.set(domain, newEmitter);
 
     const clientProvider = this.getProviderForClient(domain);
-    Object.values<AllProviderEvents>(AllProviderEvents).forEach(
-      (eventType) =>
-        clientProvider.events?.addHandler(eventType, async (details) => {
-          newEmitter.emit(eventType, {
-            ...details,
-            clientName: domain,
-            domain,
-            providerName: clientProvider.metadata.name,
-          });
-        }),
+    Object.values<AllProviderEvents>(AllProviderEvents).forEach((eventType) =>
+      clientProvider.events?.addHandler(eventType, async (details) => {
+        newEmitter.emit(eventType, {
+          ...details,
+          clientName: domain,
+          domain,
+          providerName: clientProvider.metadata.name,
+        });
+      }),
     );
 
     return newEmitter;
