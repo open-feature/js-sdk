@@ -198,7 +198,7 @@ client.setLogger(logger);
 
 Clients can be assigned to a domain.
 A domain is a logical identifier which can be used to associate clients with a particular provider.
-If a domain has no associated provider, the global provider is used.
+If a domain has no associated provider, the default provider is used.
 
 ```ts
 import { OpenFeature, InMemoryProvider } from "@openfeature/server-sdk";
@@ -217,12 +217,12 @@ const myFlags = {
 // Registering the default provider
 OpenFeature.setProvider(InMemoryProvider(myFlags));
 // Registering a provider to a domain
-OpenFeature.setProvider("in-memory", new InMemoryProvider(someOtherFlags));
+OpenFeature.setProvider("my-domain", new InMemoryProvider(someOtherFlags));
 
 // A Client bound to the default provider
 const clientWithDefault = OpenFeature.getClient();
 // A Client bound to the InMemoryProvider provider
-const domainScopedClient = OpenFeature.getClient("in-memory");
+const domainScopedClient = OpenFeature.getClient("my-domain");
 ```
 
 Domains can be defined on a provider during registration.
