@@ -6,7 +6,11 @@ export type EventMetadata = {
 
 export type CommonEventDetails = {
   providerName: string;
+  /**
+   * @deprecated alias of "domain", use domain instead
+   */
   clientName?: string;
+  readonly domain?: string;
 };
 
 type CommonEventProps = {

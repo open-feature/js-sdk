@@ -25,7 +25,11 @@ import { Provider } from '../provider';
 import { Client } from './client';
 
 type OpenFeatureClientOptions = {
+  /**
+   * @deprecated Use `domain` instead.
+   */
   name?: string;
+  domain?: string;
   version?: string;
 };
 
@@ -44,7 +48,9 @@ export class OpenFeatureClient implements Client {
 
   get metadata(): ClientMetadata {
     return {
-      name: this.options.name,
+      // Use domain if name is not provided
+      name: this.options.domain ?? this.options.name,
+      domain: this.options.domain ?? this.options.name,
       version: this.options.version,
       providerMetadata: this.providerAccessor().metadata,
     };
@@ -61,7 +67,11 @@ export class OpenFeatureClient implements Client {
     if (shouldRunNow) {
       // run immediately, we're in the matching state
       try {
-        handler({ clientName: this.metadata.name, providerName: this._provider.metadata.name });
+        handler({
+          clientName: this.metadata.name,
+          domain: this.metadata.domain,
+          providerName: this._provider.metadata.name,
+        });
       } catch (err) {
         this._logger?.error('Error running event handler:', err);
       }
@@ -179,7 +189,7 @@ export class OpenFeatureClient implements Client {
     const allHooksReversed = [...allHooks].reverse();
 
     const context = {
-      ...OpenFeature.getContext(this?.options?.name),
+      ...OpenFeature.getContext(this?.options?.domain),
     };
 
     // this reference cannot change during the course of evaluation

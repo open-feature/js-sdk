@@ -64,57 +64,57 @@ export class OpenFeatureAPI
   }
 
   /**
-   * A factory function for creating new unnamed OpenFeature clients. Clients can contain
-   * their own state (e.g. logger, hook, context). Multiple clients can be used
-   * to segment feature flag configuration.
+   * A factory function for creating new domainless OpenFeature clients.
+   * Clients can contain their own state (e.g. logger, hook, context).
+   * Multiple clients can be used to segment feature flag configuration.
    *
-   * All unnamed clients use the same provider set via {@link this.setProvider setProvider}.
+   * All domainless or unbound clients use the default provider set via {@link this.setProvider setProvider}.
    * @param {EvaluationContext} context Evaluation context that should be set on the client to used during flag evaluations
    * @returns {Client} OpenFeature Client
    */
   getClient(context?: EvaluationContext): Client;
   /**
-   * A factory function for creating new named OpenFeature clients. Clients can contain
-   * their own state (e.g. logger, hook, context). Multiple clients can be used
-   * to segment feature flag configuration.
+   * A factory function for creating new domain scoped OpenFeature clients.
+   * Clients can contain their own state (e.g. logger, hook, context).
+   * Multiple clients can be used to segment feature flag configuration.
    *
-   * If there is already a provider bound to this name via {@link this.setProvider setProvider}, this provider will be used.
-   * Otherwise, the default provider is used until a provider is assigned to that name.
-   * @param {string} name The name of the client
+   * If there is already a provider bound to this domain via {@link this.setProvider setProvider}, this provider will be used.
+   * Otherwise, the default provider is used until a provider is assigned to that domain.
+   * @param {string} domain An identifier which logically binds clients with providers
    * @param {EvaluationContext} context Evaluation context that should be set on the client to used during flag evaluations
    * @returns {Client} OpenFeature Client
    */
-  getClient(name: string, context?: EvaluationContext): Client;
+  getClient(domain: string, context?: EvaluationContext): Client;
   /**
-   * A factory function for creating new named OpenFeature clients. Clients can contain
-   * their own state (e.g. logger, hook, context). Multiple clients can be used
-   * to segment feature flag configuration.
+   * A factory function for creating new domain scoped OpenFeature clients.
+   * Clients can contain their own state (e.g. logger, hook, context).
+   * Multiple clients can be used to segment feature flag configuration.
    *
-   * If there is already a provider bound to this name via {@link this.setProvider setProvider}, this provider will be used.
-   * Otherwise, the default provider is used until a provider is assigned to that name.
-   * @param {string} name The name of the client
+   * If there is already a provider bound to this domain via {@link this.setProvider setProvider}, this provider will be used.
+   * Otherwise, the default provider is used until a provider is assigned to that domain.
+   * @param {string} domain An identifier which logically binds clients with providers
    * @param {string} version The version of the client (only used for metadata)
    * @param {EvaluationContext} context Evaluation context that should be set on the client to used during flag evaluations
    * @returns {Client} OpenFeature Client
    */
-  getClient(name: string, version: string, context?: EvaluationContext): Client;
+  getClient(domain: string, version: string, context?: EvaluationContext): Client;
   getClient(
-    nameOrContext?: string | EvaluationContext,
+    domainOrContext?: string | EvaluationContext,
     versionOrContext?: string | EvaluationContext,
     contextOrUndefined?: EvaluationContext,
   ): Client {
-    const name = stringOrUndefined(nameOrContext);
+    const domain = stringOrUndefined(domainOrContext);
     const version = stringOrUndefined(versionOrContext);
     const context =
-      objectOrUndefined<EvaluationContext>(nameOrContext) ??
+      objectOrUndefined<EvaluationContext>(domainOrContext) ??
       objectOrUndefined<EvaluationContext>(versionOrContext) ??
       objectOrUndefined<EvaluationContext>(contextOrUndefined);
 
     return new OpenFeatureClient(
-      () => this.getProviderForClient(name),
-      () => this.buildAndCacheEventEmitterForClient(name),
+      () => this.getProviderForClient(domain),
+      () => this.buildAndCacheEventEmitterForClient(domain),
       () => this._logger,
-      { name, version },
+      { domain, version },
       context,
     );
   }

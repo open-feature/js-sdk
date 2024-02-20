@@ -1,5 +1,4 @@
 import { BaseHook } from './hook';
-import { FlagValue } from '../evaluation';
 
 export interface EvaluationLifeCycle<T> {
   /**
@@ -16,7 +15,7 @@ export interface EvaluationLifeCycle<T> {
 
   /**
    * Access all the hooks that are registered on this receiver.
-   * @returns {BaseHook<FlagValue>[]} A list of the client hooks
+   * @returns {BaseHook[]} A list of the client hooks
    */
   getHooks(): BaseHook[];
 

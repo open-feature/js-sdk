@@ -2,7 +2,7 @@ import { FlagNotFoundError, GeneralError, InMemoryProvider, ProviderEvents, Prov
 import { FlagConfiguration } from '../src/provider/in-memory-provider/flag-configuration';
 import { VariantNotFoundError } from '../src/provider/in-memory-provider/variant-not-found-error';
 
-describe(InMemoryProvider, () => {
+describe('in-memory provider', () => {
   describe('initialize', () => {
     it('Should have provider status as NOT_READY after instantiation and emit READY and have READY state after initialuzation', async () => {
       const booleanFlagSpec = {
@@ -20,7 +20,6 @@ describe(InMemoryProvider, () => {
 
       await provider.initialize();
       expect(provider.status).toBe(ProviderStatus.READY);
-
     });
 
     it('Should have provider status as ERROR after instantiation, emit ERROR and have ERROR state if initialization throws', async () => {
@@ -32,7 +31,9 @@ describe(InMemoryProvider, () => {
           },
           disabled: false,
           defaultVariant: 'on',
-          contextEvaluator: () => { throw new GeneralError('context eval error'); },
+          contextEvaluator: () => {
+            throw new GeneralError('context eval error');
+          },
         },
       };
       const provider = new InMemoryProvider(throwingFlagSpec);

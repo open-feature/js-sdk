@@ -28,7 +28,8 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
   protected _logger: Logger = new DefaultLogger();
 
   private readonly _clientEventHandlers: Map<string | undefined, [AnyProviderEvent, EventHandler][]> = new Map();
-  protected _clientProviders: Map<string, P> = new Map();
+  protected _domainScopedProviders: Map<string, P> = new Map();
+  protected _domainScopedContext: Map<string, EvaluationContext> = new Map();
   protected _clientEvents: Map<string | undefined, GenericEventEmitter<AnyProviderEvent>> = new Map();
   protected _runsOn: Paradigm;
 
@@ -66,11 +67,11 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
   /**
    * Get metadata about a registered provider using the client name.
    * An unbound or empty client name will return metadata from the default provider.
-   * @param {string} [clientName] The name to identify the client
+   * @param {string} domain An identifier which logically binds clients with providers
    * @returns {ProviderMetadata} Provider Metadata
    */
-  getProviderMetadata(clientName?: string): ProviderMetadata {
-    return this.getProviderForClient(clientName).metadata;
+  getProviderMetadata(domain?: string): ProviderMetadata {
+    return this.getProviderForClient(domain).metadata;
   }
 
   /**
@@ -81,15 +82,15 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
    * @param {EventHandler} handler The handler to run on occurrence of the event type
    */
   addHandler<T extends AnyProviderEvent>(eventType: T, handler: EventHandler): void {
-    [...new Map([[undefined, this._defaultProvider]]), ...this._clientProviders].forEach((keyProviderTuple) => {
-      const clientName = keyProviderTuple[0];
+    [...new Map([[undefined, this._defaultProvider]]), ...this._domainScopedProviders].forEach((keyProviderTuple) => {
+      const domain = keyProviderTuple[0];
       const provider = keyProviderTuple[1];
       const shouldRunNow = statusMatchesEvent(eventType, keyProviderTuple[1].status);
 
       if (shouldRunNow) {
         // run immediately, we're in the matching state
         try {
-          handler({ clientName, providerName: provider.metadata.name });
+          handler({ domain, providerName: provider.metadata.name });
         } catch (err) {
           this._logger?.error('Error running event handler:', err);
         }
@@ -126,8 +127,8 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
 
   /**
    * Sets the default provider for flag evaluations and returns a promise that resolves when the provider is ready.
-   * This provider will be used by unnamed clients and named clients to which no provider is bound.
-   * Setting a provider supersedes the current provider used in new and existing clients without a name.
+   * The default provider will be used by domainless clients and clients associated with domains to which no provider is bound.
+   * Setting a provider supersedes the current provider used in new and existing unbound clients.
    * @template P
    * @param {P} provider The provider responsible for flag evaluations.
    * @returns {Promise<void>}
@@ -135,40 +136,40 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
    */
   async setProviderAndWait(provider: P): Promise<void>;
   /**
-   * Sets the provider that OpenFeature will use for flag evaluations of providers with the given name.
+   * Sets the provider that OpenFeature will use for flag evaluations on clients bound to the same domain.
    * A promise is returned that resolves when the provider is ready.
-   * Setting a provider supersedes the current provider used in new and existing clients with that name.
+   * Setting a provider supersedes the current provider used in new and existing clients in the same domain.
    * @template P
-   * @param {string} clientName The name to identify the client
+   * @param {string} domain An identifier which logically binds clients with providers
    * @param {P} provider The provider responsible for flag evaluations.
    * @returns {Promise<void>}
    * @throws Uncaught exceptions thrown by the provider during initialization.
    */
-  async setProviderAndWait(clientName: string, provider: P): Promise<void>;
-  async setProviderAndWait(clientOrProvider?: string | P, providerOrUndefined?: P): Promise<void> {
-    await this.setAwaitableProvider(clientOrProvider, providerOrUndefined);
+  async setProviderAndWait(domain: string, provider: P): Promise<void>;
+  async setProviderAndWait(domainOrProvider?: string | P, providerOrUndefined?: P): Promise<void> {
+    await this.setAwaitableProvider(domainOrProvider, providerOrUndefined);
   }
 
   /**
    * Sets the default provider for flag evaluations.
-   * This provider will be used by unnamed clients and named clients to which no provider is bound.
-   * Setting a provider supersedes the current provider used in new and existing clients without a name.
+   * The default provider will be used by domainless clients and clients associated with domains to which no provider is bound.
+   * Setting a provider supersedes the current provider used in new and existing unbound clients.
    * @template P
    * @param {P} provider The provider responsible for flag evaluations.
    * @returns {this} OpenFeature API
    */
   setProvider(provider: P): this;
   /**
-   * Sets the provider that OpenFeature will use for flag evaluations of providers with the given name.
-   * Setting a provider supersedes the current provider used in new and existing clients with that name.
+   * Sets the provider that OpenFeature will use for flag evaluations on clients bound to the same domain.
+   * Setting a provider supersedes the current provider used in new and existing clients in the same domain.
    * @template P
-   * @param {string} clientName The name to identify the client
+   * @param {string} domain An identifier which logically binds clients with providers
    * @param {P} provider The provider responsible for flag evaluations.
    * @returns {this} OpenFeature API
    */
-  setProvider(clientName: string, provider: P): this;
-  setProvider(clientOrProvider?: string | P, providerOrUndefined?: P): this {
-    const maybePromise = this.setAwaitableProvider(clientOrProvider, providerOrUndefined);
+  setProvider(domain: string, provider: P): this;
+  setProvider(domainOrProvider?: string | P, providerOrUndefined?: P): this {
+    const maybePromise = this.setAwaitableProvider(domainOrProvider, providerOrUndefined);
     if (maybePromise) {
       maybePromise.catch(() => {
         /* ignore, errors are emitted via the event emitter */
@@ -177,16 +178,16 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     return this;
   }
 
-  private setAwaitableProvider(clientOrProvider?: string | P, providerOrUndefined?: P): Promise<void> | void {
-    const clientName = stringOrUndefined(clientOrProvider);
-    const provider = objectOrUndefined<P>(clientOrProvider) ?? objectOrUndefined<P>(providerOrUndefined);
+  private setAwaitableProvider(domainOrProvider?: string | P, providerOrUndefined?: P): Promise<void> | void {
+    const domain = stringOrUndefined(domainOrProvider);
+    const provider = objectOrUndefined<P>(domainOrProvider) ?? objectOrUndefined<P>(providerOrUndefined);
 
     if (!provider) {
       this._logger.debug('No provider defined, ignoring setProvider call');
       return;
     }
 
-    const oldProvider = this.getProviderForClient(clientName);
+    const oldProvider = this.getProviderForClient(domain);
     const providerName = provider.metadata.name;
 
     // ignore no-ops
@@ -201,7 +202,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
       throw new GeneralError(`Provider '${provider.metadata.name}' is intended for use on the ${provider.runsOn}.`);
     }
 
-    const emitters = this.getAssociatedEventEmitters(clientName);
+    const emitters = this.getAssociatedEventEmitters(domain);
 
     // warn of improper implementations
     if (typeof provider.initialize === 'function' && provider.status === undefined) {
@@ -215,55 +216,65 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
 
     if (provider?.status === ProviderStatus.NOT_READY && typeof provider.initialize === 'function') {
       initializationPromise = provider
-        .initialize?.(this._context)
+        .initialize?.(domain ? this._domainScopedContext.get(domain) ?? this._context : this._context)
         ?.then(() => {
           // fetch the most recent event emitters, some may have been added during init
-          this.getAssociatedEventEmitters(clientName).forEach((emitter) => {
-            emitter?.emit(AllProviderEvents.Ready, { clientName, providerName });
+          this.getAssociatedEventEmitters(domain).forEach((emitter) => {
+            emitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
           });
-          this._events?.emit(AllProviderEvents.Ready, { clientName, providerName });
+          this._events?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
         })
         ?.catch((error) => {
-          this.getAssociatedEventEmitters(clientName).forEach((emitter) => {
-            emitter?.emit(AllProviderEvents.Error, { clientName, providerName, message: error?.message });
+          this.getAssociatedEventEmitters(domain).forEach((emitter) => {
+            emitter?.emit(AllProviderEvents.Error, {
+              clientName: domain,
+              domain,
+              providerName,
+              message: error?.message,
+            });
           });
-          this._events?.emit(AllProviderEvents.Error, { clientName, providerName, message: error?.message });
+          this._events?.emit(AllProviderEvents.Error, {
+            clientName: domain,
+            domain,
+            providerName,
+            message: error?.message,
+          });
           // rethrow after emitting error events, so that public methods can control error handling
           throw error;
         });
     } else {
       emitters.forEach((emitter) => {
-        emitter?.emit(AllProviderEvents.Ready, { clientName, providerName });
+        emitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
       });
-      this._events?.emit(AllProviderEvents.Ready, { clientName, providerName });
+      this._events?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
     }
 
-    if (clientName) {
-      this._clientProviders.set(clientName, provider);
+    if (domain) {
+      this._domainScopedProviders.set(domain, provider);
     } else {
       this._defaultProvider = provider;
     }
 
-    this.transferListeners(oldProvider, provider, clientName, emitters);
+    this.transferListeners(oldProvider, provider, domain, emitters);
 
     // Do not close a provider that is bound to any client
-    if (![...this._clientProviders.values(), this._defaultProvider].includes(oldProvider)) {
+    if (![...this._domainScopedProviders.values(), this._defaultProvider].includes(oldProvider)) {
       oldProvider?.onClose?.();
     }
 
     return initializationPromise;
   }
 
-  protected getProviderForClient(name?: string): P {
-    if (!name) {
+  protected getProviderForClient(domain?: string): P {
+    if (!domain) {
       return this._defaultProvider;
     }
 
-    return this._clientProviders.get(name) ?? this._defaultProvider;
+    return this._domainScopedProviders.get(domain) ?? this._defaultProvider;
   }
 
-  protected buildAndCacheEventEmitterForClient(name?: string): GenericEventEmitter<AnyProviderEvent> {
-    const emitter = this._clientEvents.get(name);
+  protected buildAndCacheEventEmitterForClient(domain?: string): GenericEventEmitter<AnyProviderEvent> {
+    const emitter = this._clientEvents.get(domain);
 
     if (emitter) {
       return emitter;
@@ -271,23 +282,27 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
 
     // lazily add the event emitters
     const newEmitter = this._createEventEmitter();
-    this._clientEvents.set(name, newEmitter);
+    this._clientEvents.set(domain, newEmitter);
 
-    const clientProvider = this.getProviderForClient(name);
-    Object.values<AllProviderEvents>(AllProviderEvents).forEach(
-      (eventType) =>
-        clientProvider.events?.addHandler(eventType, async (details) => {
-          newEmitter.emit(eventType, { ...details, clientName: name, providerName: clientProvider.metadata.name });
-        }),
+    const clientProvider = this.getProviderForClient(domain);
+    Object.values<AllProviderEvents>(AllProviderEvents).forEach((eventType) =>
+      clientProvider.events?.addHandler(eventType, async (details) => {
+        newEmitter.emit(eventType, {
+          ...details,
+          clientName: domain,
+          domain,
+          providerName: clientProvider.metadata.name,
+        });
+      }),
     );
 
     return newEmitter;
   }
 
   private getUnboundEmitters(): GenericEventEmitter<AnyProviderEvent>[] {
-    const namedProviders = [...this._clientProviders.keys()];
+    const domainScopedProviders = [...this._domainScopedProviders.keys()];
     const eventEmitterNames = [...this._clientEvents.keys()].filter(isDefined);
-    const unboundEmitterNames = eventEmitterNames.filter((name) => !namedProviders.includes(name));
+    const unboundEmitterNames = eventEmitterNames.filter((name) => !domainScopedProviders.includes(name));
     return [
       // all unbound, named emitters
       ...unboundEmitterNames.map((name) => this._clientEvents.get(name)),
@@ -296,18 +311,18 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     ].filter(isDefined);
   }
 
-  protected getAssociatedEventEmitters(clientName: string | undefined) {
-    return clientName ? [this.buildAndCacheEventEmitterForClient(clientName)] : this.getUnboundEmitters();
+  protected getAssociatedEventEmitters(domain: string | undefined) {
+    return domain ? [this.buildAndCacheEventEmitterForClient(domain)] : this.getUnboundEmitters();
   }
 
   private transferListeners(
     oldProvider: P,
     newProvider: P,
-    clientName: string | undefined,
+    domain: string | undefined,
     emitters: (GenericEventEmitter<AnyProviderEvent> | undefined)[],
   ) {
     this._clientEventHandlers
-      .get(clientName)
+      .get(domain)
       ?.forEach((eventHandler) => oldProvider.events?.removeHandler(...eventHandler));
 
     // iterate over the event types
@@ -315,15 +330,20 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
       const handler = async (details?: EventDetails) => {
         // on each event type, fire the associated handlers
         emitters.forEach((emitter) => {
-          emitter?.emit(eventType, { ...details, clientName, providerName: newProvider.metadata.name });
+          emitter?.emit(eventType, { ...details, clientName: domain, domain, providerName: newProvider.metadata.name });
         });
-        this._events.emit(eventType, { ...details, clientName, providerName: newProvider.metadata.name });
+        this._events.emit(eventType, {
+          ...details,
+          clientName: domain,
+          domain,
+          providerName: newProvider.metadata.name,
+        });
       };
 
       return [eventType, handler];
     });
 
-    this._clientEventHandlers.set(clientName, newClientHandlers);
+    this._clientEventHandlers.set(domain, newClientHandlers);
     newClientHandlers.forEach((eventHandler) => newProvider.events?.addHandler(...eventHandler));
   }
 
@@ -334,7 +354,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
       this.handleShutdownError(this._defaultProvider, err);
     }
 
-    const providers = Array.from(this._clientProviders);
+    const providers = Array.from(this._domainScopedProviders);
 
     await Promise.all(
       providers.map(async ([, provider]) => {
@@ -353,7 +373,7 @@ export abstract class OpenFeatureCommonAPI<P extends CommonProvider = CommonProv
     } catch (err) {
       this._logger.error('Unable to cleanly close providers. Resetting to the default configuration.');
     } finally {
-      this._clientProviders.clear();
+      this._domainScopedProviders.clear();
       this._defaultProvider = defaultProvider;
     }
   }

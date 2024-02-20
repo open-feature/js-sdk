@@ -44,14 +44,14 @@ describe('Evaluation Context', () => {
       expect(OpenFeature.getContext()).toEqual(context);
     });
 
-    it('the API MUST have a method for setting evaluation context for a named client', async () => {
+    it('the API MUST have a method for setting evaluation context for a domain', async () => {
       const context: EvaluationContext = { property1: false };
-      const clientName = 'valid';
-      await OpenFeature.setContext(clientName, context);
-      expect(OpenFeature.getContext(clientName)).toEqual(context);
+      const domain = 'valid';
+      await OpenFeature.setContext(domain, context);
+      expect(OpenFeature.getContext(domain)).toEqual(context);
     });
 
-    it('the API MUST return the default context if not match is found', async () => {
+    it('the API MUST return the default context if no matching domain is found', async () => {
       const defaultContext: EvaluationContext = { name: 'test' };
       const nameContext: EvaluationContext = { property1: false };
       await OpenFeature.setContext(defaultContext);
@@ -68,33 +68,33 @@ describe('Evaluation Context', () => {
         expect(OpenFeature.getContext()).toEqual({});
       });
 
-      it('should remove context from a name provider', async () => {
+      it('should remove context from a domain', async () => {
         const globalContext: EvaluationContext = { scope: 'global' };
         const testContext: EvaluationContext = { scope: 'test' };
-        const clientName = 'test';
+        const domain = 'test';
         await OpenFeature.setContext(globalContext);
-        await OpenFeature.setContext(clientName, testContext);
-        expect(OpenFeature.getContext(clientName)).toEqual(testContext);
-        await OpenFeature.clearContext(clientName);
-        expect(OpenFeature.getContext(clientName)).toEqual(globalContext);
+        await OpenFeature.setContext(domain, testContext);
+        expect(OpenFeature.getContext(domain)).toEqual(testContext);
+        await OpenFeature.clearContext(domain);
+        expect(OpenFeature.getContext(domain)).toEqual(globalContext);
       });
 
       it('should call onContextChange for appropriate provider with appropriate context', async () => {
         const globalContext: EvaluationContext = { scope: 'global' };
         const testContext: EvaluationContext = { scope: 'test' };
-        const clientName = 'appropriateProviderTest';
+        const domain = 'appropriateProviderTest';
         const defaultProvider = new MockProvider();
         const provider1 = new MockProvider();
 
         await OpenFeature.setProviderAndWait(defaultProvider);
-        await OpenFeature.setProviderAndWait(clientName, provider1);
+        await OpenFeature.setProviderAndWait(domain, provider1);
 
         // Spy on context changed handlers of both providers
         const defaultProviderSpy = jest.spyOn(defaultProvider, 'onContextChange');
         const provider1Spy = jest.spyOn(provider1, 'onContextChange');
 
         await OpenFeature.setContext(globalContext);
-        await OpenFeature.setContext(clientName, testContext);
+        await OpenFeature.setContext(domain, testContext);
 
         // provider one should get global and specific context calls
         expect(defaultProviderSpy).toHaveBeenCalledWith({}, globalContext);
@@ -104,22 +104,22 @@ describe('Evaluation Context', () => {
       it('should pass correct context to resolver', async () => {
         const globalContext: EvaluationContext = { scope: 'global' };
         const testContext: EvaluationContext = { scope: 'test' };
-        const clientName = 'correctContextTest';
+        const domain = 'correctContextTest';
         const defaultProvider = new MockProvider();
         const provider1 = new MockProvider();
 
         await OpenFeature.setProviderAndWait(defaultProvider);
-        await OpenFeature.setProviderAndWait(clientName, provider1);
+        await OpenFeature.setProviderAndWait(domain, provider1);
 
         // Spy on boolean resolvers of both providers
         const defaultProviderSpy = jest.spyOn(defaultProvider, 'resolveBooleanEvaluation');
         const provider1Spy = jest.spyOn(provider1, 'resolveBooleanEvaluation');
 
         await OpenFeature.setContext(globalContext);
-        await OpenFeature.setContext(clientName, testContext);
+        await OpenFeature.setContext(domain, testContext);
 
         const defaultClient = OpenFeature.getClient();
-        const provider1Client = OpenFeature.getClient(clientName);
+        const provider1Client = OpenFeature.getClient(domain);
 
         const flagName = 'some-flag';
         defaultClient.getBooleanValue(flagName, false);
@@ -133,15 +133,15 @@ describe('Evaluation Context', () => {
       it('should only call a providers onContextChange once when clearing context', async () => {
         const globalContext: EvaluationContext = { scope: 'global' };
         const testContext: EvaluationContext = { scope: 'test' };
-        const clientName = 'test';
+        const domain = 'test';
         await OpenFeature.setContext(globalContext);
-        await OpenFeature.setContext(clientName, testContext);
+        await OpenFeature.setContext(domain, testContext);
 
         const defaultProvider = new MockProvider();
         const provider1 = new MockProvider();
 
         OpenFeature.setProvider(defaultProvider);
-        OpenFeature.setProvider(clientName, provider1);
+        OpenFeature.setProvider(domain, provider1);
 
         // Spy on context changed handlers of all providers
         const contextChangedSpies = [defaultProvider, provider1].map((provider) =>
@@ -168,8 +168,8 @@ describe('Evaluation Context', () => {
         const provider2 = new MockProvider();
 
         OpenFeature.setProvider(defaultProvider);
-        OpenFeature.setProvider('client1', provider1);
-        OpenFeature.setProvider('client2', provider2);
+        OpenFeature.setProvider('domain1', provider1);
+        OpenFeature.setProvider('domain2', provider2);
 
         // Spy on context changed handlers of all providers
         const contextChangedSpies = [defaultProvider, provider1, provider2].map((provider) =>
@@ -193,15 +193,15 @@ describe('Evaluation Context', () => {
         const provider1 = new MockProvider();
         const provider2 = new MockProvider();
 
-        const client1 = 'client1';
-        const client2 = 'client2';
+        const domain1 = 'domain1';
+        const domain2 = 'domain2';
 
         OpenFeature.setProvider(defaultProvider);
-        OpenFeature.setProvider(client1, provider1);
-        OpenFeature.setProvider(client2, provider2);
+        OpenFeature.setProvider(domain1, provider1);
+        OpenFeature.setProvider(domain2, provider2);
 
-        // Set context for client1
-        await OpenFeature.setContext(client1, { property1: 'test' });
+        // Set context for domain1
+        await OpenFeature.setContext(domain1, { property1: 'test' });
 
         // Spy on context changed handlers of all providers
         const contextShouldChangeSpies = [defaultProvider, provider2].map((provider) =>
@@ -229,8 +229,8 @@ describe('Evaluation Context', () => {
         const provider2 = new MockProvider();
 
         OpenFeature.setProvider(defaultProvider);
-        OpenFeature.setProvider('client1', provider1);
-        OpenFeature.setProvider('client2', provider2);
+        OpenFeature.setProvider('domain1', provider1);
+        OpenFeature.setProvider('domain2', provider2);
 
         // Spy on context changed handlers of all providers
         const contextChangedSpies = [defaultProvider, provider1, provider2].map((provider) =>

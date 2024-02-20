@@ -80,12 +80,12 @@ class MockProvider implements Provider {
 describe('Events', () => {
   // set timeouts short for this suite.
   jest.setTimeout(TIMEOUT);
-  let clientId = uuid();
+  let domain = uuid();
 
   afterEach(async () => {
     await OpenFeature.clearProviders();
     jest.clearAllMocks();
-    clientId = uuid();
+    domain = uuid();
     // hacky, but it's helpful to clear the handlers between tests
     /* eslint-disable @typescript-eslint/no-explicit-any */
     (OpenFeature as any)._clientEventHandlers = new Map();
@@ -101,7 +101,7 @@ describe('Events', () => {
     describe('provider implements events', () => {
       it('The provider defines a mechanism for signalling the occurrence of an event`PROVIDER_READY`', (done) => {
         const provider = new MockProvider();
-        const client = OpenFeature.getClient(clientId);
+        const client = OpenFeature.getClient(domain);
         client.addHandler(ProviderEvents.Ready, () => {
           try {
             expect(client.metadata.providerMetadata.name).toBe(provider.metadata.name);
@@ -111,13 +111,13 @@ describe('Events', () => {
             done(err);
           }
         });
-        OpenFeature.setProvider(clientId, provider);
+        OpenFeature.setProvider(domain, provider);
       });
 
       it('It defines a mechanism for signalling `PROVIDER_ERROR`', (done) => {
         //make sure an error event is fired when initialize promise reject
         const provider = new MockProvider({ failOnInit: true });
-        const client = OpenFeature.getClient(clientId);
+        const client = OpenFeature.getClient(domain);
 
         client.addHandler(ProviderEvents.Error, () => {
           try {
@@ -129,14 +129,14 @@ describe('Events', () => {
           }
         });
 
-        OpenFeature.setProvider(clientId, provider);
+        OpenFeature.setProvider(domain, provider);
       });
     });
 
     describe('provider does not implement events', () => {
       it('The provider defines a mechanism for signalling the occurrence of an event`PROVIDER_READY`', (done) => {
         const provider = new MockProvider({ enableEvents: false });
-        const client = OpenFeature.getClient(clientId);
+        const client = OpenFeature.getClient(domain);
 
         client.addHandler(ProviderEvents.Ready, () => {
           try {
@@ -147,12 +147,12 @@ describe('Events', () => {
           }
         });
 
-        OpenFeature.setProvider(clientId, provider);
+        OpenFeature.setProvider(domain, provider);
       });
 
       it('It defines a mechanism for signalling `PROVIDER_ERROR`', (done) => {
         const provider = new MockProvider({ enableEvents: false, failOnInit: true });
-        const client = OpenFeature.getClient(clientId);
+        const client = OpenFeature.getClient(domain);
 
         client.addHandler(ProviderEvents.Error, () => {
           try {
@@ -164,7 +164,7 @@ describe('Events', () => {
           }
         });
 
-        OpenFeature.setProvider(clientId, provider);
+        OpenFeature.setProvider(domain, provider);
       });
     });
   });
@@ -172,7 +172,7 @@ describe('Events', () => {
   describe('Requirement 5.1.2', () => {
     it('When a provider signals the occurrence of a particular event, the associated client and API event handlers run', (done) => {
       const provider = new MockProvider();
-      const client = OpenFeature.getClient(clientId);
+      const client = OpenFeature.getClient(domain);
 
       Promise.all([
         new Promise<void>((resolve) => {
@@ -189,7 +189,7 @@ describe('Events', () => {
         done();
       });
 
-      OpenFeature.setProvider(clientId, provider);
+      OpenFeature.setProvider(domain, provider);
       provider.events?.emit(ProviderEvents.Error);
     });
   });
@@ -197,8 +197,8 @@ describe('Events', () => {
   describe('Requirement 5.1.3', () => {
     it('When a provider signals the occurrence of a particular event, event handlers on clients which are not associated with that provider do not run', (done) => {
       const provider = new MockProvider();
-      const client0 = OpenFeature.getClient(clientId);
-      const client1 = OpenFeature.getClient(clientId + '1');
+      const client0 = OpenFeature.getClient(domain);
+      const client1 = OpenFeature.getClient(domain + '1');
 
       const client1Handler = jest.fn();
       const client0Handler = () => {
@@ -209,7 +209,7 @@ describe('Events', () => {
       client0.addHandler(ProviderEvents.Ready, client0Handler);
       client1.addHandler(ProviderEvents.Ready, client1Handler);
 
-      OpenFeature.setProvider(clientId, provider);
+      OpenFeature.setProvider(domain, provider);
     });
 
     it('anonymous provider with anonymous client should run non-init events', (done) => {
@@ -330,20 +330,20 @@ describe('Events', () => {
 
     it('PROVIDER_ERROR events populates the message field', (done) => {
       const provider = new MockProvider({ failOnInit: true });
-      const client = OpenFeature.getClient(clientId);
+      const client = OpenFeature.getClient(domain);
 
       client.addHandler(ProviderEvents.Error, (details) => {
         expect(details?.message).toBeDefined();
         done();
       });
 
-      OpenFeature.setProvider(clientId, provider);
+      OpenFeature.setProvider(domain, provider);
     });
   });
 
   describe('Requirement 5.2.1,', () => {
     it('The client provides a function for associating handler functions with a particular provider event type', () => {
-      const client = OpenFeature.getClient(clientId);
+      const client = OpenFeature.getClient(domain);
       expect(client.addHandler).toBeDefined();
     });
   });
@@ -358,27 +358,29 @@ describe('Events', () => {
     it('The event details MUST contain the provider name associated with the event.', (done) => {
       const providerName = '5.2.3';
       const provider = new MockProvider({ name: providerName });
-      const client = OpenFeature.getClient(clientId);
+      const client = OpenFeature.getClient(domain);
 
       client.addHandler(ProviderEvents.Ready, (details) => {
         expect(details?.providerName).toEqual(providerName);
-        expect(details?.clientName).toEqual(clientId);
+        expect(details?.clientName).toEqual(domain);
+        expect(details?.domain).toEqual(domain);
         done();
       });
 
-      OpenFeature.setProvider(clientId, provider);
+      OpenFeature.setProvider(domain, provider);
     });
 
     it('The event details contain the client name associated with the event in the client', (done) => {
       const provider = new MockProvider();
-      const client = OpenFeature.getClient(clientId);
+      const client = OpenFeature.getClient(domain);
 
       client.addHandler(ProviderEvents.Ready, (details) => {
-        expect(details?.clientName).toEqual(clientId);
+        expect(details?.clientName).toEqual(domain);
+        expect(details?.domain).toEqual(domain);
         done();
       });
 
-      OpenFeature.setProvider(clientId, provider);
+      OpenFeature.setProvider(domain, provider);
     });
   });
 
@@ -386,14 +388,14 @@ describe('Events', () => {
     it('The handler function accepts a event details parameter.', (done) => {
       const details: StaleEvent = { message: 'message' };
       const provider = new MockProvider();
-      const client = OpenFeature.getClient(clientId);
+      const client = OpenFeature.getClient(domain);
 
       client.addHandler(ProviderEvents.Stale, (givenDetails) => {
         expect(givenDetails?.message).toEqual(details.message);
         done();
       });
 
-      OpenFeature.setProvider(clientId, provider);
+      OpenFeature.setProvider(domain, provider);
       provider.events?.emit(ProviderEvents.Stale, details);
     });
   });
@@ -401,7 +403,7 @@ describe('Events', () => {
   describe('Requirement 5.2.5', () => {
     it('If a handler function terminates abnormally, other handler functions run', (done) => {
       const provider = new MockProvider();
-      const client = OpenFeature.getClient(clientId);
+      const client = OpenFeature.getClient(domain);
 
       const handler0 = jest.fn(() => {
         throw new Error('Error during initialization');
@@ -415,7 +417,7 @@ describe('Events', () => {
       client.addHandler(ProviderEvents.Ready, handler0);
       client.addHandler(ProviderEvents.Ready, handler1);
 
-      OpenFeature.setProvider(clientId, provider);
+      OpenFeature.setProvider(domain, provider);
     });
   });
 
@@ -423,12 +425,12 @@ describe('Events', () => {
     it('Event handlers MUST persist across `provider` changes.', (done) => {
       const provider1 = new MockProvider({ name: 'provider-1' });
       const provider2 = new MockProvider({ name: 'provider-2' });
-      const client = OpenFeature.getClient(clientId);
+      const client = OpenFeature.getClient(domain);
 
       let counter = 0;
       client.addHandler(ProviderEvents.Ready, () => {
         if (client.metadata.providerMetadata.name === provider1.metadata.name) {
-          OpenFeature.setProvider(clientId, provider2);
+          OpenFeature.setProvider(domain, provider2);
           counter++;
         } else {
           expect(counter).toBeGreaterThan(0);
@@ -439,7 +441,7 @@ describe('Events', () => {
         }
       });
 
-      OpenFeature.setProvider(clientId, provider1);
+      OpenFeature.setProvider(domain, provider1);
     });
   });
 
@@ -455,7 +457,7 @@ describe('Events', () => {
     });
 
     it('The API provides a function allowing the removal of event handlers', () => {
-      const client = OpenFeature.getClient(clientId);
+      const client = OpenFeature.getClient(domain);
       const handler = jest.fn();
       const eventType = ProviderEvents.Stale;
 
@@ -469,37 +471,37 @@ describe('Events', () => {
   describe('Requirement 5.3.1', () => {
     it('If the provider `initialize` function terminates normally, `PROVIDER_READY` handlers MUST run', (done) => {
       const provider = new MockProvider();
-      const client = OpenFeature.getClient(clientId);
+      const client = OpenFeature.getClient(domain);
 
       client.addHandler(ProviderEvents.Ready, () => {
         done();
       });
 
-      OpenFeature.setProvider(clientId, provider);
+      OpenFeature.setProvider(domain, provider);
     });
   });
 
   describe('Requirement 5.3.2', () => {
     it('If the provider `initialize` function terminates abnormally, `PROVIDER_ERROR` handlers MUST run.', (done) => {
       const provider = new MockProvider({ failOnInit: true });
-      const client = OpenFeature.getClient(clientId);
+      const client = OpenFeature.getClient(domain);
 
       client.addHandler(ProviderEvents.Error, () => {
         done();
       });
 
-      OpenFeature.setProvider(clientId, provider);
+      OpenFeature.setProvider(domain, provider);
     });
 
     it('It defines a mechanism for signalling `PROVIDER_CONFIGURATION_CHANGED`', (done) => {
       const provider = new MockProvider();
-      const client = OpenFeature.getClient(clientId);
+      const client = OpenFeature.getClient(domain);
 
       client.addHandler(ProviderEvents.ConfigurationChanged, () => {
         done();
       });
 
-      OpenFeature.setProvider(clientId, provider);
+      OpenFeature.setProvider(domain, provider);
       // emit a change event from the mock provider
       provider.events?.emit(ProviderEvents.ConfigurationChanged);
     });
@@ -510,10 +512,10 @@ describe('Events', () => {
       describe('Handlers attached after the provider is already in the associated state, MUST run immediately.', () => {
         it('Ready', (done) => {
           const provider = new MockProvider({ initialStatus: ProviderStatus.READY });
-  
-          OpenFeature.setProvider(clientId, provider);
+
+          OpenFeature.setProvider(domain, provider);
           expect(provider.initialize).not.toHaveBeenCalled();
-  
+
           OpenFeature.addHandler(ProviderEvents.Ready, () => {
             done();
           });
@@ -521,10 +523,10 @@ describe('Events', () => {
 
         it('Error', (done) => {
           const provider = new MockProvider({ initialStatus: ProviderStatus.ERROR });
-  
-          OpenFeature.setProvider(clientId, provider);
+
+          OpenFeature.setProvider(domain, provider);
           expect(provider.initialize).not.toHaveBeenCalled();
-  
+
           OpenFeature.addHandler(ProviderEvents.Error, () => {
             done();
           });
@@ -532,10 +534,10 @@ describe('Events', () => {
 
         it('Stale', (done) => {
           const provider = new MockProvider({ initialStatus: ProviderStatus.STALE });
-  
-          OpenFeature.setProvider(clientId, provider);
+
+          OpenFeature.setProvider(domain, provider);
           expect(provider.initialize).not.toHaveBeenCalled();
-  
+
           OpenFeature.addHandler(ProviderEvents.Stale, () => {
             done();
           });
@@ -547,11 +549,11 @@ describe('Events', () => {
       describe('Handlers attached after the provider is already in the associated state, MUST run immediately.', () => {
         it('Ready', (done) => {
           const provider = new MockProvider({ initialStatus: ProviderStatus.READY });
-          const client = OpenFeature.getClient(clientId);
-  
-          OpenFeature.setProvider(clientId, provider);
+          const client = OpenFeature.getClient(domain);
+
+          OpenFeature.setProvider(domain, provider);
           expect(provider.initialize).not.toHaveBeenCalled();
-  
+
           client.addHandler(ProviderEvents.Ready, () => {
             done();
           });
@@ -559,11 +561,11 @@ describe('Events', () => {
 
         it('Error', (done) => {
           const provider = new MockProvider({ initialStatus: ProviderStatus.ERROR });
-          const client = OpenFeature.getClient(clientId);
-  
-          OpenFeature.setProvider(clientId, provider);
+          const client = OpenFeature.getClient(domain);
+
+          OpenFeature.setProvider(domain, provider);
           expect(provider.initialize).not.toHaveBeenCalled();
-  
+
           client.addHandler(ProviderEvents.Error, () => {
             done();
           });
@@ -571,11 +573,11 @@ describe('Events', () => {
 
         it('Stale', (done) => {
           const provider = new MockProvider({ initialStatus: ProviderStatus.STALE });
-          const client = OpenFeature.getClient(clientId);
-  
-          OpenFeature.setProvider(clientId, provider);
+          const client = OpenFeature.getClient(domain);
+
+          OpenFeature.setProvider(domain, provider);
           expect(provider.initialize).not.toHaveBeenCalled();
-  
+
           client.addHandler(ProviderEvents.Stale, () => {
             done();
           });
