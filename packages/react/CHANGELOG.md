@@ -1,5 +1,12 @@
 # Changelog
 
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/core bumped from * to 0.0.26
+    * @openfeature/web-sdk bumped from * to 0.4.13
+
 ## [0.1.1-experimental](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.1.0-experimental...react-sdk-v0.1.1-experimental) (2024-01-31)
 
 
