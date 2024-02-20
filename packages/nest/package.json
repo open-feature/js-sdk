@@ -57,7 +57,7 @@
     "@nestjs/testing": "^10.2.10",
     "@openfeature/core": "*",
     "@openfeature/server-sdk": "*",
-    "@types/supertest": "^2.0.16",
+    "@types/supertest": "^6.0.0",
     "supertest": "^6.3.3"
   }
 }
