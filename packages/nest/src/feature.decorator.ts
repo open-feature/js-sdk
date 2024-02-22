@@ -15,10 +15,10 @@ import { from, Observable } from 'rxjs';
  */
 interface FeatureClientProps {
   /**
-   * The name of the OpenFeature client, if a named client should be used.
+   * The domain of the OpenFeature client, if a domain scoped client should be used.
    * @see {@link Client.getBooleanDetails}
    */
-  name?: string;
+  domain?: string;
 }
 
 /**
@@ -26,17 +26,17 @@ interface FeatureClientProps {
  * @param {FeatureClientProps} [props] The options for injecting the client.
  * @returns {PropertyDecorator & ParameterDecorator} The decorator function.
  */
-export const FeatureClient = (props?: FeatureClientProps) => Inject(getOpenFeatureClientToken(props?.name));
+export const FeatureClient = (props?: FeatureClientProps) => Inject(getOpenFeatureClientToken(props?.domain));
 
 /**
  * Options for injecting a feature flag into a route handler.
  */
 interface FeatureProps<T extends FlagValue> {
   /**
-   * The name of the OpenFeature client, if a named client should be used.
+   * The domain of the OpenFeature client, if a domain scoped client should be used.
    * @see {@link OpenFeature#getClient}
    */
-  clientName?: string;
+  domain?: string;
   /**
    * The key of the feature flag.
    * @see {@link Client#getBooleanDetails}
@@ -55,19 +55,19 @@ interface FeatureProps<T extends FlagValue> {
 }
 
 /**
- * Returns a named or unnamed OpenFeature client with the given context.
- * @param {string} clientName The name of the OpenFeature client.
+ * Returns a domain scoped or the default OpenFeature client with the given context.
+ * @param {string} clientDomain The domain of the OpenFeature client.
  * @param {EvaluationContext} context The evaluation context of the client.
  * @returns {Client} The OpenFeature client.
  */
-function getClientForEvaluation(clientName?: string, context?: EvaluationContext) {
-  return clientName ? OpenFeature.getClient(clientName, context) : OpenFeature.getClient(context);
+function getClientForEvaluation(clientDomain?: string, context?: EvaluationContext) {
+  return clientDomain ? OpenFeature.getClient(clientDomain, context) : OpenFeature.getClient(context);
 }
 
 /**
  * Route handler parameter decorator.
  *
- * Gets the {@link EvaluationDetails} for given feature flag from a named or unnamed OpenFeature
+ * Gets the {@link EvaluationDetails} for given feature flag from a domain scoped or the default OpenFeature
  * client and populates the annotated parameter with the {@link EvaluationDetails} wrapped in an {@link Observable}.
  *
  * For example:
@@ -82,8 +82,8 @@ function getClientForEvaluation(clientName?: string, context?: EvaluationContext
  * @returns {ParameterDecorator}
  */
 export const BooleanFeatureFlag = createParamDecorator(
-  ({ clientName, flagKey, defaultValue, context }: FeatureProps<boolean>): Observable<EvaluationDetails<boolean>> => {
-    const client = getClientForEvaluation(clientName, context);
+  ({ domain, flagKey, defaultValue, context }: FeatureProps<boolean>): Observable<EvaluationDetails<boolean>> => {
+    const client = getClientForEvaluation(domain, context);
     return from(client.getBooleanDetails(flagKey, defaultValue));
   },
 );
@@ -91,7 +91,7 @@ export const BooleanFeatureFlag = createParamDecorator(
 /**
  * Route handler parameter decorator.
  *
- * Gets the {@link EvaluationDetails} for given feature flag from a named or unnamed OpenFeature
+ * Gets the {@link EvaluationDetails} for given feature flag from a domain scoped or the default OpenFeature
  * client and populates the annotated parameter with the {@link EvaluationDetails} wrapped in an {@link Observable}.
  *
  * For example:
@@ -106,8 +106,8 @@ export const BooleanFeatureFlag = createParamDecorator(
  * @returns {ParameterDecorator}
  */
 export const StringFeatureFlag = createParamDecorator(
-  ({ clientName, flagKey, defaultValue, context }: FeatureProps<string>): Observable<EvaluationDetails<string>> => {
-    const client = getClientForEvaluation(clientName, context);
+  ({ domain, flagKey, defaultValue, context }: FeatureProps<string>): Observable<EvaluationDetails<string>> => {
+    const client = getClientForEvaluation(domain, context);
     return from(client.getStringDetails(flagKey, defaultValue));
   },
 );
@@ -115,7 +115,7 @@ export const StringFeatureFlag = createParamDecorator(
 /**
  * Route handler parameter decorator.
  *
- * Gets the {@link EvaluationDetails} for given feature flag from a named or unnamed OpenFeature
+ * Gets the {@link EvaluationDetails} for given feature flag from adomain scoped or the default OpenFeature
  * client and populates the annotated parameter with the {@link EvaluationDetails} wrapped in an {@link Observable}.
  *
  * For example:
@@ -130,8 +130,8 @@ export const StringFeatureFlag = createParamDecorator(
  * @returns {ParameterDecorator}
  */
 export const NumberFeatureFlag = createParamDecorator(
-  ({ clientName, flagKey, defaultValue, context }: FeatureProps<number>): Observable<EvaluationDetails<number>> => {
-    const client = getClientForEvaluation(clientName, context);
+  ({ domain, flagKey, defaultValue, context }: FeatureProps<number>): Observable<EvaluationDetails<number>> => {
+    const client = getClientForEvaluation(domain, context);
     return from(client.getNumberDetails(flagKey, defaultValue));
   },
 );
@@ -139,7 +139,7 @@ export const NumberFeatureFlag = createParamDecorator(
 /**
  * Route handler parameter decorator.
  *
- * Gets the {@link EvaluationDetails} for given feature flag from a named or unnamed OpenFeature
+ * Gets the {@link EvaluationDetails} for given feature flag from a domain scoped or the default OpenFeature
  * client and populates the annotated parameter with the {@link EvaluationDetails} wrapped in an {@link Observable}.
  *
  * For example:
@@ -154,13 +154,8 @@ export const NumberFeatureFlag = createParamDecorator(
  * @returns {ParameterDecorator}
  */
 export const ObjectFeatureFlag = createParamDecorator(
-  ({
-    clientName,
-    flagKey,
-    defaultValue,
-    context,
-  }: FeatureProps<JsonValue>): Observable<EvaluationDetails<JsonValue>> => {
-    const client = getClientForEvaluation(clientName, context);
+  ({ domain, flagKey, defaultValue, context }: FeatureProps<JsonValue>): Observable<EvaluationDetails<JsonValue>> => {
+    const client = getClientForEvaluation(domain, context);
     return from(client.getObjectDetails(flagKey, defaultValue));
   },
 );

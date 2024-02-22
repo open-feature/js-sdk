@@ -8,7 +8,7 @@ import { EvaluationContextInterceptor } from '../src';
 export class OpenFeatureTestService {
   constructor(
     @FeatureClient() public defaultClient: OpenFeatureClient,
-    @FeatureClient({ name: 'namedClient' }) public namedClient: OpenFeatureClient,
+    @FeatureClient({ domain: 'domainScopedClient' }) public domainScopedClient: OpenFeatureClient,
   ) {}
 
   public async serviceMethod(flag: EvaluationDetails<FlagValue>) {

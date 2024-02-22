@@ -55,11 +55,11 @@ export class OpenFeatureModule {
     }
 
     if (options?.providers) {
-      Object.entries(options.providers).forEach(([name, provider]) => {
-        OpenFeature.setProvider(name, provider);
+      Object.entries(options.providers).forEach(([domain, provider]) => {
+        OpenFeature.setProvider(domain, provider);
         clientValueProviders.push({
-          provide: getOpenFeatureClientToken(name),
-          useFactory: () => OpenFeature.getClient(name),
+          provide: getOpenFeatureClientToken(domain),
+          useFactory: () => OpenFeature.getClient(domain),
         });
       });
     }
@@ -100,11 +100,11 @@ export interface OpenFeatureModuleOptions {
    */
   defaultProvider?: Provider;
   /**
-   * Named providers to set to OpenFeature.
+   * Domain scoped providers to set to OpenFeature.
    * @see {@link OpenFeature#setProvider}
    */
   providers?: {
-    [providerName: string]: Provider;
+    [domain: string]: Provider;
   };
   /**
    * Global {@link Logger} for OpenFeature.
@@ -149,10 +149,10 @@ export interface OpenFeatureModuleOptions {
 }
 
 /**
- * Returns an injection token for a (named) OpenFeature client.
- * @param {string} name The name of the OpenFeature client.
+ * Returns an injection token for a (domain scoped) OpenFeature client.
+ * @param {string} domain The domain of the OpenFeature client.
  * @returns {Client} The injection token.
  */
-export function getOpenFeatureClientToken(name?: string): string {
-  return name ? `OpenFeatureClient_${name}` : 'OpenFeatureClient_default';
+export function getOpenFeatureClientToken(domain?: string): string {
+  return domain ? `OpenFeatureClient_${domain}` : 'OpenFeatureClient_default';
 }
