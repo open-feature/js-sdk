@@ -136,7 +136,7 @@ import { FeatureClient, Client } from '@openfeature/nestjs-sdk';
 export class OpenFeatureTestService {
   constructor(
     @FeatureClient() private defaultClient: Client,
-    @FeatureClient({ domain: 'differentProvider' }) private sopedClient: Client,
+    @FeatureClient({ domain: 'my-domain' }) private scopedClient: Client,
   ) {}
 
   public async getBoolean() {
