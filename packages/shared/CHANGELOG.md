@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.26](https://github.com/open-feature/js-sdk/compare/core-v0.0.25...core-v0.0.26) (2024-02-22)
+
+
+### ✨ New Features
+
+* add support for domains ([#805](https://github.com/open-feature/js-sdk/issues/805)) ([98ba00a](https://github.com/open-feature/js-sdk/commit/98ba00a28d2f97a363c35ffce84cd8db1fa53f3f))
+
 ## [0.0.25](https://github.com/open-feature/js-sdk/compare/core-v0.0.24...core-v0.0.25) (2024-01-31)
 
 
