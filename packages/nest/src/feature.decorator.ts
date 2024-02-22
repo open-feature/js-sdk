@@ -115,7 +115,7 @@ export const StringFeatureFlag = createParamDecorator(
 /**
  * Route handler parameter decorator.
  *
- * Gets the {@link EvaluationDetails} for given feature flag from adomain scoped or the default OpenFeature
+ * Gets the {@link EvaluationDetails} for given feature flag from a domain scoped or the default OpenFeature
  * client and populates the annotated parameter with the {@link EvaluationDetails} wrapped in an {@link Observable}.
  *
  * For example:
