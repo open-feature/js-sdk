@@ -1,16 +1,13 @@
 import * as React from 'react';
 import { Client, OpenFeature } from '@openfeature/web-sdk';
 
-type ClientOrClientName =
+type ClientOrDomain =
   | {
       /**
-       * The name of the client.
+       * An identifier which logically binds clients with providers
        * @see OpenFeature.setProvider() and overloads.
        */
-      clientName: string;
-      /**
-       * OpenFeature client to use.
-       */
+      domain: string;
       client?: never;
     }
   | {
@@ -18,22 +15,18 @@ type ClientOrClientName =
        * OpenFeature client to use.
        */
       client: Client;
-      /**
-       * The name of the client.
-       * @see OpenFeature.setProvider() and overloads.
-       */
-      clientName?: never;
+      domain?: never;
     };
 
 type ProviderProps = {
   children?: React.ReactNode;
-} & ClientOrClientName;
+} & ClientOrDomain;
 
 const Context = React.createContext<Client | undefined>(undefined);
 
-export const OpenFeatureProvider = ({ client, clientName, children }: ProviderProps) => {
+export const OpenFeatureProvider = ({ client, domain, children }: ProviderProps) => {
   if (!client) {
-    client = OpenFeature.getClient(clientName);
+    client = OpenFeature.getClient(domain);
   }
 
   return <Context.Provider value={client}>{children}</Context.Provider>;

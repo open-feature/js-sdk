@@ -42,7 +42,7 @@ The OpenFeature React SDK adds React-specific functionality to the [OpenFeature 
 
 In addition to the feature provided by the [web sdk](https://openfeature.dev/docs/reference/technologies/client/web), capabilities include:
 
-- [Multiple Providers and Scoping](#multiple-providers-and-scoping)
+- [Multiple Providers and domains](#multiple-providers-and-domains)
 - [Re-rendering with Context Changes](#re-rendering-with-context-changes)
 - [Re-rendering with Flag Configuration Changes](#re-rendering-with-flag-configuration-changes)
 - [Suspense Support](#suspense-support)
@@ -130,15 +130,16 @@ const {
 } = useBooleanFlagDetails('new-message', false);
 ```
 
-### Multiple Providers and Scoping
+### Multiple Providers and domains
 
-Multiple providers and scoped clients can be configured by passing a `clientName` to the `OpenFeatureProvider`:
+
+Multiple providers can be used by passing a `domain` to the `OpenFeatureProvider`:
 
 ```tsx
-// Flags within this scope will use the a client/provider associated with `myClient`,
+// Flags within this domain will use the a client/provider associated with `my-domain`,
 function App() {
   return (
-    <OpenFeatureProvider clientName={'myClient'}>
+    <OpenFeatureProvider domain={'my-domain'}>
       <Page></Page>
     </OpenFeatureProvider>
   );
@@ -148,8 +149,10 @@ function App() {
 This is analogous to:
 
 ```ts
-OpenFeature.getClient('myClient');
+OpenFeature.getClient('my-domain');
 ```
+
+For more information about `domains`, refer to the [web SDK](https://github.com/open-feature/js-sdk/blob/main/packages/client/README.md).
 
 ### Re-rendering with Context Changes
 
