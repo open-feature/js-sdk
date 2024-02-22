@@ -130,7 +130,7 @@ const {
 } = useBooleanFlagDetails('new-message', false);
 ```
 
-### Multiple Providers and domains
+### Multiple Providers and Domains
 
 
 Multiple providers can be used by passing a `domain` to the `OpenFeatureProvider`:
