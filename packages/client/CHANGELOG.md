@@ -1,6 +1,24 @@
 # Changelog
 
 
+## [0.4.13](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.12...web-sdk-v0.4.13) (2024-02-22)
+
+
+### ✨ New Features
+
+* add support for domains ([#805](https://github.com/open-feature/js-sdk/issues/805)) ([98ba00a](https://github.com/open-feature/js-sdk/commit/98ba00a28d2f97a363c35ffce84cd8db1fa53f3f))
+
+
+### 🧹 Chore
+
+* **main:** release core 0.0.26 ([#823](https://github.com/open-feature/js-sdk/issues/823)) ([2fc38bd](https://github.com/open-feature/js-sdk/commit/2fc38bd8387ab7219eac15d8a1cf4f8da24855da))
+
+
+### 📚 Documentation
+
+* fix runsOn example on readme ([1096ae5](https://github.com/open-feature/js-sdk/commit/1096ae5d46cfcddd548c63d5a9901493dcdcf032))
+* improved grammar, added punction to readme ([70bd33d](https://github.com/open-feature/js-sdk/commit/70bd33db72ce3689fc99cd6ca9833f1ee35d980f))
+
 ## [0.4.12](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.11...web-sdk-v0.4.12) (2024-01-31)
 
 
