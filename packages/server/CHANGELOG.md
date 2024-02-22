@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.12.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.11.0...server-sdk-v1.12.0) (2024-02-22)
+
+
+### ✨ New Features
+
+* add support for domains ([#805](https://github.com/open-feature/js-sdk/issues/805)) ([98ba00a](https://github.com/open-feature/js-sdk/commit/98ba00a28d2f97a363c35ffce84cd8db1fa53f3f))
+
+
+### 🧹 Chore
+
+* **main:** release core 0.0.26 ([#823](https://github.com/open-feature/js-sdk/issues/823)) ([2fc38bd](https://github.com/open-feature/js-sdk/commit/2fc38bd8387ab7219eac15d8a1cf4f8da24855da))
+
+
+### 📚 Documentation
+
+* add missing punctuation to readme ([4c73189](https://github.com/open-feature/js-sdk/commit/4c73189f62210e2e165cefcadf010cf7c14207f5))
+
 ## [1.11.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.10.0...server-sdk-v1.11.0) (2024-01-31)
 
 
