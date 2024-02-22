@@ -60,7 +60,7 @@ interface FeatureProps<T extends FlagValue> {
  * @param {EvaluationContext} context The evaluation context of the client.
  * @returns {Client} The OpenFeature client.
  */
-function getClientForEvaluation(clientDomain?: string, context?: EvaluationContext) {
+function getClientForEvaluation(domain?: string, context?: EvaluationContext) {
   return domain ? OpenFeature.getClient(domain, context) : OpenFeature.getClient(context);
 }
 
