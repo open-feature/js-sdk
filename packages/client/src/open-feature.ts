@@ -21,7 +21,7 @@ type OpenFeatureGlobal = {
 };
 type DomainRecord = {
   domain?: string;
-  record: ProviderWrapper<Provider, ClientProviderStatus>;
+  wrapper: ProviderWrapper<Provider, ClientProviderStatus>;
 };
 
 const _globalThis = globalThis as OpenFeatureGlobal;
@@ -85,11 +85,11 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<ClientProviderStatus, P
     const context = objectOrUndefined<T>(domainOrContext) ?? objectOrUndefined(contextOrUndefined) ?? {};
 
     if (domain) {
-      const record = this._domainScopedProviders.get(domain);
-      if (record) {
+      const wrapper = this._domainScopedProviders.get(domain);
+      if (wrapper) {
         const oldContext = this.getContext(domain);
         this._domainScopedContext.set(domain, context);
-        await this.runProviderContextChangeHandler(domain, record, oldContext, context);
+        await this.runProviderContextChangeHandler(domain, wrapper, oldContext, context);
       } else {
         this._domainScopedContext.set(domain, context);
       }
@@ -100,19 +100,19 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<ClientProviderStatus, P
       // collect all providers that are using the default context (not bound to a domain)
       const unboundProviders: DomainRecord[] = Array.from(this._domainScopedProviders.entries())
         .filter(([domain]) => !this._domainScopedContext.has(domain))
-        .reduce<DomainRecord[]>((acc, [domain, record]) => {
-          acc.push({ domain, record });
+        .reduce<DomainRecord[]>((acc, [domain, wrapper]) => {
+          acc.push({ domain, wrapper });
           return acc;
         }, []);
 
       const allDomainRecords: DomainRecord[] = [
         // add in the default (no domain)
-        { domain: undefined, record: this._defaultProvider },
+        { domain: undefined, wrapper: this._defaultProvider },
         ...unboundProviders,
       ];
       await Promise.all(
         allDomainRecords.map((dm) =>
-          this.runProviderContextChangeHandler(dm.domain, dm.record, oldContext, context),
+          this.runProviderContextChangeHandler(dm.domain, dm.wrapper, oldContext, context),
         ),
       );
     }
@@ -155,12 +155,12 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<ClientProviderStatus, P
   async clearContext(domainOrUndefined?: string): Promise<void> {
     const domain = stringOrUndefined(domainOrUndefined);
     if (domain) {
-      const record = this._domainScopedProviders.get(domain);
-      if (record) {
+      const wrapper = this._domainScopedProviders.get(domain);
+      if (wrapper) {
         const oldContext = this.getContext(domain);
         this._domainScopedContext.delete(domain);
         const newContext = this.getContext();
-        await this.runProviderContextChangeHandler(domain, record, oldContext, newContext);
+        await this.runProviderContextChangeHandler(domain, wrapper, oldContext, newContext);
       } else {
         this._domainScopedContext.delete(domain);
       }
