@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.1.0-experimental](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.0.5-experimental...nestjs-sdk-v0.1.0-experimental) (2024-02-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* **nestjs:** add domains ([#831](https://github.com/open-feature/js-sdk/issues/831))
+
+### ✨ New Features
+
+* **nestjs:** add domains ([#831](https://github.com/open-feature/js-sdk/issues/831)) ([840d7ac](https://github.com/open-feature/js-sdk/commit/840d7acaa3725bade9e8458ad9ced8e20fae1a5e))
+
+
+### 🧹 Chore
+
+* **deps:** update dependency @types/supertest to v6 ([#782](https://github.com/open-feature/js-sdk/issues/782)) ([53479d1](https://github.com/open-feature/js-sdk/commit/53479d1edd3aad40f3d3fc3662cef6a317f78bbe))
+
 ## [0.0.5-experimental](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.0.4-experimental...nestjs-sdk-v0.0.5-experimental) (2024-01-31)
 
 
