@@ -42,10 +42,10 @@ describe('OpenFeatureModule', () => {
       expect(await client.getStringValue('testStringFlag', '')).toEqual('expected-string-value-default');
     });
 
-    it('should inject the client with the given name', async () => {
-      const client = moduleRef.get<OpenFeatureClient>(getOpenFeatureClientToken('namedClient'));
+    it('should inject the client with the given scope', async () => {
+      const client = moduleRef.get<OpenFeatureClient>(getOpenFeatureClientToken('domainScopedClient'));
       expect(client).toBeDefined();
-      expect(await client.getStringValue('testStringFlag', '')).toEqual('expected-string-value-named');
+      expect(await client.getStringValue('testStringFlag', '')).toEqual('expected-string-value-scoped');
     });
   });
 

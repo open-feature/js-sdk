@@ -35,9 +35,9 @@ describe('OpenFeature SDK', () => {
           'expected-string-value-default',
         );
 
-        expect(testService.namedClient).toBeDefined();
-        expect(await testService.namedClient.getStringValue('testStringFlag', 'wrong-value')).toEqual(
-          'expected-string-value-named',
+        expect(testService.domainScopedClient).toBeDefined();
+        expect(await testService.domainScopedClient.getStringValue('testStringFlag', 'wrong-value')).toEqual(
+          'expected-string-value-scoped',
         );
       });
     });

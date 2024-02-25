@@ -25,9 +25,8 @@ export const defaultProvider = new InMemoryProvider({
   },
 });
 
-
 export const providers = {
-  namedClient: new InMemoryProvider({
+  domainScopedClient: new InMemoryProvider({
     testBooleanFlag: {
       defaultVariant: 'default',
       variants: { default: true },
@@ -35,7 +34,7 @@ export const providers = {
     },
     testStringFlag: {
       defaultVariant: 'default',
-      variants: { default: 'expected-string-value-named' },
+      variants: { default: 'expected-string-value-scoped' },
       disabled: false,
     },
     testNumberFlag: {
@@ -45,12 +44,11 @@ export const providers = {
     },
     testObjectFlag: {
       defaultVariant: 'default',
-      variants: { default: { client: 'named' } },
+      variants: { default: { client: 'scoped' } },
       disabled: false,
     },
   }),
 };
-
 
 export const exampleContextFactory = async (context: ExecutionContext) => {
   const request = await context.switchToHttp().getRequest();
@@ -70,6 +68,6 @@ export const getOpenFeatureDefaultTestModule = () => {
   return OpenFeatureModule.forRoot({
     contextFactory: exampleContextFactory,
     defaultProvider,
-    providers
+    providers,
   });
 };
