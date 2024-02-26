@@ -53,12 +53,12 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<ClientProviderStatus, P
     return instance;
   }
 
-  private getProviderStatus(name?: string): ProviderStatus {
-    if (!name) {
+  private getProviderStatus(domain?: string): ProviderStatus {
+    if (!domain) {
       return this._defaultProvider.status;
     }
 
-    return this._domainScopedProviders.get(name)?.status ?? this._defaultProvider.status;
+    return this._domainScopedProviders.get(domain)?.status ?? this._defaultProvider.status;
   }
 
   /**
