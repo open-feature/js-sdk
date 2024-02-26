@@ -76,7 +76,8 @@ export class ProviderWrapper<P extends CommonProvider<AnyProviderStatus>, S exte
 export abstract class OpenFeatureCommonAPI<S extends AnyProviderStatus, P extends CommonProvider<S> = CommonProvider<S>, H extends BaseHook = BaseHook>
   implements Eventing, EvaluationLifeCycle<OpenFeatureCommonAPI<S, P>>, ManageLogger<OpenFeatureCommonAPI<S, P>>
 {
-  protected abstract readonly _statusEnumType: typeof ClientProviderStatus | typeof ServerProviderStatus; // an accessor 
+  // accessor for the type of the ProviderStatus enum (client or server)
+  protected abstract readonly _statusEnumType: typeof ClientProviderStatus | typeof ServerProviderStatus;
   protected abstract _createEventEmitter(): GenericEventEmitter<AnyProviderEvent>;
   protected abstract _defaultProvider: ProviderWrapper<P, AnyProviderStatus>;
   protected abstract _domainScopedProviders: Map<string, ProviderWrapper<P, AnyProviderStatus>>;
