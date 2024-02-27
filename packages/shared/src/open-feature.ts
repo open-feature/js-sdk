@@ -267,7 +267,8 @@ export abstract class OpenFeatureCommonAPI<S extends AnyProviderStatus, P extend
     let initializationPromise: Promise<void> | void = undefined;
     const wrappedProvider = new ProviderWrapper<P, AnyProviderStatus>(provider, this._statusEnumType.NOT_READY, this._statusEnumType);
 
-    if (typeof provider.initialize === 'function') {
+    // initialize the provider if it implements "initialize" and it's not already registered
+    if (typeof provider.initialize === 'function' && !this.allProviders.includes(provider)) {
       initializationPromise = provider
         .initialize?.(domain ? this._domainScopedContext.get(domain) ?? this._context : this._context)
         ?.then(() => {
@@ -318,14 +319,11 @@ export abstract class OpenFeatureCommonAPI<S extends AnyProviderStatus, P extend
 
     this.transferListeners(oldProvider, provider, domain, emitters);
 
-    const allProviders = [
-      ...[...this._domainScopedProviders.values()].map((wrappers) => wrappers.provider),
-      this._defaultProvider.provider,
-    ];
-
     // Do not close a provider that is bound to any client
-    if (!allProviders.includes(oldProvider)) {
-      oldProvider?.onClose?.();
+    if (!this.allProviders.includes(oldProvider)) {
+      oldProvider?.onClose?.()?.catch((err: Error | undefined) => {
+        this._logger.error(`error closing provider: ${err?.message}, ${err?.stack}`)
+      });
     }
 
     return initializationPromise;
@@ -442,6 +440,13 @@ export abstract class OpenFeatureCommonAPI<S extends AnyProviderStatus, P extend
       this._domainScopedProviders.clear();
       this._defaultProvider = new ProviderWrapper<P, AnyProviderStatus>(defaultProvider, this._statusEnumType.NOT_READY, this._statusEnumType);
     }
+  }
+
+  private get allProviders(): P[] {
+    return [
+      ...[...this._domainScopedProviders.values()].map((wrappers) => wrappers.provider),
+      this._defaultProvider.provider,
+    ];
   }
 
   private handleShutdownError(provider: P, err: unknown) {
