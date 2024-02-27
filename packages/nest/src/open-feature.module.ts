@@ -16,10 +16,10 @@ import {
   ServerProviderEvents,
   EventHandler,
   Logger,
+  AsyncLocalStorageTransactionContextProvider,
 } from '@openfeature/server-sdk';
 import { ContextFactory, ContextFactoryToken } from './context-factory';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { AsyncLocalStorageTransactionContext } from './evaluation-context-propagator';
 import { EvaluationContextInterceptor } from './evaluation-context-interceptor';
 import { ShutdownService } from './shutdown.service';
 
@@ -29,7 +29,7 @@ import { ShutdownService } from './shutdown.service';
 @Module({})
 export class OpenFeatureModule {
   static forRoot({ useGlobalInterceptor = true, ...options }: OpenFeatureModuleOptions): DynamicModule {
-    OpenFeature.setTransactionContextPropagator(new AsyncLocalStorageTransactionContext());
+    OpenFeature.setTransactionContextPropagator(new AsyncLocalStorageTransactionContextProvider());
 
     if (options.logger) {
       OpenFeature.setLogger(options.logger);
@@ -130,7 +130,7 @@ export interface OpenFeatureModuleOptions {
    * The {@link ContextFactory} for creating an {@link EvaluationContext} from Nest {@link ExecutionContext} information.
    * This could be header values of a request or something similar.
    * The context is automatically used for all feature flag evaluations during this request.
-   * @see {@link AsyncLocalStorageTransactionContext}
+   * @see {@link AsyncLocalStorageTransactionContextProvider}
    */
   contextFactory?: ContextFactory;
   /**

@@ -208,7 +208,7 @@ describe('OpenFeatureClient', () => {
             const defaultStringValue = 'other';
             const value: MyRestrictedString = await client.getStringValue<MyRestrictedString>(
               stringFlag,
-              defaultStringValue
+              defaultStringValue,
             );
 
             expect(value).toEqual(STRING_VALUE);
@@ -236,7 +236,7 @@ describe('OpenFeatureClient', () => {
             const defaultNumberValue = 4096;
             const value: MyRestrictedNumber = await client.getNumberValue<MyRestrictedNumber>(
               numberFlag,
-              defaultNumberValue
+              defaultNumberValue,
             );
 
             expect(value).toEqual(NUMBER_VALUE);
@@ -539,7 +539,7 @@ describe('OpenFeatureClient', () => {
           flagKey,
           defaultValue,
           expect.objectContaining({ transformed: false }),
-          {}
+          {},
         );
       });
     });
@@ -575,7 +575,7 @@ describe('OpenFeatureClient', () => {
           expect.objectContaining({
             targetingKey: TARGETING_KEY,
           }),
-          expect.anything()
+          expect.anything(),
         );
       });
     });
@@ -601,7 +601,7 @@ describe('OpenFeatureClient', () => {
           expect.objectContaining({
             ...context,
           }),
-          expect.anything()
+          expect.anything(),
         );
       });
     });
@@ -645,9 +645,13 @@ describe('OpenFeatureClient', () => {
             return this.context;
           }
 
-          setTransactionContext(transactionContext: EvaluationContext, callback: () => void): void {
+          setTransactionContext<TArgs extends unknown[], R>(
+            transactionContext: TransactionContext,
+            callback: (...args: TArgs) => R,
+            ...args: TArgs
+          ): void {
             this.context = transactionContext;
-            callback();
+            callback(...args);
           }
         }
 
@@ -671,7 +675,7 @@ describe('OpenFeatureClient', () => {
             ...invocationContext,
             ...beforeHookContext,
           }),
-          expect.anything()
+          expect.anything(),
         );
       });
     });
@@ -691,7 +695,7 @@ describe('OpenFeatureClient', () => {
     const client = OpenFeature.getClient();
 
     expect(await client.addHooks().clearHooks().setContext({}).setLogger(console).getBooleanValue('test', true)).toBe(
-      true
+      true,
     );
   });
 });

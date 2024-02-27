@@ -1,13 +1,17 @@
 import { EvaluationContext } from '@openfeature/core';
-import { TransactionContextPropagator } from './transaction-context';
+import { TransactionContext, TransactionContextPropagator } from './transaction-context';
 
 class NoopTransactionContextPropagator implements TransactionContextPropagator {
   getTransactionContext(): EvaluationContext {
     return {};
   }
 
-  setTransactionContext(_: EvaluationContext, callback: () => void): void {
-    callback();
+  setTransactionContext<TArgs extends unknown[], R>(
+    _: TransactionContext,
+    callback: (...args: TArgs) => R,
+    ...args: TArgs
+  ): void {
+    callback(...args);
   }
 }
 
