@@ -322,7 +322,7 @@ export abstract class OpenFeatureCommonAPI<S extends AnyProviderStatus, P extend
     // Do not close a provider that is bound to any client
     if (!this.allProviders.includes(oldProvider)) {
       oldProvider?.onClose?.()?.catch((err: Error | undefined) => {
-        this._logger.error(`error closing provider: ${err?.message}, ${err?.stack}`)
+        this._logger.error(`error closing provider: ${err?.message}, ${err?.stack}`);
       });
     }
 
