@@ -331,12 +331,12 @@ export abstract class OpenFeatureCommonAPI<S extends AnyProviderStatus, P extend
     return initializationPromise;
   }
 
-  protected getProviderForClient(name?: string): P {
-    if (!name) {
+  protected getProviderForClient(domain?: string): P {
+    if (!domain) {
       return this._defaultProvider.provider;
     }
 
-    return this._domainScopedProviders.get(name)?.provider ?? this._defaultProvider.provider;
+    return this._domainScopedProviders.get(domain)?.provider ?? this._defaultProvider.provider;
   }
 
   protected buildAndCacheEventEmitterForClient(domain?: string): GenericEventEmitter<AnyProviderEvent> {

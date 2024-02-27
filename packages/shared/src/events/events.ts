@@ -69,6 +69,6 @@ export { ClientProviderEvents as AllProviderEvents };
 
 /**
  * A type representing any possible ProviderEvent (server or client side).
- * If you are implementing a hook or provider, you probably want to import `ProviderEvents` from the respective SDK.
+ * In most cases, you probably want to import `ProviderEvents` from the respective SDK.
  */
 export type AnyProviderEvent = ServerProviderEvents | ClientProviderEvents;

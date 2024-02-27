@@ -73,6 +73,10 @@ export enum ClientProviderStatus {
   RECONCILING = 'RECONCILING',
 }
 
+/**
+ * A type representing any possible ProviderStatus (server or client side).
+ * In most cases, you probably want to import `ProviderStatus` from the respective SDK.
+ */
 export { ClientProviderStatus as AllProviderStatus };
 
 /**
@@ -82,7 +86,7 @@ export interface ProviderMetadata extends Metadata {
   readonly name: string;
 }
 
-export interface CommonProvider<E extends ClientProviderStatus | ServerProviderStatus> {
+export interface CommonProvider<S extends ClientProviderStatus | ServerProviderStatus> {
   readonly metadata: ProviderMetadata;
 
   /**
@@ -98,7 +102,7 @@ export interface CommonProvider<E extends ClientProviderStatus | ServerProviderS
    * 
    * _Providers which do not implement this method are assumed to be ready immediately._
    */
-  readonly status?: E;
+  readonly status?: S;
 
   /**
    * An event emitter for ProviderEvents.
