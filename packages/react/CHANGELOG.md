@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.0-experimental](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.1.1-experimental...react-sdk-v0.2.0-experimental) (2024-02-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* use "domain" instead of "clientName" ([#826](https://github.com/open-feature/js-sdk/issues/826))
+
+### ✨ New Features
+
+* use "domain" instead of "clientName" ([#826](https://github.com/open-feature/js-sdk/issues/826)) ([427ba88](https://github.com/open-feature/js-sdk/commit/427ba883f5b3d38e40ed3dd493c6208f2f74691e))
+
 ## [0.1.1-experimental](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.1.0-experimental...react-sdk-v0.1.1-experimental) (2024-01-31)
 
 
