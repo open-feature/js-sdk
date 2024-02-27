@@ -279,7 +279,6 @@ import {
   Logger,
   Provider,
   ProviderEventEmitter,
-  ProviderStatus,
   ResolutionDetails
 } from '@openfeature/server-sdk';
 
@@ -304,8 +303,6 @@ class MyProvider implements Provider {
   resolveObjectEvaluation<T extends JsonValue>(flagKey: string, defaultValue: T, context: EvaluationContext, logger: Logger): Promise<ResolutionDetails<T>> {
     // code to evaluate an object
   }
-
-  status?: ProviderStatus | undefined;
 
   // implement with "new OpenFeatureEventEmitter()", and use "emit()" to emit events
   events?: ProviderEventEmitter<AnyProviderEvent> | undefined; 
