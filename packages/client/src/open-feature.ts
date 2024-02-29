@@ -28,7 +28,7 @@ const _globalThis = globalThis as OpenFeatureGlobal;
 
 export class OpenFeatureAPI extends OpenFeatureCommonAPI<ClientProviderStatus, Provider, Hook> implements ManageContext<Promise<void>> {
   protected _statusEnumType: typeof ProviderStatus = ProviderStatus;
-  protected _events: GenericEventEmitter<ProviderEvents> = new OpenFeatureEventEmitter();
+  protected _apiEmitter: GenericEventEmitter<ProviderEvents> = new OpenFeatureEventEmitter();
   protected _defaultProvider: ProviderWrapper<Provider, ClientProviderStatus> = new ProviderWrapper(NOOP_PROVIDER, ProviderStatus.NOT_READY, this._statusEnumType);
   protected _domainScopedProviders: Map<string, ProviderWrapper<Provider, ClientProviderStatus>> = new Map();
   protected _createEventEmitter = () => new OpenFeatureEventEmitter();
@@ -220,6 +220,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<ClientProviderStatus, P
     oldContext: EvaluationContext,
     newContext: EvaluationContext,
   ): Promise<void> {
+    // this should always be set according to the typings, but let's be defensive considering JS
     const providerName = wrapper.provider?.metadata?.name || 'unnamed-provider';
     
     try {
@@ -229,7 +230,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<ClientProviderStatus, P
         this.getAssociatedEventEmitters(domain).forEach((emitter) => {
           emitter?.emit(ProviderEvents.Reconciling, { domain, providerName });
         });
-        this._events?.emit(ProviderEvents.Reconciling, { domain, providerName });
+        this._apiEmitter?.emit(ProviderEvents.Reconciling, { domain, providerName });
         await wrapper.provider.onContextChange(oldContext, newContext);
         wrapper.decrementPendingContextChanges();
       }
@@ -239,7 +240,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<ClientProviderStatus, P
         this.getAssociatedEventEmitters(domain).forEach((emitter) => {
           emitter?.emit(ProviderEvents.ContextChanged, { clientName: domain, domain, providerName });
         });
-        this._events?.emit(ProviderEvents.ContextChanged, { clientName: domain, domain, providerName });
+        this._apiEmitter?.emit(ProviderEvents.ContextChanged, { clientName: domain, domain, providerName });
       }
     } catch (err) {
       // run error handlers instead
@@ -252,7 +253,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<ClientProviderStatus, P
         this.getAssociatedEventEmitters(domain).forEach((emitter) => {
           emitter?.emit(ProviderEvents.Error, { clientName: domain, domain, providerName, message });
         });
-        this._events?.emit(ProviderEvents.Error, { clientName: domain, domain, providerName, message });
+        this._apiEmitter?.emit(ProviderEvents.Error, { clientName: domain, domain, providerName, message });
       }
     }
   }

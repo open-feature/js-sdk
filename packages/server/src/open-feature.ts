@@ -31,7 +31,7 @@ export class OpenFeatureAPI
   implements ManageContext<OpenFeatureAPI>, ManageTransactionContextPropagator<OpenFeatureCommonAPI<ServerProviderStatus, Provider>>
 {
   protected _statusEnumType: typeof ProviderStatus = ProviderStatus;
-  protected _events = new OpenFeatureEventEmitter();
+  protected _apiEmitter = new OpenFeatureEventEmitter();
   protected _defaultProvider: ProviderWrapper<Provider, ServerProviderStatus> = new ProviderWrapper(NOOP_PROVIDER, ProviderStatus.NOT_READY, this._statusEnumType);
   protected _domainScopedProviders: Map<string, ProviderWrapper<Provider, ServerProviderStatus>> = new Map();
   protected _createEventEmitter = () => new OpenFeatureEventEmitter();

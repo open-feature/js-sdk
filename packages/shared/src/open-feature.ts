@@ -80,8 +80,8 @@ export abstract class OpenFeatureCommonAPI<S extends AnyProviderStatus, P extend
   protected abstract readonly _statusEnumType: typeof ClientProviderStatus | typeof ServerProviderStatus;
   protected abstract _createEventEmitter(): GenericEventEmitter<AnyProviderEvent>;
   protected abstract _defaultProvider: ProviderWrapper<P, AnyProviderStatus>;
-  protected abstract _domainScopedProviders: Map<string, ProviderWrapper<P, AnyProviderStatus>>;
-  protected abstract readonly _events: GenericEventEmitter<AnyProviderEvent>;
+  protected abstract readonly _domainScopedProviders: Map<string, ProviderWrapper<P, AnyProviderStatus>>;
+  protected abstract readonly _apiEmitter: GenericEventEmitter<AnyProviderEvent>;
 
   protected _hooks: H[] = [];
   protected _context: EvaluationContext = {};
@@ -157,7 +157,7 @@ export abstract class OpenFeatureCommonAPI<S extends AnyProviderStatus, P extend
       }
     });
 
-    this._events.addHandler(eventType, handler);
+    this._apiEmitter.addHandler(eventType, handler);
   }
 
   /**
@@ -166,14 +166,14 @@ export abstract class OpenFeatureCommonAPI<S extends AnyProviderStatus, P extend
    * @param {EventHandler} handler The handler to remove for the provider event type
    */
   removeHandler<T extends AnyProviderEvent>(eventType: T, handler: EventHandler): void {
-    this._events.removeHandler(eventType, handler);
+    this._apiEmitter.removeHandler(eventType, handler);
   }
 
   /**
    * Removes all event handlers.
    */
   clearHandlers(): void {
-    this._events.removeAllHandlers();
+    this._apiEmitter.removeAllHandlers();
   }
 
   /**
@@ -182,7 +182,7 @@ export abstract class OpenFeatureCommonAPI<S extends AnyProviderStatus, P extend
    * @returns {EventHandler[]} The handlers currently attached to the given provider event type
    */
   getHandlers<T extends AnyProviderEvent>(eventType: T): EventHandler[] {
-    return this._events.getHandlers(eventType);
+    return this._apiEmitter.getHandlers(eventType);
   }
 
   /**
@@ -277,7 +277,7 @@ export abstract class OpenFeatureCommonAPI<S extends AnyProviderStatus, P extend
           this.getAssociatedEventEmitters(domain).forEach((emitter) => {
             emitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
           });
-          this._events?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
+          this._apiEmitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
         })
         ?.catch((error) => {
           // if this is a fatal error, transition to FATAL status
@@ -294,7 +294,7 @@ export abstract class OpenFeatureCommonAPI<S extends AnyProviderStatus, P extend
               message: error?.message,
             });
           });
-          this._events?.emit(AllProviderEvents.Error, {
+          this._apiEmitter?.emit(AllProviderEvents.Error, {
             clientName: domain,
             domain,
             providerName,
@@ -308,7 +308,7 @@ export abstract class OpenFeatureCommonAPI<S extends AnyProviderStatus, P extend
       emitters.forEach((emitter) => {
         emitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
       });
-      this._events?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
+      this._apiEmitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
     }
 
     if (domain) {
@@ -396,7 +396,7 @@ export abstract class OpenFeatureCommonAPI<S extends AnyProviderStatus, P extend
         emitters.forEach((emitter) => {
           emitter?.emit(eventType, { ...details, clientName: domain, domain, providerName: newProvider.metadata.name });
         });
-        this._events.emit(eventType, {
+        this._apiEmitter.emit(eventType, {
           ...details,
           clientName: domain,
           domain,
