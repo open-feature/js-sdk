@@ -1,8 +1,12 @@
-import { OpenFeature, AsyncLocalStorageTransactionContextProvider, NOOP_TRANSACTION_CONTEXT_PROPAGATOR } from '../src';
+import {
+  OpenFeature,
+  AsyncLocalStorageTransactionContextPropagator,
+  NOOP_TRANSACTION_CONTEXT_PROPAGATOR,
+} from '../src';
 
-describe('AsyncLocalStorageTransactionContextProvider', () => {
+describe('AsyncLocalStorageTransactionContextPropagator', () => {
   beforeAll(() => {
-    OpenFeature.setTransactionContextPropagator(new AsyncLocalStorageTransactionContextProvider());
+    OpenFeature.setTransactionContextPropagator(new AsyncLocalStorageTransactionContextPropagator());
   });
 
   afterAll(() => {
