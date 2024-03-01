@@ -499,6 +499,16 @@ describe('Events', () => {
       // emit a change event from the mock provider
       provider.events?.emit(ProviderEvents.ConfigurationChanged, { flagsChanged: [changedFlag] });
     });
+
+    it('It allows iteration over all event types', () => {
+      // just a typings test; it should be possible to iterate over a collection of ProviderEvents,
+      const client = OpenFeature.getClient(domain);
+      const providerEvents: ProviderEvents[] = [];
+
+      providerEvents.forEach((e) => {
+        client.addHandler(e, () => {});
+      });
+    });
   });
   
   describe('Requirement 5.3.3', () => {

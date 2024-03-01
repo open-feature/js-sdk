@@ -87,6 +87,10 @@ export interface Eventing<T extends ServerProviderEvents | ClientProviderEvents>
     eventType: T extends ClientProviderEvents ? ClientNotChangeEvents : ServerNotChangeEvents,
     handler: EventHandler<T extends ClientProviderEvents ? ClientNotChangeEvents : ServerNotChangeEvents>,
   ): void;
+  addHandler(
+    eventType: T extends ClientProviderEvents ? ClientProviderEvents : ServerProviderEvents,
+    handler: EventHandler<T extends ClientProviderEvents ? ClientProviderEvents : ServerProviderEvents>,
+  ): void;
 
   /**
    * Removes a handler for the given provider event type.
