@@ -21,31 +21,31 @@ class MockProvider implements Provider {
   readonly events?: OpenFeatureEventEmitter;
   readonly runsOn = 'client';
   private hasInitialize: boolean;
+  private hasContextChanged: boolean;
   private failOnInit: boolean;
   private failOnContextChange: boolean;
   private asyncDelay?: number;
   private enableEvents: boolean;
-  status?: ProviderStatus = undefined;
   onContextChange?: () => Promise<void>;
+  initialize?: () => Promise<void>;
 
   constructor(options?: {
     hasInitialize?: boolean;
-    initialStatus?: ProviderStatus;
     asyncDelay?: number;
     enableEvents?: boolean;
     failOnInit?: boolean;
-    noContextChanged?: boolean;
+    hasContextChanged?: boolean;
     failOnContextChange?: boolean;
     name?: string;
   }) {
     this.metadata = { name: options?.name ?? 'mock-provider' };
     this.hasInitialize = options?.hasInitialize ?? true;
-    this.status = options?.initialStatus ?? ProviderStatus.NOT_READY;
+    this.hasContextChanged = options?.hasContextChanged ?? true;
     this.asyncDelay = options?.asyncDelay ?? 0;
     this.enableEvents = options?.enableEvents ?? true;
     this.failOnInit = options?.failOnInit ?? false;
     this.failOnContextChange = options?.failOnContextChange ?? false;
-    if (!options?.noContextChanged) {
+    if (this.hasContextChanged) {
       this.onContextChange = this.changeHandler;
     }
 
@@ -59,13 +59,9 @@ class MockProvider implements Provider {
         if (this.failOnInit) {
           throw new Error(ERR_MESSAGE);
         }
-
-        this.status = ProviderStatus.READY;
       });
     }
   }
-
-  initialize: jest.Mock<Promise<void>, []> | undefined;
 
   resolveBooleanEvaluation(): ResolutionDetails<boolean> {
     throw new Error('Not implemented');
@@ -235,7 +231,6 @@ describe('Events', () => {
     it('anonymous provider with anonymous client should run non-init events', (done) => {
       const defaultProvider = new MockProvider({
         failOnInit: false,
-        initialStatus: ProviderStatus.NOT_READY,
         name: 'default',
       });
 
@@ -255,7 +250,6 @@ describe('Events', () => {
     it('anonymous provider with anonymous client should run init events', (done) => {
       const defaultProvider = new MockProvider({
         failOnInit: false,
-        initialStatus: ProviderStatus.NOT_READY,
         name: 'default',
       });
 
@@ -272,7 +266,6 @@ describe('Events', () => {
     it('anonymous provider with named client should run non-init events', (done) => {
       const defaultProvider = new MockProvider({
         failOnInit: false,
-        initialStatus: ProviderStatus.NOT_READY,
         name: 'default',
       });
       const unboundName = 'some-new-unbound-name';
@@ -293,7 +286,6 @@ describe('Events', () => {
     it('anonymous provider with named client should run init events', (done) => {
       const defaultProvider = new MockProvider({
         failOnInit: false,
-        initialStatus: ProviderStatus.NOT_READY,
         name: 'default',
       });
       const unboundName = 'some-other-unbound-name';
@@ -334,7 +326,6 @@ describe('Events', () => {
     it('handler added while while provider initializing runs', (done) => {
       const provider = new MockProvider({
         name: 'race',
-        initialStatus: ProviderStatus.NOT_READY,
         asyncDelay: TIMEOUT / 2,
       });
 
@@ -531,35 +522,22 @@ describe('Events', () => {
     describe('API', () => {
       describe('Handlers attached after the provider is already in the associated state, MUST run immediately.', () => {
         it('Ready', (done) => {
-          const provider = new MockProvider({ initialStatus: ProviderStatus.READY });
+          const provider = new MockProvider({ hasInitialize: false });
 
-          OpenFeature.setProvider(domain, provider);
-          expect(provider.initialize).not.toHaveBeenCalled();
-
-          OpenFeature.addHandler(ProviderEvents.Ready, () => {
-            done();
+          OpenFeature.setProviderAndWait(domain, provider).then(() => {
+            OpenFeature.addHandler(ProviderEvents.Ready, () => {
+              done();
+            });
           });
         });
 
         it('Error', (done) => {
-          const provider = new MockProvider({ initialStatus: ProviderStatus.ERROR });
+          const provider = new MockProvider({ failOnInit: true });
 
-          OpenFeature.setProvider(domain, provider);
-          expect(provider.initialize).not.toHaveBeenCalled();
-
-          OpenFeature.addHandler(ProviderEvents.Error, () => {
-            done();
-          });
-        });
-
-        it('Stale', (done) => {
-          const provider = new MockProvider({ initialStatus: ProviderStatus.STALE });
-
-          OpenFeature.setProvider(domain, provider);
-          expect(provider.initialize).not.toHaveBeenCalled();
-
-          OpenFeature.addHandler(ProviderEvents.Stale, () => {
-            done();
+          OpenFeature.setProviderAndWait(domain, provider).catch(() => {
+            OpenFeature.addHandler(ProviderEvents.Error, () => {
+              done();
+            });
           });
         });
       });
@@ -568,39 +546,93 @@ describe('Events', () => {
     describe('client', () => {
       describe('Handlers attached after the provider is already in the associated state, MUST run immediately.', () => {
         it('Ready', (done) => {
-          const provider = new MockProvider({ initialStatus: ProviderStatus.READY });
+          const provider = new MockProvider({ hasInitialize: false });
           const client = OpenFeature.getClient(domain);
 
-          OpenFeature.setProvider(domain, provider);
-          expect(provider.initialize).not.toHaveBeenCalled();
-
-          client.addHandler(ProviderEvents.Ready, () => {
-            done();
+          OpenFeature.setProviderAndWait(domain, provider).then(() => {
+            client.addHandler(ProviderEvents.Ready, () => {
+              done();
+            });
           });
         });
 
         it('Error', (done) => {
-          const provider = new MockProvider({ initialStatus: ProviderStatus.ERROR });
+          const provider = new MockProvider({ failOnInit: true });
           const client = OpenFeature.getClient(domain);
 
-          OpenFeature.setProvider(domain, provider);
-          expect(provider.initialize).not.toHaveBeenCalled();
-
-          client.addHandler(ProviderEvents.Error, () => {
-            done();
+          OpenFeature.setProviderAndWait(domain, provider).catch(() => {
+            client.addHandler(ProviderEvents.Error, () => {
+              done();
+            });
           });
         });
+      });
+    });
+  });
 
-        it('Stale', (done) => {
-          const provider = new MockProvider({ initialStatus: ProviderStatus.STALE });
+  describe('Requirement 5.3.4.1', () => {
+    describe('API', () => {
+      describe('provider has context changed handler', () => {
+        it('Reconciling and ContextChanged are emitted', async () => {
+          const provider = new MockProvider({ hasInitialize: false, hasContextChanged: true });
+
+          const handler = jest.fn(() => {});
+
+          await OpenFeature.setProviderAndWait(domain, provider);
+          OpenFeature.addHandler(ProviderEvents.Reconciling, handler);
+          OpenFeature.addHandler(ProviderEvents.ContextChanged, handler);
+          await OpenFeature.setContext(domain, {});
+
+          expect(handler).toHaveBeenCalledTimes(2);
+        });
+      });
+
+      describe('provider has no context changed handler', () => {
+        it('only ContextChanged is emitted', async () => {
+          const provider = new MockProvider({ hasInitialize: false, hasContextChanged: false });
+
+          const handler = jest.fn(() => {});
+
+          await OpenFeature.setProviderAndWait(domain, provider);
+          OpenFeature.addHandler(ProviderEvents.Reconciling, handler); // this should not be called
+          OpenFeature.addHandler(ProviderEvents.ContextChanged, handler);
+          await OpenFeature.setContext(domain, {});
+
+          expect(handler).toHaveBeenCalledTimes(1);
+        });
+      });
+    });
+    
+    describe('client', () => {
+      describe('provider has context changed handler', () => {
+        it('Stale and ContextChanged are emitted', async () => {
+          const provider = new MockProvider({ hasInitialize: false, hasContextChanged: true });
+
+          const handler = jest.fn(() => {});
           const client = OpenFeature.getClient(domain);
 
-          OpenFeature.setProvider(domain, provider);
-          expect(provider.initialize).not.toHaveBeenCalled();
+          await OpenFeature.setProviderAndWait(domain, provider);
+          client.addHandler(ProviderEvents.Reconciling, handler);
+          client.addHandler(ProviderEvents.ContextChanged, handler);
+          await OpenFeature.setContext(domain, {});
 
-          client.addHandler(ProviderEvents.Stale, () => {
-            done();
-          });
+          expect(handler).toHaveBeenCalledTimes(2);
+        });
+      });
+
+      describe('provider has no context changed handler', () => {
+        it('only ContextChanged is emitted', async () => {
+          const provider = new MockProvider({ hasInitialize: false, hasContextChanged: false });
+
+          const handler = jest.fn(() => {});
+          const client = OpenFeature.getClient(domain);
+
+          await OpenFeature.setProviderAndWait(domain, provider);
+          client.addHandler(ProviderEvents.Reconciling, handler); // this should not be called
+          client.addHandler(ProviderEvents.ContextChanged, handler);
+          await OpenFeature.setContext(domain, {});
+
+          expect(handler).toHaveBeenCalledTimes(1);
         });
       });
     });
@@ -610,7 +642,7 @@ describe('Events', () => {
     describe('API', () => {
       describe('context set for same client', () => {
         it("If the provider's `on context changed` function terminates normally, associated `PROVIDER_CONTEXT_CHANGED` handlers MUST run.", (done) => {
-          const provider = new MockProvider({ initialStatus: ProviderStatus.READY });
+          const provider = new MockProvider({ hasInitialize: false });
 
           OpenFeature.setProvider(domain, provider);
           OpenFeature.setContext(domain, {});
@@ -630,7 +662,7 @@ describe('Events', () => {
         });
 
         it("If the provider's `on context changed` function terminates abnormally, associated `PROVIDER_ERROR` handlers MUST run.", (done) => {
-          const provider = new MockProvider({ initialStatus: ProviderStatus.READY, failOnContextChange: true });
+          const provider = new MockProvider({ hasInitialize: false, failOnContextChange: true });
 
           OpenFeature.setProvider(domain, provider);
           OpenFeature.setContext(domain, {});
@@ -652,7 +684,7 @@ describe('Events', () => {
 
       describe('context set for different client', () => {
         it("If the provider's `on context changed` function terminates normally, associated `PROVIDER_CONTEXT_CHANGED` handlers MUST run.", (done) => {
-          const provider = new MockProvider({ initialStatus: ProviderStatus.READY });
+          const provider = new MockProvider({ hasInitialize: false });
           let runCount = 0;
 
           OpenFeature.setProvider(domain, provider);
@@ -683,7 +715,7 @@ describe('Events', () => {
         });
 
         it("If the provider's `on context changed` function terminates abnormally, associated `PROVIDER_ERROR` handlers MUST run.", (done) => {
-          const provider = new MockProvider({ initialStatus: ProviderStatus.READY, failOnContextChange: true });
+          const provider = new MockProvider({ hasInitialize: false, failOnContextChange: true });
 
           OpenFeature.setProvider(domain, provider);
 
@@ -708,7 +740,7 @@ describe('Events', () => {
 
     describe('client', () => {
       it("If the provider's `on context changed` function terminates normally, associated `PROVIDER_CONTEXT_CHANGED` handlers MUST run.", (done) => {
-        const provider = new MockProvider({ initialStatus: ProviderStatus.READY });
+        const provider = new MockProvider({ hasInitialize: false });
         const client = OpenFeature.getClient(domain);
 
         OpenFeature.setProvider(domain, provider);
@@ -729,7 +761,7 @@ describe('Events', () => {
       });
 
       it("If the provider's `on context changed` function terminates abnormally, associated `PROVIDER_ERROR` handlers MUST run.", (done) => {
-        const provider = new MockProvider({ initialStatus: ProviderStatus.READY, failOnContextChange: true });
+        const provider = new MockProvider({ hasInitialize: false, failOnContextChange: true });
         const client = OpenFeature.getClient(domain);
 
         OpenFeature.setProvider(domain, provider);
@@ -751,29 +783,47 @@ describe('Events', () => {
       });
     });
 
-    describe('provider', () => {
-      describe('has no onContextChange handler', () => {
-        it('runs API ContextChanged event handler', (done) => {
-          const noChangeHandlerProvider = 'noChangeHandlerProvider';
-          const provider = new MockProvider({ initialStatus: ProviderStatus.READY, noContextChanged: true });
+    describe('reentrant invocations', () => {
+      it('only fire one terminal event', async () => {
+        // provider context change will take 100ms
+        const provider = new MockProvider({ hasInitialize: false, asyncDelay: 100 });
+        const client = OpenFeature.getClient(domain);
+        let runs = 0;
 
-          OpenFeature.setProvider(noChangeHandlerProvider, provider);
-          OpenFeature.setContext(noChangeHandlerProvider, {});
+        OpenFeature.setProvider(domain, provider);
 
-          const handler = (details?: EventDetails) => {
-            try {
-              expect(details?.clientName).toEqual(noChangeHandlerProvider);
-              expect(details?.domain).toEqual(noChangeHandlerProvider);
-              expect(details?.providerName).toEqual(provider.metadata.name);
-              done();
-            } catch (e) {
-              done(e);
-            }
-          };
+        const handler = () => {
+          runs++;
+        };
 
-          OpenFeature.addHandler(ProviderEvents.ContextChanged, handler);
-        });
+        client.addHandler(ProviderEvents.ContextChanged, handler);
+        
+        // update context change twice
+        await Promise.all([
+          OpenFeature.setContext(domain, {}),
+          OpenFeature.setContext(domain, {}),
+        ]);
+
+        // should only have run once
+        expect(runs).toEqual(1);
       });
+    });
+  });
+
+  describe('Requirement 5.3.5', () => {
+    it('provider events update status', async () => {
+      // provider context change will take 100ms
+      const provider = new MockProvider({ hasInitialize: false });
+      OpenFeature.setProviderAndWait(domain, provider);
+      const client = OpenFeature.getClient(domain);
+      provider.events?.emit(ProviderEvents.Stale);
+      expect(client.providerStatus).toEqual(ProviderStatus.STALE);
+
+      provider.events?.emit(ProviderEvents.Ready);
+      expect(client.providerStatus).toEqual(ProviderStatus.READY);
+
+      provider.events?.emit(ProviderEvents.Error);
+      expect(client.providerStatus).toEqual(ProviderStatus.ERROR);
     });
   });
 });

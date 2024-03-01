@@ -56,7 +56,7 @@ interface FeatureProps<T extends FlagValue> {
 
 /**
  * Returns a domain scoped or the default OpenFeature client with the given context.
- * @param {string} clientDomain The domain of the OpenFeature client.
+ * @param {string} domain The domain of the OpenFeature client.
  * @param {EvaluationContext} context The evaluation context of the client.
  * @returns {Client} The OpenFeature client.
  */

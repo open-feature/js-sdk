@@ -1,5 +1,7 @@
-import { CommonProvider, EvaluationContext, JsonValue, Logger, ResolutionDetails } from '@openfeature/core';
+import { CommonProvider, EvaluationContext, JsonValue, Logger, ResolutionDetails, ServerProviderStatus } from '@openfeature/core';
 import { Hook } from '../hooks';
+
+export { ServerProviderStatus as ProviderStatus };
 
 /**
  * Interface that providers must implement to resolve flag values for their particular
@@ -7,7 +9,7 @@ import { Hook } from '../hooks';
  *
  * Implementation for resolving all the required flag types must be defined.
  */
-export interface Provider extends CommonProvider {
+export interface Provider extends CommonProvider<ServerProviderStatus> {
   /**
    * A provider hook exposes a mechanism for provider authors to register hooks
    * to tap into various stages of the flag evaluation lifecycle. These hooks can
