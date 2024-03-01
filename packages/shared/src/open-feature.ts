@@ -7,7 +7,7 @@ import {
   EventHandler,
   Eventing,
   GenericEventEmitter,
-  statusMatchesEvent,
+  statusMatchesEvent
 } from './events';
 import { isDefined } from './filter';
 import { BaseHook, EvaluationLifeCycle } from './hooks';
@@ -74,7 +74,7 @@ export class ProviderWrapper<P extends CommonProvider<AnyProviderStatus>, S exte
 }
 
 export abstract class OpenFeatureCommonAPI<S extends AnyProviderStatus, P extends CommonProvider<S> = CommonProvider<S>, H extends BaseHook = BaseHook>
-  implements Eventing, EvaluationLifeCycle<OpenFeatureCommonAPI<S, P>>, ManageLogger<OpenFeatureCommonAPI<S, P>>
+  implements Eventing<AnyProviderEvent>, EvaluationLifeCycle<OpenFeatureCommonAPI<S, P>>, ManageLogger<OpenFeatureCommonAPI<S, P>>
 {
   // accessor for the type of the ProviderStatus enum (client or server)
   protected abstract readonly _statusEnumType: typeof ClientProviderStatus | typeof ServerProviderStatus;

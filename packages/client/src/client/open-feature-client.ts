@@ -11,6 +11,7 @@ import {
   Logger,
   OpenFeatureError,
   ProviderFatalError,
+  ProviderNotReadyError,
   ResolutionDetails,
   SafeLogger,
   StandardResolutionReasons,
@@ -23,7 +24,6 @@ import { Hook } from '../hooks';
 import { OpenFeature } from '../open-feature';
 import { Provider, ProviderStatus } from '../provider';
 import { Client } from './client';
-import { ProviderNotReadyError } from '@openfeature/core';
 
 type OpenFeatureClientOptions = {
   /**

@@ -1,5 +1,5 @@
 import { ErrorCode } from '../evaluation';
-import { AllProviderEvents, AnyProviderEvent } from './events';
+import { ClientProviderEvents, ServerProviderEvents, AnyProviderEvent } from './events';
 
 export type EventMetadata = {
   [key: string]: string | boolean | number;
@@ -19,48 +19,86 @@ type CommonEventProps = {
   metadata?: EventMetadata;
 };
 
-
 export type ReadyEvent = CommonEventProps;
 export type ErrorEvent = CommonEventProps;
 export type StaleEvent = CommonEventProps;
 export type ReconcilingEvent = CommonEventProps & { errorCode: ErrorCode };
 export type ConfigChangeEvent = CommonEventProps & { flagsChanged?: string[] };
 
-type EventMap = {
-  [AllProviderEvents.Ready]: ReadyEvent;
-  [AllProviderEvents.Error]: ErrorEvent;
-  [AllProviderEvents.Stale]: StaleEvent;
-  [AllProviderEvents.ContextChanged]: CommonEventProps;
-  [AllProviderEvents.ConfigurationChanged]: ConfigChangeEvent;
-  [AllProviderEvents.Reconciling]: ReconcilingEvent;
+type ServerEventMap = {
+  [ServerProviderEvents.Ready]: ReadyEvent;
+  [ServerProviderEvents.Error]: ErrorEvent;
+  [ServerProviderEvents.Stale]: StaleEvent;
+  [ServerProviderEvents.ConfigurationChanged]: ConfigChangeEvent;
 };
 
-export type EventContext<  U extends Record<string, unknown> = Record<string, unknown>
-> = EventMap[AllProviderEvents] & U;
+type ClientEventMap = {
+  [ClientProviderEvents.Ready]: ReadyEvent;
+  [ClientProviderEvents.Error]: ErrorEvent;
+  [ClientProviderEvents.Stale]: StaleEvent;
+  [ClientProviderEvents.ConfigurationChanged]: ConfigChangeEvent;
+  [ClientProviderEvents.Reconciling]: CommonEventProps;
+  [ClientProviderEvents.ContextChanged]: CommonEventProps;
+};
 
-export type EventDetails = EventContext & CommonEventDetails;
-export type EventHandler = (eventDetails?: EventDetails) => Promise<unknown> | unknown;
+type ServerNotChangeEvents =
+  | ServerProviderEvents.Ready
+  | ServerProviderEvents.Error
+  | ServerProviderEvents.Stale;
+type ClientNotChangeEvents =
+  | ClientProviderEvents.Ready
+  | ClientProviderEvents.Error
+  | ClientProviderEvents.Stale
+  | ClientProviderEvents.ContextChanged
+  | ClientProviderEvents.Reconciling;
+export type NotChangeEvents = ServerNotChangeEvents | ClientNotChangeEvents;
 
-export interface Eventing {
+export type EventContext<
+  U extends Record<string, unknown> = Record<string, unknown>,
+  T extends ServerProviderEvents | ClientProviderEvents = ServerProviderEvents | ClientProviderEvents,
+> = (T extends ClientProviderEvents ? ClientEventMap[T] : T extends ServerProviderEvents ? ServerEventMap[T] : never) &
+  U;
+
+export type EventDetails<
+  T extends ServerProviderEvents | ClientProviderEvents = ServerProviderEvents | ClientProviderEvents,
+> = EventContext<Record<string, unknown>, T> & CommonEventDetails;
+export type EventHandler<
+  T extends ServerProviderEvents | ClientProviderEvents = ServerProviderEvents | ClientProviderEvents,
+> = (eventDetails?: EventDetails<T>) => Promise<unknown> | unknown;
+
+export interface Eventing<T extends ServerProviderEvents | ClientProviderEvents> {
   /**
    * Adds a handler for the given provider event type.
    * The handlers are called in the order they have been added.
-   * @param {AnyProviderEvent} eventType The provider event type to listen to
+   * @param eventType The provider event type to listen to
    * @param {EventHandler} handler The handler to run on occurrence of the event type
    */
-  addHandler(eventType: AnyProviderEvent, handler: EventHandler): void;
+  addHandler(
+    eventType: T extends ClientProviderEvents
+      ? ClientProviderEvents.ConfigurationChanged
+      : ServerProviderEvents.ConfigurationChanged,
+    handler: EventHandler<
+      T extends ClientProviderEvents
+        ? ClientProviderEvents.ConfigurationChanged
+        : ServerProviderEvents.ConfigurationChanged
+    >,
+  ): void;
+  addHandler(
+    eventType: T extends ClientProviderEvents ? ClientNotChangeEvents : ServerNotChangeEvents,
+    handler: EventHandler<T extends ClientProviderEvents ? ClientNotChangeEvents : ServerNotChangeEvents>,
+  ): void;
 
   /**
    * Removes a handler for the given provider event type.
    * @param {AnyProviderEvent} eventType The provider event type to remove the listener for
    * @param {EventHandler} handler The handler to remove for the provider event type
    */
-  removeHandler(eventType: AnyProviderEvent, handler: EventHandler): void;
+  removeHandler(eventType: T, handler: EventHandler<T>): void;
 
   /**
    * Gets the current handlers for the given provider event type.
    * @param {AnyProviderEvent} eventType The provider event type to get the current handlers for
    * @returns {EventHandler[]} The handlers currently attached to the given provider event type
    */
-  getHandlers(eventType: AnyProviderEvent): EventHandler[];
+  getHandlers(eventType: T): EventHandler<T>[];
 }
