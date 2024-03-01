@@ -14,7 +14,7 @@ type ReactFlagEvaluationOptions = {
    * Set to true if you want to show suspense fallbacks while flags are re-evaluated after context changes.
    * Defaults to false.
    */
-  suspendWhileStale?: boolean,
+  suspendWhileReconciling?: boolean,
   /**
    * Update the component if the provider emits a ConfigurationChanged event.
    * Set to false to prevent components from re-rendering when flag value changes
@@ -35,7 +35,7 @@ const DEFAULT_OPTIONS: ReactFlagEvaluationOptions = {
   updateOnContextChanged: true,
   updateOnConfigurationChanged: true,
   suspendUntilReady: true,
-  suspendWhileStale: false,
+  suspendWhileReconciling: false,
 };
 
 enum SuspendState {
@@ -177,15 +177,15 @@ function attachHandlersAndResolve<T extends FlagValue>(flagKey: string, defaultV
     if (defaultedOptions.updateOnContextChanged) {
       // update when the context changes
       client.addHandler(ProviderEvents.ContextChanged, forceUpdate);
-      if (defaultedOptions.suspendWhileStale) {
-        client.addHandler(ProviderEvents.Stale, suspendRef);
+      if (defaultedOptions.suspendWhileReconciling) {
+        client.addHandler(ProviderEvents.Reconciling, suspendRef);
       }
     }
     return () => {
       // cleanup the handlers
       client.removeHandler(ProviderEvents.Ready, forceUpdate);
       client.removeHandler(ProviderEvents.ContextChanged, forceUpdate);
-      client.removeHandler(ProviderEvents.Stale, suspendRef);
+      client.removeHandler(ProviderEvents.Reconciling, suspendRef);
     };
   }, []);
   
