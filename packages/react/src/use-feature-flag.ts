@@ -5,7 +5,7 @@ import { useOpenFeatureClient } from './provider';
 type ReactFlagEvaluationOptions = {
   /**
    * Suspend flag evaluations while the provider is not ready.
-   * Set to false if you don't want to show suspense fallbacks util the provider is initialized.
+   * Set to false if you don't want to show suspense fallbacks until the provider is initialized.
    * Defaults to true.
    */
   suspendUntilReady?: boolean,
