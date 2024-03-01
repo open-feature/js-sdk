@@ -52,6 +52,7 @@ export class InMemoryProvider implements Provider {
       .map(([key]) => key);
 
     this._flagConfiguration = { ...flagConfiguration };
+
     try {
       await this.initialize(this._context);
       this.events.emit(ProviderEvents.ConfigurationChanged, { flagsChanged });
