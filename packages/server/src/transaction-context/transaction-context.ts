@@ -33,7 +33,9 @@ export interface TransactionContextPropagator {
    * {@link this#getTransactionContext}.
    *
    * The {@link TransactionContextPropagator} must persist the {@link transactionContext} and make it available
-   * to {@link callback} via  {@link this#getTransactionContext}.
+   * to {@link callback} via {@link this#getTransactionContext}.
+   *
+   * The precedence of merging context can be seen in {@link https://openfeature.dev/specification/sections/evaluation-context#requirement-323 the specification}.
    *
    * Example:
    *
