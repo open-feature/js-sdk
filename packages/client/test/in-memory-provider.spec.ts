@@ -1,10 +1,10 @@
-import { FlagNotFoundError, GeneralError, InMemoryProvider, ProviderEvents, ProviderStatus, StandardResolutionReasons, TypeMismatchError } from '../src';
+import { FlagNotFoundError, GeneralError, InMemoryProvider, ProviderEvents, StandardResolutionReasons, TypeMismatchError } from '../src';
 import { FlagConfiguration } from '../src/provider/in-memory-provider/flag-configuration';
 import { VariantNotFoundError } from '../src/provider/in-memory-provider/variant-not-found-error';
 
 describe('in-memory provider', () => {
   describe('initialize', () => {
-    it('Should have provider status as NOT_READY after instantiation and emit READY and have READY state after initialuzation', async () => {
+    it('Should not throw for valid flags', async () => {
       const booleanFlagSpec = {
         'a-boolean-flag': {
           variants: {
@@ -16,13 +16,10 @@ describe('in-memory provider', () => {
         },
       };
       const provider = new InMemoryProvider(booleanFlagSpec);
-      expect(provider.status).toBe(ProviderStatus.NOT_READY);
-
       await provider.initialize();
-      expect(provider.status).toBe(ProviderStatus.READY);
     });
 
-    it('Should have provider status as ERROR after instantiation, emit ERROR and have ERROR state if initialization throws', async () => {
+    it('Should throw on invalid flags', async () => {
       const throwingFlagSpec: FlagConfiguration = {
         'a-boolean-flag': {
           variants: {
@@ -37,12 +34,8 @@ describe('in-memory provider', () => {
         },
       };
       const provider = new InMemoryProvider(throwingFlagSpec);
-
-      expect(provider.status).toBe(ProviderStatus.NOT_READY);
       const someContext = {};
-
       await expect(provider.initialize(someContext)).rejects.toThrow();
-      expect(provider.status).toBe(ProviderStatus.ERROR);
     });
   });
 
@@ -511,9 +504,6 @@ describe('in-memory provider', () => {
       const configChangedSpy = jest.fn();
       provider.events.addHandler(ProviderEvents.ConfigurationChanged, configChangedSpy);
 
-      const readySpy = jest.fn();
-      provider.events.addHandler(ProviderEvents.Ready, readySpy);
-
       const newFlagSpec = {
         'some-flag': {
           variants: {
@@ -526,8 +516,6 @@ describe('in-memory provider', () => {
       await provider.putConfiguration(newFlagSpec);
 
       expect(configChangedSpy).toHaveBeenCalledWith({ flagsChanged: ['some-flag'] });
-      expect(readySpy).toHaveBeenCalled();
-      expect(provider.status).toBe(ProviderStatus.READY);
     });
   });
 

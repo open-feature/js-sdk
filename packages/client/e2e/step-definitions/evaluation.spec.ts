@@ -1,13 +1,13 @@
-import { defineFeature, loadFeature } from 'jest-cucumber';
 import {
-  JsonValue,
-  JsonObject,
-  EvaluationDetails,
   EvaluationContext,
+  EvaluationDetails,
+  JsonObject,
+  JsonValue,
   ResolutionDetails,
   StandardResolutionReasons,
 } from '@openfeature/core';
-import { OpenFeature, ProviderEvents, InMemoryProvider } from '../../src';
+import { defineFeature, loadFeature } from 'jest-cucumber';
+import { InMemoryProvider, OpenFeature } from '../../src';
 import flagConfiguration from './flags-config';
 // load the feature file.
 const feature = loadFeature('packages/client/e2e/features/evaluation.feature');
@@ -18,15 +18,12 @@ const client = OpenFeature.getClient();
 const givenAnOpenfeatureClientIsRegisteredWithCacheDisabled = (
   given: (stepMatcher: string, stepDefinitionCallback: () => void) => void
 ) => {
-  OpenFeature.setProvider(new InMemoryProvider(flagConfiguration));
   given('a provider is registered with cache disabled', () => undefined);
 };
 
 defineFeature(feature, (test) => {
-  beforeAll((done) => {
-    client.addHandler(ProviderEvents.Ready, async () => {
-      done();
-    });
+  beforeAll(async () => {
+    await OpenFeature.setProvider(new InMemoryProvider(flagConfiguration));
   });
 
   afterAll(async () => {

@@ -1,11 +1,23 @@
-import { ClientMetadata, EvaluationLifeCycle, Eventing, ManageContext, ManageLogger } from '@openfeature/core';
+import {
+  ClientMetadata,
+  EvaluationLifeCycle,
+  Eventing,
+  ManageContext,
+  ManageLogger,
+} from '@openfeature/core';
 import { Features } from '../evaluation';
+import { ProviderStatus } from '../provider';
+import { ProviderEvents } from '../events';
 
 export interface Client
   extends EvaluationLifeCycle<Client>,
     Features,
     ManageContext<Client>,
     ManageLogger<Client>,
-    Eventing {
+    Eventing<ProviderEvents> {
   readonly metadata: ClientMetadata;
+  /**
+   * Returns the status of the associated provider.
+   */
+  readonly providerStatus: ProviderStatus;
 }

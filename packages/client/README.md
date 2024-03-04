@@ -279,7 +279,6 @@ import {
   Logger,
   Provider,
   ProviderEventEmitter,
-  ProviderStatus,
   ResolutionDetails
 } from '@openfeature/web-sdk';
 
@@ -308,8 +307,6 @@ class MyProvider implements Provider {
   onContextChange?(oldContext: EvaluationContext, newContext: EvaluationContext): Promise<void> {
     // reconcile the provider's cached flags, if applicable
   }
-
-  status?: ProviderStatus | undefined;
 
   // implement with "new OpenFeatureEventEmitter()", and use "emit()" to emit events
   events?: ProviderEventEmitter<AnyProviderEvent> | undefined; 

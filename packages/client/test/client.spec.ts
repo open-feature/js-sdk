@@ -3,12 +3,14 @@ import {
   ErrorCode,
   EvaluationDetails,
   FlagNotFoundError,
+  GeneralError,
   JsonArray,
   JsonObject,
   JsonValue,
   OpenFeature,
   OpenFeatureClient,
   Provider,
+  ProviderFatalError,
   ProviderStatus,
   ResolutionDetails,
   StandardResolutionReasons,
@@ -385,6 +387,83 @@ describe('OpenFeatureClient', () => {
       });
     });
   });
+
+  describe('Requirement 1.7.1, 1.7.3', () => {
+    const initProvider = {
+      metadata: {
+        name: 'initProvider',
+      },
+      initialize: () => {
+        return Promise.resolve();
+      }
+    } as unknown as Provider;
+    it('status must be READY if init resolves', async () => {
+      await OpenFeature.setProviderAndWait('1.7.1, 1.7.3', initProvider);
+      const client = OpenFeature.getClient('1.7.1, 1.7.3');
+      expect(client.providerStatus).toEqual(ProviderStatus.READY);
+    });
+  });
+
+  describe('Requirement 1.7.4', () => {
+    const errorProvider = {
+      metadata: {
+        name: 'errorProvider',
+      },
+      initialize: async () => {
+        return Promise.reject(new GeneralError());
+      }
+    } as unknown as Provider;
+    it('status must be ERROR if init rejects', async () => {
+      await expect(OpenFeature.setProviderAndWait('1.7.4', errorProvider)).rejects.toThrow();
+      const client = OpenFeature.getClient('1.7.4');
+      expect(client.providerStatus).toEqual(ProviderStatus.ERROR);
+    });
+  });
+
+  describe('Requirement 1.7.5, 1.7.6, 1.7.8', () => {
+    const fatalProvider = {
+      metadata: {
+        name: 'fatalProvider',
+      },
+      initialize: () => {
+        return Promise.reject(new ProviderFatalError());
+      }
+    } as unknown as Provider;
+    it('must short circuit and return PROVIDER_FATAL code if provider FATAL', async () => {
+      await expect(OpenFeature.setProviderAndWait('1.7.5, 1.7.6, 1.7.8', fatalProvider)).rejects.toThrow();
+      const client = OpenFeature.getClient('1.7.5, 1.7.6, 1.7.8');
+      expect(client.providerStatus).toEqual(ProviderStatus.FATAL);
+
+      const defaultVal = 'default';
+      const details = await client.getStringDetails('some-flag', defaultVal);
+      expect(details.value).toEqual(defaultVal);
+      expect(details.errorCode).toEqual(ErrorCode.PROVIDER_FATAL);
+    });
+  });
+
+  describe('Requirement 1.7.7', () => {
+    const neverReadyProvider = {
+      metadata: {
+        name: 'fatalProvider',
+      },
+      initialize: () => {
+        return new Promise(() => {
+          return; // promise never resolves
+        });
+      }
+    } as unknown as Provider;
+    it('must short circuit and return PROVIDER_NOT_READY code if provider NOT_READY', async () => {
+      OpenFeature.setProviderAndWait('1.7.7', neverReadyProvider).catch(() => {
+        // do nothing
+      });
+      const defaultVal = 'default';
+      const client = OpenFeature.getClient('1.7.7');
+      expect(client.providerStatus).toEqual(ProviderStatus.NOT_READY);
+      const details = await client.getStringDetails('some-flag', defaultVal);
+      expect(details.value).toEqual(defaultVal);
+      expect(details.errorCode).toEqual(ErrorCode.PROVIDER_NOT_READY);
+    });
+  });
   
   describe('Evaluation details structure', () => {
     const flagKey = 'number-details';
@@ -535,13 +614,22 @@ describe('OpenFeatureClient', () => {
   });
 
   describe('providerStatus', () => {
-    it('should return current provider status', ()=> {
-      OpenFeature.setProvider({ ...MOCK_PROVIDER, status: ProviderStatus.STALE});
-      expect(OpenFeature.getClient().providerStatus).toEqual(ProviderStatus.STALE);
+    it('should return current provider status', (done) => {
+      OpenFeature.setProviderAndWait({
+        ...MOCK_PROVIDER,
+        initialize: () => {
+          return new Promise<void>((resolve) => setTimeout(resolve, 1000));
+        },
+      }).then(() => {
+        expect(OpenFeature.getClient().providerStatus).toEqual(ProviderStatus.READY);
+        done();
+      });
+
+      expect(OpenFeature.getClient().providerStatus).toEqual(ProviderStatus.NOT_READY);
     });
 
-    it('should return READY if not defined', ()=> {
-      OpenFeature.setProvider(MOCK_PROVIDER);
+    it('should return READY if initialize not defined', async () => {
+      await OpenFeature.setProviderAndWait({ ...MOCK_PROVIDER, initialize: undefined });
       expect(OpenFeature.getClient().providerStatus).toEqual(ProviderStatus.READY);
     });
   });
