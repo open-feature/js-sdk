@@ -86,16 +86,17 @@ See [here](https://open-feature.github.io/js-sdk/modules/_openfeature_server_sdk
 
 ## 🌟 Features
 
-| Status | Features                | Description                                                                                                                        |
-| ------ | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| ✅      | [Providers](#providers) | Integrate with a commercial, open source, or in-house feature management tool.                                                     |
-| ✅      | [Targeting](#targeting) | Contextually-aware flag evaluation using [evaluation context](https://openfeature.dev/docs/reference/concepts/evaluation-context). |
-| ✅      | [Hooks](#hooks)         | Add functionality to various stages of the flag evaluation life-cycle.                                                             |
-| ✅      | [Logging](#logging)     | Integrate with popular logging packages.                                                                                           |
-| ✅      | [Domains](#domains)     | Logically bind clients with providers.                                                                                             |
-| ✅      | [Eventing](#eventing)   | React to state changes in the provider or flag management system.                                                                  |
-| ✅      | [Shutdown](#shutdown)   | Gracefully clean up a provider during application shutdown.                                                                        |
-| ✅      | [Extending](#extending) | Extend OpenFeature with custom providers and hooks.                                                                                |
+| Status | Features                                                            | Description                                                                                                                                                  |
+|--------|---------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ✅      | [Providers](#providers)                                             | Integrate with a commercial, open source, or in-house feature management tool.                                                                               |
+| ✅      | [Targeting](#targeting)                                             | Contextually-aware flag evaluation using [evaluation context](https://openfeature.dev/docs/reference/concepts/evaluation-context).                           |
+| ✅      | [Hooks](#hooks)                                                     | Add functionality to various stages of the flag evaluation life-cycle.                                                                                       |
+| ✅      | [Logging](#logging)                                                 | Integrate with popular logging packages.                                                                                                                     |
+| ✅      | [Domains](#domains)                                                 | Logically bind clients with providers.                                                                                                                       |
+| ✅      | [Eventing](#eventing)                                               | React to state changes in the provider or flag management system.                                                                                            |
+| ✅      | [Shutdown](#shutdown)                                               | Gracefully clean up a provider during application shutdown.                                                                                                  |
+| ✅      | [Transaction Context Propagation](#transaction-context-propagation) | Set a specific [evaluation context](https://openfeature.dev/docs/reference/concepts/evaluation-context) for a transaction (e.g. an HTTP request or a thread) |                                                                                                                               |
+| ✅      | [Extending](#extending)                                             | Extend OpenFeature with custom providers and hooks.                                                                                                          |
 
 <sub>Implemented: ✅ | In-progress: ⚠️ | Not implemented yet: ❌</sub>
 
@@ -113,7 +114,7 @@ To register a provider and ensure it is ready before further actions are taken, 
 
 ```ts
 await OpenFeature.setProviderAndWait(new MyProvider());
-```  
+```
 
 #### Synchronous
 
@@ -186,7 +187,7 @@ import type { Logger } from "@openfeature/server-sdk";
 // The logger can be anything that conforms with the Logger interface
 const logger: Logger = console;
 
-// Sets a global logger 
+// Sets a global logger
 OpenFeature.setLogger(logger);
 
 // Sets a client logger
@@ -251,6 +252,32 @@ client.addHandler(ProviderEvents.Error, (eventDetails) => {
 });
 ```
 
+### Transaction Context Propagation
+
+Transaction context is a container for transaction-specific evaluation context (e.g. user id, user agent, IP).
+Transaction context can be set where specific data is available (e.g. an auth service or request handler) and by using the transaction context propagator it will automatically be applied to all flag evaluations within a transaction (e.g. a request or thread).
+
+The following example shows an Express middleware using transaction context propagation to propagate the request ip and user id into request scoped transaction context.
+
+```ts
+import express, { Request, Response, NextFunction } from "express";
+import { OpenFeature, AsyncLocalStorageTransactionContextPropagator } from '@openfeature/server-sdk';
+
+OpenFeature.setTransactionContextPropagator(new AsyncLocalStorageTransactionContextPropagator())
+
+/**
+ * This example is based on an express middleware.
+ */
+const app = express();
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const ip = res.headers.get("X-Forwarded-For")
+  OpenFeature.setTransactionContext({ targetingKey: req.user.id, ipAddress: ip }, () => {
+    // The transaction context is used in any flag evaluation throughout the whole call chain of next
+    next();
+  });
+})
+```
+
 ### Shutdown
 
 The OpenFeature API provides a close function to perform a cleanup of all registered providers.
@@ -305,7 +332,7 @@ class MyProvider implements Provider {
   }
 
   // implement with "new OpenFeatureEventEmitter()", and use "emit()" to emit events
-  events?: ProviderEventEmitter<AnyProviderEvent> | undefined; 
+  events?: ProviderEventEmitter<AnyProviderEvent> | undefined;
 
   initialize?(context?: EvaluationContext | undefined): Promise<void> {
     // code to initialize your provider

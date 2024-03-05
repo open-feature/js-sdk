@@ -9,13 +9,9 @@ export type TransactionContext = EvaluationContext;
 
 export interface ManageTransactionContextPropagator<T> extends TransactionContextPropagator {
   /**
-   * EXPERIMENTAL: Transaction context propagation is experimental and subject to change.
-   * The OpenFeature Enhancement Proposal regarding transaction context can be found [here](https://github.com/open-feature/ofep/pull/32).
-   *
    * Sets a transaction context propagator on this receiver. The transaction context
    * propagator is responsible for persisting context for the duration of a single
    * transaction.
-   * @experimental
    * @template T The type of the receiver
    * @param {TransactionContextPropagator} transactionContextPropagator The context propagator to be used
    * @returns {T} The receiver (this object)
@@ -25,30 +21,43 @@ export interface ManageTransactionContextPropagator<T> extends TransactionContex
 
 export interface TransactionContextPropagator {
   /**
-   * EXPERIMENTAL: Transaction context propagation is experimental and subject to change.
-   * The OpenFeature Enhancement Proposal regarding transaction context can be found [here](https://github.com/open-feature/ofep/pull/32).
-   *
    * Returns the currently defined transaction context using the registered transaction
    * context propagator.
-   * @experimental
    * @returns {TransactionContext} The current transaction context
    */
   getTransactionContext(): TransactionContext;
 
   /**
-   * EXPERIMENTAL: Transaction context propagation is experimental and subject to change.
-   * The OpenFeature Enhancement Proposal regarding transaction context can be found [here](https://github.com/open-feature/ofep/pull/32).
-   *
    * Sets the transaction context using the registered transaction context propagator.
-   * @experimental
+   * Runs the {@link callback} function, in which the {@link transactionContext} will be available by calling
+   * {@link this#getTransactionContext}.
+   *
+   * The {@link TransactionContextPropagator} must persist the {@link transactionContext} and make it available
+   * to {@link callback} via {@link this#getTransactionContext}.
+   *
+   * The precedence of merging context can be seen in {@link https://openfeature.dev/specification/sections/evaluation-context#requirement-323 the specification}.
+   *
+   * Example:
+   *
+   * ```js
+   * app.use((req: Request, res: Response, next: NextFunction) => {
+   *     const ip = res.headers.get("X-Forwarded-For")
+   *     OpenFeature.setTransactionContext({ targetingKey: req.user.id, ipAddress: ip }, () => {
+   *         // The transaction context is used in any flag evaluation throughout the whole call chain of next
+   *         next();
+   *     });
+   * })
+   *
+   * ```
+   * @template TArgs The optional args passed to the callback function
    * @template R The return value of the callback
    * @param {TransactionContext} transactionContext The transaction specific context
-   * @param {(...args: unknown[]) => R} callback Callback function used to set the transaction context on the stack
+   * @param {(...args: unknown[]) => R} callback Callback function to run
    * @param {...unknown[]} args Optional arguments that are passed to the callback function
    */
-  setTransactionContext<R>(
+  setTransactionContext<TArgs extends unknown[], R>(
     transactionContext: TransactionContext,
-    callback: (...args: unknown[]) => R,
-    ...args: unknown[]
+    callback: (...args: TArgs) => R,
+    ...args: TArgs
   ): void;
 }

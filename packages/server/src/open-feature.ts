@@ -154,10 +154,10 @@ export class OpenFeatureAPI
     return this;
   }
 
-  setTransactionContext<R>(
+  setTransactionContext<TArgs extends unknown[], R>(
     transactionContext: TransactionContext,
-    callback: (...args: unknown[]) => R,
-    ...args: unknown[]
+    callback: (...args: TArgs) => R,
+    ...args: TArgs
   ): void {
     this._transactionContextPropagator.setTransactionContext(transactionContext, callback, ...args);
   }
