@@ -7,12 +7,15 @@ import { AllProviderEvents, AnyProviderEvent } from './events';
  * The GenericEventEmitter should only be used within the SDK. It supports additional properties that can be included
  * in the event details.
  */
-export abstract class GenericEventEmitter<E extends AnyProviderEvent, AdditionalContext extends Record<string, unknown> = Record<string, unknown>>
+export abstract class GenericEventEmitter<
+    E extends AnyProviderEvent,
+    AdditionalContext extends Record<string, unknown> = Record<string, unknown>,
+  >
   implements ProviderEventEmitter<E>, ManageLogger<GenericEventEmitter<E, AdditionalContext>>
 {
   protected abstract readonly eventEmitter: PlatformEventEmitter;
 
-  private readonly _handlers: { [key in AnyProviderEvent]: WeakMap<EventHandler, EventHandler[]>} = {
+  private readonly _handlers: { [key in AnyProviderEvent]: WeakMap<EventHandler, EventHandler[]> } = {
     [AllProviderEvents.ConfigurationChanged]: new WeakMap<EventHandler, EventHandler[]>(),
     [AllProviderEvents.ContextChanged]: new WeakMap<EventHandler, EventHandler[]>(),
     [AllProviderEvents.Ready]: new WeakMap<EventHandler, EventHandler[]>(),
@@ -33,7 +36,11 @@ export abstract class GenericEventEmitter<E extends AnyProviderEvent, Additional
     // The handlers have to be wrapped with an async function because if a synchronous functions throws an error,
     // the other handlers will not run.
     const asyncHandler = async (details?: EventDetails) => {
-      await handler(details);    
+      try {
+        await handler(details);
+      } catch (err) {
+        this._logger?.error('Error running event handler:', err);
+      }
     };
     // The async handler has to be written to the map, because we need to get the wrapper function when deleting a listener
     const existingAsyncHandlers = this._handlers[eventType].get(handler);
@@ -84,7 +91,7 @@ export abstract class GenericEventEmitter<E extends AnyProviderEvent, Additional
  * This is an un-exported type that corresponds to NodeJS.EventEmitter.
  * We can't use that type here, because this module is used in both the browser, and the server.
  * In the server, node (or whatever server runtime) provides an implementation for this.
- * In the browser, we bundle in the popular 'events' package, which is a polyfill of NodeJS.EventEmitter.
+ * In the browser, we bundle in the popular 'EventEmitter3' package, which is a polyfill of NodeJS.EventEmitter.
  */
 /* eslint-disable */
 interface PlatformEventEmitter {
@@ -94,13 +101,8 @@ interface PlatformEventEmitter {
   removeListener(eventName: string | symbol, listener: (...args: any[]) => void): this;
   off(eventName: string | symbol, listener: (...args: any[]) => void): this;
   removeAllListeners(event?: string | symbol): this;
-  setMaxListeners(n: number): this;
-  getMaxListeners(): number;
   listeners(eventName: string | symbol): Function[];
-  rawListeners(eventName: string | symbol): Function[];
   emit(eventName: string | symbol, ...args: any[]): boolean;
   listenerCount(eventName: string | symbol, listener?: Function): number;
-  prependListener(eventName: string | symbol, listener: (...args: any[]) => void): this;
-  prependOnceListener(eventName: string | symbol, listener: (...args: any[]) => void): this;
   eventNames(): Array<string | symbol>;
 }
