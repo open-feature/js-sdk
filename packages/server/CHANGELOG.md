@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.13.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.12.0...server-sdk-v1.13.0) (2024-03-05)
+
+
+### ✨ New Features
+
+* context propagation ([#837](https://github.com/open-feature/js-sdk/issues/837)) ([b1abef1](https://github.com/open-feature/js-sdk/commit/b1abef1a2bc2bf27de48a09b44167a2644b62943))
+* maintain state in SDK, add RECONCILING ([#795](https://github.com/open-feature/js-sdk/issues/795)) ([cfb0a69](https://github.com/open-feature/js-sdk/commit/cfb0a69c42bd06bf59a7b8761fd90739872a8aeb))
+
+
+### 🐛 Bug Fixes
+
+* allow iteration over all event types ([#844](https://github.com/open-feature/js-sdk/issues/844)) ([411c7b4](https://github.com/open-feature/js-sdk/commit/411c7b4265f2029df09219028995d621bb57ad97))
+* correct rollup to bundle all but core ([#846](https://github.com/open-feature/js-sdk/issues/846)) ([f451e25](https://github.com/open-feature/js-sdk/commit/f451e255bf97e9636fbb801acc0da6f6d40ad2b8))
+
+
+### 🧹 Chore
+
+* **main:** release core 0.0.27 ([#839](https://github.com/open-feature/js-sdk/issues/839)) ([ccbb1f9](https://github.com/open-feature/js-sdk/commit/ccbb1f9c9746af73bc17b43808072a678d05c371))
+
 ## [1.12.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.11.0...server-sdk-v1.12.0) (2024-02-22)
 
 
