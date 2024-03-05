@@ -1,6 +1,6 @@
 {
   "name": "@openfeature/nestjs-sdk",
-  "version": "0.1.0-experimental",
+  "version": "0.1.1-experimental",
   "description": "OpenFeature Nest.js SDK",
   "main": "./dist/cjs/index.js",
   "files": [
