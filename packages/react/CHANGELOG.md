@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.1-experimental](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.2.0-experimental...react-sdk-v0.2.1-experimental) (2024-03-05)
+
+
+### ✨ New Features
+
+* maintain state in SDK, add RECONCILING ([#795](https://github.com/open-feature/js-sdk/issues/795)) ([cfb0a69](https://github.com/open-feature/js-sdk/commit/cfb0a69c42bd06bf59a7b8761fd90739872a8aeb))
+* suspend on RECONCILING, mem provider fixes ([#796](https://github.com/open-feature/js-sdk/issues/796)) ([8101ff1](https://github.com/open-feature/js-sdk/commit/8101ff197ff97808d14114e56aae27023f9b09f6))
+
 ## [0.2.0-experimental](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.1.1-experimental...react-sdk-v0.2.0-experimental) (2024-02-27)
 
 
