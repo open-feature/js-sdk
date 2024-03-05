@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.28](https://github.com/open-feature/js-sdk/compare/core-v0.0.27...core-v0.0.28) (2024-03-05)
+
+
+### ✨ New Features
+
+* use EvenEmitter3 for web-sdk ([#847](https://github.com/open-feature/js-sdk/issues/847)) ([861cf83](https://github.com/open-feature/js-sdk/commit/861cf8378271daf6205c5fc199ffc1bde8dfcc64))
+
 ## [0.0.27](https://github.com/open-feature/js-sdk/compare/core-v0.0.26...core-v0.0.27) (2024-03-05)
 
 
