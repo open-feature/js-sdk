@@ -1,5 +1,5 @@
 import { GenericEventEmitter } from '@openfeature/core';
-import EventEmitter from 'events';
+import { EventEmitter } from 'node:events';
 import { ProviderEvents } from './events';
 
 /**
