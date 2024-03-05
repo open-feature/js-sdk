@@ -1,6 +1,25 @@
 # Changelog
 
 
+## [0.4.14](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.13...web-sdk-v0.4.14) (2024-03-05)
+
+
+### ✨ New Features
+
+* maintain state in SDK, add RECONCILING ([#795](https://github.com/open-feature/js-sdk/issues/795)) ([cfb0a69](https://github.com/open-feature/js-sdk/commit/cfb0a69c42bd06bf59a7b8761fd90739872a8aeb))
+* suspend on RECONCILING, mem provider fixes ([#796](https://github.com/open-feature/js-sdk/issues/796)) ([8101ff1](https://github.com/open-feature/js-sdk/commit/8101ff197ff97808d14114e56aae27023f9b09f6))
+
+
+### 🐛 Bug Fixes
+
+* allow iteration over all event types ([#844](https://github.com/open-feature/js-sdk/issues/844)) ([411c7b4](https://github.com/open-feature/js-sdk/commit/411c7b4265f2029df09219028995d621bb57ad97))
+* correct rollup to bundle all but core ([#846](https://github.com/open-feature/js-sdk/issues/846)) ([f451e25](https://github.com/open-feature/js-sdk/commit/f451e255bf97e9636fbb801acc0da6f6d40ad2b8))
+
+
+### 🧹 Chore
+
+* **main:** release core 0.0.27 ([#839](https://github.com/open-feature/js-sdk/issues/839)) ([ccbb1f9](https://github.com/open-feature/js-sdk/commit/ccbb1f9c9746af73bc17b43808072a678d05c371))
+
 ## [0.4.13](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.12...web-sdk-v0.4.13) (2024-02-22)
 
 
