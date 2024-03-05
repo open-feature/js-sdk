@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.1-experimental](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.1.0-experimental...nestjs-sdk-v0.1.1-experimental) (2024-03-05)
+
+
+### ✨ New Features
+
+* context propagation ([#837](https://github.com/open-feature/js-sdk/issues/837)) ([b1abef1](https://github.com/open-feature/js-sdk/commit/b1abef1a2bc2bf27de48a09b44167a2644b62943))
+* maintain state in SDK, add RECONCILING ([#795](https://github.com/open-feature/js-sdk/issues/795)) ([cfb0a69](https://github.com/open-feature/js-sdk/commit/cfb0a69c42bd06bf59a7b8761fd90739872a8aeb))
+
 ## [0.1.0-experimental](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.0.5-experimental...nestjs-sdk-v0.1.0-experimental) (2024-02-25)
 
 
