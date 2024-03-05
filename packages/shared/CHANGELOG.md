@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.27](https://github.com/open-feature/js-sdk/compare/core-v0.0.26...core-v0.0.27) (2024-03-05)
+
+
+### ✨ New Features
+
+* maintain state in SDK, add RECONCILING ([#795](https://github.com/open-feature/js-sdk/issues/795)) ([cfb0a69](https://github.com/open-feature/js-sdk/commit/cfb0a69c42bd06bf59a7b8761fd90739872a8aeb))
+
+
+### 🐛 Bug Fixes
+
+* allow iteration over all event types ([#844](https://github.com/open-feature/js-sdk/issues/844)) ([411c7b4](https://github.com/open-feature/js-sdk/commit/411c7b4265f2029df09219028995d621bb57ad97))
+
 ## [0.0.26](https://github.com/open-feature/js-sdk/compare/core-v0.0.25...core-v0.0.26) (2024-02-22)
 
 
