@@ -42,10 +42,19 @@ The OpenFeature React SDK adds React-specific functionality to the [OpenFeature 
 
 In addition to the feature provided by the [web sdk](https://openfeature.dev/docs/reference/technologies/client/web), capabilities include:
 
-- [Multiple Providers and domains](#multiple-providers-and-domains)
-- [Re-rendering with Context Changes](#re-rendering-with-context-changes)
-- [Re-rendering with Flag Configuration Changes](#re-rendering-with-flag-configuration-changes)
-- [Suspense Support](#suspense-support)
+- [Overview](#overview)
+- [🚀 Quick start](#-quick-start)
+  - [Requirements](#requirements)
+  - [Install](#install)
+    - [npm](#npm)
+    - [yarn](#yarn)
+    - [Required peer dependencies](#required-peer-dependencies)
+  - [Usage](#usage)
+  - [Multiple Providers and Domains](#multiple-providers-and-domains)
+  - [Re-rendering with Context Changes](#re-rendering-with-context-changes)
+  - [Re-rendering with Flag Configuration Changes](#re-rendering-with-flag-configuration-changes)
+  - [Suspense Support](#suspense-support)
+- [Resources](#resources)
 
 ## 🚀 Quick start
 
@@ -62,11 +71,18 @@ In addition to the feature provided by the [web sdk](https://openfeature.dev/doc
 npm install --save @openfeature/react-sdk
 ```
 
+#### yarn
+
+```sh
+# yarn requires manual installation of the peer dependencies (see below)
+yarn add @openfeature/react-sdk @openfeature/web-sdk @openfeature/core
+```
+
 #### Required peer dependencies
 
 The following list contains the peer dependencies of `@openfeature/react-sdk` with its expected and compatible versions:
 
-* `@openfeature/web-sdk`: >=0.4.10
+* `@openfeature/web-sdk`: >=0.4.14
 * `react`: >=16.8.0
 
 ### Usage
