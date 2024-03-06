@@ -61,6 +61,19 @@ Capabilities include:
 npm install --save @openfeature/nestjs-sdk
 ```
 
+#### npm
+
+```sh
+npm install --save @openfeature/nestjs-sdk
+```
+
+#### yarn
+
+```sh
+# yarn requires manual installation of the peer dependencies (see below)
+yarn add @openfeature/nestjs-sdk @openfeature/server-sdk @openfeature/core
+```
+
 #### Required peer dependencies
 
 The following list contains the peer dependencies of `@openfeature/nestjs-sdk` with its expected and compatible versions:
