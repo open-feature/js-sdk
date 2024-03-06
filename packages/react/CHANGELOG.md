@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2-experimental](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.2.1-experimental...react-sdk-v0.2.2-experimental) (2024-03-06)
+
+
+### 🐛 Bug Fixes
+
+* **types:** conflicts with peer types ([#852](https://github.com/open-feature/js-sdk/issues/852)) ([fdc8576](https://github.com/open-feature/js-sdk/commit/fdc8576f472253604e26c36e10c0d315f71dbe1c))
+
 ## [0.2.1-experimental](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.2.0-experimental...react-sdk-v0.2.1-experimental) (2024-03-05)
 
 
