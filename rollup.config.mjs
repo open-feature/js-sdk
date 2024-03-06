@@ -11,7 +11,7 @@ export default {
   },
   // function indicating which deps should be considered external: external deps will NOT have their types bundled
   external: (id) => {
-    // bundle everything except peer deps (@openfeature/*, @nest/*,  react. rxjs)
+    // bundle everything except peer deps (@openfeature/*, @nest/*,  react, rxjs)
     return id.startsWith('@openfeature') ||
       id.startsWith('@nest') ||
       id === 'rxjs' ||
