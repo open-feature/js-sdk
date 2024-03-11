@@ -61,12 +61,6 @@ Capabilities include:
 npm install --save @openfeature/nestjs-sdk
 ```
 
-#### npm
-
-```sh
-npm install --save @openfeature/nestjs-sdk
-```
-
 #### yarn
 
 ```sh
