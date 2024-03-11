@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.0](https://github.com/open-feature/js-sdk/compare/core-v0.0.28...core-v1.0.0) (2024-03-11)
+
+### No changes
+
 ## [0.0.28](https://github.com/open-feature/js-sdk/compare/core-v0.0.27...core-v0.0.28) (2024-03-05)
 
 
