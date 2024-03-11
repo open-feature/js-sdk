@@ -43,7 +43,7 @@ The OpenFeature React SDK adds React-specific functionality to the [OpenFeature 
 In addition to the feature provided by the [web sdk](https://openfeature.dev/docs/reference/technologies/client/web), capabilities include:
 
 - [Overview](#overview)
-- [🚀 Quick start](#-quick-start)
+- [Quick start](#-quick-start)
   - [Requirements](#requirements)
   - [Install](#install)
     - [npm](#npm)
@@ -56,7 +56,7 @@ In addition to the feature provided by the [web sdk](https://openfeature.dev/doc
   - [Suspense Support](#suspense-support)
 - [Resources](#resources)
 
-## 🚀 Quick start
+## Quick start
 
 ### Requirements
 
