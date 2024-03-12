@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.13.2](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.13.1...server-sdk-v1.13.2) (2024-03-12)
+
+
+### 🧹 Chore
+
+* **main:** release core 1.0.0 ([#869](https://github.com/open-feature/js-sdk/issues/869)) ([4191a02](https://github.com/open-feature/js-sdk/commit/4191a02dbc5b66053b63d19e2e9c5bf750aaf4bf))
+
+
+### 📚 Documentation
+
+* fixed feature table formatting ([84a26db](https://github.com/open-feature/js-sdk/commit/84a26db4276f1dfbfd2e0554189a1570c06001d4))
+
 ## [1.13.1](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.13.0...server-sdk-v1.13.1) (2024-03-05)
 
 
