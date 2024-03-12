@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.4.16](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.15...web-sdk-v0.4.16) (2024-03-12)
+
+
+### 🧹 Chore
+
+* **main:** release core 1.0.0 ([#869](https://github.com/open-feature/js-sdk/issues/869)) ([4191a02](https://github.com/open-feature/js-sdk/commit/4191a02dbc5b66053b63d19e2e9c5bf750aaf4bf))
+
 ## [0.4.15](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.14...web-sdk-v0.4.15) (2024-03-05)
 
 
