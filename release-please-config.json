@@ -12,6 +12,7 @@
       "versioning": "default"
     },
     "packages/client": {
+      "release-as": "1.0.0",
       "release-type": "node",
       "prerelease": false,
       "bump-minor-pre-major": true,
@@ -36,7 +37,6 @@
       "versioning": "default"
     },
     "packages/shared": {
-      "release-as": "1.0.0",
       "release-type": "node",
       "prerelease": false,
       "bump-minor-pre-major": true,
