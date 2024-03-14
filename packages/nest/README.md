@@ -50,7 +50,7 @@ Capabilities include:
 
 ### Requirements
 
-- Node.js version 16+
+- Node.js version 18+
 - NestJS version 8+
 
 ### Install
