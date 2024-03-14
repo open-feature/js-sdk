@@ -296,14 +296,6 @@ await OpenFeature.close()
 
 ## Extending
 
-### Considerations
-
-When developing a library based on OpenFeature components, it's important to list the `@openfeature/server-sdk` as a `peerDependency` of your package.
-This is a general best-practice when developing JavaScript libraries that have dependencies in common with their consuming application.
-Failing to do this can result in multiple copies of the OpenFeature SDK in the consumer, which can lead to type errors, and broken singleton behavior.
-The `@openfeature/core` package itself follows this pattern: the `@openfeature/server-sdk` has a peer dependency on `@openfeature/core`, and uses whatever copy of that module the consumer has installed (note that NPM installs peers automatically unless `--legacy-peer-deps` is set, while yarn does not, and PNPM does so based on it's configuration).
-When developing such libraries, it's NOT necessary to add a `peerDependency` on `@openfeature/core`, since the `@openfeature/server-sdk` establishes that dependency itself transitively.
-
 ### Develop a provider
 
 To develop a provider, you need to create a new project and include the OpenFeature SDK as a dependency.
@@ -375,3 +367,11 @@ export class MyHook implements Hook {
 ```
 
 > Built a new hook? [Let us know](https://github.com/open-feature/openfeature.dev/issues/new?assignees=&labels=hook&projects=&template=document-hook.yaml&title=%5BHook%5D%3A+) so we can add it to the docs!
+
+### Considerations
+
+When developing a library based on OpenFeature components, it's important to list the `@openfeature/server-sdk` as a `peerDependency` of your package.
+This is a general best-practice when developing JavaScript libraries that have dependencies in common with their consuming application.
+Failing to do this can result in multiple copies of the OpenFeature SDK in the consumer, which can lead to type errors, and broken singleton behavior.
+The `@openfeature/core` package itself follows this pattern: the `@openfeature/server-sdk` has a peer dependency on `@openfeature/core`, and uses whatever copy of that module the consumer has installed (note that NPM installs peers automatically unless `--legacy-peer-deps` is set, while yarn does not, and PNPM does so based on its configuration).
+When developing such libraries, it's NOT necessary to add a `peerDependency` on `@openfeature/core`, since the `@openfeature/server-sdk` establishes that dependency itself transitively.
