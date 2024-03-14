@@ -271,7 +271,7 @@ await OpenFeature.close()
 When developing a library based on OpenFeature components, it's important to list the `@openfeature/web-sdk` as a `peerDependency` of your package.
 This is a general best-practice when developing JavaScript libraries that have dependencies in common with their consuming application.
 Failing to do this can result in multiple copies of the OpenFeature SDK in the consumer, which can lead to type errors, and broken singleton behavior.
-The `@openfeature/core` package itself follows this pattern: the `@openfeature/web-sdk` has a peer dependency on `@openfeature/core`, and uses whatever copy of that module the consumer has installed (note that NPM installs peers automatically, while yarn does not, and PNPM does so based on it's configuration).
+The `@openfeature/core` package itself follows this pattern: the `@openfeature/web-sdk` has a peer dependency on `@openfeature/core`, and uses whatever copy of that module the consumer has installed (note that NPM installs peers automatically unless `--legacy-peer-deps` is set, while yarn does not, and PNPM does so based on it's configuration).
 When developing such libraries, it's NOT necessary to add a `peerDependency` on `@openfeature/core`, since the `@openfeature/web-sdk` establishes that dependency itself transitively.
 
 ### Develop a provider
