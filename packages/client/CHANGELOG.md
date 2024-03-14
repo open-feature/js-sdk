@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.0.0](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.16...web-sdk-v1.0.0) (2024-03-13)
+
+
+### 🧹 Chore
+
+* prompt web-sdk 1.0 ([#871](https://github.com/open-feature/js-sdk/issues/871)) ([7d50d93](https://github.com/open-feature/js-sdk/commit/7d50d931d5cda349a31969c997e7581ea4883b6a))
+
 ## [0.4.16](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.15...web-sdk-v0.4.16) (2024-03-12)
 
 
