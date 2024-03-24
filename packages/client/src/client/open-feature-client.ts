@@ -201,7 +201,7 @@ export class OpenFeatureClient implements Client {
       defaultValue,
       flagValueType: flagType,
       clientMetadata: this.metadata,
-      providerMetadata: OpenFeature.providerMetadata,
+      providerMetadata: this._provider.metadata,
       context,
       logger: this._logger,
     };
