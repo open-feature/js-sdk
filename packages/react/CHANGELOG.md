@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.2.3-experimental](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.2.2-experimental...react-sdk-v0.2.3-experimental) (2024-03-25)
+
+
+### 🐛 Bug Fixes
+
+* make domain/client optional ([#884](https://github.com/open-feature/js-sdk/issues/884)) ([2b633b5](https://github.com/open-feature/js-sdk/commit/2b633b56778dde9a8955f19ca207fa0e8dced884))
+
+
+### 🧹 Chore
+
+* prompt web-sdk 1.0 ([#871](https://github.com/open-feature/js-sdk/issues/871)) ([7d50d93](https://github.com/open-feature/js-sdk/commit/7d50d931d5cda349a31969c997e7581ea4883b6a))
+
+
+### 📚 Documentation
+
+* fix invalid link fragment ([9d63803](https://github.com/open-feature/js-sdk/commit/9d638038c0062704dc701bfbba3004e89ed59e3e))
+* remove emojis from react readme ([9e0e368](https://github.com/open-feature/js-sdk/commit/9e0e368d2328de2c7a4a5d91068aa75ecd70f8ed))
+
 ## [0.2.2-experimental](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.2.1-experimental...react-sdk-v0.2.2-experimental) (2024-03-06)
 
 
