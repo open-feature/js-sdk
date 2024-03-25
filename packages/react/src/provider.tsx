@@ -7,14 +7,14 @@ type ClientOrDomain =
        * An identifier which logically binds clients with providers
        * @see OpenFeature.setProvider() and overloads.
        */
-      domain: string;
+      domain?: string;
       client?: never;
     }
   | {
       /**
        * OpenFeature client to use.
        */
-      client: Client;
+      client?: Client;
       domain?: never;
     };
 
