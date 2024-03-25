@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.0.0](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.0.0...web-sdk-v1.0.0) (2024-03-25)
+
+
+### 📚 Documentation
+
+* add peer dep explainer ([#876](https://github.com/open-feature/js-sdk/issues/876)) ([cfd23b9](https://github.com/open-feature/js-sdk/commit/cfd23b90f0ca2673253fbbe30f4db585e746bc63))
+
 ## [1.0.0](https://github.com/open-feature/js-sdk/compare/web-sdk-v0.4.16...web-sdk-v1.0.0) (2024-03-13)
 
 
