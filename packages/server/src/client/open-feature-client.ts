@@ -254,7 +254,7 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
       defaultValue,
       flagValueType: flagType,
       clientMetadata: this.metadata,
-      providerMetadata: OpenFeature.providerMetadata,
+      providerMetadata: this._provider.metadata,
       context: mergedContext,
       logger: this._logger,
     };

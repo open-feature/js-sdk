@@ -73,6 +73,39 @@ describe('Hooks', () => {
         ],
       });
     });
+    it('client metadata and provider metadata must match the client and provider used to resolve the flag', (done) => {
+      const provider: Provider = {
+        metadata: {
+          name: 'mock-my-domain-provider',
+        },
+        resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
+          return Promise.resolve({
+            value: BOOLEAN_VALUE,
+            variant: BOOLEAN_VARIANT,
+            reason: REASON,
+          });
+        }),
+      } as unknown as Provider;
+
+      OpenFeature.setProvider('my-domain', provider);
+      const client = OpenFeature.getClient('my-domain');
+
+      client.getBooleanValue(FLAG_KEY, false, undefined, {
+        hooks: [
+          {
+            before: (hookContext) => {
+              try {
+                expect(hookContext.providerMetadata).toEqual(provider.metadata);
+                expect(hookContext.clientMetadata).toEqual(client.metadata);
+                done();
+              } catch (err) {
+                done(err);
+              }
+            },
+          },
+        ],
+      });
+    });
   });
 
   describe('Requirement 4.1.3', () => {
