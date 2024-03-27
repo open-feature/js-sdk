@@ -60,7 +60,7 @@ jobs:
         run: npm run docs
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
 
   e2e:
     runs-on: ubuntu-latest
