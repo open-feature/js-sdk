@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.4](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.13.3...server-sdk-v1.13.4) (2024-03-27)
+
+
+### 🐛 Bug Fixes
+
+* return metadata for the bound provider in hookContext ([#883](https://github.com/open-feature/js-sdk/issues/883)) ([fd84025](https://github.com/open-feature/js-sdk/commit/fd84025bdfe30e8d730fa546d01c1ad6c6953189))
+
 ## [1.13.3](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.13.2...server-sdk-v1.13.3) (2024-03-25)
 
 
