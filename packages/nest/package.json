@@ -51,10 +51,10 @@
     "@openfeature/server-sdk": ">=1.7.5"
   },
   "devDependencies": {
-    "@nestjs/common": "^10.2.10",
-    "@nestjs/core": "^10.2.10",
-    "@nestjs/platform-express": "^10.2.10",
-    "@nestjs/testing": "^10.2.10",
+    "@nestjs/common": "^10.3.6",
+    "@nestjs/core": "^10.3.6",
+    "@nestjs/platform-express": "^10.3.6",
+    "@nestjs/testing": "^10.3.6",
     "@openfeature/core": "*",
     "@openfeature/server-sdk": "*",
     "@types/supertest": "^6.0.0",
