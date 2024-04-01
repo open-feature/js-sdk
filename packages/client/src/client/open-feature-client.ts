@@ -107,16 +107,27 @@ export class OpenFeatureClient implements Client {
     return this;
   }
 
-  getBooleanValue(flagKey: string, defaultValue: boolean, options?: FlagEvaluationOptions): boolean {
-    return this.getBooleanDetails(flagKey, defaultValue, options).value;
+  getBooleanValue<T extends boolean = boolean>(
+    flagKey: string,
+    defaultValue: T,
+    options?: FlagEvaluationOptions,
+  ): T {
+    return this.getBooleanDetails<T>(flagKey, defaultValue, options).value;
   }
 
-  getBooleanDetails(
+  getBooleanDetails<T extends boolean = boolean>(
     flagKey: string,
-    defaultValue: boolean,
+    defaultValue: T,
     options?: FlagEvaluationOptions,
-  ): EvaluationDetails<boolean> {
-    return this.evaluate<boolean>(flagKey, this._provider.resolveBooleanEvaluation, defaultValue, 'boolean', options);
+  ): EvaluationDetails<T> {
+    return this.evaluate<T>(
+      flagKey,
+      // this isolates providers from our restricted boolean generic argument.
+      this._provider.resolveBooleanEvaluation as () => EvaluationDetails<T>,
+      defaultValue,
+      'boolean',
+      options,
+    );
   }
 
   getStringValue<T extends string = string>(flagKey: string, defaultValue: T, options?: FlagEvaluationOptions): T {
@@ -208,7 +219,7 @@ export class OpenFeatureClient implements Client {
 
     try {
       this.beforeHooks(allHooks, hookContext, options);
-      
+
       // short circuit evaluation entirely if provider is in a bad state
       if (this.providerStatus === ProviderStatus.NOT_READY) {
         throw new ProviderNotReadyError('provider has not yet initialized');

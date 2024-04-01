@@ -130,15 +130,16 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
     return (await this.getBooleanDetails(flagKey, defaultValue, context, options)).value;
   }
 
-  getBooleanDetails(
+  getBooleanDetails<T extends boolean = boolean>(
     flagKey: string,
-    defaultValue: boolean,
+    defaultValue: T,
     context?: EvaluationContext,
     options?: FlagEvaluationOptions,
-  ): Promise<EvaluationDetails<boolean>> {
-    return this.evaluate<boolean>(
+  ): Promise<EvaluationDetails<T>> {
+    return this.evaluate<T>(
       flagKey,
-      this._provider.resolveBooleanEvaluation,
+      // this isolates providers from our restricted boolean generic argument.
+      this._provider.resolveBooleanEvaluation as () => Promise<EvaluationDetails<T>>,
       defaultValue,
       'boolean',
       context,

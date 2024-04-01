@@ -10,6 +10,7 @@ export interface Features {
   /**
    * Performs a flag evaluation that returns a boolean.
    * @param {string} flagKey The flag key uniquely identifies a particular flag
+   * @template {boolean} T A optional generic argument constraining the boolean
    * @param {boolean} defaultValue The value returned if an error occurs
    * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
@@ -22,9 +23,17 @@ export interface Features {
     options?: FlagEvaluationOptions,
   ): Promise<boolean>;
 
+  getBooleanValue<T extends boolean = boolean>(
+    flagKey: string,
+    defaultValue: T,
+    context?: EvaluationContext,
+    options?: FlagEvaluationOptions,
+  ): Promise<T>;
+
   /**
    * Performs a flag evaluation that a returns an evaluation details object.
    * @param {string} flagKey The flag key uniquely identifies a particular flag
+   * @template {boolean} T A optional generic argument constraining the boolean
    * @param {boolean} defaultValue The value returned if an error occurs
    * @param {EvaluationContext} context The evaluation context used on an individual flag evaluation
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
@@ -36,6 +45,13 @@ export interface Features {
     context?: EvaluationContext,
     options?: FlagEvaluationOptions,
   ): Promise<EvaluationDetails<boolean>>;
+
+  getBooleanDetails<T extends boolean = boolean>(
+    flagKey: string,
+    defaultValue: T,
+    context?: EvaluationContext,
+    options?: FlagEvaluationOptions,
+  ): Promise<EvaluationDetails<T>>;
 
   /**
    * Performs a flag evaluation that returns a string.

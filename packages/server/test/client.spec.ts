@@ -181,13 +181,26 @@ describe('OpenFeatureClient', () => {
 
     describe('flag evaluation', () => {
       describe('getBooleanValue', () => {
-        it('should return boolean, and call boolean resolver', async () => {
-          const booleanFlag = 'my-boolean-flag';
-          const defaultBooleanValue = false;
-          const value = await client.getBooleanValue(booleanFlag, defaultBooleanValue);
+        describe('with no generic arg (as boolean)', () => {
+          it('should return boolean, and call boolean resolver', async () => {
+            const booleanFlag = 'my-boolean-flag';
+            const defaultBooleanValue = false;
+            const value = await client.getBooleanValue(booleanFlag, defaultBooleanValue);
+  
+            expect(value).toEqual(BOOLEAN_VALUE);
+            expect(MOCK_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalledWith(booleanFlag, defaultBooleanValue, {}, {});
+          });
+        });
 
-          expect(value).toEqual(BOOLEAN_VALUE);
-          expect(MOCK_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalledWith(booleanFlag, defaultBooleanValue, {}, {});
+        describe('with generic arg', () => {
+          it('should return T, and call boolean resolver', async () => {
+            const booleanFlag = 'my-boolean-flag';
+            const defaultBooleanValue = true;
+            const value = await client.getBooleanValue<true>(booleanFlag, defaultBooleanValue);
+  
+            expect(value).toEqual(BOOLEAN_VALUE);
+            expect(MOCK_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalledWith(booleanFlag, defaultBooleanValue, {}, {});
+          });
         });
       });
 

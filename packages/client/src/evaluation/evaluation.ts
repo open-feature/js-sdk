@@ -9,15 +9,19 @@ export interface Features {
   /**
    * Performs a flag evaluation that returns a boolean.
    * @param {string} flagKey The flag key uniquely identifies a particular flag
+   * @template {string} T A optional generic argument constraining the boolean
    * @param {boolean} defaultValue The value returned if an error occurs
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
    * @returns {boolean} Flag evaluation response
    */
   getBooleanValue(flagKey: string, defaultValue: boolean, options?: FlagEvaluationOptions): boolean;
 
+  getBooleanValue<T extends boolean = boolean>(flagKey: string, defaultValue: T, options?: FlagEvaluationOptions): T;
+
   /**
    * Performs a flag evaluation that a returns an evaluation details object.
    * @param {string} flagKey The flag key uniquely identifies a particular flag
+   * @template {boolean} T A optional generic argument constraining the boolean
    * @param {boolean} defaultValue The value returned if an error occurs
    * @param {FlagEvaluationOptions} options Additional flag evaluation options
    * @returns {EvaluationDetails<boolean>} Flag evaluation details response
@@ -27,6 +31,12 @@ export interface Features {
     defaultValue: boolean,
     options?: FlagEvaluationOptions,
   ): EvaluationDetails<boolean>;
+
+  getBooleanDetails<T extends boolean = boolean>(
+    flagKey: string,
+    defaultValue: boolean,
+    options?: FlagEvaluationOptions,
+  ): EvaluationDetails<T>;
 
   /**
    * Performs a flag evaluation that returns a string.
