@@ -1,6 +1,14 @@
-import { Client, EvaluationDetails, FlagEvaluationOptions, FlagValue, JsonValue, ProviderEvents, ProviderStatus } from '@openfeature/web-sdk';
+import {
+  Client,
+  EvaluationDetails,
+  FlagEvaluationOptions,
+  FlagValue,
+  JsonValue,
+  ProviderEvents,
+  ProviderStatus,
+} from '@openfeature/web-sdk';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { useOpenFeatureClient } from './provider';
+import { useOpenFeatureClient } from '../provider';
 
 type ReactFlagEvaluationOptions = {
   /**
@@ -8,27 +16,27 @@ type ReactFlagEvaluationOptions = {
    * Set to false if you don't want to show suspense fallbacks until the provider is initialized.
    * Defaults to true.
    */
-  suspendUntilReady?: boolean,
+  suspendUntilReady?: boolean;
   /**
    * Suspend flag evaluations while the provider's context is being reconciled.
    * Set to true if you want to show suspense fallbacks while flags are re-evaluated after context changes.
    * Defaults to false.
    */
-  suspendWhileReconciling?: boolean,
+  suspendWhileReconciling?: boolean;
   /**
    * Update the component if the provider emits a ConfigurationChanged event.
    * Set to false to prevent components from re-rendering when flag value changes
    * are received by the associated provider.
    * Defaults to true.
    */
-  updateOnConfigurationChanged?: boolean,
+  updateOnConfigurationChanged?: boolean;
   /**
    * Update the component when the OpenFeature context changes.
-   * Set to false to prevent components from re-rendering when attributes which 
+   * Set to false to prevent components from re-rendering when attributes which
    * may be factors in flag evaluation change.
    * Defaults to true.
    */
-  updateOnContextChanged?: boolean,
+  updateOnContextChanged?: boolean;
 } & FlagEvaluationOptions;
 
 const DEFAULT_OPTIONS: ReactFlagEvaluationOptions = {
@@ -41,7 +49,7 @@ const DEFAULT_OPTIONS: ReactFlagEvaluationOptions = {
 enum SuspendState {
   Pending,
   Success,
-  Error
+  Error,
 }
 
 /**
@@ -52,7 +60,11 @@ enum SuspendState {
  * @param {ReactFlagEvaluationOptions} options options for this evaluation
  * @returns { boolean} a EvaluationDetails object for this evaluation
  */
-export function useBooleanFlagValue(flagKey: string, defaultValue: boolean, options?: ReactFlagEvaluationOptions): boolean {
+export function useBooleanFlagValue(
+  flagKey: string,
+  defaultValue: boolean,
+  options?: ReactFlagEvaluationOptions,
+): boolean {
   return useBooleanFlagDetails(flagKey, defaultValue, options).value;
 }
 
@@ -64,10 +76,19 @@ export function useBooleanFlagValue(flagKey: string, defaultValue: boolean, opti
  * @param {ReactFlagEvaluationOptions} options options for this evaluation
  * @returns { EvaluationDetails<boolean>} a EvaluationDetails object for this evaluation
  */
-export function useBooleanFlagDetails(flagKey: string, defaultValue: boolean, options?: ReactFlagEvaluationOptions): EvaluationDetails<boolean> {
-  return attachHandlersAndResolve(flagKey, defaultValue, (client) => {
-    return client.getBooleanDetails;
-  },  options);
+export function useBooleanFlagDetails(
+  flagKey: string,
+  defaultValue: boolean,
+  options?: ReactFlagEvaluationOptions,
+): EvaluationDetails<boolean> {
+  return attachHandlersAndResolve(
+    flagKey,
+    defaultValue,
+    (client) => {
+      return client.getBooleanDetails;
+    },
+    options,
+  );
 }
 
 /**
@@ -79,7 +100,11 @@ export function useBooleanFlagDetails(flagKey: string, defaultValue: boolean, op
  * @param {ReactFlagEvaluationOptions} options options for this evaluation
  * @returns { boolean} a EvaluationDetails object for this evaluation
  */
-export function useStringFlagValue<T extends string = string>(flagKey: string, defaultValue: T, options?: ReactFlagEvaluationOptions): T {
+export function useStringFlagValue<T extends string = string>(
+  flagKey: string,
+  defaultValue: T,
+  options?: ReactFlagEvaluationOptions,
+): T {
   return useStringFlagDetails(flagKey, defaultValue, options).value;
 }
 
@@ -92,10 +117,19 @@ export function useStringFlagValue<T extends string = string>(flagKey: string, d
  * @param {ReactFlagEvaluationOptions} options options for this evaluation
  * @returns { EvaluationDetails<string>} a EvaluationDetails object for this evaluation
  */
-export function useStringFlagDetails<T extends string = string>(flagKey: string, defaultValue: T, options?: ReactFlagEvaluationOptions): EvaluationDetails<T> {
-  return attachHandlersAndResolve(flagKey, defaultValue, (client) => {
-    return client.getStringDetails<T>;
-  },  options);
+export function useStringFlagDetails<T extends string = string>(
+  flagKey: string,
+  defaultValue: T,
+  options?: ReactFlagEvaluationOptions,
+): EvaluationDetails<T> {
+  return attachHandlersAndResolve(
+    flagKey,
+    defaultValue,
+    (client) => {
+      return client.getStringDetails<T>;
+    },
+    options,
+  );
 }
 
 /**
@@ -107,7 +141,11 @@ export function useStringFlagDetails<T extends string = string>(flagKey: string,
  * @param {ReactFlagEvaluationOptions} options options for this evaluation
  * @returns { boolean} a EvaluationDetails object for this evaluation
  */
-export function useNumberFlagValue<T extends number = number>(flagKey: string, defaultValue: T, options?: ReactFlagEvaluationOptions): T {
+export function useNumberFlagValue<T extends number = number>(
+  flagKey: string,
+  defaultValue: T,
+  options?: ReactFlagEvaluationOptions,
+): T {
   return useNumberFlagDetails(flagKey, defaultValue, options).value;
 }
 
@@ -120,10 +158,19 @@ export function useNumberFlagValue<T extends number = number>(flagKey: string, d
  * @param {ReactFlagEvaluationOptions} options options for this evaluation
  * @returns { EvaluationDetails<number>} a EvaluationDetails object for this evaluation
  */
-export function useNumberFlagDetails<T extends number = number>(flagKey: string, defaultValue: T, options?: ReactFlagEvaluationOptions): EvaluationDetails<T> {
-  return attachHandlersAndResolve(flagKey, defaultValue, (client) => {
-    return client.getNumberDetails<T>;
-  },  options);
+export function useNumberFlagDetails<T extends number = number>(
+  flagKey: string,
+  defaultValue: T,
+  options?: ReactFlagEvaluationOptions,
+): EvaluationDetails<T> {
+  return attachHandlersAndResolve(
+    flagKey,
+    defaultValue,
+    (client) => {
+      return client.getNumberDetails<T>;
+    },
+    options,
+  );
 }
 
 /**
@@ -135,7 +182,11 @@ export function useNumberFlagDetails<T extends number = number>(flagKey: string,
  * @param {ReactFlagEvaluationOptions} options options for this evaluation
  * @returns { boolean} a EvaluationDetails object for this evaluation
  */
-export function useObjectFlagValue<T extends JsonValue = JsonValue>(flagKey: string, defaultValue: T, options?: ReactFlagEvaluationOptions): T {
+export function useObjectFlagValue<T extends JsonValue = JsonValue>(
+  flagKey: string,
+  defaultValue: T,
+  options?: ReactFlagEvaluationOptions,
+): T {
   return useObjectFlagDetails<T>(flagKey, defaultValue, options).value;
 }
 
@@ -148,13 +199,27 @@ export function useObjectFlagValue<T extends JsonValue = JsonValue>(flagKey: str
  * @param {ReactFlagEvaluationOptions} options options for this evaluation
  * @returns { EvaluationDetails<T>} a EvaluationDetails object for this evaluation
  */
-export function useObjectFlagDetails<T extends JsonValue = JsonValue>(flagKey: string, defaultValue: T, options?: ReactFlagEvaluationOptions): EvaluationDetails<T> {
-  return attachHandlersAndResolve(flagKey, defaultValue, (client) => {
-    return client.getObjectDetails<T>;
-  },  options);
+export function useObjectFlagDetails<T extends JsonValue = JsonValue>(
+  flagKey: string,
+  defaultValue: T,
+  options?: ReactFlagEvaluationOptions,
+): EvaluationDetails<T> {
+  return attachHandlersAndResolve(
+    flagKey,
+    defaultValue,
+    (client) => {
+      return client.getObjectDetails<T>;
+    },
+    options,
+  );
 }
 
-function attachHandlersAndResolve<T extends FlagValue>(flagKey: string, defaultValue: T, resolver: (client: Client) => (flagKey: string, defaultValue: T) => EvaluationDetails<T>, options?: ReactFlagEvaluationOptions): EvaluationDetails<T> {
+function attachHandlersAndResolve<T extends FlagValue>(
+  flagKey: string,
+  defaultValue: T,
+  resolver: (client: Client) => (flagKey: string, defaultValue: T) => EvaluationDetails<T>,
+  options?: ReactFlagEvaluationOptions,
+): EvaluationDetails<T> {
   const defaultedOptions = { ...DEFAULT_OPTIONS, ...options };
   const [, updateState] = useState<object | undefined>();
   const client = useOpenFeatureClient();
@@ -162,7 +227,13 @@ function attachHandlersAndResolve<T extends FlagValue>(flagKey: string, defaultV
     updateState({});
   };
   const suspendRef = () => {
-    suspend(client, updateState, ProviderEvents.ContextChanged, ProviderEvents.ConfigurationChanged, ProviderEvents.Ready);
+    suspend(
+      client,
+      updateState,
+      ProviderEvents.ContextChanged,
+      ProviderEvents.ConfigurationChanged,
+      ProviderEvents.Ready,
+    );
   };
 
   useEffect(() => {
@@ -188,7 +259,7 @@ function attachHandlersAndResolve<T extends FlagValue>(flagKey: string, defaultV
       client.removeHandler(ProviderEvents.Reconciling, suspendRef);
     };
   }, []);
-  
+
   useEffect(() => {
     if (defaultedOptions.updateOnConfigurationChanged) {
       // update when the provider configuration changes
@@ -209,10 +280,13 @@ function attachHandlersAndResolve<T extends FlagValue>(flagKey: string, defaultV
  * @param {Function} updateState the state update function
  * @param {ProviderEvents[]} resumeEvents list of events which will resume the suspend
  */
-function suspend(client: Client, updateState: Dispatch<SetStateAction<object | undefined>>, ...resumeEvents: ProviderEvents[]) {
-
+function suspend(
+  client: Client,
+  updateState: Dispatch<SetStateAction<object | undefined>>,
+  ...resumeEvents: ProviderEvents[]
+) {
   let suspendResolver: () => void;
-  
+
   const suspendPromise = new Promise<void>((resolve) => {
     suspendResolver = () => {
       resolve();
@@ -235,20 +309,19 @@ function suspend(client: Client, updateState: Dispatch<SetStateAction<object | u
  * @template T flag type
  * @returns {Function} suspense-compliant lambda
  */
-function suspenseWrapper <T>(promise: Promise<T>) {
+function suspenseWrapper<T>(promise: Promise<T>) {
   let status: SuspendState = SuspendState.Pending;
   let result: T;
 
-  const suspended = promise.then(
-    (value) => {
+  const suspended = promise
+    .then((value) => {
       status = SuspendState.Success;
       result = value;
-    },
-    (error) => {
+    })
+    .catch((error) => {
       status = SuspendState.Error;
       result = error;
-    }
-  );
+    });
 
   return () => {
     switch (status) {
@@ -262,4 +335,4 @@ function suspenseWrapper <T>(promise: Promise<T>) {
         throw new Error('Suspending promise is in an unknown state.');
     }
   };
-};
+}
