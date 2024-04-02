@@ -1,6 +1,18 @@
 # Changelog
 
 
+## [1.0.2](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.0.1...web-sdk-v1.0.2) (2024-04-02)
+
+
+### 🐛 Bug Fixes
+
+* return metadata for the bound provider in hookContext ([#883](https://github.com/open-feature/js-sdk/issues/883)) ([fd84025](https://github.com/open-feature/js-sdk/commit/fd84025bdfe30e8d730fa546d01c1ad6c6953189))
+
+
+### 🧹 Chore
+
+* **main:** release core 1.1.0 ([#899](https://github.com/open-feature/js-sdk/issues/899)) ([b3e5f7e](https://github.com/open-feature/js-sdk/commit/b3e5f7eb2aac5d5533c51764242e06a6ba508082))
+
 ## [1.0.1](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.0.0...web-sdk-v1.0.1) (2024-03-25)
 
 
