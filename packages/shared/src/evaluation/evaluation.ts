@@ -39,6 +39,16 @@ export type EvaluationDetails<T extends FlagValue> = {
 
 export const StandardResolutionReasons = {
   /**
+   * The resolved value is static (no dynamic evaluation).
+   */
+  STATIC: 'STATIC',
+
+  /**
+   *  The resolved value was configured statically, or otherwise fell back to a pre-configured value.
+   */
+  DEFAULT: 'DEFAULT',
+
+  /**
    * The resolved value was the result of a dynamic evaluation, such as a rule or specific user-targeting.
    */
   TARGETING_MATCH: 'TARGETING_MATCH',
@@ -49,14 +59,14 @@ export const StandardResolutionReasons = {
   SPLIT: 'SPLIT',
 
   /**
+   * The resolved value was retrieved from cache.
+   */
+  CACHED: 'CACHED',
+
+  /**
    * The resolved value was the result of the flag being disabled in the management system.
    */
   DISABLED: 'DISABLED',
-
-  /**
-   *  The resolved value was configured statically, or otherwise fell back to a pre-configured value.
-   */
-  DEFAULT: 'DEFAULT',
 
   /**
    * The reason for the resolved value could not be determined.
@@ -64,14 +74,9 @@ export const StandardResolutionReasons = {
   UNKNOWN: 'UNKNOWN',
 
   /**
-   * The resolved value is static (no dynamic evaluation).
+   * The resolved value is non-authoritative or possibly out of date.
    */
-  STATIC: 'STATIC',
-
-  /**
-   * The resolved value was retrieved from cache.
-   */
-  CACHED: 'CACHED',
+  STALE: 'STALE',
 
   /**
    * The resolved value was the result of an error.
