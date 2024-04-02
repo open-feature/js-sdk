@@ -47,7 +47,7 @@ export interface FlagQuery<T extends FlagValue = FlagValue> {
 
   /**
    * Indicates this flag is up-to-date and in sync with the source of truth.
-   * Specifically, indicates the evaluation did not default due to error, and the reason is neither {@link StandardResolutionReasons.CACHED} or {@link StandardResolutionReasons.DISABLED}.
+   * Specifically, indicates the evaluation did not default due to error, and the reason is neither {@link StandardResolutionReasons.STALE} or {@link StandardResolutionReasons.DISABLED}.
    */
   readonly isAuthoritative: boolean;
 

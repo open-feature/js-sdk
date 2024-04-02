@@ -429,7 +429,7 @@ class HookFlagQuery<T extends FlagValue = FlagValue> implements FlagQuery {
   get isAuthoritative() {
     return (
       !this.isError &&
-      this._details.reason != StandardResolutionReasons.CACHED &&
+      this._details.reason != StandardResolutionReasons.STALE &&
       this._details.reason != StandardResolutionReasons.DISABLED
     );
   }
