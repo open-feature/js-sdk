@@ -3,5 +3,5 @@
   "packages/react": "0.2.3-experimental",
   "packages/client": "1.0.1",
   "packages/server": "1.13.3",
-  "packages/shared": "1.0.0"
+  "packages/shared": "1.1.0"
 }
