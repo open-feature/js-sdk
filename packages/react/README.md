@@ -87,7 +87,7 @@ The following list contains the peer dependencies of `@openfeature/react-sdk` wi
 
 ### Usage
 
-The `OpenFeatureProvider` represents a scope for feature flag evaluations within a react application.
+The `OpenFeatureProvider` represents a scope for feature flag evaluations within a React application.
 It binds an OpenFeature client to all evaluations within child components, and allows the use of evaluation hooks.
 The example below shows how to use the `OpenFeatureProvider` with OpenFeature's `InMemoryProvider`.
 
