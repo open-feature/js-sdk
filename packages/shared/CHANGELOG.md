@@ -1,5 +1,12 @@
 # Changelog 
 
+## [1.1.0](https://github.com/open-feature/js-sdk/compare/core-v1.0.0...core-v1.1.0) (2024-04-02)
+
+
+### ✨ New Features
+
+* add STALE pre-defined reason ([#898](https://github.com/open-feature/js-sdk/issues/898)) ([7f4f080](https://github.com/open-feature/js-sdk/commit/7f4f0808a65318407a482261eee012bbbcfd11a8))
+
 ## [1.0.0](https://github.com/open-feature/js-sdk/compare/core-v0.0.28...core-v1.0.0) (2024-03-12)
 
 
