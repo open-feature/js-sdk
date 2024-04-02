@@ -70,6 +70,7 @@ type ConstrainedFlagQuery<T> = FlagQuery<
 /**
  * Evaluates a feature flag generically, returning an react-flavored queryable object.
  * The resolver method to use is based on the type of the defaultValue.
+ * For type-specific hooks, use {@link useBooleanFlagValue}, {@link useBooleanFlagDetails} and equivalents.
  * By default, components will re-render when the flag value changes.
  * @param {string} flagKey the flag identifier
  * @template {FlagValue} T A optional generic argument constraining the default.
@@ -108,6 +109,7 @@ T extends boolean
 /**
  * Evaluates a feature flag, returning a boolean.
  * By default, components will re-render when the flag value changes.
+ * For a generic hook returning a queryable interface, see {@link useFlag}.
  * @param {string} flagKey the flag identifier
  * @param {boolean} defaultValue the default value
  * @param {ReactFlagEvaluationOptions} options options for this evaluation
@@ -124,6 +126,7 @@ export function useBooleanFlagValue(
 /**
  * Evaluates a feature flag, returning evaluation details.
  * By default, components will re-render when the flag value changes.
+ * For a generic hook returning a queryable interface, see {@link useFlag}.
  * @param {string} flagKey the flag identifier
  * @param {boolean} defaultValue the default value
  * @param {ReactFlagEvaluationOptions} options options for this evaluation
@@ -147,6 +150,7 @@ export function useBooleanFlagDetails(
 /**
  * Evaluates a feature flag, returning a string.
  * By default, components will re-render when the flag value changes.
+ * For a generic hook returning a queryable interface, see {@link useFlag}.
  * @param {string} flagKey the flag identifier
  * @template {string} [T=string] A optional generic argument constraining the string
  * @param {T} defaultValue the default value
@@ -164,6 +168,7 @@ export function useStringFlagValue<T extends string = string>(
 /**
  * Evaluates a feature flag, returning evaluation details.
  * By default, components will re-render when the flag value changes.
+ * For a generic hook returning a queryable interface, see {@link useFlag}.
  * @param {string} flagKey the flag identifier
  * @template {string} [T=string] A optional generic argument constraining the string
  * @param {T} defaultValue the default value
@@ -188,6 +193,7 @@ export function useStringFlagDetails<T extends string = string>(
 /**
  * Evaluates a feature flag, returning a number.
  * By default, components will re-render when the flag value changes.
+ * For a generic hook returning a queryable interface, see {@link useFlag}.
  * @param {string} flagKey the flag identifier
  * @template {number} [T=number] A optional generic argument constraining the number
  * @param {T} defaultValue the default value
@@ -205,6 +211,7 @@ export function useNumberFlagValue<T extends number = number>(
 /**
  * Evaluates a feature flag, returning evaluation details.
  * By default, components will re-render when the flag value changes.
+ * For a generic hook returning a queryable interface, see {@link useFlag}.
  * @param {string} flagKey the flag identifier
  * @template {number} [T=number] A optional generic argument constraining the number
  * @param {T} defaultValue the default value
@@ -229,6 +236,7 @@ export function useNumberFlagDetails<T extends number = number>(
 /**
  * Evaluates a feature flag, returning an object.
  * By default, components will re-render when the flag value changes.
+ * For a generic hook returning a queryable interface, see {@link useFlag}.
  * @param {string} flagKey the flag identifier
  * @template {JsonValue} [T=JsonValue] A optional generic argument describing the structure
  * @param {T} defaultValue the default value
@@ -246,6 +254,7 @@ export function useObjectFlagValue<T extends JsonValue = JsonValue>(
 /**
  * Evaluates a feature flag, returning evaluation details.
  * By default, components will re-render when the flag value changes.
+ * For a generic hook returning a queryable interface, see {@link useFlag}.
  * @param {string} flagKey the flag identifier
  * @param {T} defaultValue the default value
  * @template {JsonValue} [T=JsonValue] A optional generic argument describing the structure

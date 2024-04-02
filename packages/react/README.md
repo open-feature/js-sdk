@@ -126,11 +126,11 @@ function App() {
 
 function Page() {
   // Use the "query-style" flag evaluation hook.
-  const { value: newMessage } = useFlag('new-message', true);
+  const { value: newMessageFlagValue } = useFlag('new-message', true);
   return (
     <div className="App">
       <header className="App-header">
-        {newMessage ? <p>Welcome to this OpenFeature-enabled React app!</p> : <p>Welcome to this React app.</p>}
+        {newMessageFlagValue ? <p>Welcome to this OpenFeature-enabled React app!</p> : <p>Welcome to this React app.</p>}
       </header>
     </div>
   )
@@ -191,7 +191,7 @@ You can disable this feature in the hook options:
 
 ```tsx
 function Page() {
-  const newMessage = useBooleanFlagValue('new-message', false, { updateOnContextChanged: false });
+  const newMessageFlagValue = useBooleanFlagValue('new-message', false, { updateOnContextChanged: false });
   return (
     <MyComponents></MyComponents>
   )
@@ -208,7 +208,7 @@ You can disable this feature in the hook options:
 
 ```tsx
 function Page() {
-  const newMessage = useBooleanFlagValue('new-message', false, { updateOnConfigurationChanged: false });
+  const newMessageFlagValue = useBooleanFlagValue('new-message', false, { updateOnConfigurationChanged: false });
   return (
     <MyComponents></MyComponents>
   )
@@ -235,11 +235,11 @@ function Content() {
 
 function Message() {
   // component to render after READY.
-  const newMessage = useBooleanFlagValue('new-message', false);
+  const newMessageFlagValue = useBooleanFlagValue('new-message', false);
 
   return (
     <>
-      {newMessage ? (
+      {newMessageFlagValue ? (
         <p>Welcome to this OpenFeature-enabled React app!</p>
       ) : (
         <p>Welcome to this plain old React app!</p>
