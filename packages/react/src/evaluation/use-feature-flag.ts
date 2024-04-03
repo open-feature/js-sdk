@@ -55,6 +55,8 @@ enum SuspendState {
 }
 
 // just used for casting, etc, but don't use for return values because the name isn't as clear
+//
+// This type is a bit wild-looking, but I think we need it. We have to use the conditional, because otherwise useFlag('key', false) would return false, not boolean (too constrained).
 type ConstrainedFlagQuery<T> = FlagQuery<
   T extends boolean
     ? boolean
