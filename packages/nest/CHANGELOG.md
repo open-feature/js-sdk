@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.3-experimental](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.1.2-experimental...nestjs-sdk-v0.1.3-experimental) (2024-04-02)
+
+
+### 🐛 Bug Fixes
+
+* **deps:** resolve CVE-2024-29041 with nest update ([#889](https://github.com/open-feature/js-sdk/issues/889)) ([042ec5f](https://github.com/open-feature/js-sdk/commit/042ec5f70863ecc974371481be24f08c65321f7c))
+
+
+### 📚 Documentation
+
+* remove duplicate npm install section ([fd0fcfc](https://github.com/open-feature/js-sdk/commit/fd0fcfcfc815803a967e971b7e575c24e46c93bc))
+
 ## [0.1.2-experimental](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.1.1-experimental...nestjs-sdk-v0.1.2-experimental) (2024-03-06)
 
 
