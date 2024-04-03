@@ -138,7 +138,7 @@ function Page() {
 
 export default App;
 ```
-You use the strongly-typed flag value and flag evaluation details hooks as well, if you prefer.
+You can use the strongly-typed flag value and flag evaluation detail hooks as well, if you prefer.
 
 ```tsx
 import { useBooleanFlagValue } from '@openfeature/react-sdk';
