@@ -77,7 +77,7 @@ type ConstrainedFlagQuery<T> = FlagQuery<
  * @param {string} flagKey the flag identifier
  * @template {FlagValue} T A optional generic argument constraining the default.
  * @param {T} defaultValue the default value; used to determine what resolved type should be used.
- * @param {ReactFlagEvaluationOptions} options options for this evaluation
+ * @param {ReactFlagEvaluationOptions} options for this evaluation
  * @returns { FlagQuery } a queryable object containing useful information about the flag.
  */
 export function useFlag<T extends FlagValue = FlagValue>(
