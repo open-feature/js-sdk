@@ -6,9 +6,11 @@ import {
   JsonValue,
   ProviderEvents,
   ProviderStatus,
+  StandardResolutionReasons,
 } from '@openfeature/web-sdk';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useOpenFeatureClient } from '../provider';
+import { FlagQuery } from '../query';
 
 type ReactFlagEvaluationOptions = {
   /**
@@ -52,9 +54,64 @@ enum SuspendState {
   Error,
 }
 
+// This type is a bit wild-looking, but I think we need it.
+// We have to use the conditional, because otherwise useFlag('key', false) would return false, not boolean (too constrained).
+// We have a duplicate for the hook return below, this one is just used for casting because the name isn't as clear
+type ConstrainedFlagQuery<T> = FlagQuery<
+  T extends boolean
+    ? boolean
+    : T extends number
+      ? number
+      : T extends string
+        ? string
+        : T extends JsonValue
+          ? T
+          : JsonValue
+>;
+
+/**
+ * Evaluates a feature flag generically, returning an react-flavored queryable object.
+ * The resolver method to use is based on the type of the defaultValue.
+ * For type-specific hooks, use {@link useBooleanFlagValue}, {@link useBooleanFlagDetails} and equivalents.
+ * By default, components will re-render when the flag value changes.
+ * @param {string} flagKey the flag identifier
+ * @template {FlagValue} T A optional generic argument constraining the default.
+ * @param {T} defaultValue the default value; used to determine what resolved type should be used.
+ * @param {ReactFlagEvaluationOptions} options for this evaluation
+ * @returns { FlagQuery } a queryable object containing useful information about the flag.
+ */
+export function useFlag<T extends FlagValue = FlagValue>(
+  flagKey: string,
+  defaultValue: T,
+  options?: ReactFlagEvaluationOptions,
+): FlagQuery<
+T extends boolean
+  ? boolean
+  : T extends number
+    ? number
+    : T extends string
+      ? string
+      : T extends JsonValue
+        ? T
+        : JsonValue
+> {
+  // use the default value to determine the resolver to call
+  const query =
+    typeof defaultValue === 'boolean'
+      ? new HookFlagQuery<boolean>(useBooleanFlagDetails(flagKey, defaultValue, options))
+      : typeof defaultValue === 'number'
+        ? new HookFlagQuery<number>(useNumberFlagDetails(flagKey, defaultValue, options))
+        : typeof defaultValue === 'string'
+          ? new HookFlagQuery<string>(useStringFlagDetails(flagKey, defaultValue, options))
+          : new HookFlagQuery<JsonValue>(useObjectFlagDetails(flagKey, defaultValue, options));
+  // TS sees this as HookFlagQuery<JsonValue>, because the compiler isn't aware of the `typeof` checks above.
+  return query as unknown as ConstrainedFlagQuery<T>;
+}
+
 /**
  * Evaluates a feature flag, returning a boolean.
  * By default, components will re-render when the flag value changes.
+ * For a generic hook returning a queryable interface, see {@link useFlag}.
  * @param {string} flagKey the flag identifier
  * @param {boolean} defaultValue the default value
  * @param {ReactFlagEvaluationOptions} options options for this evaluation
@@ -71,6 +128,7 @@ export function useBooleanFlagValue(
 /**
  * Evaluates a feature flag, returning evaluation details.
  * By default, components will re-render when the flag value changes.
+ * For a generic hook returning a queryable interface, see {@link useFlag}.
  * @param {string} flagKey the flag identifier
  * @param {boolean} defaultValue the default value
  * @param {ReactFlagEvaluationOptions} options options for this evaluation
@@ -94,6 +152,7 @@ export function useBooleanFlagDetails(
 /**
  * Evaluates a feature flag, returning a string.
  * By default, components will re-render when the flag value changes.
+ * For a generic hook returning a queryable interface, see {@link useFlag}.
  * @param {string} flagKey the flag identifier
  * @template {string} [T=string] A optional generic argument constraining the string
  * @param {T} defaultValue the default value
@@ -104,13 +163,14 @@ export function useStringFlagValue<T extends string = string>(
   flagKey: string,
   defaultValue: T,
   options?: ReactFlagEvaluationOptions,
-): T {
+): string {
   return useStringFlagDetails(flagKey, defaultValue, options).value;
 }
 
 /**
  * Evaluates a feature flag, returning evaluation details.
  * By default, components will re-render when the flag value changes.
+ * For a generic hook returning a queryable interface, see {@link useFlag}.
  * @param {string} flagKey the flag identifier
  * @template {string} [T=string] A optional generic argument constraining the string
  * @param {T} defaultValue the default value
@@ -121,7 +181,7 @@ export function useStringFlagDetails<T extends string = string>(
   flagKey: string,
   defaultValue: T,
   options?: ReactFlagEvaluationOptions,
-): EvaluationDetails<T> {
+): EvaluationDetails<string> {
   return attachHandlersAndResolve(
     flagKey,
     defaultValue,
@@ -135,6 +195,7 @@ export function useStringFlagDetails<T extends string = string>(
 /**
  * Evaluates a feature flag, returning a number.
  * By default, components will re-render when the flag value changes.
+ * For a generic hook returning a queryable interface, see {@link useFlag}.
  * @param {string} flagKey the flag identifier
  * @template {number} [T=number] A optional generic argument constraining the number
  * @param {T} defaultValue the default value
@@ -145,13 +206,14 @@ export function useNumberFlagValue<T extends number = number>(
   flagKey: string,
   defaultValue: T,
   options?: ReactFlagEvaluationOptions,
-): T {
+): number {
   return useNumberFlagDetails(flagKey, defaultValue, options).value;
 }
 
 /**
  * Evaluates a feature flag, returning evaluation details.
  * By default, components will re-render when the flag value changes.
+ * For a generic hook returning a queryable interface, see {@link useFlag}.
  * @param {string} flagKey the flag identifier
  * @template {number} [T=number] A optional generic argument constraining the number
  * @param {T} defaultValue the default value
@@ -162,7 +224,7 @@ export function useNumberFlagDetails<T extends number = number>(
   flagKey: string,
   defaultValue: T,
   options?: ReactFlagEvaluationOptions,
-): EvaluationDetails<T> {
+): EvaluationDetails<number> {
   return attachHandlersAndResolve(
     flagKey,
     defaultValue,
@@ -176,6 +238,7 @@ export function useNumberFlagDetails<T extends number = number>(
 /**
  * Evaluates a feature flag, returning an object.
  * By default, components will re-render when the flag value changes.
+ * For a generic hook returning a queryable interface, see {@link useFlag}.
  * @param {string} flagKey the flag identifier
  * @template {JsonValue} [T=JsonValue] A optional generic argument describing the structure
  * @param {T} defaultValue the default value
@@ -193,6 +256,7 @@ export function useObjectFlagValue<T extends JsonValue = JsonValue>(
 /**
  * Evaluates a feature flag, returning evaluation details.
  * By default, components will re-render when the flag value changes.
+ * For a generic hook returning a queryable interface, see {@link useFlag}.
  * @param {string} flagKey the flag identifier
  * @param {T} defaultValue the default value
  * @template {JsonValue} [T=JsonValue] A optional generic argument describing the structure
@@ -335,4 +399,53 @@ function suspenseWrapper<T>(promise: Promise<T>) {
         throw new Error('Suspending promise is in an unknown state.');
     }
   };
+}
+
+// FlagQuery implementation, do not export
+class HookFlagQuery<T extends FlagValue = FlagValue> implements FlagQuery {
+  constructor(private _details: EvaluationDetails<T>) {}
+
+  get details() {
+    return this._details;
+  }
+
+  get value() {
+    return this._details?.value;
+  }
+
+  get variant() {
+    return this._details.variant;
+  }
+
+  get flagMetadata() {
+    return this._details.flagMetadata;
+  }
+
+  get reason() {
+    return this._details.reason;
+  }
+
+  get isError() {
+    return !!this._details?.errorCode || this._details.reason == StandardResolutionReasons.ERROR;
+  }
+
+  get errorCode() {
+    return this._details?.errorCode;
+  }
+
+  get errorMessage() {
+    return this._details?.errorMessage;
+  }
+
+  get isAuthoritative() {
+    return (
+      !this.isError &&
+      this._details.reason != StandardResolutionReasons.STALE &&
+      this._details.reason != StandardResolutionReasons.DISABLED
+    );
+  }
+
+  get type() {
+    return typeof this._details.value;
+  }
 }

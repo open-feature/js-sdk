@@ -87,10 +87,12 @@ The following list contains the peer dependencies of `@openfeature/react-sdk` wi
 
 ### Usage
 
+The `OpenFeatureProvider` represents a scope for feature flag evaluations within a React application.
+It binds an OpenFeature client to all evaluations within child components, and allows the use of evaluation hooks.
 The example below shows how to use the `OpenFeatureProvider` with OpenFeature's `InMemoryProvider`.
 
 ```tsx
-import { EvaluationContext, OpenFeatureProvider, useBooleanFlagValue, useBooleanFlagDetails, OpenFeature, InMemoryProvider } from '@openfeature/react-sdk';
+import { EvaluationContext, OpenFeatureProvider, useFlag, OpenFeature, InMemoryProvider } from '@openfeature/react-sdk';
 
 const flagConfig = {
   'new-message': {
@@ -109,8 +111,11 @@ const flagConfig = {
   },
 };
 
+// Instantiate and set our provider (be sure this only happens once)!
+// Note: there's no need to await its initialization, the React SDK handles re-rendering and suspense for you!
 OpenFeature.setProvider(new InMemoryProvider(flagConfig));
 
+// Enclose your content in the configured provider
 function App() {
   return (
     <OpenFeatureProvider>
@@ -120,11 +125,12 @@ function App() {
 }
 
 function Page() {
-  const newMessage = useBooleanFlagValue('new-message', false);
+  // Use the "query-style" flag evaluation hook.
+  const { value: showNewMessage } = useFlag('new-message', true);
   return (
     <div className="App">
       <header className="App-header">
-        {newMessage ? <p>Welcome to this OpenFeature-enabled React app!</p> : <p>Welcome to this React app.</p>}
+        {showNewMessage ? <p>Welcome to this OpenFeature-enabled React app!</p> : <p>Welcome to this React app.</p>}
       </header>
     </div>
   )
@@ -132,12 +138,19 @@ function Page() {
 
 export default App;
 ```
+You can use the strongly-typed flag value and flag evaluation detail hooks as well, if you prefer.
 
-You use the detailed flag evaluation hooks to evaluate the flag and get additional information about the flag and the evaluation.
+```tsx
+import { useBooleanFlagValue } from '@openfeature/react-sdk';
+
+// boolean flag evaluation
+const value = useBooleanFlagValue('new-message', false);
+```
 
 ```tsx
 import { useBooleanFlagDetails } from '@openfeature/react-sdk';
 
+// "detailed" boolean flag evaluation
 const {
   value,
   variant,
@@ -178,7 +191,7 @@ You can disable this feature in the hook options:
 
 ```tsx
 function Page() {
-  const newMessage = useBooleanFlagValue('new-message', false, { updateOnContextChanged: false });
+  const showNewMessage = useBooleanFlagValue('new-message', false, { updateOnContextChanged: false });
   return (
     <MyComponents></MyComponents>
   )
@@ -195,7 +208,7 @@ You can disable this feature in the hook options:
 
 ```tsx
 function Page() {
-  const newMessage = useBooleanFlagValue('new-message', false, { updateOnConfigurationChanged: false });
+  const showNewMessage = useBooleanFlagValue('new-message', false, { updateOnConfigurationChanged: false });
   return (
     <MyComponents></MyComponents>
   )
@@ -222,11 +235,11 @@ function Content() {
 
 function Message() {
   // component to render after READY.
-  const newMessage = useBooleanFlagValue('new-message', false);
+  const showNewMessage = useBooleanFlagValue('new-message', false);
 
   return (
     <>
-      {newMessage ? (
+      {showNewMessage ? (
         <p>Welcome to this OpenFeature-enabled React app!</p>
       ) : (
         <p>Welcome to this plain old React app!</p>
