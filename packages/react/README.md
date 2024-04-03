@@ -112,7 +112,7 @@ const flagConfig = {
 };
 
 // Instantiate and set our provider (be sure this only happens once)!
-// Note: there's no need to await it's initialization, the React SDK handles re-rendering and suspense for you!
+// Note: there's no need to await its initialization, the React SDK handles re-rendering and suspense for you!
 OpenFeature.setProvider(new InMemoryProvider(flagConfig));
 
 // Enclose your content in the configured provider
@@ -126,11 +126,11 @@ function App() {
 
 function Page() {
   // Use the "query-style" flag evaluation hook.
-  const { value: newMessageFlagValue } = useFlag('new-message', true);
+  const { value: showNewMessage } = useFlag('new-message', true);
   return (
     <div className="App">
       <header className="App-header">
-        {newMessageFlagValue ? <p>Welcome to this OpenFeature-enabled React app!</p> : <p>Welcome to this React app.</p>}
+        {showNewMessage ? <p>Welcome to this OpenFeature-enabled React app!</p> : <p>Welcome to this React app.</p>}
       </header>
     </div>
   )
@@ -191,7 +191,7 @@ You can disable this feature in the hook options:
 
 ```tsx
 function Page() {
-  const newMessageFlagValue = useBooleanFlagValue('new-message', false, { updateOnContextChanged: false });
+  const showNewMessage = useBooleanFlagValue('new-message', false, { updateOnContextChanged: false });
   return (
     <MyComponents></MyComponents>
   )
@@ -208,7 +208,7 @@ You can disable this feature in the hook options:
 
 ```tsx
 function Page() {
-  const newMessageFlagValue = useBooleanFlagValue('new-message', false, { updateOnConfigurationChanged: false });
+  const showNewMessage = useBooleanFlagValue('new-message', false, { updateOnConfigurationChanged: false });
   return (
     <MyComponents></MyComponents>
   )
@@ -235,11 +235,11 @@ function Content() {
 
 function Message() {
   // component to render after READY.
-  const newMessageFlagValue = useBooleanFlagValue('new-message', false);
+  const showNewMessage = useBooleanFlagValue('new-message', false);
 
   return (
     <>
-      {newMessageFlagValue ? (
+      {showNewMessage ? (
         <p>Welcome to this OpenFeature-enabled React app!</p>
       ) : (
         <p>Welcome to this plain old React app!</p>
