@@ -25,6 +25,11 @@ type ProviderProps = {
 } & ClientOrDomain &
   ReactFlagEvaluationOptions;
 
+  /**
+   * Provides a scope for evaluating feature flags by binding a client to all child components.
+   * @param {ProviderProps} properties props for the context provider
+   * @returns {OpenFeatureProvider} context provider
+   */
 export function OpenFeatureProvider({ client, domain, children, ...options }: ProviderProps) {
   if (!client) {
     client = OpenFeature.getClient(domain);

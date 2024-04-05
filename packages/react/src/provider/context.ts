@@ -8,7 +8,7 @@ export const Context = React.createContext<{ client: Client; options: ReactFlagE
 /**
  * Get a copy of the effective options used for this OpenFeatureProvider.
  * DO NOT EXPORT PUBLICLY
- * @returns ReactFlagEvaluationOptions
+ * @returns {ReactFlagEvaluationOptions} options the defaulted options
  */
 export function useProviderOptions() {
   const { options } = React.useContext(Context) || {};
