@@ -278,7 +278,7 @@ Alternatively, you can disable this feature by setting `suspendWhileReconciling=
 > I get odd rendering issues, or errors when components mount, if I use the suspense features.
 
 In React 16/17's "Legacy Suspense", when a component suspends, its sibling components initially mount and then are hidden.
-This can cause surprising effects and inconsistencies if they are render while the provider is still getting ready.
+This can cause surprising effects and inconsistencies if sibling components are rendered while the provider is still getting ready.
 To fix this, you can upgrade to React 18, which uses "Concurrent Suspense", in which siblings are not mounted until their suspended sibling resolves.
 Alternatively, if you cannot upgrade to React 18, you can use the `useWhenProviderReady` utility hook in any sibling components to force them from mounting until the provider is ready.
 
