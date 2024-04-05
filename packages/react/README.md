@@ -286,7 +286,7 @@ Alternatively, if you cannot upgrade to React 18, you can use the `useWhenProvid
 
 The `OpenFeatureProvider` binds a `client` to all child components, but the provider and context associated with that client is controlled by the `domain` parameter.
 This is consistent with all OpenFeature SDKs.
-To scope a provider to a particular provider/context set the `domain` parameter on your `OpenFeatureProvider`:
+To scope an OpenFeatureProvider to a particular provider/context set the `domain` parameter on your `OpenFeatureProvider`:
 
 ```tsx
 <OpenFeatureProvider domain={'my-domain'}>
