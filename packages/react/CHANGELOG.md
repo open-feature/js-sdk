@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.4-experimental](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.2.3-experimental...react-sdk-v0.2.4-experimental) (2024-04-03)
+
+
+### ✨ New Features
+
+* query-style, generic useFlag hook ([#897](https://github.com/open-feature/js-sdk/issues/897)) ([5c17b8d](https://github.com/open-feature/js-sdk/commit/5c17b8dfcffd2f0145e5b2c79fa9dff842bbac92))
+
+
+### 🔄 Refactoring
+
+* dir restructure ([#894](https://github.com/open-feature/js-sdk/issues/894)) ([ce9f65c](https://github.com/open-feature/js-sdk/commit/ce9f65c6ec41867f67c528997cf3acef367f9260))
+
 ## [0.2.3-experimental](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.2.2-experimental...react-sdk-v0.2.3-experimental) (2024-03-25)
 
 
