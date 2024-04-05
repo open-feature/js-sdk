@@ -9,7 +9,8 @@ enum SuspendState {
 
 /**
  * Suspend function. If this runs, components using the calling hook will be suspended.
- * DO NOT EXPORT PUBLICLY
+ * DO NOT EXPORT PUBLICLY 
+ * @internal
  * @param {Client} client the OpenFeature client
  * @param {Function} updateState the state update function
  * @param {ProviderEvents[]} resumeEvents list of events which will resume the suspend
@@ -40,6 +41,7 @@ export function suspend(
 /**
  * Promise wrapper that throws unresolved promises to support React suspense.
  * DO NOT EXPORT PUBLICLY
+ * @internal
  * @param {Promise<T>} promise to wrap
  * @template T flag type
  * @returns {Function} suspense-compliant lambda
