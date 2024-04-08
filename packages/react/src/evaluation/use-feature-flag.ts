@@ -8,7 +8,7 @@ import {
   StandardResolutionReasons
 } from '@openfeature/web-sdk';
 import { useEffect, useState } from 'react';
-import { ReactFlagEvaluationOptions, getDefaultedOptions } from '../common/options';
+import { DEFAULT_OPTIONS, ReactFlagEvaluationOptions, normalizeOptions } from '../common/options';
 import { suspend } from '../common/suspend';
 import { useProviderOptions } from '../provider/context';
 import { useOpenFeatureClient } from '../provider/use-open-feature-client';
@@ -245,7 +245,7 @@ function attachHandlersAndResolve<T extends FlagValue>(
   options?: ReactFlagEvaluationOptions,
 ): EvaluationDetails<T> {
   // highest priority > evaluation hook options > provider options > default options > lowest priority
-  const defaultedOptions = getDefaultedOptions({...useProviderOptions(), ...options});
+  const defaultedOptions = { ...DEFAULT_OPTIONS, ...useProviderOptions(), ...normalizeOptions(options)};
   const [, updateState] = useState<object | undefined>();
   const client = useOpenFeatureClient();
   const forceUpdate = () => {

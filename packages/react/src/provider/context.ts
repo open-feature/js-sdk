@@ -1,6 +1,6 @@
-import React from 'react';
-import { ReactFlagEvaluationOptions, getDefaultedOptions } from '../common/options';
 import { Client } from '@openfeature/web-sdk';
+import React from 'react';
+import { NormalizedOptions, ReactFlagEvaluationOptions, normalizeOptions } from '../common/options';
 
 /**
  * The underlying React context.
@@ -10,12 +10,12 @@ import { Client } from '@openfeature/web-sdk';
 export const Context = React.createContext<{ client: Client; options: ReactFlagEvaluationOptions } | undefined>(undefined);
 
 /**
- * Get a copy of the effective options used for this OpenFeatureProvider.
+ * Get a normalized copy of the options used for this OpenFeatureProvider, see {@link normalizeOptions}.
  * DO NOT EXPORT PUBLICLY
  * @internal
- * @returns {ReactFlagEvaluationOptions} options the defaulted options
+ * @returns {NormalizedOptions} normalized options the defaulted options, not defaulted or normalized.
  */
-export function useProviderOptions() {
+export function useProviderOptions(): NormalizedOptions {
   const { options } = React.useContext(Context) || {};
-  return getDefaultedOptions(options);
+  return normalizeOptions(options);
 }
