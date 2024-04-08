@@ -59,7 +59,7 @@ export const DEFAULT_OPTIONS: ReactFlagEvaluationOptions = {
  * Returns normalization options (all `undefined` fields removed, and `suspend` decomposed to `suspendUntilReady` and `suspendWhileReconciling`).
  * DO NOT EXPORT PUBLICLY
  * @internal
- * @param options options to normalize
+ * @param {ReactFlagEvaluationOptions} options  options to normalize
  * @returns {NormalizedOptions} normalized options
  */
 export const normalizeOptions: (options?: ReactFlagEvaluationOptions) => NormalizedOptions = (options?: ReactFlagEvaluationOptions) => {
@@ -73,5 +73,5 @@ export const normalizeOptions: (options?: ReactFlagEvaluationOptions) => Normali
     // only return these if properly set (no undefined to allow overriding with spread)
     ...(typeof suspendUntilReady === 'boolean' && {suspendUntilReady}),
     ...(typeof suspendWhileReconciling === 'boolean' && {suspendWhileReconciling}),
-  }
+  };
 };
