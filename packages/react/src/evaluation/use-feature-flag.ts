@@ -1,58 +1,18 @@
 import {
   Client,
   EvaluationDetails,
-  FlagEvaluationOptions,
   FlagValue,
   JsonValue,
   ProviderEvents,
   ProviderStatus,
-  StandardResolutionReasons,
+  StandardResolutionReasons
 } from '@openfeature/web-sdk';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { useOpenFeatureClient } from '../provider';
+import { useEffect, useState } from 'react';
+import { DEFAULT_OPTIONS, ReactFlagEvaluationOptions, normalizeOptions } from '../common/options';
+import { suspend } from '../common/suspend';
+import { useProviderOptions } from '../provider/context';
+import { useOpenFeatureClient } from '../provider/use-open-feature-client';
 import { FlagQuery } from '../query';
-
-type ReactFlagEvaluationOptions = {
-  /**
-   * Suspend flag evaluations while the provider is not ready.
-   * Set to false if you don't want to show suspense fallbacks until the provider is initialized.
-   * Defaults to true.
-   */
-  suspendUntilReady?: boolean;
-  /**
-   * Suspend flag evaluations while the provider's context is being reconciled.
-   * Set to true if you want to show suspense fallbacks while flags are re-evaluated after context changes.
-   * Defaults to false.
-   */
-  suspendWhileReconciling?: boolean;
-  /**
-   * Update the component if the provider emits a ConfigurationChanged event.
-   * Set to false to prevent components from re-rendering when flag value changes
-   * are received by the associated provider.
-   * Defaults to true.
-   */
-  updateOnConfigurationChanged?: boolean;
-  /**
-   * Update the component when the OpenFeature context changes.
-   * Set to false to prevent components from re-rendering when attributes which
-   * may be factors in flag evaluation change.
-   * Defaults to true.
-   */
-  updateOnContextChanged?: boolean;
-} & FlagEvaluationOptions;
-
-const DEFAULT_OPTIONS: ReactFlagEvaluationOptions = {
-  updateOnContextChanged: true,
-  updateOnConfigurationChanged: true,
-  suspendUntilReady: true,
-  suspendWhileReconciling: false,
-};
-
-enum SuspendState {
-  Pending,
-  Success,
-  Error,
-}
 
 // This type is a bit wild-looking, but I think we need it.
 // We have to use the conditional, because otherwise useFlag('key', false) would return false, not boolean (too constrained).
@@ -284,7 +244,8 @@ function attachHandlersAndResolve<T extends FlagValue>(
   resolver: (client: Client) => (flagKey: string, defaultValue: T) => EvaluationDetails<T>,
   options?: ReactFlagEvaluationOptions,
 ): EvaluationDetails<T> {
-  const defaultedOptions = { ...DEFAULT_OPTIONS, ...options };
+  // highest priority > evaluation hook options > provider options > default options > lowest priority
+  const defaultedOptions = { ...DEFAULT_OPTIONS, ...useProviderOptions(), ...normalizeOptions(options)};
   const [, updateState] = useState<object | undefined>();
   const client = useOpenFeatureClient();
   const forceUpdate = () => {
@@ -336,69 +297,6 @@ function attachHandlersAndResolve<T extends FlagValue>(
   }, []);
 
   return resolver(client).call(client, flagKey, defaultValue);
-}
-
-/**
- * Suspend function. If this runs, components using the calling hook will be suspended.
- * @param {Client} client the OpenFeature client
- * @param {Function} updateState the state update function
- * @param {ProviderEvents[]} resumeEvents list of events which will resume the suspend
- */
-function suspend(
-  client: Client,
-  updateState: Dispatch<SetStateAction<object | undefined>>,
-  ...resumeEvents: ProviderEvents[]
-) {
-  let suspendResolver: () => void;
-
-  const suspendPromise = new Promise<void>((resolve) => {
-    suspendResolver = () => {
-      resolve();
-      resumeEvents.forEach((e) => {
-        client.removeHandler(e, suspendResolver); // remove handlers once they've run
-      });
-      client.removeHandler(ProviderEvents.Error, suspendResolver);
-    };
-    resumeEvents.forEach((e) => {
-      client.addHandler(e, suspendResolver);
-    });
-    client.addHandler(ProviderEvents.Error, suspendResolver); // we never want to throw, resolve with errors - we may make this configurable later
-  });
-  updateState(suspenseWrapper(suspendPromise));
-}
-
-/**
- * Promise wrapper that throws unresolved promises to support React suspense.
- * @param {Promise<T>} promise to wrap
- * @template T flag type
- * @returns {Function} suspense-compliant lambda
- */
-function suspenseWrapper<T>(promise: Promise<T>) {
-  let status: SuspendState = SuspendState.Pending;
-  let result: T;
-
-  const suspended = promise
-    .then((value) => {
-      status = SuspendState.Success;
-      result = value;
-    })
-    .catch((error) => {
-      status = SuspendState.Error;
-      result = error;
-    });
-
-  return () => {
-    switch (status) {
-      case SuspendState.Pending:
-        throw suspended;
-      case SuspendState.Success:
-        return result;
-      case SuspendState.Error:
-        throw result;
-      default:
-        throw new Error('Suspending promise is in an unknown state.');
-    }
-  };
 }
 
 // FlagQuery implementation, do not export

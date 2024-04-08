@@ -50,10 +50,13 @@ In addition to the feature provided by the [web sdk](https://openfeature.dev/doc
     - [yarn](#yarn)
     - [Required peer dependencies](#required-peer-dependencies)
   - [Usage](#usage)
-  - [Multiple Providers and Domains](#multiple-providers-and-domains)
-  - [Re-rendering with Context Changes](#re-rendering-with-context-changes)
-  - [Re-rendering with Flag Configuration Changes](#re-rendering-with-flag-configuration-changes)
-  - [Suspense Support](#suspense-support)
+    - [OpenFeatureProvider context provider](#openfeatureprovider-context-provider)
+    - [Evaluation hooks](#evaluation-hooks)
+    - [Multiple Providers and Domains](#multiple-providers-and-domains)
+    - [Re-rendering with Context Changes](#re-rendering-with-context-changes)
+    - [Re-rendering with Flag Configuration Changes](#re-rendering-with-flag-configuration-changes)
+    - [Suspense Support](#suspense-support)
+- [FAQ and troubleshooting](#faq-and-troubleshooting)
 - [Resources](#resources)
 
 ## Quick start
@@ -87,7 +90,9 @@ The following list contains the peer dependencies of `@openfeature/react-sdk` wi
 
 ### Usage
 
-The `OpenFeatureProvider` represents a scope for feature flag evaluations within a React application.
+#### OpenFeatureProvider context provider
+
+The `OpenFeatureProvider` is a [React context provider](https://react.dev/reference/react/createContext#provider) which represents a scope for feature flag evaluations within a React application.
 It binds an OpenFeature client to all evaluations within child components, and allows the use of evaluation hooks.
 The example below shows how to use the `OpenFeatureProvider` with OpenFeature's `InMemoryProvider`.
 
@@ -123,9 +128,15 @@ function App() {
     </OpenFeatureProvider>
   );
 }
+```
 
+#### Evaluation hooks
+
+Within the provider, you can use the various evaluation hooks to evaluate flags. 
+
+```tsx
 function Page() {
-  // Use the "query-style" flag evaluation hook.
+  // Use the "query-style" flag evaluation hook, specifying a flag-key and a default value.
   const { value: showNewMessage } = useFlag('new-message', true);
   return (
     <div className="App">
@@ -135,9 +146,8 @@ function Page() {
     </div>
   )
 }
-
-export default App;
 ```
+
 You can use the strongly-typed flag value and flag evaluation detail hooks as well, if you prefer.
 
 ```tsx
@@ -159,8 +169,7 @@ const {
 } = useBooleanFlagDetails('new-message', false);
 ```
 
-### Multiple Providers and Domains
-
+#### Multiple Providers and Domains
 
 Multiple providers can be used by passing a `domain` to the `OpenFeatureProvider`:
 
@@ -183,11 +192,11 @@ OpenFeature.getClient('my-domain');
 
 For more information about `domains`, refer to the [web SDK](https://github.com/open-feature/js-sdk/blob/main/packages/client/README.md).
 
-### Re-rendering with Context Changes
+#### Re-rendering with Context Changes
 
 By default, if the OpenFeature [evaluation context](https://openfeature.dev/docs/reference/concepts/evaluation-context) is modified, components will be re-rendered.
 This is useful in cases where flag values are dependant on user-attributes or other application state (user logged in, items in card, etc).
-You can disable this feature in the hook options:
+You can disable this feature in the hook options (or in the [OpenFeatureProvider](#openfeatureprovider-context-provider)):
 
 ```tsx
 function Page() {
@@ -200,11 +209,11 @@ function Page() {
 
 For more information about how evaluation context works in the React SDK, see the documentation on OpenFeature's [static context SDK paradigm](https://openfeature.dev/specification/glossary/#static-context-paradigm).
 
-### Re-rendering with Flag Configuration Changes
+#### Re-rendering with Flag Configuration Changes
 
 By default, if the underlying provider emits a `ConfigurationChanged` event, components will be re-rendered.
 This is useful if you want your UI to immediately reflect changes in the backend flag configuration.
-You can disable this feature in the hook options:
+You can disable this feature in the hook options (or in the [OpenFeatureProvider](#openfeatureprovider-context-provider)):
 
 ```tsx
 function Page() {
@@ -217,11 +226,11 @@ function Page() {
 
 Note that if your provider doesn't support updates, this configuration has no impact.
 
-### Suspense Support
+#### Suspense Support
 
 Frequently, providers need to perform some initial startup tasks.
-It may be desireable not to display components with feature flags until this is complete.
-Built-in [suspense](https://react.dev/reference/react/Suspense) support makes this easy: 
+It may be desireable not to display components with feature flags until this is complete, or when the context changes.
+Built-in [suspense](https://react.dev/reference/react/Suspense) support makes this easy.
 
 ```tsx
 function Content() {
@@ -252,6 +261,37 @@ function Fallback() {
   // component to render before READY.
   return <p>Waiting for provider to be ready...</p>;
 }
+
+```
+
+This can be disabled in the hook options (or in the [OpenFeatureProvider](#openfeatureprovider-context-provider)).
+
+## FAQ and troubleshooting
+
+> I get an error that says something like: `A React component suspended while rendering, but no fallback UI was specified.`
+
+The OpenFeature React SDK features built-in [suspense support](#suspense-support).
+This means that it will render your loading fallback automatically while the your provider starts up, and during context reconciliation for any of your components using feature flags!
+However, you will see this error if you neglect to create a suspense boundary around any components using feature flags; add a suspense boundary to resolve this issue.
+Alternatively, you can disable this feature by setting `suspendWhileReconciling=false` and `suspendUntilReady=false` in the [evaluation hooks](#evaluation-hooks) or the [OpenFeatureProvider](#openfeatureprovider-context-provider) (which applies to all evaluation hooks in child components).
+
+> I get odd rendering issues, or errors when components mount, if I use the suspense features.
+
+In React 16/17's "Legacy Suspense", when a component suspends, its sibling components initially mount and then are hidden.
+This can cause surprising effects and inconsistencies if sibling components are rendered while the provider is still getting ready.
+To fix this, you can upgrade to React 18, which uses "Concurrent Suspense", in which siblings are not mounted until their suspended sibling resolves.
+Alternatively, if you cannot upgrade to React 18, you can use the `useWhenProviderReady` utility hook in any sibling components to prevent them from mounting until the provider is ready.
+
+> I am using multiple `OpenFeatureProvider` contexts, but they are sharing the same provider or evaluation context. Why?
+
+The `OpenFeatureProvider` binds a `client` to all child components, but the provider and context associated with that client is controlled by the `domain` parameter.
+This is consistent with all OpenFeature SDKs.
+To scope an OpenFeatureProvider to a particular provider/context set the `domain` parameter on your `OpenFeatureProvider`:
+
+```tsx
+<OpenFeatureProvider domain={'my-domain'}>
+  <Page></Page>
+</OpenFeatureProvider>
 ```
 
 ## Resources

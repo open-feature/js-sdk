@@ -1,5 +1,7 @@
-import * as React from 'react';
 import { Client, OpenFeature } from '@openfeature/web-sdk';
+import * as React from 'react';
+import { ReactFlagEvaluationOptions } from '../common/options';
+import { Context } from './context';
 
 type ClientOrDomain =
   | {
@@ -20,26 +22,18 @@ type ClientOrDomain =
 
 type ProviderProps = {
   children?: React.ReactNode;
-} & ClientOrDomain;
+} & ClientOrDomain &
+  ReactFlagEvaluationOptions;
 
-const Context = React.createContext<Client | undefined>(undefined);
-
-export const OpenFeatureProvider = ({ client, domain, children }: ProviderProps) => {
+  /**
+   * Provides a scope for evaluating feature flags by binding a client to all child components.
+   * @param {ProviderProps} properties props for the context provider
+   * @returns {OpenFeatureProvider} context provider
+   */
+export function OpenFeatureProvider({ client, domain, children, ...options }: ProviderProps) {
   if (!client) {
     client = OpenFeature.getClient(domain);
   }
 
-  return <Context.Provider value={client}>{children}</Context.Provider>;
-};
-
-export const useOpenFeatureClient = () => {
-  const client = React.useContext(Context);
-
-  if (!client) {
-    throw new Error(
-      'No OpenFeature client available - components using OpenFeature must be wrapped with an <OpenFeatureProvider>'
-    );
-  }
-
-  return client;
-};
+  return <Context.Provider value={{ client, options }}>{children}</Context.Provider>;
+}
