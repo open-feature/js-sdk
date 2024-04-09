@@ -4,7 +4,7 @@
   "private": true,
   "description": "OpenFeature SDK for JavaScript",
   "scripts": {
-    "test": "jest --selectProjects=shared --selectProjects=server --selectProjects=client --silent",
+    "test": "jest --selectProjects=shared --selectProjects=server --selectProjects=client --selectProjects=react --silent",
     "e2e-server": "git submodule update --init --recursive && shx cp test-harness/features/evaluation.feature packages/server/e2e/features && jest --selectProjects=server-e2e --verbose",
     "e2e-client": "git submodule update --init --recursive && shx cp test-harness/features/evaluation.feature packages/client/e2e/features && jest --selectProjects=client-e2e --verbose",
     "e2e": "npm run e2e-server && npm run e2e-client",
@@ -37,6 +37,8 @@
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^11.1.6",
+    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/react": "^14.2.2",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.11.16",
     "@types/react": "^18.2.55",
