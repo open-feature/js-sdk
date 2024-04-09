@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.3.0-experimental](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.2.4-experimental...react-sdk-v0.3.0-experimental) (2024-04-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* options inheritance, useWhenProviderReady, suspend by default ([#900](https://github.com/open-feature/js-sdk/issues/900))
+
+### ✨ New Features
+
+* options inheritance, useWhenProviderReady, suspend by default ([#900](https://github.com/open-feature/js-sdk/issues/900)) ([539e741](https://github.com/open-feature/js-sdk/commit/539e7415de8dae333fed72ae80590021d9600830))
+
 ## [0.2.4-experimental](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.2.3-experimental...react-sdk-v0.2.4-experimental) (2024-04-03)
 
 
