@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1-experimental](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.3.0-experimental...react-sdk-v0.3.1-experimental) (2024-04-09)
+
+
+### 🐛 Bug Fixes
+
+* default options (re-renders not firing by default) ([#905](https://github.com/open-feature/js-sdk/issues/905)) ([a85e723](https://github.com/open-feature/js-sdk/commit/a85e72333fab85b3fcad87542c11fbed85ca9d85))
+
 ## [0.3.0-experimental](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.2.4-experimental...react-sdk-v0.3.0-experimental) (2024-04-08)
 
 
