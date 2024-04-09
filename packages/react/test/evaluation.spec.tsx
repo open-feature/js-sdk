@@ -338,7 +338,7 @@ describe('re-rending and suspense', () => {
         OpenFeature.setContext(SUSPENSE, { user: TARGETED_USER }); // update the context
       });
 
-      // expect to see default while we are reconciling
+      // expect to see fallback while we are reconciling
       await waitFor(() => expect(screen.queryByText(FALLBACK)).toBeInTheDocument(), { timeout: DELAY / 2 });
 
       // make sure we updated after reconciling
