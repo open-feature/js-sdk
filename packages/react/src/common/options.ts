@@ -62,15 +62,13 @@ export const DEFAULT_OPTIONS: ReactFlagEvaluationOptions = {
  * @param {ReactFlagEvaluationOptions} options  options to normalize
  * @returns {NormalizedOptions} normalized options
  */
-export const normalizeOptions: (options?: ReactFlagEvaluationOptions) => NormalizedOptions = (options?: ReactFlagEvaluationOptions) => {
-  const defaultOptionsIfMissing = !options ? {} : options;
-
-  const updateOnContextChanged = defaultOptionsIfMissing.suspendWhileReconciling;
-  const updateOnConfigurationChanged = defaultOptionsIfMissing.updateOnConfigurationChanged;
+export const normalizeOptions: (options?: ReactFlagEvaluationOptions) => NormalizedOptions = (options: ReactFlagEvaluationOptions = {}) => {
+  const updateOnContextChanged = options.updateOnContextChanged;
+  const updateOnConfigurationChanged = options.updateOnConfigurationChanged;
 
   // fall-back the suspense options to the catch-all `suspend` property 
-  const suspendUntilReady = 'suspendUntilReady' in defaultOptionsIfMissing ? defaultOptionsIfMissing.suspendUntilReady : defaultOptionsIfMissing.suspend;
-  const suspendWhileReconciling = 'suspendWhileReconciling' in defaultOptionsIfMissing ? defaultOptionsIfMissing.suspendWhileReconciling : defaultOptionsIfMissing.suspend;
+  const suspendUntilReady = 'suspendUntilReady' in options ? options.suspendUntilReady : options.suspend;
+  const suspendWhileReconciling = 'suspendWhileReconciling' in options ? options.suspendWhileReconciling : options.suspend;
 
   return {
     // only return these if properly set (no undefined to allow overriding with spread)
