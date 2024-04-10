@@ -3,37 +3,18 @@ import '@testing-library/jest-dom'; // see: https://testing-library.com/docs/rea
 import { act, render, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import {
-    OpenFeatureProvider,
-    useBooleanFlagDetails,
-    useBooleanFlagValue,
-    useFlag,
-    useNumberFlagDetails,
-    useNumberFlagValue,
-    useObjectFlagDetails,
-    useObjectFlagValue,
-    useStringFlagDetails,
-    useStringFlagValue,
+  OpenFeatureProvider,
+  useBooleanFlagDetails,
+  useBooleanFlagValue,
+  useFlag,
+  useNumberFlagDetails,
+  useNumberFlagValue,
+  useObjectFlagDetails,
+  useObjectFlagValue,
+  useStringFlagDetails,
+  useStringFlagValue,
 } from '../src/';
-
-class TestingProvider extends InMemoryProvider {
-  constructor(
-    flagConfiguration: ConstructorParameters<typeof InMemoryProvider>[0],
-    private delay: number,
-  ) {
-    super(flagConfiguration);
-  }
-
-  // artificially delay our init (delaying PROVIDER_READY event)
-  async initialize(context?: EvaluationContext | undefined): Promise<void> {
-    await new Promise((resolve) => setTimeout(resolve, this.delay));
-    return super.initialize(context);
-  }
-
-  // artificially delay context changes
-  async onContextChange(): Promise<void> {
-    await new Promise((resolve) => setTimeout(resolve, this.delay));
-  }
-}
+import { TestingProvider } from './test.utils';
 
 describe('evaluation', () => {
   const EVALUATION = 'evaluation';
@@ -49,7 +30,6 @@ describe('evaluation', () => {
   const OBJECT_FLAG_KEY = 'object-flag';
   const OBJECT_FLAG_VARIANT = 'template';
   const OBJECT_FLAG_VALUE = { factor: 'x1000' };
-
   const VARIANT_ATTR = 'data-variant';
   const REASON_ATTR = 'data-reason';
   const REASON_ATTR_VALUE = StandardResolutionReasons.STATIC;
@@ -92,7 +72,7 @@ describe('evaluation', () => {
 
   OpenFeature.setProvider(EVALUATION, provider);
 
-  describe('query-style evaluation API', () => {
+  describe('useFlag hook', () => {
     function TestComponent() {
       const {
         value: booleanVal,
@@ -100,24 +80,28 @@ describe('evaluation', () => {
         variant: boolVariant,
         type: booleanType,
       } = useFlag(BOOL_FLAG_KEY, false);
+
       const {
         value: stringVal,
         reason: stringReason,
         variant: stringVariant,
         type: stringType,
       } = useFlag(STRING_FLAG_KEY, 'default');
+
       const {
         value: numberVal,
         reason: numberReason,
         variant: numberVariant,
         type: numberType,
       } = useFlag(NUMBER_FLAG_KEY, 0);
+
       const {
         value: objectVal,
         reason: objectReason,
         variant: objectVariant,
         type: objectType,
       } = useFlag(OBJECT_FLAG_KEY, {});
+
       return (
         <>
           <div data-type={booleanType} data-variant={boolVariant} data-reason={boolReason}>{`${booleanVal}`}</div>
@@ -132,7 +116,7 @@ describe('evaluation', () => {
       );
     }
 
-    it('should evaluate flag', () => {
+    it('should evaluate flags', () => {
       render(
         <OpenFeatureProvider domain={EVALUATION}>
           <TestComponent></TestComponent>
@@ -166,7 +150,7 @@ describe('evaluation', () => {
     });
   });
 
-  describe('basic evaluation API', () => {
+  describe('useFlagValue hooks', () => {
     function TestComponent() {
       const booleanVal = useBooleanFlagValue(BOOL_FLAG_KEY, false);
       const stringVal = useStringFlagValue(STRING_FLAG_KEY, 'default');
@@ -182,7 +166,7 @@ describe('evaluation', () => {
       );
     }
 
-    it('should evaluate flag', () => {
+    it('should evaluate flags', () => {
       render(
         <OpenFeatureProvider domain={EVALUATION}>
           <TestComponent></TestComponent>
@@ -192,7 +176,7 @@ describe('evaluation', () => {
     });
   });
 
-  describe('detailed evaluation API', () => {
+  describe('useFlagDetails hooks', () => {
     function TestComponent() {
       const booleanValDetails = useBooleanFlagDetails(BOOL_FLAG_KEY, false);
       const stringValDetails = useStringFlagDetails(STRING_FLAG_KEY, 'default');
@@ -218,7 +202,7 @@ describe('evaluation', () => {
       );
     }
 
-    it('should evaluate flag', () => {
+    it('should evaluate flags', () => {
       render(
         <OpenFeatureProvider domain={EVALUATION}>
           <TestComponent></TestComponent>
@@ -255,7 +239,7 @@ describe('re-rending and suspense', () => {
    * multiples of it are used in assertions as well
    */
   const DELAY = 100;
-  
+
   const SUSPENSE_ON = 'suspense';
   const SUSPENSE_OFF = 'suspense';
   const SUSPENSE_FLAG_KEY = 'delayed-flag';
@@ -281,13 +265,12 @@ describe('re-rending and suspense', () => {
               return 'both';
             }
             return 'greeting';
-          }
+          },
         },
       },
       DELAY,
     ); // delay init by 100ms
-  }; 
-  
+  };
 
   function TestComponent() {
     const { value } = useFlag(SUSPENSE_FLAG_KEY, DEFAULT);
@@ -298,87 +281,93 @@ describe('re-rending and suspense', () => {
     );
   }
 
-  describe('suspendUntilReady=true (default)', () => {
-    it('should suspend until ready and then render', async () => {
-      OpenFeature.setProvider(SUSPENSE_ON, suspendingProvider());
+  describe('evaluation', () => {
+    describe('suspendUntilReady=true (default)', () => {
+      it('should suspend until ready and then render', async () => {
+        OpenFeature.setProvider(SUSPENSE_ON, suspendingProvider());
 
-      render(
-        <OpenFeatureProvider domain={SUSPENSE_ON}>
-          <React.Suspense fallback={<div>{FALLBACK}</div>}>
-            <TestComponent></TestComponent>
-          </React.Suspense>
-        </OpenFeatureProvider>,
-      );
+        render(
+          <OpenFeatureProvider domain={SUSPENSE_ON}>
+            <React.Suspense fallback={<div>{FALLBACK}</div>}>
+              <TestComponent></TestComponent>
+            </React.Suspense>
+          </OpenFeatureProvider>,
+        );
 
-      // should see fallback initially
-      expect(screen.queryByText(STATIC_FLAG_VALUE)).toBeNull();
-      expect(screen.queryByText(FALLBACK)).toBeInTheDocument();
-      // eventually we should the value
-      await waitFor(() => expect(screen.queryByText(STATIC_FLAG_VALUE)).toBeInTheDocument(), { timeout: DELAY * 2 });
-    });
-  });
-
-  describe('suspendWhileReconciling=true (default)', () => {
-    it('should suspend until reconciled and then render', async () => {
-      await OpenFeature.setContext(SUSPENSE_OFF, {});
-      OpenFeature.setProvider(SUSPENSE_ON, suspendingProvider());
-
-      render(
-        // disable suspendUntilReady, we are only testing reconcile suspense.
-        <OpenFeatureProvider domain={SUSPENSE_ON} suspendUntilReady={false}>
-          <React.Suspense fallback={<div>{FALLBACK}</div>}>
-            <TestComponent></TestComponent>
-          </React.Suspense>
-        </OpenFeatureProvider>,
-      );
-      
-      // initially should be default, because suspendUntilReady={false}
-      expect(screen.queryByText(DEFAULT)).toBeInTheDocument();
-
-      // update the context without awaiting
-      act(() => {
-        OpenFeature.setContext(SUSPENSE_ON, { user: TARGETED_USER });
+        // should see fallback initially
+        expect(screen.queryByText(STATIC_FLAG_VALUE)).toBeNull();
+        expect(screen.queryByText(FALLBACK)).toBeInTheDocument();
+        // eventually we should see the value
+        await waitFor(() => expect(screen.queryByText(STATIC_FLAG_VALUE)).toBeInTheDocument(), { timeout: DELAY * 2 });
       });
-
-      // expect to see fallback while we are reconciling
-      await waitFor(() => expect(screen.queryByText(FALLBACK)).toBeInTheDocument(), { timeout: DELAY / 2 });
-
-      // make sure we updated after reconciling
-      await waitFor(() => expect(screen.queryByText(TARGETED_FLAG_VALUE)).toBeInTheDocument(), { timeout: DELAY * 2 });
     });
-  });
 
-  describe('suspend=false', () => {
-    it('should not suspend until reconciled and then render', async () => {
-      await OpenFeature.setContext(SUSPENSE_OFF, {});
-      OpenFeature.setProvider(SUSPENSE_OFF, suspendingProvider());
+    describe('suspendWhileReconciling=true (default)', () => {
+      it('should suspend until reconciled and then render', async () => {
+        await OpenFeature.setContext(SUSPENSE_OFF, {});
+        OpenFeature.setProvider(SUSPENSE_ON, suspendingProvider());
 
-      render(
-        // disable suspendUntilReady, we are only testing reconcile suspense.
-        <OpenFeatureProvider domain={SUSPENSE_OFF} suspend={false}>
-          <React.Suspense fallback={<div>{FALLBACK}</div>}>
-            <TestComponent></TestComponent>
-          </React.Suspense>
-        </OpenFeatureProvider>,
-      );
-      
-      // assert no suspense
-      expect(screen.queryByText(DEFAULT)).toBeInTheDocument();
-      expect(screen.queryByText(FALLBACK)).toBeNull();
+        render(
+          // disable suspendUntilReady, we are only testing reconcile suspense.
+          <OpenFeatureProvider domain={SUSPENSE_ON} suspendUntilReady={false}>
+            <React.Suspense fallback={<div>{FALLBACK}</div>}>
+              <TestComponent></TestComponent>
+            </React.Suspense>
+          </OpenFeatureProvider>,
+        );
 
-      // expect to see static value after we are ready
-      await waitFor(() => expect(screen.queryByText(STATIC_FLAG_VALUE)).toBeInTheDocument(), { timeout: DELAY * 2 });
+        // initially should be default, because suspendUntilReady={false}
+        expect(screen.queryByText(DEFAULT)).toBeInTheDocument();
 
-      // update the context without awaiting
-      act(() => {
-        OpenFeature.setContext(SUSPENSE_OFF, { user: TARGETED_USER });
+        // update the context without awaiting
+        act(() => {
+          OpenFeature.setContext(SUSPENSE_ON, { user: TARGETED_USER });
+        });
+
+        // expect to see fallback while we are reconciling
+        await waitFor(() => expect(screen.queryByText(FALLBACK)).toBeInTheDocument(), { timeout: DELAY / 2 });
+
+        // make sure we updated after reconciling
+        await waitFor(() => expect(screen.queryByText(TARGETED_FLAG_VALUE)).toBeInTheDocument(), {
+          timeout: DELAY * 2,
+        });
       });
+    });
 
-      // expect to see static value until we reconcile
-      await waitFor(() => expect(screen.queryByText(STATIC_FLAG_VALUE)).toBeInTheDocument(), { timeout: DELAY / 2 });
+    describe('suspend=false', () => {
+      it('should not suspend until reconciled and then render', async () => {
+        await OpenFeature.setContext(SUSPENSE_OFF, {});
+        OpenFeature.setProvider(SUSPENSE_OFF, suspendingProvider());
 
-      // make sure we updated after reconciling
-      await waitFor(() => expect(screen.queryByText(TARGETED_FLAG_VALUE)).toBeInTheDocument(), { timeout: DELAY * 2 });
+        render(
+          // disable suspendUntilReady, we are only testing reconcile suspense.
+          <OpenFeatureProvider domain={SUSPENSE_OFF} suspend={false}>
+            <React.Suspense fallback={<div>{FALLBACK}</div>}>
+              <TestComponent></TestComponent>
+            </React.Suspense>
+          </OpenFeatureProvider>,
+        );
+
+        // assert no suspense
+        expect(screen.queryByText(DEFAULT)).toBeInTheDocument();
+        expect(screen.queryByText(FALLBACK)).toBeNull();
+
+        // expect to see static value after we are ready
+        await waitFor(() => expect(screen.queryByText(STATIC_FLAG_VALUE)).toBeInTheDocument(), { timeout: DELAY * 2 });
+
+        // update the context without awaiting
+        act(() => {
+          OpenFeature.setContext(SUSPENSE_OFF, { user: TARGETED_USER });
+        });
+
+        // expect to see static value until we reconcile
+        await waitFor(() => expect(screen.queryByText(STATIC_FLAG_VALUE)).toBeInTheDocument(), { timeout: DELAY / 2 });
+
+        // make sure we updated after reconciling
+        await waitFor(() => expect(screen.queryByText(TARGETED_FLAG_VALUE)).toBeInTheDocument(), {
+          timeout: DELAY * 2,
+        });
+      });
     });
   });
 });
