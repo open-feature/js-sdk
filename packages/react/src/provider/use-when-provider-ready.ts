@@ -18,12 +18,24 @@ export function useWhenProviderReady(options?: Options): boolean {
   const [, updateState] = useState<object | undefined>();
   const client = useOpenFeatureClient();
   // highest priority > evaluation hook options > provider options > default options > lowest priority
-  const defaultedOptions = { ...DEFAULT_OPTIONS, ...useProviderOptions(), ...normalizeOptions(options)};
+  const defaultedOptions = { ...DEFAULT_OPTIONS, ...useProviderOptions(), ...normalizeOptions(options) };
+  const updateStateRef = () => {
+    updateState({});
+  };
 
   useEffect(() => {
-    if (defaultedOptions.suspendUntilReady && client.providerStatus === ProviderStatus.NOT_READY) {
-      suspend(client, updateState, ProviderEvents.Ready);
+    if (client.providerStatus === ProviderStatus.NOT_READY) {
+      // re-render when provider is ready
+      client.addHandler(ProviderEvents.Ready, updateStateRef);
+      if (defaultedOptions.suspendUntilReady) {
+        // suspend and update when the provider is ready
+        suspend(client, updateState, ProviderEvents.Ready);
+      }
     }
+    return () => {
+      // cleanup the handler
+      client.removeHandler(ProviderEvents.Ready, updateStateRef);
+    };
   }, []);
 
   return client.providerStatus === ProviderStatus.READY;
