@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2-experimental](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.3.1-experimental...react-sdk-v0.3.2-experimental) (2024-04-11)
+
+
+### 🐛 Bug Fixes
+
+* re-render w/ useWhenProviderReady, add tests ([#901](https://github.com/open-feature/js-sdk/issues/901)) ([0f2094e](https://github.com/open-feature/js-sdk/commit/0f2094e2360ffed58a6103c00e5ba0ade6ac50eb))
+
 ## [0.3.1-experimental](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.3.0-experimental...react-sdk-v0.3.1-experimental) (2024-04-09)
 
 
