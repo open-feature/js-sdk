@@ -83,10 +83,11 @@ yarn add @openfeature/react-sdk @openfeature/web-sdk @openfeature/core
 
 #### Required peer dependencies
 
-The following list contains the peer dependencies of `@openfeature/react-sdk` with its expected and compatible versions:
+The following list contains the peer dependencies of `@openfeature/react-sdk`.
+See the [package.json](./package.json) for the required versions.
 
-* `@openfeature/web-sdk`: >=1.0.0
-* `react`: >=16.8.0
+* `@openfeature/web-sdk`
+* `react`
 
 ### Usage
 
