@@ -295,6 +295,12 @@ To scope an OpenFeatureProvider to a particular provider/context set the `domain
 </OpenFeatureProvider>
 ```
 
+> I can import things form the `@openfeature/react-sdk`, `@openfeature/web-sdk`, and `@openfeature/core`; which should I use?
+
+The `@openfeature/react-sdk` re-exports everything from its peers (`@openfeature/web-sdk` and `@openfeature/core`), and adds the React-specific features.
+You can import everything from the `@openfeature/react-sdk` directly.
+Avoid importing anything from `@openfeature/web-sdk` or `@openfeature/core`.
+
 ## Resources
 
  - [Example repo](https://github.com/open-feature/react-test-app)
