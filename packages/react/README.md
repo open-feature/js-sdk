@@ -34,8 +34,6 @@
 
 <!-- x-hide-in-docs-end -->
 
-🧪 This SDK is experimental.
-
 ## Overview
 
 The OpenFeature React SDK adds React-specific functionality to the [OpenFeature Web SDK](https://openfeature.dev/docs/reference/technologies/client/web).
