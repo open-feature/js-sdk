@@ -12,8 +12,8 @@
 <!-- x-hide-in-docs-end -->
 <!-- The 'github-badges' class is used in the docs -->
 <p align="center" class="github-badges">
-  <a href="https://github.com/open-feature/spec/releases/tag/v0.7.0">
-    <img alt="Specification" src="https://img.shields.io/static/v1?label=specification&message=v0.7.0&color=yellow&style=for-the-badge" />
+  <a href="https://github.com/open-feature/spec/releases/tag/v0.8.0">
+    <img alt="Specification" src="https://img.shields.io/static/v1?label=specification&message=v0.8.0&color=yellow&style=for-the-badge" />
   </a>
   <!-- x-release-please-start-version -->
   <a href="https://github.com/open-feature/js-sdk/releases/tag/react-sdk-v0.3.2-experimental">
@@ -33,8 +33,6 @@
 [OpenFeature](https://openfeature.dev) is an open specification that provides a vendor-agnostic, community-driven API for feature flagging that works with your favorite feature flag management tool or in-house solution.
 
 <!-- x-hide-in-docs-end -->
-
-🧪 This SDK is experimental.
 
 ## Overview
 
@@ -83,10 +81,11 @@ yarn add @openfeature/react-sdk @openfeature/web-sdk @openfeature/core
 
 #### Required peer dependencies
 
-The following list contains the peer dependencies of `@openfeature/react-sdk` with its expected and compatible versions:
+The following list contains the peer dependencies of `@openfeature/react-sdk`.
+See the [package.json](./package.json) for the required versions.
 
-* `@openfeature/web-sdk`: >=1.0.0
-* `react`: >=16.8.0
+* `@openfeature/web-sdk`
+* `react`
 
 ### Usage
 
@@ -293,6 +292,12 @@ To scope an OpenFeatureProvider to a particular provider/context set the `domain
   <Page></Page>
 </OpenFeatureProvider>
 ```
+
+> I can import things form the `@openfeature/react-sdk`, `@openfeature/web-sdk`, and `@openfeature/core`; which should I use?
+
+The `@openfeature/react-sdk` re-exports everything from its peers (`@openfeature/web-sdk` and `@openfeature/core`), and adds the React-specific features.
+You can import everything from the `@openfeature/react-sdk` directly.
+Avoid importing anything from `@openfeature/web-sdk` or `@openfeature/core`.
 
 ## Resources
 
