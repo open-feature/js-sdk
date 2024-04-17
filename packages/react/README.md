@@ -12,8 +12,8 @@
 <!-- x-hide-in-docs-end -->
 <!-- The 'github-badges' class is used in the docs -->
 <p align="center" class="github-badges">
-  <a href="https://github.com/open-feature/spec/releases/tag/v0.7.0">
-    <img alt="Specification" src="https://img.shields.io/static/v1?label=specification&message=v0.7.0&color=yellow&style=for-the-badge" />
+  <a href="https://github.com/open-feature/spec/releases/tag/v0.8.0">
+    <img alt="Specification" src="https://img.shields.io/static/v1?label=specification&message=v0.8.0&color=yellow&style=for-the-badge" />
   </a>
   <!-- x-release-please-start-version -->
   <a href="https://github.com/open-feature/js-sdk/releases/tag/react-sdk-v0.3.2-experimental">
