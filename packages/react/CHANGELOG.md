@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.3.2-experimental...react-sdk-v0.3.2) (2024-04-18)
+
+
+### 🧹 Chore
+
+* remove pre-release, update readme ([#908](https://github.com/open-feature/js-sdk/issues/908)) ([2532379](https://github.com/open-feature/js-sdk/commit/2532379f2ee5c38090a3e2c671edb2a6ca026bd5))
+
 ## [0.3.2-experimental](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.3.1-experimental...react-sdk-v0.3.2-experimental) (2024-04-11)
 
 
