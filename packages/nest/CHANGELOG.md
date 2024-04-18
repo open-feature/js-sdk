@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4-experimental](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.1.3-experimental...nestjs-sdk-v0.1.4-experimental) (2024-04-18)
+
+
+### 🧹 Chore
+
+* bump spec version badge to v0.8.0 ([#910](https://github.com/open-feature/js-sdk/issues/910)) ([a7b2c4b](https://github.com/open-feature/js-sdk/commit/a7b2c4bca09112d49e637735466502adb1438ebe))
+
 ## [0.1.3-experimental](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.1.2-experimental...nestjs-sdk-v0.1.3-experimental) (2024-04-02)
 
 
