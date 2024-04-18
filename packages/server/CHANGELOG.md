@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.5](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.13.4...server-sdk-v1.13.5) (2024-04-18)
+
+
+### 🧹 Chore
+
+* bump spec version badge to v0.8.0 ([#910](https://github.com/open-feature/js-sdk/issues/910)) ([a7b2c4b](https://github.com/open-feature/js-sdk/commit/a7b2c4bca09112d49e637735466502adb1438ebe))
+
 ## [1.13.4](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.13.3...server-sdk-v1.13.4) (2024-04-02)
 
 
