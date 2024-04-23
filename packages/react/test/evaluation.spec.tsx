@@ -535,7 +535,7 @@ describe('evaluation', () => {
     });
 
     describe('useFlagDetails hooks', () => {
-      it('should call associated client with key, default, context, and options', () => {
+      it('should call associated client resolver with key, default, context, and options', () => {
         const { result: boolResult } = renderHook(
           () => useBooleanFlagDetails(BOOL_FLAG_KEY, false, { hooks: [myHook] }),
           { wrapper },
