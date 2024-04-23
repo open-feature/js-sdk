@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.3](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.3.2...react-sdk-v0.3.3) (2024-04-23)
+
+
+### 🐛 Bug Fixes
+
+* invocation hooks not called ([#916](https://github.com/open-feature/js-sdk/issues/916)) ([2f77738](https://github.com/open-feature/js-sdk/commit/2f7773809007733d1ccaeeaa58b1799d6c1731b4))
+
 ## [0.3.2](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.3.2-experimental...react-sdk-v0.3.2) (2024-04-18)
 
 
