@@ -1,6 +1,7 @@
 import {
   Client,
   EvaluationDetails,
+  FlagEvaluationOptions,
   FlagValue,
   JsonValue,
   ProviderEvents,
@@ -13,7 +14,6 @@ import { suspend } from '../common/suspend';
 import { useProviderOptions } from '../provider/context';
 import { useOpenFeatureClient } from '../provider/use-open-feature-client';
 import { FlagQuery } from '../query';
-import { FlagEvaluationOptions } from '@openfeature/web-sdk';
 
 // This type is a bit wild-looking, but I think we need it.
 // We have to use the conditional, because otherwise useFlag('key', false) would return false, not boolean (too constrained).
