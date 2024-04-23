@@ -1,6 +1,7 @@
 import {
   Client,
   EvaluationDetails,
+  FlagEvaluationOptions,
   FlagValue,
   JsonValue,
   ProviderEvents,
@@ -241,7 +242,7 @@ export function useObjectFlagDetails<T extends JsonValue = JsonValue>(
 function attachHandlersAndResolve<T extends FlagValue>(
   flagKey: string,
   defaultValue: T,
-  resolver: (client: Client) => (flagKey: string, defaultValue: T) => EvaluationDetails<T>,
+  resolver: (client: Client) => (flagKey: string, defaultValue: T, options?: FlagEvaluationOptions) => EvaluationDetails<T>,
   options?: ReactFlagEvaluationOptions,
 ): EvaluationDetails<T> {
   // highest priority > evaluation hook options > provider options > default options > lowest priority
@@ -296,7 +297,7 @@ function attachHandlersAndResolve<T extends FlagValue>(
     };
   }, []);
 
-  return resolver(client).call(client, flagKey, defaultValue);
+  return resolver(client).call(client, flagKey, defaultValue, options);
 }
 
 // FlagQuery implementation, do not export
