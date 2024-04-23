@@ -16,8 +16,8 @@
     <img alt="Specification" src="https://img.shields.io/static/v1?label=specification&message=v0.8.0&color=yellow&style=for-the-badge" />
   </a>
   <!-- x-release-please-start-version -->
-  <a href="https://github.com/open-feature/js-sdk/releases/tag/react-sdk-v0.3.2">
-    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v0.3.2&color=blue&style=for-the-badge" />
+  <a href="https://github.com/open-feature/js-sdk/releases/tag/react-sdk-v0.3.3">
+    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v0.3.3&color=blue&style=for-the-badge" />
   </a>
   <!-- x-release-please-end -->
   <br/>
