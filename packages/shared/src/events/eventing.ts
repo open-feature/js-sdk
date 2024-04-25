@@ -6,24 +6,24 @@ export type EventMetadata = {
 };
 
 export type CommonEventDetails = {
-  providerName: string;
+  readonly providerName: string;
   /**
    * @deprecated alias of "domain", use domain instead
    */
-  clientName?: string;
+  readonly clientName?: string;
   readonly domain?: string;
 };
 
 type CommonEventProps = {
-  message?: string;
-  metadata?: EventMetadata;
+  readonly message?: string;
+  readonly metadata?: EventMetadata;
 };
 
 export type ReadyEvent = CommonEventProps;
 export type ErrorEvent = CommonEventProps;
 export type StaleEvent = CommonEventProps;
-export type ReconcilingEvent = CommonEventProps & { errorCode: ErrorCode };
-export type ConfigChangeEvent = CommonEventProps & { flagsChanged?: string[] };
+export type ReconcilingEvent = CommonEventProps & { readonly errorCode: ErrorCode };
+export type ConfigChangeEvent = CommonEventProps & { readonly flagsChanged?: string[] };
 
 type ServerEventMap = {
   [ServerProviderEvents.Ready]: ReadyEvent;
