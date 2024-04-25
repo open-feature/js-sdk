@@ -1,32 +1,4 @@
-import { EvaluationContext, JsonValue, OpenFeature, Provider, ProviderMetadata, ResolutionDetails } from '../src';
-
-const initializeMock = jest.fn();
-
-class MockProvider implements Provider {
-  readonly metadata: ProviderMetadata;
-
-  constructor(options?: { name?: string }) {
-    this.metadata = { name: options?.name ?? 'mock-provider' };
-  }
-
-  initialize = initializeMock;
-
-  resolveBooleanEvaluation(): Promise<ResolutionDetails<boolean>> {
-    throw new Error('Method not implemented.');
-  }
-
-  resolveStringEvaluation(): Promise<ResolutionDetails<string>> {
-    throw new Error('Method not implemented.');
-  }
-
-  resolveNumberEvaluation(): Promise<ResolutionDetails<number>> {
-    throw new Error('Method not implemented.');
-  }
-
-  resolveObjectEvaluation<T extends JsonValue>(): Promise<ResolutionDetails<T>> {
-    throw new Error('Method not implemented.');
-  }
-}
+import { EvaluationContext, OpenFeature } from '../src';
 
 describe('Evaluation Context', () => {
   afterEach(async () => {
@@ -45,32 +17,6 @@ describe('Evaluation Context', () => {
       const context: EvaluationContext = { property1: false };
       OpenFeature.setContext(context);
       expect(OpenFeature.getContext()).toEqual(context);
-    });
-
-    describe('Set context during provider registration', () => {
-      it('should set the context for the default provider', () => {
-        const context: EvaluationContext = { property1: false };
-        const provider = new MockProvider();
-        OpenFeature.setProvider(provider, context);
-        expect(OpenFeature.getContext()).toEqual(context);
-      });
-
-      it('should set the context for the default provider prior to initialization', async () => {
-        const context: EvaluationContext = { property1: false };
-        const provider = new MockProvider();
-        await OpenFeature.setProviderAndWait(provider, context);
-        expect(initializeMock).toHaveBeenCalledWith(context);
-        expect(OpenFeature.getContext()).toEqual(context);
-      });
-
-      it('should set the context for a named provider prior to initialization', async () => {
-        const context: EvaluationContext = { property1: false };
-        const clientName = 'test';
-        const provider = new MockProvider({ name: clientName });
-        await OpenFeature.setProviderAndWait(clientName, provider, context);
-        expect(initializeMock).toHaveBeenCalledWith(context);
-        expect(OpenFeature.getContext()).toEqual(context);
-      });
     });
   });
 
