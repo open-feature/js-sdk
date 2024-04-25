@@ -175,7 +175,7 @@ export default {
       displayName: 'react',
       testEnvironment: 'jsdom',
       preset: 'ts-jest',
-      testMatch: ['<rootDir>/packages/react/src/common/options.ts', '<rootDir>/packages/react/test/**/*.spec.{ts,tsx}'],
+      testMatch: ['<rootDir>/packages/react/test/**/*.spec.{ts,tsx}'],
       moduleNameMapper: {
         '@openfeature/core': '<rootDir>/packages/shared/src',
         '@openfeature/web-sdk': '<rootDir>/packages/client/src',

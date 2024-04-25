@@ -27,7 +27,7 @@ describe('normalizeOptions', () => {
     });
   });
 
-  // we fallback the more specific suspense props (`ssuspendUntilReady` and `suspendWhileReconciling`) to `suspend`
+  // we fallback the more specific suspense props (`suspendUntilReady` and `suspendWhileReconciling`) to `suspend`
   describe('suspend fallback', () => {
     it('should fallback to true suspend value', () => {
       const normalized = normalizeOptions({
