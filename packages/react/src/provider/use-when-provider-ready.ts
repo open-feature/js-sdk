@@ -1,9 +1,9 @@
-import { ProviderEvents, ProviderStatus } from '@openfeature/web-sdk';
-import { useEffect, useState } from 'react';
+import { ProviderStatus } from '@openfeature/web-sdk';
 import { DEFAULT_OPTIONS, ReactFlagEvaluationOptions, normalizeOptions } from '../common/options';
-import { suspend } from '../common/suspend';
 import { useProviderOptions } from './context';
 import { useOpenFeatureClient } from './use-open-feature-client';
+import { useOpenFeatureClientStatus } from './use-open-feature-client-status';
+import { suspendUntilReady } from '../common/suspend';
 
 type Options = Pick<ReactFlagEvaluationOptions, 'suspendUntilReady'>;
 
@@ -15,28 +15,15 @@ type Options = Pick<ReactFlagEvaluationOptions, 'suspendUntilReady'>;
  * @returns {boolean} boolean indicating if provider is {@link ProviderStatus.READY}, useful if suspense is disabled and you want to handle loaders on your own
  */
 export function useWhenProviderReady(options?: Options): boolean {
-  const [, updateState] = useState<object | undefined>();
   const client = useOpenFeatureClient();
+  const status = useOpenFeatureClientStatus();
   // highest priority > evaluation hook options > provider options > default options > lowest priority
   const defaultedOptions = { ...DEFAULT_OPTIONS, ...useProviderOptions(), ...normalizeOptions(options) };
-  const updateStateRef = () => {
-    updateState({});
-  };
 
-  useEffect(() => {
-    if (client.providerStatus === ProviderStatus.NOT_READY) {
-      // re-render when provider is ready
-      client.addHandler(ProviderEvents.Ready, updateStateRef);
-      if (defaultedOptions.suspendUntilReady) {
-        // suspend and update when the provider is ready
-        suspend(client, updateState, ProviderEvents.Ready);
-      }
-    }
-    return () => {
-      // cleanup the handler
-      client.removeHandler(ProviderEvents.Ready, updateStateRef);
-    };
-  }, []);
+  // suspense
+  if (defaultedOptions.suspendUntilReady && status === ProviderStatus.NOT_READY) {
+    throw suspendUntilReady(client);
+  }
 
-  return client.providerStatus === ProviderStatus.READY;
+  return status === ProviderStatus.READY;
 }
