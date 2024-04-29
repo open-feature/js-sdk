@@ -240,13 +240,13 @@ For more details, please refer to the [providers](#providers) section.
 #### Manage evaluation context for domains
 
 By default, domain-scoped clients use the global context.
-This can be overridden by explicitly setting context when registering the provider or by references the domain when updating context.
+This can be overridden by explicitly setting context when registering the provider or by references the domain when updating context:
 
 ```ts
-OpenFeature.setProvider("my-domain", new NewCachedProvider(), { isCache: true });
+OpenFeature.setProvider("my-domain", new NewCachedProvider(), { targetingKey: localStorage.getItem("targetingKey") });
 ```
 
-Change context after the provider has been registered by using `setContext` with a name.
+To change context after the provider has been registered, use `setContext` with a name:
 
 ```ts
 await OpenFeature.setContext("my-domain", { targetingKey: localStorage.getItem("targetingKey") })
