@@ -3,7 +3,7 @@ import { Client, ProviderEvents } from '@openfeature/web-sdk';
 /**
  * Suspends until the client is ready to evaluate feature flags.
  * DO NOT EXPORT PUBLICLY
- * @param client
+ * @param {Client} client OpenFeature client
  */
 export function suspendUntilReady(client: Client): Promise<void> {
   let resolve: (value: unknown) => void;

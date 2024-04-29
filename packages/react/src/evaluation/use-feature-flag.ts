@@ -10,7 +10,7 @@ import {
 } from '@openfeature/web-sdk';
 import { useEffect, useState } from 'react';
 import { DEFAULT_OPTIONS, ReactFlagEvaluationOptions, normalizeOptions } from '../common/options';
-import { suspendUntilReady } from '../common/suspend';
+import { suspendUntilReady } from '../common/suspense';
 import { useProviderOptions } from '../provider/context';
 import { useOpenFeatureClient } from '../provider/use-open-feature-client';
 import { useOpenFeatureClientStatus } from '../provider/use-open-feature-client-status';
@@ -247,17 +247,17 @@ function attachHandlersAndResolve<T extends FlagValue>(
   options?: ReactFlagEvaluationOptions,
 ): EvaluationDetails<T> {
   // highest priority > evaluation hook options > provider options > default options > lowest priority
-  const defaultedOptions = { ...DEFAULT_OPTIONS, ...useProviderOptions(), ...normalizeOptions(options)};
+  const defaultedOptions = { ...DEFAULT_OPTIONS, ...useProviderOptions(), ...normalizeOptions(options) };
   const client = useOpenFeatureClient();
   const status = useOpenFeatureClientStatus();
 
   // suspense
   if (defaultedOptions.suspendUntilReady && status === ProviderStatus.NOT_READY) {
-    throw suspendUntilReady(client);
+    suspendUntilReady(client);
   }
 
   if (defaultedOptions.suspendWhileReconciling && status === ProviderStatus.RECONCILING) {
-    throw suspendUntilReady(client);
+    suspendUntilReady(client);
   }
 
   const [evalutationDetails, setEvaluationDetails] = useState<EvaluationDetails<T>>(

@@ -3,7 +3,7 @@ import { DEFAULT_OPTIONS, ReactFlagEvaluationOptions, normalizeOptions } from '.
 import { useProviderOptions } from './context';
 import { useOpenFeatureClient } from './use-open-feature-client';
 import { useOpenFeatureClientStatus } from './use-open-feature-client-status';
-import { suspendUntilReady } from '../common/suspend';
+import { suspendUntilReady } from '../common/suspense';
 
 type Options = Pick<ReactFlagEvaluationOptions, 'suspendUntilReady'>;
 
@@ -22,7 +22,7 @@ export function useWhenProviderReady(options?: Options): boolean {
 
   // suspense
   if (defaultedOptions.suspendUntilReady && status === ProviderStatus.NOT_READY) {
-    throw suspendUntilReady(client);
+    suspendUntilReady(client);
   }
 
   return status === ProviderStatus.READY;
