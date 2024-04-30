@@ -196,11 +196,9 @@ export class OpenFeatureAPI
     // The setProvider method doesn't return a promise so we need to catch and
     // log any errors that occur during provider initialization to avoid having
     // an unhandled promise rejection.
-    if (maybePromise instanceof Promise) {
-      maybePromise.catch((err) => {
-        this._logger.error('Error during provider initialization:', err);
-      });
-    }
+    Promise.resolve(maybePromise).catch((err) => {
+      this._logger.error('Error during provider initialization:', err);
+    });
     return this;
   }
 
