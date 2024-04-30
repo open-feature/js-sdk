@@ -4,6 +4,8 @@ import {
   InMemoryProvider,
   OpenFeature,
   StandardResolutionReasons,
+  EvaluationDetails,
+  ErrorCode,
 } from '@openfeature/web-sdk';
 import '@testing-library/jest-dom'; // see: https://testing-library.com/docs/react-testing-library/setup
 import { act, render, renderHook, screen, waitFor } from '@testing-library/react';
@@ -21,6 +23,7 @@ import {
   useStringFlagValue,
 } from '../src/';
 import { TestingProvider } from './test.utils';
+import { HookFlagQuery } from '../src/evaluation/hook-flag-query';
 
 describe('evaluation', () => {
   const EVALUATION = 'evaluation';
@@ -575,6 +578,77 @@ describe('evaluation', () => {
           OBJECT_DEFAULT_VALUE,
           expect.objectContaining({ hooks: [myHook] }),
         );
+      });
+    });
+
+    describe('HookFlagQuery',  () => {
+      it('should return errors correctly', () => {
+        const errorMessage = 'no flag found with key i-dont-exist';
+        const details: EvaluationDetails<boolean> = {
+          flagKey: 'i-dont-exist',
+          flagMetadata: {},
+          errorCode: ErrorCode.FLAG_NOT_FOUND,
+          errorMessage,
+          value: true,
+        };
+
+        let hookFlagQuery = new HookFlagQuery(details);
+        expect(hookFlagQuery.isError).toEqual(true);
+        expect(hookFlagQuery.errorCode).toEqual(ErrorCode.FLAG_NOT_FOUND);
+        expect(hookFlagQuery.errorMessage).toEqual(errorMessage);
+
+        details.errorCode = undefined;
+        details.reason = StandardResolutionReasons.ERROR;
+        hookFlagQuery = new HookFlagQuery(details);
+        expect(hookFlagQuery.isError).toEqual(true);
+      });
+
+      it('should return flag metadata', () => {
+        const flagMetadata = {
+          'ping': 'pong'
+        };
+        const details: EvaluationDetails<boolean> = {
+          flagKey: 'with-metadata',
+          flagMetadata,
+          value: true,
+        };
+        const hookFlagQuery = new HookFlagQuery(details);
+        expect(hookFlagQuery.flagMetadata).toEqual(flagMetadata);
+      });
+
+      it('should return details', () => {
+        const details: EvaluationDetails<string> = {
+          flagKey: 'flag-key',
+          flagMetadata : {},
+          value: 'string'
+        };
+
+        const hookFlagQuery = new HookFlagQuery(details);
+        expect(hookFlagQuery.details).toEqual(details);
+      });
+
+      it('should return is authorative correctly', () => {
+        const details: EvaluationDetails<number> = {
+          flagKey: 'flag-key',
+          flagMetadata : {},
+          value: 7,
+        };
+
+        let hookFlagQuery = new HookFlagQuery(details);
+        expect(hookFlagQuery.isAuthoritative).toEqual(true);
+
+        details.reason = StandardResolutionReasons.STALE;
+        hookFlagQuery = new HookFlagQuery(details);
+        expect(hookFlagQuery.isAuthoritative).toEqual(false);
+
+        details.reason = StandardResolutionReasons.DISABLED;
+        hookFlagQuery = new HookFlagQuery(details);
+        expect(hookFlagQuery.isAuthoritative).toEqual(false);
+
+        details.errorCode = ErrorCode.FLAG_NOT_FOUND,
+        details.reason = undefined;
+        hookFlagQuery = new HookFlagQuery(details);
+        expect(hookFlagQuery.isAuthoritative).toEqual(false);
       });
     });
   });
