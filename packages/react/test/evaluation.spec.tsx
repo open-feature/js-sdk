@@ -582,25 +582,14 @@ describe('evaluation', () => {
     });
 
     describe('HookFlagQuery',  () => {
-      it('should return errors correctly', () => {
-        const errorMessage = 'no flag found with key i-dont-exist';
-        const details: EvaluationDetails<boolean> = {
-          flagKey: 'i-dont-exist',
-          flagMetadata: {},
-          errorCode: ErrorCode.FLAG_NOT_FOUND,
-          errorMessage,
-          value: true,
+      it('should return details', () => {
+        const details: EvaluationDetails<string> = {
+          flagKey: 'flag-key',
+          flagMetadata : {},
+          value: 'string'
         };
-
-        let hookFlagQuery = new HookFlagQuery(details);
-        expect(hookFlagQuery.isError).toEqual(true);
-        expect(hookFlagQuery.errorCode).toEqual(ErrorCode.FLAG_NOT_FOUND);
-        expect(hookFlagQuery.errorMessage).toEqual(errorMessage);
-
-        details.errorCode = undefined;
-        details.reason = StandardResolutionReasons.ERROR;
-        hookFlagQuery = new HookFlagQuery(details);
-        expect(hookFlagQuery.isError).toEqual(true);
+        const hookFlagQuery = new HookFlagQuery(details);
+        expect(hookFlagQuery.details).toEqual(details);
       });
 
       it('should return flag metadata', () => {
@@ -616,39 +605,56 @@ describe('evaluation', () => {
         expect(hookFlagQuery.flagMetadata).toEqual(flagMetadata);
       });
 
-      it('should return details', () => {
-        const details: EvaluationDetails<string> = {
-          flagKey: 'flag-key',
-          flagMetadata : {},
-          value: 'string'
-        };
-
+      it.each([
+        [{
+          flagKey: 'i-dont-exist',
+          flagMetadata: {},
+          errorMessage: 'no flag found with key i-dont-exist',
+          errorCode: ErrorCode.FLAG_NOT_FOUND,
+          value: true
+        }],
+        [{
+          flagKey: 'i-dont-exist',
+          flagMetadata: {},
+          errorMessage: 'no flag found with key i-dont-exist',
+          errorCode: undefined,
+          reason: StandardResolutionReasons.ERROR,
+          value: true
+        }],
+      ])('should return errors if reason is error and errorCode',(details) => {;
         const hookFlagQuery = new HookFlagQuery(details);
-        expect(hookFlagQuery.details).toEqual(details);
+        expect(hookFlagQuery.isError).toEqual(true);
+        expect(hookFlagQuery.errorCode).toEqual(details.errorCode);
+        expect(hookFlagQuery.errorMessage).toEqual(details.errorMessage);
       });
 
-      it('should return is authorative if Reason != STALE/DISABLED and errorCode unset', () => {
-        const details: EvaluationDetails<number> = {
-          flagKey: 'flag-key',
+      it.each([
+        [{
+          flagKey: 'isAuthorative-true',
           flagMetadata : {},
           value: 7,
-        };
-
-        let hookFlagQuery = new HookFlagQuery(details);
-        expect(hookFlagQuery.isAuthoritative).toEqual(true);
-
-        details.reason = StandardResolutionReasons.STALE;
-        hookFlagQuery = new HookFlagQuery(details);
-        expect(hookFlagQuery.isAuthoritative).toEqual(false);
-
-        details.reason = StandardResolutionReasons.DISABLED;
-        hookFlagQuery = new HookFlagQuery(details);
-        expect(hookFlagQuery.isAuthoritative).toEqual(false);
-
-        details.errorCode = ErrorCode.FLAG_NOT_FOUND,
-        details.reason = undefined;
-        hookFlagQuery = new HookFlagQuery(details);
-        expect(hookFlagQuery.isAuthoritative).toEqual(false);
+        }, true],
+        [{
+          flagKey: 'with-error',
+          flagMetadata : {},
+          value: 7,
+          errorCode: ErrorCode.FLAG_NOT_FOUND
+        }, false],
+        [{
+          flagKey: 'with-reason-stale',
+          flagMetadata : {},
+          value: 7,
+          reason: StandardResolutionReasons.STALE
+        }, false],
+        [{
+          flagKey: 'with-reason-disabled',
+          flagMetadata : {},
+          value: 7,
+          reason: StandardResolutionReasons.DISABLED
+        }, false],
+      ])('should return isAuthorative if Reason != STALE/DISABLED and errorCode unset',(details, expected) => {
+        const hookFlagQuery = new HookFlagQuery(details);
+        expect(hookFlagQuery.isAuthoritative).toEqual(expected);
       });
     });
   });
