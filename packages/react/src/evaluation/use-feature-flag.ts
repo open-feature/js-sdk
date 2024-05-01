@@ -10,9 +10,10 @@ import {
 } from '@openfeature/web-sdk';
 import { useEffect, useState } from 'react';
 import { DEFAULT_OPTIONS, ReactFlagEvaluationOptions, normalizeOptions } from '../common/options';
-import { suspend } from '../common/suspend';
+import { suspendUntilReady } from '../common/suspense';
 import { useProviderOptions } from '../provider/context';
 import { useOpenFeatureClient } from '../provider/use-open-feature-client';
+import { useOpenFeatureClientStatus } from '../provider/use-open-feature-client-status';
 import { FlagQuery } from '../query';
 
 // This type is a bit wild-looking, but I think we need it.
@@ -246,58 +247,56 @@ function attachHandlersAndResolve<T extends FlagValue>(
   options?: ReactFlagEvaluationOptions,
 ): EvaluationDetails<T> {
   // highest priority > evaluation hook options > provider options > default options > lowest priority
-  const defaultedOptions = { ...DEFAULT_OPTIONS, ...useProviderOptions(), ...normalizeOptions(options)};
-  const [, updateState] = useState<object | undefined>();
+  const defaultedOptions = { ...DEFAULT_OPTIONS, ...useProviderOptions(), ...normalizeOptions(options) };
   const client = useOpenFeatureClient();
-  const forceUpdate = () => {
-    updateState({});
-  };
-  const suspendRef = () => {
-    suspend(
-      client,
-      updateState,
-      ProviderEvents.ContextChanged,
-      ProviderEvents.ConfigurationChanged,
-      ProviderEvents.Ready,
-    );
+  const status = useOpenFeatureClientStatus();
+
+  // suspense
+  if (defaultedOptions.suspendUntilReady && status === ProviderStatus.NOT_READY) {
+    suspendUntilReady(client);
+  }
+
+  if (defaultedOptions.suspendWhileReconciling && status === ProviderStatus.RECONCILING) {
+    suspendUntilReady(client);
+  }
+
+  const [evalutationDetails, setEvaluationDetails] = useState<EvaluationDetails<T>>(
+    resolver(client).call(client, flagKey, defaultValue, options),
+  );
+
+  const updateEvaluationDetailsRef = () => {
+    setEvaluationDetails(resolver(client).call(client, flagKey, defaultValue, options));
   };
 
   useEffect(() => {
-    if (client.providerStatus === ProviderStatus.NOT_READY) {
+    if (status === ProviderStatus.NOT_READY) {
       // update when the provider is ready
-      client.addHandler(ProviderEvents.Ready, forceUpdate);
-      if (defaultedOptions.suspendUntilReady) {
-        suspend(client, updateState, ProviderEvents.Ready);
-      }
+      client.addHandler(ProviderEvents.Ready, updateEvaluationDetailsRef);
     }
 
     if (defaultedOptions.updateOnContextChanged) {
       // update when the context changes
-      client.addHandler(ProviderEvents.ContextChanged, forceUpdate);
-      if (defaultedOptions.suspendWhileReconciling) {
-        client.addHandler(ProviderEvents.Reconciling, suspendRef);
-      }
+      client.addHandler(ProviderEvents.ContextChanged, updateEvaluationDetailsRef);
     }
     return () => {
       // cleanup the handlers
-      client.removeHandler(ProviderEvents.Ready, forceUpdate);
-      client.removeHandler(ProviderEvents.ContextChanged, forceUpdate);
-      client.removeHandler(ProviderEvents.Reconciling, suspendRef);
+      client.removeHandler(ProviderEvents.Ready, updateEvaluationDetailsRef);
+      client.removeHandler(ProviderEvents.ContextChanged, updateEvaluationDetailsRef);
     };
   }, []);
 
   useEffect(() => {
     if (defaultedOptions.updateOnConfigurationChanged) {
       // update when the provider configuration changes
-      client.addHandler(ProviderEvents.ConfigurationChanged, forceUpdate);
+      client.addHandler(ProviderEvents.ConfigurationChanged, updateEvaluationDetailsRef);
     }
     return () => {
       // cleanup the handlers
-      client.removeHandler(ProviderEvents.ConfigurationChanged, forceUpdate);
+      client.removeHandler(ProviderEvents.ConfigurationChanged, updateEvaluationDetailsRef);
     };
   }, []);
 
-  return resolver(client).call(client, flagKey, defaultValue, options);
+  return evalutationDetails;
 }
 
 // FlagQuery implementation, do not export
