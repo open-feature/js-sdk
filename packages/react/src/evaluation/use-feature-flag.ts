@@ -6,7 +6,6 @@ import {
   JsonValue,
   ProviderEvents,
   ProviderStatus,
-  StandardResolutionReasons
 } from '@openfeature/web-sdk';
 import { useEffect, useState } from 'react';
 import { DEFAULT_OPTIONS, ReactFlagEvaluationOptions, normalizeOptions } from '../common/options';
@@ -15,6 +14,7 @@ import { useProviderOptions } from '../provider/context';
 import { useOpenFeatureClient } from '../provider/use-open-feature-client';
 import { useOpenFeatureClientStatus } from '../provider/use-open-feature-client-status';
 import { FlagQuery } from '../query';
+import { HookFlagQuery } from './hook-flag-query';
 
 // This type is a bit wild-looking, but I think we need it.
 // We have to use the conditional, because otherwise useFlag('key', false) would return false, not boolean (too constrained).
@@ -297,53 +297,4 @@ function attachHandlersAndResolve<T extends FlagValue>(
   }, []);
 
   return evalutationDetails;
-}
-
-// FlagQuery implementation, do not export
-class HookFlagQuery<T extends FlagValue = FlagValue> implements FlagQuery {
-  constructor(private _details: EvaluationDetails<T>) {}
-
-  get details() {
-    return this._details;
-  }
-
-  get value() {
-    return this._details?.value;
-  }
-
-  get variant() {
-    return this._details.variant;
-  }
-
-  get flagMetadata() {
-    return this._details.flagMetadata;
-  }
-
-  get reason() {
-    return this._details.reason;
-  }
-
-  get isError() {
-    return !!this._details?.errorCode || this._details.reason == StandardResolutionReasons.ERROR;
-  }
-
-  get errorCode() {
-    return this._details?.errorCode;
-  }
-
-  get errorMessage() {
-    return this._details?.errorMessage;
-  }
-
-  get isAuthoritative() {
-    return (
-      !this.isError &&
-      this._details.reason != StandardResolutionReasons.STALE &&
-      this._details.reason != StandardResolutionReasons.DISABLED
-    );
-  }
-
-  get type() {
-    return typeof this._details.value;
-  }
 }

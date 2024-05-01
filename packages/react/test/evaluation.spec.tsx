@@ -4,6 +4,8 @@ import {
   InMemoryProvider,
   OpenFeature,
   StandardResolutionReasons,
+  EvaluationDetails,
+  ErrorCode,
 } from '@openfeature/web-sdk';
 import '@testing-library/jest-dom'; // see: https://testing-library.com/docs/react-testing-library/setup
 import { act, render, renderHook, screen, waitFor } from '@testing-library/react';
@@ -21,6 +23,7 @@ import {
   useStringFlagValue,
 } from '../src/';
 import { TestingProvider } from './test.utils';
+import { HookFlagQuery } from '../src/evaluation/hook-flag-query';
 import { startTransition, useState } from 'react';
 
 describe('evaluation', () => {
@@ -679,6 +682,83 @@ describe('evaluation', () => {
           OBJECT_DEFAULT_VALUE,
           expect.objectContaining({ hooks: [myHook] }),
         );
+      });
+    });
+
+    describe('HookFlagQuery',  () => {
+      it('should return details', () => {
+        const details: EvaluationDetails<string> = {
+          flagKey: 'flag-key',
+          flagMetadata : {},
+          value: 'string'
+        };
+        const hookFlagQuery = new HookFlagQuery(details);
+        expect(hookFlagQuery.details).toEqual(details);
+      });
+
+      it('should return flag metadata', () => {
+        const flagMetadata = {
+          'ping': 'pong'
+        };
+        const details: EvaluationDetails<boolean> = {
+          flagKey: 'with-flagMetadata',
+          flagMetadata,
+          value: true,
+        };
+        const hookFlagQuery = new HookFlagQuery(details);
+        expect(hookFlagQuery.flagMetadata).toEqual(expect.objectContaining(flagMetadata));
+      });
+
+      it.each([
+        [{
+          flagKey: 'i-dont-exist',
+          flagMetadata: {},
+          errorMessage: 'no flag found with key i-dont-exist',
+          errorCode: ErrorCode.FLAG_NOT_FOUND,
+          value: true
+        }],
+        [{
+          flagKey: 'i-dont-exist',
+          flagMetadata: {},
+          errorMessage: 'no flag found with key i-dont-exist',
+          errorCode: undefined,
+          reason: StandardResolutionReasons.ERROR,
+          value: true
+        }],
+      ])('should return errors if reason is error or errorCode is set',(details) => {;
+        const hookFlagQuery = new HookFlagQuery(details);
+        expect(hookFlagQuery.isError).toEqual(true);
+        expect(hookFlagQuery.errorCode).toEqual(details.errorCode);
+        expect(hookFlagQuery.errorMessage).toEqual(details.errorMessage);
+      });
+
+      it.each([
+        [{
+          flagKey: 'isAuthorative-true',
+          flagMetadata : {},
+          value: 7,
+        }, true],
+        [{
+          flagKey: 'with-error',
+          flagMetadata : {},
+          value: 7,
+          errorCode: ErrorCode.FLAG_NOT_FOUND
+        }, false],
+        [{
+          flagKey: 'with-reason-stale',
+          flagMetadata : {},
+          value: 7,
+          reason: StandardResolutionReasons.STALE
+        }, false],
+        [{
+          flagKey: 'with-reason-disabled',
+          flagMetadata : {},
+          value: 7,
+          reason: StandardResolutionReasons.DISABLED
+        }, false],
+      ])('should return isAuthorative if Reason != STALE/DISABLED and errorCode unset',(details, expected) => {
+        const hookFlagQuery = new HookFlagQuery(details);
+        expect(hookFlagQuery.isAuthoritative).toEqual(expected);
       });
     });
   });
