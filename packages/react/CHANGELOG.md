@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.4](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.3.3...react-sdk-v0.3.4) (2024-05-01)
+
+
+### 🐛 Bug Fixes
+
+* delayed suspense causes "flicker" ([#921](https://github.com/open-feature/js-sdk/issues/921)) ([4bce2a0](https://github.com/open-feature/js-sdk/commit/4bce2a0f1a5a716160b8862f1882d24c97688288))
+
 ## [0.3.3](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.3.2...react-sdk-v0.3.3) (2024-04-23)
 
 
