@@ -15,7 +15,6 @@ import { useOpenFeatureClient } from '../provider/use-open-feature-client';
 import { FlagQuery } from '../query';
 import { HookFlagQuery } from './hook-flag-query';
 
-
 // This type is a bit wild-looking, but I think we need it.
 // We have to use the conditional, because otherwise useFlag('key', false) would return false, not boolean (too constrained).
 // We have a duplicate for the hook return below, this one is just used for casting because the name isn't as clear

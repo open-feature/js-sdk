@@ -627,7 +627,7 @@ describe('evaluation', () => {
         expect(hookFlagQuery.details).toEqual(details);
       });
 
-      it('should return is authorative correctly', () => {
+      it('should return is authorative if Reason != STALE/DISABLED and errorCode unset', () => {
         const details: EvaluationDetails<number> = {
           flagKey: 'flag-key',
           flagMetadata : {},
