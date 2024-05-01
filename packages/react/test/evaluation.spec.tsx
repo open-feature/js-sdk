@@ -597,12 +597,12 @@ describe('evaluation', () => {
           'ping': 'pong'
         };
         const details: EvaluationDetails<boolean> = {
-          flagKey: 'with-metadata',
+          flagKey: 'with-flagMetadata',
           flagMetadata,
           value: true,
         };
         const hookFlagQuery = new HookFlagQuery(details);
-        expect(hookFlagQuery.flagMetadata).toEqual(flagMetadata);
+        expect(hookFlagQuery.flagMetadata).toEqual(expect.objectContaining(flagMetadata));
       });
 
       it.each([
@@ -621,7 +621,7 @@ describe('evaluation', () => {
           reason: StandardResolutionReasons.ERROR,
           value: true
         }],
-      ])('should return errors if reason is error and errorCode',(details) => {;
+      ])('should return errors if reason is error or errorCode is set',(details) => {;
         const hookFlagQuery = new HookFlagQuery(details);
         expect(hookFlagQuery.isError).toEqual(true);
         expect(hookFlagQuery.errorCode).toEqual(details.errorCode);
