@@ -1,11 +1,19 @@
-import { OpenFeature, Provider, ResolutionDetails, Client, FlagValueType, EvaluationContext, Hook } from '../src';
+import {
+  OpenFeature,
+  Provider,
+  ResolutionDetails,
+  Client,
+  FlagValueType,
+  EvaluationContext,
+  Hook,
+  StandardResolutionReasons,
+  ErrorCode,
+} from '../src';
 
 const BOOLEAN_VALUE = true;
 
 const BOOLEAN_VARIANT = `${BOOLEAN_VALUE}`;
 const REASON = 'mocked-value';
-const ERROR_REASON = 'error';
-const ERROR_CODE = 'MOCKED_ERROR';
 
 // a mock provider with some jest spies
 const MOCK_PROVIDER: Provider = {
@@ -28,8 +36,8 @@ const MOCK_ERROR_PROVIDER: Provider = {
   },
   resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
     return Promise.reject({
-      reason: ERROR_REASON,
-      errorCode: ERROR_CODE,
+      reason: StandardResolutionReasons.ERROR,
+      errorCode: ErrorCode.GENERAL,
     });
   }),
 } as unknown as Provider;
@@ -357,6 +365,48 @@ describe('Hooks', () => {
           ],
         });
       });
+
+      it('"error" must run if resolution details contains an error code', async () => {
+        (MOCK_ERROR_PROVIDER.resolveBooleanEvaluation as jest.Mock).mockResolvedValueOnce({
+          value: BOOLEAN_VALUE,
+          errorCode: ErrorCode.FLAG_NOT_FOUND,
+        });
+
+        const mockErrorHook = jest.fn();
+
+        const details = await client.getBooleanDetails(FLAG_KEY, false, undefined, {
+          hooks: [{ error: mockErrorHook }],
+        });
+
+        expect(mockErrorHook).toHaveBeenCalled();
+        expect(details).toEqual(
+          expect.objectContaining({
+            errorCode: ErrorCode.FLAG_NOT_FOUND,
+            reason: StandardResolutionReasons.ERROR,
+          }),
+        );
+      });
+
+      it('"error" must run if resolution details contains the reason "ERROR"', async () => {
+        (MOCK_ERROR_PROVIDER.resolveBooleanEvaluation as jest.Mock).mockResolvedValueOnce({
+          value: BOOLEAN_VALUE,
+          reason: StandardResolutionReasons.ERROR,
+        });
+
+        const mockErrorHook = jest.fn();
+
+        const details = await client.getBooleanDetails(FLAG_KEY, false, undefined, {
+          hooks: [{ error: mockErrorHook }],
+        });
+
+        expect(mockErrorHook).toHaveBeenCalled();
+        expect(details).toEqual(
+          expect.objectContaining({
+            errorCode: ErrorCode.GENERAL,
+            reason: StandardResolutionReasons.ERROR,
+          }),
+        );
+      });
     });
   });
 
@@ -636,8 +686,8 @@ describe('Hooks', () => {
         ],
         resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
           return Promise.reject({
-            reason: ERROR_REASON,
-            errorCode: ERROR_CODE,
+            reason: StandardResolutionReasons.ERROR,
+            errorCode: ErrorCode.INVALID_CONTEXT,
           });
         }),
       } as unknown as Provider;
@@ -717,8 +767,8 @@ describe('Hooks', () => {
         ],
         resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
           return Promise.reject({
-            reason: ERROR_REASON,
-            errorCode: ERROR_CODE,
+            reason: StandardResolutionReasons.ERROR,
+            errorCode: ErrorCode.PROVIDER_NOT_READY,
           });
         }),
       } as unknown as Provider;

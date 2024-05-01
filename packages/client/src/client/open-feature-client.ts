@@ -15,7 +15,8 @@ import {
   ResolutionDetails,
   SafeLogger,
   StandardResolutionReasons,
-  statusMatchesEvent
+  instantiateErrorByKey,
+  statusMatchesEvent,
 } from '@openfeature/core';
 import { FlagEvaluationOptions } from '../evaluation';
 import { ProviderEvents } from '../events';
@@ -224,6 +225,16 @@ export class OpenFeatureClient implements Client {
         flagMetadata: Object.freeze(resolution.flagMetadata ?? {}),
         flagKey,
       };
+
+      if (evaluationDetails.errorCode || evaluationDetails.reason === StandardResolutionReasons.ERROR) {
+        const errorCode = evaluationDetails.errorCode || ErrorCode.GENERAL;
+        this.errorHooks(allHooksReversed, hookContext, instantiateErrorByKey(errorCode), options);
+        return {
+          ...evaluationDetails,
+          errorCode,
+          reason: StandardResolutionReasons.ERROR,
+        };
+      }
 
       this.afterHooks(allHooksReversed, hookContext, evaluationDetails, options);
 
