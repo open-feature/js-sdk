@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getOpenFeatureClientToken, OpenFeatureModule, ServerProviderEvents } from '../src';
-import { OpenFeature, OpenFeatureClient } from '@openfeature/server-sdk';
+import { Client, OpenFeature } from '@openfeature/server-sdk';
 import { getOpenFeatureDefaultTestModule } from './fixtures';
 
 describe('OpenFeatureModule', () => {
@@ -31,19 +31,19 @@ describe('OpenFeatureModule', () => {
 
       it('should return the SDKs default provider and not throw', async () => {
         expect(() => {
-          moduleWithoutProvidersRef.get<OpenFeatureClient>(getOpenFeatureClientToken());
+          moduleWithoutProvidersRef.get<Client>(getOpenFeatureClientToken());
         }).not.toThrow();
       });
     });
 
     it('should return the default provider', async () => {
-      const client = moduleRef.get<OpenFeatureClient>(getOpenFeatureClientToken());
+      const client = moduleRef.get<Client>(getOpenFeatureClientToken());
       expect(client).toBeDefined();
       expect(await client.getStringValue('testStringFlag', '')).toEqual('expected-string-value-default');
     });
 
     it('should inject the client with the given scope', async () => {
-      const client = moduleRef.get<OpenFeatureClient>(getOpenFeatureClientToken('domainScopedClient'));
+      const client = moduleRef.get<Client>(getOpenFeatureClientToken('domainScopedClient'));
       expect(client).toBeDefined();
       expect(await client.getStringValue('testStringFlag', '')).toEqual('expected-string-value-scoped');
     });

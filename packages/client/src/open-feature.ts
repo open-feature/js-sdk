@@ -8,10 +8,11 @@ import {
   objectOrUndefined,
   stringOrUndefined,
 } from '@openfeature/core';
-import { Client, OpenFeatureClient } from './client';
+import { Client } from './client';
 import { OpenFeatureEventEmitter, ProviderEvents } from './events';
 import { Hook } from './hooks';
 import { NOOP_PROVIDER, Provider, ProviderStatus } from './provider';
+import { OpenFeatureClient } from './client/open-feature-client';
 
 // use a symbol as a key for the global singleton
 const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/web-sdk/api');
@@ -26,10 +27,17 @@ type DomainRecord = {
 
 const _globalThis = globalThis as OpenFeatureGlobal;
 
-export class OpenFeatureAPI extends OpenFeatureCommonAPI<ClientProviderStatus, Provider, Hook> implements ManageContext<Promise<void>> {
+export class OpenFeatureAPI
+  extends OpenFeatureCommonAPI<ClientProviderStatus, Provider, Hook>
+  implements ManageContext<Promise<void>>
+{
   protected _statusEnumType: typeof ProviderStatus = ProviderStatus;
   protected _apiEmitter: GenericEventEmitter<ProviderEvents> = new OpenFeatureEventEmitter();
-  protected _defaultProvider: ProviderWrapper<Provider, ClientProviderStatus> = new ProviderWrapper(NOOP_PROVIDER, ProviderStatus.NOT_READY, this._statusEnumType);
+  protected _defaultProvider: ProviderWrapper<Provider, ClientProviderStatus> = new ProviderWrapper(
+    NOOP_PROVIDER,
+    ProviderStatus.NOT_READY,
+    this._statusEnumType,
+  );
   protected _domainScopedProviders: Map<string, ProviderWrapper<Provider, ClientProviderStatus>> = new Map();
   protected _createEventEmitter = () => new OpenFeatureEventEmitter();
 
@@ -111,9 +119,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<ClientProviderStatus, P
         ...unboundProviders,
       ];
       await Promise.all(
-        allDomainRecords.map((dm) =>
-          this.runProviderContextChangeHandler(dm.domain, dm.wrapper, oldContext, context),
-        ),
+        allDomainRecords.map((dm) => this.runProviderContextChangeHandler(dm.domain, dm.wrapper, oldContext, context)),
       );
     }
   }
@@ -222,7 +228,7 @@ export class OpenFeatureAPI extends OpenFeatureCommonAPI<ClientProviderStatus, P
   ): Promise<void> {
     // this should always be set according to the typings, but let's be defensive considering JS
     const providerName = wrapper.provider?.metadata?.name || 'unnamed-provider';
-    
+
     try {
       if (typeof wrapper.provider.onContextChange === 'function') {
         wrapper.incrementPendingContextChanges();

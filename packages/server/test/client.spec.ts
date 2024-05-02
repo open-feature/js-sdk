@@ -9,7 +9,6 @@ import {
   JsonObject,
   JsonValue,
   OpenFeature,
-  OpenFeatureClient,
   Provider,
   ProviderFatalError,
   ProviderStatus,
@@ -18,6 +17,7 @@ import {
   TransactionContext,
   TransactionContextPropagator,
 } from '../src';
+import { OpenFeatureClient } from '../src/client/open-feature-client';
 
 const BOOLEAN_VALUE = true;
 const STRING_VALUE = 'val';

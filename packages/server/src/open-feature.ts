@@ -6,7 +6,7 @@ import {
   objectOrUndefined,
   stringOrUndefined,
 } from '@openfeature/core';
-import { Client, OpenFeatureClient } from './client';
+import { Client } from './client';
 import { OpenFeatureEventEmitter } from './events';
 import { Hook } from './hooks';
 import { NOOP_PROVIDER, Provider, ProviderStatus } from './provider';
@@ -17,6 +17,7 @@ import {
   TransactionContextPropagator,
 } from './transaction-context';
 import { ServerProviderStatus } from '@openfeature/core';
+import { OpenFeatureClient } from './client/open-feature-client';
 
 // use a symbol as a key for the global singleton
 const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/js-sdk/api');
@@ -28,11 +29,17 @@ const _globalThis = globalThis as OpenFeatureGlobal;
 
 export class OpenFeatureAPI
   extends OpenFeatureCommonAPI<ServerProviderStatus, Provider, Hook>
-  implements ManageContext<OpenFeatureAPI>, ManageTransactionContextPropagator<OpenFeatureCommonAPI<ServerProviderStatus, Provider>>
+  implements
+    ManageContext<OpenFeatureAPI>,
+    ManageTransactionContextPropagator<OpenFeatureCommonAPI<ServerProviderStatus, Provider>>
 {
   protected _statusEnumType: typeof ProviderStatus = ProviderStatus;
   protected _apiEmitter = new OpenFeatureEventEmitter();
-  protected _defaultProvider: ProviderWrapper<Provider, ServerProviderStatus> = new ProviderWrapper(NOOP_PROVIDER, ProviderStatus.NOT_READY, this._statusEnumType);
+  protected _defaultProvider: ProviderWrapper<Provider, ServerProviderStatus> = new ProviderWrapper(
+    NOOP_PROVIDER,
+    ProviderStatus.NOT_READY,
+    this._statusEnumType,
+  );
   protected _domainScopedProviders: Map<string, ProviderWrapper<Provider, ServerProviderStatus>> = new Map();
   protected _createEventEmitter = () => new OpenFeatureEventEmitter();
 
