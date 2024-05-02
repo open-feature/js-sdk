@@ -41,5 +41,5 @@ export {
   TargetingKeyMissingError,
   TypeMismatchError,
   OpenFeatureError,
-  instantiateErrorByKey,
+  instantiateErrorByErrorCode,
 };
