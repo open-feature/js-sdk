@@ -10,8 +10,8 @@ import { ProviderNotReadyError } from './provider-not-ready-error';
 import { TargetingKeyMissingError } from './targeting-key-missing-error';
 import { TypeMismatchError } from './type-mismatch-error';
 
-const instantiateErrorByKey = (key: ErrorCode, message?: string): OpenFeatureError => {
-  switch (key) {
+const instantiateErrorByErrorCode = (errorCode: ErrorCode, message?: string): OpenFeatureError => {
+  switch (errorCode) {
     case ErrorCode.FLAG_NOT_FOUND:
       return new FlagNotFoundError(message);
     case ErrorCode.PARSE_ERROR:
