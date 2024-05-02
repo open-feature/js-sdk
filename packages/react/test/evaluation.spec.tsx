@@ -4,6 +4,8 @@ import {
   InMemoryProvider,
   OpenFeature,
   StandardResolutionReasons,
+  EvaluationDetails,
+  ErrorCode,
 } from '@openfeature/web-sdk';
 import '@testing-library/jest-dom'; // see: https://testing-library.com/docs/react-testing-library/setup
 import { act, render, renderHook, screen, waitFor } from '@testing-library/react';
@@ -21,6 +23,8 @@ import {
   useStringFlagValue,
 } from '../src/';
 import { TestingProvider } from './test.utils';
+import { HookFlagQuery } from '../src/evaluation/hook-flag-query';
+import { startTransition, useState } from 'react';
 
 describe('evaluation', () => {
   const EVALUATION = 'evaluation';
@@ -40,6 +44,7 @@ describe('evaluation', () => {
   const REASON_ATTR = 'data-reason';
   const REASON_ATTR_VALUE = StandardResolutionReasons.STATIC;
   const TYPE_ATTR = 'data-type';
+  const BUTTON_TEXT = 'button';
 
   const makeProvider = () => {
     return new InMemoryProvider({
@@ -331,17 +336,69 @@ describe('evaluation', () => {
       it('should suspend until ready and then render', async () => {
         OpenFeature.setProvider(SUSPENSE_ON, suspendingProvider());
 
+        let renderedDefaultValue = false;
+
+        function Component() {
+          const { value } = useFlag(SUSPENSE_FLAG_KEY, DEFAULT);
+
+          if (value === DEFAULT) {
+            renderedDefaultValue = true;
+          }
+
+          return <div>{value}</div>;
+        }
+
         render(
           <OpenFeatureProvider domain={SUSPENSE_ON}>
             <React.Suspense fallback={<div>{FALLBACK}</div>}>
-              <TestComponent></TestComponent>
+              <Component></Component>
             </React.Suspense>
           </OpenFeatureProvider>,
         );
 
         // should see fallback initially
+        expect(renderedDefaultValue).toBe(false);
         expect(screen.queryByText(STATIC_FLAG_VALUE_A)).toBeNull();
         expect(screen.queryByText(FALLBACK)).toBeInTheDocument();
+        // eventually we should see the value
+        await waitFor(() => expect(screen.queryByText(STATIC_FLAG_VALUE_A)).toBeInTheDocument(), {
+          timeout: DELAY * 2,
+        });
+      });
+
+      it('should show the previous UI during a transition', async () => {
+        OpenFeature.setProvider(SUSPENSE_ON, suspendingProvider());
+
+        function ParentComponent() {
+          const [show, setShow] = useState(false);
+
+          if (show) {
+            return <TestComponent></TestComponent>;
+          } else {
+            return <button onClick={() => startTransition(() => setShow(true))}>{BUTTON_TEXT}</button>;
+          }
+        }
+
+        render(
+          <OpenFeatureProvider domain={SUSPENSE_ON}>
+            <React.Suspense fallback={<div>{FALLBACK}</div>}>
+              <ParentComponent></ParentComponent>
+            </React.Suspense>
+          </OpenFeatureProvider>,
+        );
+
+        // should see button initially
+        const button = screen.getByText(BUTTON_TEXT);
+        expect(button).toBeInTheDocument();
+
+        // click the button
+        act(() => {
+          button.click();
+        });
+
+        // because this is a transition update, we still see the button
+        expect(button).toBeInTheDocument();
+
         // eventually we should see the value
         await waitFor(() => expect(screen.queryByText(STATIC_FLAG_VALUE_A)).toBeInTheDocument(), {
           timeout: DELAY * 2,
@@ -354,11 +411,23 @@ describe('evaluation', () => {
         await OpenFeature.setContext(SUSPENSE_OFF, {});
         OpenFeature.setProvider(SUSPENSE_ON, suspendingProvider());
 
+        let renderedDefaultValue;
+
+        function Component() {
+          const { value } = useFlag(SUSPENSE_FLAG_KEY, DEFAULT);
+
+          if (value === DEFAULT) {
+            renderedDefaultValue = true;
+          }
+
+          return <div>{value}</div>;
+        }
+
         render(
           // disable suspendUntilReady, we are only testing reconcile suspense.
           <OpenFeatureProvider domain={SUSPENSE_ON} suspendUntilReady={false}>
             <React.Suspense fallback={<div>{FALLBACK}</div>}>
-              <TestComponent></TestComponent>
+              <Component></Component>
             </React.Suspense>
           </OpenFeatureProvider>,
         );
@@ -366,10 +435,16 @@ describe('evaluation', () => {
         // initially should be default, because suspendUntilReady={false}
         expect(screen.queryByText(DEFAULT)).toBeInTheDocument();
 
+        // after the initial render, we should never see the default value anymore, because suspendWhileReconciling={true}
+        renderedDefaultValue = false;
+
         // update the context without awaiting
         act(() => {
           OpenFeature.setContext(SUSPENSE_ON, { user: TARGETED_USER });
         });
+
+        // the default value should not be rendered again, since we are suspending while reconciling
+        expect(renderedDefaultValue).toBe(false);
 
         // expect to see fallback while we are reconciling
         await waitFor(() => expect(screen.queryByText(FALLBACK)).toBeInTheDocument(), { timeout: DELAY / 2 });
@@ -378,6 +453,38 @@ describe('evaluation', () => {
         await waitFor(() => expect(screen.queryByText(TARGETED_FLAG_VALUE)).toBeInTheDocument(), {
           timeout: DELAY * 2,
         });
+      });
+    });
+
+    it('should show the previous UI while reconciling during a transition', async () => {
+      await OpenFeature.setContext(SUSPENSE_OFF, {});
+      OpenFeature.setProvider(SUSPENSE_ON, suspendingProvider());
+
+      render(
+        // disable suspendUntilReady, we are only testing reconcile suspense.
+        <OpenFeatureProvider domain={SUSPENSE_ON} suspendUntilReady={false}>
+          <React.Suspense fallback={<div>{FALLBACK}</div>}>
+            <TestComponent></TestComponent>
+          </React.Suspense>
+        </OpenFeatureProvider>,
+      );
+
+      // initially should be default, because suspendUntilReady={false}
+      expect(screen.queryByText(DEFAULT)).toBeInTheDocument();
+
+      // update the context without awaiting
+      act(() => {
+        startTransition(() => {
+          OpenFeature.setContext(SUSPENSE_ON, { user: TARGETED_USER });
+        });
+      });
+
+      // we should still see the same UI, because this is a transition update
+      expect(screen.queryByText(DEFAULT)).toBeInTheDocument();
+
+      // make sure we updated after reconciling
+      await waitFor(() => expect(screen.queryByText(TARGETED_FLAG_VALUE)).toBeInTheDocument(), {
+        timeout: DELAY * 2,
       });
     });
 
@@ -575,6 +682,83 @@ describe('evaluation', () => {
           OBJECT_DEFAULT_VALUE,
           expect.objectContaining({ hooks: [myHook] }),
         );
+      });
+    });
+
+    describe('HookFlagQuery',  () => {
+      it('should return details', () => {
+        const details: EvaluationDetails<string> = {
+          flagKey: 'flag-key',
+          flagMetadata : {},
+          value: 'string'
+        };
+        const hookFlagQuery = new HookFlagQuery(details);
+        expect(hookFlagQuery.details).toEqual(details);
+      });
+
+      it('should return flag metadata', () => {
+        const flagMetadata = {
+          'ping': 'pong'
+        };
+        const details: EvaluationDetails<boolean> = {
+          flagKey: 'with-flagMetadata',
+          flagMetadata,
+          value: true,
+        };
+        const hookFlagQuery = new HookFlagQuery(details);
+        expect(hookFlagQuery.flagMetadata).toEqual(expect.objectContaining(flagMetadata));
+      });
+
+      it.each([
+        [{
+          flagKey: 'i-dont-exist',
+          flagMetadata: {},
+          errorMessage: 'no flag found with key i-dont-exist',
+          errorCode: ErrorCode.FLAG_NOT_FOUND,
+          value: true
+        }],
+        [{
+          flagKey: 'i-dont-exist',
+          flagMetadata: {},
+          errorMessage: 'no flag found with key i-dont-exist',
+          errorCode: undefined,
+          reason: StandardResolutionReasons.ERROR,
+          value: true
+        }],
+      ])('should return errors if reason is error or errorCode is set',(details) => {;
+        const hookFlagQuery = new HookFlagQuery(details);
+        expect(hookFlagQuery.isError).toEqual(true);
+        expect(hookFlagQuery.errorCode).toEqual(details.errorCode);
+        expect(hookFlagQuery.errorMessage).toEqual(details.errorMessage);
+      });
+
+      it.each([
+        [{
+          flagKey: 'isAuthorative-true',
+          flagMetadata : {},
+          value: 7,
+        }, true],
+        [{
+          flagKey: 'with-error',
+          flagMetadata : {},
+          value: 7,
+          errorCode: ErrorCode.FLAG_NOT_FOUND
+        }, false],
+        [{
+          flagKey: 'with-reason-stale',
+          flagMetadata : {},
+          value: 7,
+          reason: StandardResolutionReasons.STALE
+        }, false],
+        [{
+          flagKey: 'with-reason-disabled',
+          flagMetadata : {},
+          value: 7,
+          reason: StandardResolutionReasons.DISABLED
+        }, false],
+      ])('should return isAuthorative if Reason != STALE/DISABLED and errorCode unset',(details, expected) => {
+        const hookFlagQuery = new HookFlagQuery(details);
+        expect(hookFlagQuery.isAuthoritative).toEqual(expected);
       });
     });
   });

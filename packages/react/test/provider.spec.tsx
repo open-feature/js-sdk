@@ -73,17 +73,24 @@ describe('provider', () => {
 
   describe('useWhenProviderReady', () => {
     describe('suspendUntilReady=true (default)', () => {
-      function TestComponent() {
-        const isReady = useWhenProviderReady();
-        return (
-          <>
-            <div>{isReady ? '👍' : '👎'}</div>
-          </>
-        );
-      }
-
       it('should suspend until ready and then return provider status', async () => {
         OpenFeature.setProvider(SUSPENSE_ON, suspendingProvider());
+
+        let renderedWhileNotReady = false;
+
+        function TestComponent() {
+          const isReady = useWhenProviderReady();
+
+          if (!isReady) {
+            renderedWhileNotReady = true;
+          }
+
+          return (
+            <>
+              <div>{isReady ? '👍' : '👎'}</div>
+            </>
+          );
+        }
 
         render(
           <OpenFeatureProvider domain={SUSPENSE_ON}>
@@ -94,7 +101,8 @@ describe('provider', () => {
         );
 
         // should see fallback initially
-        expect(screen.queryByText('👎')).not.toBeVisible();
+        expect(renderedWhileNotReady).toBe(false);
+        expect(screen.queryByText('👎')).not.toBeInTheDocument();
         expect(screen.queryByText(FALLBACK)).toBeInTheDocument();
         // eventually we should the value
         await waitFor(() => expect(screen.queryByText('👍')).toBeVisible(), { timeout: DELAY * 2 });
