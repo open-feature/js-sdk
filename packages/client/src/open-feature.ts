@@ -365,14 +365,20 @@ export class OpenFeatureAPI
 
     try {
       if (typeof wrapper.provider.onContextChange === 'function') {
-        wrapper.incrementPendingContextChanges();
-        wrapper.status = this._statusEnumType.RECONCILING;
-        this.getAssociatedEventEmitters(domain).forEach((emitter) => {
-          emitter?.emit(ProviderEvents.Reconciling, { domain, providerName });
-        });
-        this._apiEmitter?.emit(ProviderEvents.Reconciling, { domain, providerName });
-        await wrapper.provider.onContextChange(oldContext, newContext);
-        wrapper.decrementPendingContextChanges();
+        const maybePromise = wrapper.provider.onContextChange(oldContext, newContext);
+
+        // only reconcile if the onContextChange method returns a promise
+        if (typeof maybePromise?.then === 'function') {
+          wrapper.incrementPendingContextChanges();
+          wrapper.status = this._statusEnumType.RECONCILING;
+          this.getAssociatedEventEmitters(domain).forEach((emitter) => {
+            emitter?.emit(ProviderEvents.Reconciling, { domain, providerName });
+          });
+          this._apiEmitter?.emit(ProviderEvents.Reconciling, { domain, providerName });
+
+          await maybePromise;
+          wrapper.decrementPendingContextChanges();
+        }
       }
       // only run the event handlers, and update the state if the onContextChange method succeeded
       wrapper.status = this._statusEnumType.READY;

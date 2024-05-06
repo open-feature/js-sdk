@@ -22,11 +22,12 @@ class MockProvider implements Provider {
   readonly runsOn = 'client';
   private hasInitialize: boolean;
   private hasContextChanged: boolean;
+  private asyncContextChangedHandler: boolean;
   private failOnInit: boolean;
   private failOnContextChange: boolean;
   private asyncDelay?: number;
   private enableEvents: boolean;
-  onContextChange?: () => Promise<void>;
+  onContextChange?: () => Promise<void> | void;
   initialize?: () => Promise<void>;
 
   constructor(options?: {
@@ -35,6 +36,7 @@ class MockProvider implements Provider {
     enableEvents?: boolean;
     failOnInit?: boolean;
     hasContextChanged?: boolean;
+    asyncContextChangedHandler?: boolean;
     failOnContextChange?: boolean;
     name?: string;
   }) {
@@ -45,6 +47,7 @@ class MockProvider implements Provider {
     this.enableEvents = options?.enableEvents ?? true;
     this.failOnInit = options?.failOnInit ?? false;
     this.failOnContextChange = options?.failOnContextChange ?? false;
+    this.asyncContextChangedHandler = options?.asyncContextChangedHandler ?? true;
     if (this.hasContextChanged) {
       this.onContextChange = this.changeHandler;
     }
@@ -80,15 +83,19 @@ class MockProvider implements Provider {
   }
 
   private changeHandler() {
-    return new Promise<void>((resolve, reject) =>
-      setTimeout(() => {
-        if (this.failOnContextChange) {
-          reject(new Error(ERR_MESSAGE));
-        } else {
-          resolve();
-        }
-      }, this.asyncDelay),
-    );
+    if (this.asyncContextChangedHandler) {
+      return new Promise<void>((resolve, reject) =>
+        setTimeout(() => {
+          if (this.failOnContextChange) {
+            reject(new Error(ERR_MESSAGE));
+          } else {
+            resolve();
+          }
+        }, this.asyncDelay),
+      );
+    } else if (this.failOnContextChange) {
+      throw new Error(ERR_MESSAGE);
+    }
   }
 }
 
@@ -598,6 +605,25 @@ describe('Events', () => {
 
           expect(handler).toHaveBeenCalledTimes(2);
         });
+
+        it('Reconciling events are not emitted for synchronous onContextChange operations', async () => {
+          const provider = new MockProvider({
+            hasInitialize: false,
+            hasContextChanged: true,
+            asyncContextChangedHandler: false,
+          });
+
+          const reconcileHandler = jest.fn(() => {});
+          const changedEventHandler = jest.fn(() => {});
+
+          await OpenFeature.setProviderAndWait(domain, provider);
+          OpenFeature.addHandler(ProviderEvents.Reconciling, reconcileHandler);
+          OpenFeature.addHandler(ProviderEvents.ContextChanged, changedEventHandler);
+          await OpenFeature.setContext(domain, {});
+
+          expect(reconcileHandler).not.toHaveBeenCalled();
+          expect(changedEventHandler).toHaveBeenCalledTimes(1);
+        });
       });
 
       describe('provider has no context changed handler', () => {
@@ -615,7 +641,7 @@ describe('Events', () => {
         });
       });
     });
-    
+
     describe('client', () => {
       describe('provider has context changed handler', () => {
         it('Stale and ContextChanged are emitted', async () => {
@@ -810,12 +836,9 @@ describe('Events', () => {
         };
 
         client.addHandler(ProviderEvents.ContextChanged, handler);
-        
+
         // update context change twice
-        await Promise.all([
-          OpenFeature.setContext(domain, {}),
-          OpenFeature.setContext(domain, {}),
-        ]);
+        await Promise.all([OpenFeature.setContext(domain, {}), OpenFeature.setContext(domain, {})]);
 
         // should only have run once
         expect(runs).toEqual(1);
