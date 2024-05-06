@@ -19,12 +19,18 @@ export interface Provider extends CommonProvider<ClientProviderStatus> {
   readonly hooks?: Hook[];
 
   /**
-   * A handler function to reconcile changes when the static context.
+   * A handler function to reconcile changes made to the static context.
    * Called by the SDK when the context is changed.
+   *
+   * Returning a promise will put the provider in the RECONCILING state and
+   * emit the ProviderEvents.Reconciling event.
+   *
+   * Return void will avoid putting the provider in the RECONCILING state and
+   * **not** emit the ProviderEvents.Reconciling event.
    * @param oldContext
    * @param newContext
    */
-  onContextChange?(oldContext: EvaluationContext, newContext: EvaluationContext): Promise<void>;
+  onContextChange?(oldContext: EvaluationContext, newContext: EvaluationContext): Promise<void> | void;
 
   /**
    * Resolve a boolean flag and its evaluation details.
