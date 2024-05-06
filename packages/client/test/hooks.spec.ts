@@ -229,27 +229,6 @@ describe('Hooks', () => {
           }),
         );
       });
-
-      it('"error" must run if resolution details contains the reason "ERROR"', () => {
-        (MOCK_ERROR_PROVIDER.resolveBooleanEvaluation as jest.Mock).mockReturnValue({
-          value: BOOLEAN_VALUE,
-          reason: StandardResolutionReasons.ERROR,
-        });
-
-        const mockErrorHook = jest.fn();
-
-        const details = client.getBooleanDetails(FLAG_KEY, false, {
-          hooks: [{ error: mockErrorHook }],
-        });
-
-        expect(mockErrorHook).toHaveBeenCalled();
-        expect(details).toEqual(
-          expect.objectContaining({
-            errorCode: ErrorCode.GENERAL,
-            reason: StandardResolutionReasons.ERROR,
-          }),
-        );
-      });
     });
   });
 

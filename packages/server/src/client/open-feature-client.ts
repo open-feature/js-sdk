@@ -279,12 +279,15 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
         flagKey,
       };
 
-      if (evaluationDetails.errorCode || evaluationDetails.reason === StandardResolutionReasons.ERROR) {
-        const errorCode = evaluationDetails.errorCode || ErrorCode.GENERAL;
-        await this.errorHooks(allHooksReversed, hookContext, instantiateErrorByErrorCode(errorCode), options);
+      if (evaluationDetails.errorCode) {
+        await this.errorHooks(
+          allHooksReversed,
+          hookContext,
+          instantiateErrorByErrorCode(evaluationDetails.errorCode),
+          options,
+        );
         return {
           ...evaluationDetails,
-          errorCode,
           reason: StandardResolutionReasons.ERROR,
         };
       }
