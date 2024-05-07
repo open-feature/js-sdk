@@ -31,6 +31,9 @@ type ConstrainedFlagQuery<T> = FlagQuery<
           : JsonValue
 >;
 
+// suspense options removed for the useSuspenseFlag hooks
+type NoSuspenseOptions = Omit<ReactFlagEvaluationOptions, 'suspend' | 'suspendUntilReady' | 'suspendWhileReconciling'>
+
 /**
  * Evaluates a feature flag generically, returning an react-flavored queryable object.
  * The resolver method to use is based on the type of the defaultValue.
@@ -68,6 +71,26 @@ T extends boolean
           : new HookFlagQuery<JsonValue>(useObjectFlagDetails(flagKey, defaultValue, options));
   // TS sees this as HookFlagQuery<JsonValue>, because the compiler isn't aware of the `typeof` checks above.
   return query as unknown as ConstrainedFlagQuery<T>;
+}
+
+// alias to the return value of useFlag, used to keep useSuspenseFlag consistent
+type ReturnTypeOfUseFlag<T extends FlagValue> = ReturnType<typeof useFlag<T>>
+
+/**
+ * Equivalent to {@link useFlag} with `options: { suspend: true }`
+ * @experimental Suspense is an experimental feature subject to change in future versions.
+ * @param {string} flagKey the flag identifier
+ * @template {FlagValue} T A optional generic argument constraining the default.
+ * @param {T} defaultValue the default value; used to determine what resolved type should be used.
+ * @param {NoSuspenseOptions} options for this evaluation
+ * @returns { ReturnTypeOfUseFlag<T> } a queryable object containing useful information about the flag.
+ */
+export function useSuspenseFlag<T extends FlagValue = FlagValue>(
+  flagKey: string,
+  defaultValue: T,
+  options?: NoSuspenseOptions,
+): ReturnTypeOfUseFlag<T> {
+  return useFlag(flagKey, defaultValue, { ...options, suspendUntilReady: true, suspendWhileReconciling: true });
 }
 
 /**
