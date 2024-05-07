@@ -54,6 +54,9 @@
 npm install --save @openfeature/web-sdk
 ```
 
+> [!TIP]
+> This SDK is designed to run in the browser. If you're interested in server support, check out the [Node.js SDK](https://openfeature.dev/docs/reference/technologies/server/javascript/).
+
 #### yarn
 
 ```sh
