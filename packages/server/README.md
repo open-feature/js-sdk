@@ -141,9 +141,6 @@ In OpenFeature, we refer to this as [targeting](https://openfeature.dev/specific
 If the flag management system you're using supports targeting, you can provide the input data using the [evaluation context](https://openfeature.dev/docs/reference/concepts/evaluation-context).
 
 ```ts
-// set global context during provider registration
-await OpenFeature.setProviderAndWait(new MyProvider(), { host: 'localhost' })
-
 // set a value to the global context
 OpenFeature.setContext({ region: "us-east-1" });
 
@@ -162,7 +159,7 @@ const boolValue = await client.getBooleanValue('some-flag', false, requestContex
 ```
 
 Context is merged by the SDK before a flag evaluation occurs.
-The merge is order is defined [here](https://openfeature.dev/specification/sections/evaluation-context#requirement-323) in the OpenFeature specification.
+The merge order is defined [here](https://openfeature.dev/specification/sections/evaluation-context#requirement-323) in the OpenFeature specification.
 
 ### Hooks
 
@@ -239,26 +236,6 @@ const domainScopedClient = OpenFeature.getClient("my-domain");
 
 Domains can be defined on a provider during registration.
 For more details, please refer to the [providers](#providers) section.
-
-#### Manage evaluation context for domains
-
-TODO: See how we want to handle this behavior.
-
-By default, domain-scoped clients use the global context.
-This can be overridden by explicitly setting context when registering the provider or by references the domain when updating context.
-
-```ts
-OpenFeature.setProvider("my-domain", new NewCachedProvider(), { isCache: true});
-```
-
-Change context after the provider has been registered by using `setContext` with a name.
-
-```ts
-OpenFeature.setContext("my-domain", { targetingKey: localStorage.getItem("targetingKey") })
-```
-
-Once context has been defined for a named client, it will override the global context for all clients using the associated provider.
-Context can be cleared using for a named provider using `OpenFeature.clearContext("my-domain")` or call `OpenFeature.clearContexts()` to reset all context.
 
 ### Eventing
 
