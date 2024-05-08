@@ -280,16 +280,7 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
       };
 
       if (evaluationDetails.errorCode) {
-        await this.errorHooks(
-          allHooksReversed,
-          hookContext,
-          instantiateErrorByErrorCode(evaluationDetails.errorCode),
-          options,
-        );
-        return {
-          ...evaluationDetails,
-          reason: StandardResolutionReasons.ERROR,
-        };
+        throw instantiateErrorByErrorCode(evaluationDetails.errorCode);
       }
 
       await this.afterHooks(allHooksReversed, hookContext, evaluationDetails, options);

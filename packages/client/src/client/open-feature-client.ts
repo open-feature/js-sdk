@@ -227,16 +227,7 @@ export class OpenFeatureClient implements Client {
       };
 
       if (evaluationDetails.errorCode) {
-        this.errorHooks(
-          allHooksReversed,
-          hookContext,
-          instantiateErrorByErrorCode(evaluationDetails.errorCode),
-          options,
-        );
-        return {
-          ...evaluationDetails,
-          reason: StandardResolutionReasons.ERROR,
-        };
+        throw instantiateErrorByErrorCode(evaluationDetails.errorCode);
       }
 
       this.afterHooks(allHooksReversed, hookContext, evaluationDetails, options);
