@@ -15,7 +15,8 @@ import {
   ResolutionDetails,
   SafeLogger,
   StandardResolutionReasons,
-  statusMatchesEvent
+  instantiateErrorByErrorCode,
+  statusMatchesEvent,
 } from '@openfeature/core';
 import { FlagEvaluationOptions } from '../evaluation';
 import { ProviderEvents } from '../events';
@@ -208,7 +209,7 @@ export class OpenFeatureClient implements Client {
 
     try {
       this.beforeHooks(allHooks, hookContext, options);
-      
+
       // short circuit evaluation entirely if provider is in a bad state
       if (this.providerStatus === ProviderStatus.NOT_READY) {
         throw new ProviderNotReadyError('provider has not yet initialized');
@@ -224,6 +225,10 @@ export class OpenFeatureClient implements Client {
         flagMetadata: Object.freeze(resolution.flagMetadata ?? {}),
         flagKey,
       };
+
+      if (evaluationDetails.errorCode) {
+        throw instantiateErrorByErrorCode(evaluationDetails.errorCode);
+      }
 
       this.afterHooks(allHooksReversed, hookContext, evaluationDetails, options);
 

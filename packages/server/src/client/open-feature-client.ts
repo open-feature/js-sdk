@@ -16,6 +16,7 @@ import {
   ResolutionDetails,
   SafeLogger,
   StandardResolutionReasons,
+  instantiateErrorByErrorCode,
   statusMatchesEvent,
 } from '@openfeature/core';
 import { FlagEvaluationOptions } from '../evaluation';
@@ -277,6 +278,10 @@ export class OpenFeatureClient implements Client, ManageContext<OpenFeatureClien
         flagMetadata: Object.freeze(resolution.flagMetadata ?? {}),
         flagKey,
       };
+
+      if (evaluationDetails.errorCode) {
+        throw instantiateErrorByErrorCode(evaluationDetails.errorCode);
+      }
 
       await this.afterHooks(allHooksReversed, hookContext, evaluationDetails, options);
 
