@@ -7,7 +7,7 @@ import {
   EventHandler,
   Eventing,
   GenericEventEmitter,
-  statusMatchesEvent
+  statusMatchesEvent,
 } from './events';
 import { isDefined } from './filter';
 import { BaseHook, EvaluationLifeCycle } from './hooks';
@@ -25,7 +25,11 @@ type AnyProviderStatus = ClientProviderStatus | ServerProviderStatus;
 export class ProviderWrapper<P extends CommonProvider<AnyProviderStatus>, S extends AnyProviderStatus> {
   private _pendingContextChanges = 0;
 
-  constructor(private _provider: P, private _status: S, _statusEnumType: typeof ClientProviderStatus | typeof ServerProviderStatus) {
+  constructor(
+    private _provider: P,
+    private _status: S,
+    _statusEnumType: typeof ClientProviderStatus | typeof ServerProviderStatus,
+  ) {
     // update the providers status with events
     _provider.events?.addHandler(AllProviderEvents.Ready, () => {
       // These casts are due to the face we don't "know" what status enum we are dealing with here (client or server).
@@ -50,7 +54,7 @@ export class ProviderWrapper<P extends CommonProvider<AnyProviderStatus>, S exte
 
   set provider(provider: P) {
     this._provider = provider;
-  } 
+  }
 
   get status(): S {
     return this._status;
@@ -73,8 +77,15 @@ export class ProviderWrapper<P extends CommonProvider<AnyProviderStatus>, S exte
   }
 }
 
-export abstract class OpenFeatureCommonAPI<S extends AnyProviderStatus, P extends CommonProvider<S> = CommonProvider<S>, H extends BaseHook = BaseHook>
-  implements Eventing<AnyProviderEvent>, EvaluationLifeCycle<OpenFeatureCommonAPI<S, P>>, ManageLogger<OpenFeatureCommonAPI<S, P>>
+export abstract class OpenFeatureCommonAPI<
+    S extends AnyProviderStatus,
+    P extends CommonProvider<S> = CommonProvider<S>,
+    H extends BaseHook = BaseHook,
+  >
+  implements
+    Eventing<AnyProviderEvent>,
+    EvaluationLifeCycle<OpenFeatureCommonAPI<S, P>>,
+    ManageLogger<OpenFeatureCommonAPI<S, P>>
 {
   // accessor for the type of the ProviderStatus enum (client or server)
   protected abstract readonly _statusEnumType: typeof ClientProviderStatus | typeof ServerProviderStatus;
@@ -185,60 +196,19 @@ export abstract class OpenFeatureCommonAPI<S extends AnyProviderStatus, P extend
     return this._apiEmitter.getHandlers(eventType);
   }
 
-  /**
-   * Sets the default provider for flag evaluations and returns a promise that resolves when the provider is ready.
-   * The default provider will be used by domainless clients and clients associated with domains to which no provider is bound.
-   * Setting a provider supersedes the current provider used in new and existing unbound clients.
-   * @template P
-   * @param {P} provider The provider responsible for flag evaluations.
-   * @returns {Promise<void>}
-   * @throws Uncaught exceptions thrown by the provider during initialization.
-   */
-  async setProviderAndWait(provider: P): Promise<void>;
-  /**
-   * Sets the provider that OpenFeature will use for flag evaluations on clients bound to the same domain.
-   * A promise is returned that resolves when the provider is ready.
-   * Setting a provider supersedes the current provider used in new and existing clients in the same domain.
-   * @template P
-   * @param {string} domain An identifier which logically binds clients with providers
-   * @param {P} provider The provider responsible for flag evaluations.
-   * @returns {Promise<void>}
-   * @throws Uncaught exceptions thrown by the provider during initialization.
-   */
-  async setProviderAndWait(domain: string, provider: P): Promise<void>;
-  async setProviderAndWait(domainOrProvider?: string | P, providerOrUndefined?: P): Promise<void> {
-    await this.setAwaitableProvider(domainOrProvider, providerOrUndefined);
-  }
+  abstract setProviderAndWait(
+    clientOrProvider?: string | P,
+    providerContextOrUndefined?: P | EvaluationContext,
+    contextOrUndefined?: EvaluationContext,
+  ): Promise<void>;
 
-  /**
-   * Sets the default provider for flag evaluations.
-   * The default provider will be used by domainless clients and clients associated with domains to which no provider is bound.
-   * Setting a provider supersedes the current provider used in new and existing unbound clients.
-   * @template P
-   * @param {P} provider The provider responsible for flag evaluations.
-   * @returns {this} OpenFeature API
-   */
-  setProvider(provider: P): this;
-  /**
-   * Sets the provider that OpenFeature will use for flag evaluations on clients bound to the same domain.
-   * Setting a provider supersedes the current provider used in new and existing clients in the same domain.
-   * @template P
-   * @param {string} domain An identifier which logically binds clients with providers
-   * @param {P} provider The provider responsible for flag evaluations.
-   * @returns {this} OpenFeature API
-   */
-  setProvider(domain: string, provider: P): this;
-  setProvider(domainOrProvider?: string | P, providerOrUndefined?: P): this {
-    const maybePromise = this.setAwaitableProvider(domainOrProvider, providerOrUndefined);
-    if (maybePromise) {
-      maybePromise.catch(() => {
-        /* ignore, errors are emitted via the event emitter */
-      });
-    }
-    return this;
-  }
+  abstract setProvider(
+    clientOrProvider?: string | P,
+    providerContextOrUndefined?: P | EvaluationContext,
+    contextOrUndefined?: EvaluationContext,
+  ): this;
 
-  private setAwaitableProvider(domainOrProvider?: string | P, providerOrUndefined?: P): Promise<void> | void {
+  protected setAwaitableProvider(domainOrProvider?: string | P, providerOrUndefined?: P): Promise<void> | void {
     const domain = stringOrUndefined(domainOrProvider);
     const provider = objectOrUndefined<P>(domainOrProvider) ?? objectOrUndefined<P>(providerOrUndefined);
 
@@ -265,7 +235,11 @@ export abstract class OpenFeatureCommonAPI<S extends AnyProviderStatus, P extend
     const emitters = this.getAssociatedEventEmitters(domain);
 
     let initializationPromise: Promise<void> | void = undefined;
-    const wrappedProvider = new ProviderWrapper<P, AnyProviderStatus>(provider, this._statusEnumType.NOT_READY, this._statusEnumType);
+    const wrappedProvider = new ProviderWrapper<P, AnyProviderStatus>(
+      provider,
+      this._statusEnumType.NOT_READY,
+      this._statusEnumType,
+    );
 
     // initialize the provider if it implements "initialize" and it's not already registered
     if (typeof provider.initialize === 'function' && !this.allProviders.includes(provider)) {
@@ -438,7 +412,11 @@ export abstract class OpenFeatureCommonAPI<S extends AnyProviderStatus, P extend
       this._logger.error('Unable to cleanly close providers. Resetting to the default configuration.');
     } finally {
       this._domainScopedProviders.clear();
-      this._defaultProvider = new ProviderWrapper<P, AnyProviderStatus>(defaultProvider, this._statusEnumType.NOT_READY, this._statusEnumType);
+      this._defaultProvider = new ProviderWrapper<P, AnyProviderStatus>(
+        defaultProvider,
+        this._statusEnumType.NOT_READY,
+        this._statusEnumType,
+      );
     }
   }
 

@@ -70,6 +70,140 @@ export class OpenFeatureAPI
   }
 
   /**
+   * Sets the default provider for flag evaluations and returns a promise that resolves when the provider is ready.
+   * This provider will be used by domainless clients and clients associated with domains to which no provider is bound.
+   * Setting a provider supersedes the current provider used in new and existing unbound clients.
+   * @param {Provider} provider The provider responsible for flag evaluations.
+   * @returns {Promise<void>}
+   * @throws Uncaught exceptions thrown by the provider during initialization.
+   */
+  setProviderAndWait(provider: Provider): Promise<void>;
+  /**
+   * Sets the default provider for flag evaluations and returns a promise that resolves when the provider is ready.
+   * This provider will be used by domainless clients and clients associated with domains to which no provider is bound.
+   * Setting a provider supersedes the current provider used in new and existing unbound clients.
+   * @param {Provider} provider The provider responsible for flag evaluations.
+   * @param {EvaluationContext} context The evaluation context to use for flag evaluations.
+   * @returns {Promise<void>}
+   * @throws Uncaught exceptions thrown by the provider during initialization.
+   */
+  setProviderAndWait(provider: Provider, context: EvaluationContext): Promise<void>;
+  /**
+   * Sets the provider that OpenFeature will use for flag evaluations on clients bound to the same domain.
+   * A promise is returned that resolves when the provider is ready.
+   * Setting a provider supersedes the current provider used in new and existing clients bound to the same domain.
+   * @param {string} domain The name to identify the client
+   * @param {Provider} provider The provider responsible for flag evaluations.
+   * @returns {Promise<void>}
+   * @throws Uncaught exceptions thrown by the provider during initialization.
+   */
+  setProviderAndWait(domain: string, provider: Provider): Promise<void>;
+  /**
+   * Sets the provider that OpenFeature will use for flag evaluations on clients bound to the same domain.
+   * A promise is returned that resolves when the provider is ready.
+   * Setting a provider supersedes the current provider used in new and existing clients bound to the same domain.
+   * @param {string} domain The name to identify the client
+   * @param {Provider} provider The provider responsible for flag evaluations.
+   * @param {EvaluationContext} context The evaluation context to use for flag evaluations.
+   * @returns {Promise<void>}
+   * @throws Uncaught exceptions thrown by the provider during initialization.
+   */
+  setProviderAndWait(domain: string, provider: Provider, context: EvaluationContext): Promise<void>;
+  async setProviderAndWait(
+    clientOrProvider?: string | Provider,
+    providerContextOrUndefined?: Provider | EvaluationContext,
+    contextOrUndefined?: EvaluationContext,
+  ): Promise<void> {
+    const domain = stringOrUndefined(clientOrProvider);
+    const provider = domain
+      ? objectOrUndefined<Provider>(providerContextOrUndefined)
+      : objectOrUndefined<Provider>(clientOrProvider);
+    const context = domain
+      ? objectOrUndefined<EvaluationContext>(contextOrUndefined)
+      : objectOrUndefined<EvaluationContext>(providerContextOrUndefined);
+
+    if (context) {
+      // synonymously setting context prior to provider initialization.
+      // No context change event will be emitted.
+      if (domain) {
+        this._domainScopedContext.set(domain, context);
+      } else {
+        this._context = context;
+      }
+    }
+
+    await this.setAwaitableProvider(domain, provider);
+  }
+
+  /**
+   * Sets the default provider for flag evaluations.
+   * This provider will be used by domainless clients and clients associated with domains to which no provider is bound.
+   * Setting a provider supersedes the current provider used in new and existing unbound clients.
+   * @param {Provider} provider The provider responsible for flag evaluations.
+   * @returns {this} OpenFeature API
+   */
+  setProvider(provider: Provider): this;
+  /**
+   * Sets the default provider and evaluation context for flag evaluations.
+   * This provider will be used by domainless clients and clients associated with domains to which no provider is bound.
+   * Setting a provider supersedes the current provider used in new and existing unbound clients.
+   * @param {Provider} provider The provider responsible for flag evaluations.
+   * @param context {EvaluationContext} The evaluation context to use for flag evaluations.
+   * @returns {this} OpenFeature API
+   */
+  setProvider(provider: Provider, context: EvaluationContext): this;
+  /**
+   * Sets the provider for flag evaluations of providers with the given name.
+   * Setting a provider supersedes the current provider used in new and existing clients bound to the same domain.
+   * @param {string} domain The name to identify the client
+   * @param {Provider} provider The provider responsible for flag evaluations.
+   * @returns {this} OpenFeature API
+   */
+  setProvider(domain: string, provider: Provider): this;
+  /**
+   * Sets the provider and evaluation context flag evaluations of providers with the given name.
+   * Setting a provider supersedes the current provider used in new and existing clients bound to the same domain.
+   * @param {string} domain The name to identify the client
+   * @param {Provider} provider The provider responsible for flag evaluations.
+   * @param context {EvaluationContext} The evaluation context to use for flag evaluations.
+   * @returns {this} OpenFeature API
+   */
+  setProvider(domain: string, provider: Provider, context: EvaluationContext): this;
+  setProvider(
+    domainOrProvider?: string | Provider,
+    providerContextOrUndefined?: Provider | EvaluationContext,
+    contextOrUndefined?: EvaluationContext,
+  ): this {
+    const domain = stringOrUndefined(domainOrProvider);
+    const provider = domain
+      ? objectOrUndefined<Provider>(providerContextOrUndefined)
+      : objectOrUndefined<Provider>(domainOrProvider);
+    const context = domain
+      ? objectOrUndefined<EvaluationContext>(contextOrUndefined)
+      : objectOrUndefined<EvaluationContext>(providerContextOrUndefined);
+
+    if (context) {
+      // synonymously setting context prior to provider initialization.
+      // No context change event will be emitted.
+      if (domain) {
+        this._domainScopedContext.set(domain, context);
+      } else {
+        this._context = context;
+      }
+    }
+
+    const maybePromise = this.setAwaitableProvider(domain, provider);
+
+    // The setProvider method doesn't return a promise so we need to catch and
+    // log any errors that occur during provider initialization to avoid having
+    // an unhandled promise rejection.
+    Promise.resolve(maybePromise).catch((err) => {
+      this._logger.error('Error during provider initialization:', err);
+    });
+    return this;
+  }
+
+  /**
    * Sets the evaluation context globally.
    * This will be used by all providers that have not bound to a domain.
    * @param {EvaluationContext} context Evaluation context
@@ -135,7 +269,7 @@ export class OpenFeatureAPI
    * @param {string} domain An identifier which logically binds clients with providers
    * @returns {EvaluationContext} Evaluation context
    */
-  getContext(domain?: string): EvaluationContext;
+  getContext(domain?: string | undefined): EvaluationContext;
   getContext(domainOrUndefined?: string): EvaluationContext {
     const domain = stringOrUndefined(domainOrUndefined);
     if (domain) {

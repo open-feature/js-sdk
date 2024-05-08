@@ -161,6 +161,9 @@ const requestContext = {
 const boolValue = await client.getBooleanValue('some-flag', false, requestContext);
 ```
 
+Context is merged by the SDK before a flag evaluation occurs.
+The merge order is defined [here](https://openfeature.dev/specification/sections/evaluation-context#requirement-323) in the OpenFeature specification.
+
 ### Hooks
 
 [Hooks](https://openfeature.dev/docs/reference/concepts/hooks) allow for custom logic to be added at well-defined points of the flag evaluation life-cycle.
