@@ -74,7 +74,7 @@ T extends boolean
 }
 
 // alias to the return value of useFlag, used to keep useSuspenseFlag consistent
-type ReturnTypeOfUseFlag<T extends FlagValue> = ReturnType<typeof useFlag<T>>
+type UseFlagReturn<T extends FlagValue> = ReturnType<typeof useFlag<T>>
 
 /**
  * Equivalent to {@link useFlag} with `options: { suspend: true }`
@@ -83,13 +83,13 @@ type ReturnTypeOfUseFlag<T extends FlagValue> = ReturnType<typeof useFlag<T>>
  * @template {FlagValue} T A optional generic argument constraining the default.
  * @param {T} defaultValue the default value; used to determine what resolved type should be used.
  * @param {NoSuspenseOptions} options for this evaluation
- * @returns { ReturnTypeOfUseFlag<T> } a queryable object containing useful information about the flag.
+ * @returns { UseFlagReturn<T> } a queryable object containing useful information about the flag.
  */
 export function useSuspenseFlag<T extends FlagValue = FlagValue>(
   flagKey: string,
   defaultValue: T,
   options?: NoSuspenseOptions,
-): ReturnTypeOfUseFlag<T> {
+): UseFlagReturn<T> {
   return useFlag(flagKey, defaultValue, { ...options, suspendUntilReady: true, suspendWhileReconciling: true });
 }
 
