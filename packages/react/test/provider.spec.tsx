@@ -79,7 +79,7 @@ describe('provider', () => {
         let renderedWhileNotReady = false;
 
         function TestComponent() {
-          const isReady = useWhenProviderReady();
+          const isReady = useWhenProviderReady({ suspendUntilReady: true });
 
           if (!isReady) {
             renderedWhileNotReady = true;

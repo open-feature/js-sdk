@@ -4,6 +4,7 @@ export type ReactFlagEvaluationOptions = ({
   /**
    * Enable or disable all suspense functionality.
    * Cannot be used in conjunction with `suspendUntilReady` and `suspendWhileReconciling` options.
+   * @experimental Suspense is an experimental feature subject to change in future versions.
    */
   suspend?: boolean;
   suspendUntilReady?: never;
@@ -12,15 +13,17 @@ export type ReactFlagEvaluationOptions = ({
   /**
    * Suspend flag evaluations while the provider is not ready.
    * Set to false if you don't want to show suspense fallbacks until the provider is initialized.
-   * Defaults to true.
+   * Defaults to false.
    * Cannot be used in conjunction with `suspend` option.
+   * @experimental Suspense is an experimental feature subject to change in future versions.
    */
   suspendUntilReady?: boolean;
   /**
    * Suspend flag evaluations while the provider's context is being reconciled.
    * Set to true if you want to show suspense fallbacks while flags are re-evaluated after context changes.
-   * Defaults to true.
+   * Defaults to false.
    * Cannot be used in conjunction with `suspend` option.
+   * @experimental Suspense is an experimental feature subject to change in future versions.
    */
   suspendWhileReconciling?: boolean;
   suspend?: never;
@@ -51,8 +54,8 @@ export type NormalizedOptions = Omit<ReactFlagEvaluationOptions, 'suspend'>;
 export const DEFAULT_OPTIONS: ReactFlagEvaluationOptions = {
   updateOnContextChanged: true,
   updateOnConfigurationChanged: true,
-  suspendUntilReady: true,
-  suspendWhileReconciling: true,
+  suspendUntilReady: false,
+  suspendWhileReconciling: false,
 };
 
 /**

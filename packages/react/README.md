@@ -199,10 +199,14 @@ You can disable this feature in the hook options (or in the [OpenFeatureProvider
 
 ```tsx
 function Page() {
-  const showNewMessage = useBooleanFlagValue('new-message', false, { updateOnContextChanged: false });
+  const { value: showNewMessage } = useFlag('new-message', false, { updateOnContextChanged: false });
   return (
-    <MyComponents></MyComponents>
-  )
+    <div className="App">
+      <header className="App-header">
+        {showNewMessage ? <p>Welcome to this OpenFeature-enabled React app!</p> : <p>Welcome to this React app.</p>}
+      </header>
+    </div>
+  );
 }
 ```
 
@@ -216,10 +220,14 @@ You can disable this feature in the hook options (or in the [OpenFeatureProvider
 
 ```tsx
 function Page() {
-  const showNewMessage = useBooleanFlagValue('new-message', false, { updateOnConfigurationChanged: false });
+  const { value: showNewMessage } = useFlag('new-message', false, { updateOnConfigurationChanged: false });
   return (
-    <MyComponents></MyComponents>
-  )
+    <div className="App">
+      <header className="App-header">
+        {showNewMessage ? <p>Welcome to this OpenFeature-enabled React app!</p> : <p>Welcome to this React app.</p>}
+      </header>
+    </div>
+  );
 }
 ```
 
@@ -227,9 +235,14 @@ Note that if your provider doesn't support updates, this configuration has no im
 
 #### Suspense Support
 
+> [!NOTE]  
+> React suspense is an experimental feature and subject to change in future versions.
+
+
 Frequently, providers need to perform some initial startup tasks.
 It may be desireable not to display components with feature flags until this is complete, or when the context changes.
 Built-in [suspense](https://react.dev/reference/react/Suspense) support makes this easy.
+Use `useSuspenseFlag` or pass `{ suspend: true }` in the hook options to leverage this functionality.
 
 ```tsx
 function Content() {
@@ -242,8 +255,8 @@ function Content() {
 }
 
 function Message() {
-  // component to render after READY.
-  const showNewMessage = useBooleanFlagValue('new-message', false);
+  // component to render after READY, equivalent to useFlag('new-message', false, { suspend: true });
+  const { value: showNewMessage } = useSuspenseFlag('new-message', false);
 
   return (
     <>
@@ -271,8 +284,9 @@ This can be disabled in the hook options (or in the [OpenFeatureProvider](#openf
 
 The OpenFeature React SDK features built-in [suspense support](#suspense-support).
 This means that it will render your loading fallback automatically while the your provider starts up, and during context reconciliation for any of your components using feature flags!
-However, you will see this error if you neglect to create a suspense boundary around any components using feature flags; add a suspense boundary to resolve this issue.
-Alternatively, you can disable this feature by setting `suspendWhileReconciling=false` and `suspendUntilReady=false` in the [evaluation hooks](#evaluation-hooks) or the [OpenFeatureProvider](#openfeatureprovider-context-provider) (which applies to all evaluation hooks in child components).
+If you use suspense and neglect to create a suspense boundary around any components using feature flags, you will see this error.
+Add a suspense boundary to resolve this issue.
+Alternatively, you can disable this suspense (the default) by removing `suspendWhileReconciling=true`, `suspendUntilReady=true` or `suspend=true` in the [evaluation hooks](#evaluation-hooks) or the [OpenFeatureProvider](#openfeatureprovider-context-provider) (which applies to all evaluation hooks in child components).
 
 > I get odd rendering issues, or errors when components mount, if I use the suspense features.
 
