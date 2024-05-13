@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/open-feature/js-sdk#readme",
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^11.1.6",
