@@ -1,5 +1,18 @@
 # Changelog 
 
+## [1.2.0](https://github.com/open-feature/js-sdk/compare/core-v1.1.0...core-v1.2.0) (2024-05-13)
+
+
+### ✨ New Features
+
+* set context during provider init on web ([#919](https://github.com/open-feature/js-sdk/issues/919)) ([7e6c1c6](https://github.com/open-feature/js-sdk/commit/7e6c1c6e7082e75535bf81b4e70c8c57ef870b77))
+
+
+### 🐛 Bug Fixes
+
+* removes exports of OpenFeatureClient class and makes event props readonly ([#918](https://github.com/open-feature/js-sdk/issues/918)) ([e9a25c2](https://github.com/open-feature/js-sdk/commit/e9a25c21cb17c3b5700bca652e3c0ed15e8f49b4))
+* run error hook when provider returns reason error or error code ([#926](https://github.com/open-feature/js-sdk/issues/926)) ([c6d0b5d](https://github.com/open-feature/js-sdk/commit/c6d0b5da9c7f4c11319422fbe8c668a7613b044d))
+
 ## [1.1.0](https://github.com/open-feature/js-sdk/compare/core-v1.0.0...core-v1.1.0) (2024-04-02)
 
 
