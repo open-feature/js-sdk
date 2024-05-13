@@ -1,6 +1,6 @@
 import { Paradigm } from '@openfeature/core';
 import { OpenFeature, OpenFeatureAPI, Provider, ProviderStatus } from '../src';
-import { OpenFeatureClient } from '../src/client/open-feature-client';
+import { OpenFeatureClient } from '../src/client/internal/open-feature-client';
 
 const mockProvider = (config?: { initialStatus?: ProviderStatus; runsOn?: Paradigm }) => {
   return {

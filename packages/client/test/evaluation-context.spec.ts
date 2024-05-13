@@ -1,11 +1,15 @@
 import { EvaluationContext, JsonValue, OpenFeature, Provider, ProviderMetadata, ResolutionDetails } from '../src';
 
+const initializeMock = jest.fn();
+
 class MockProvider implements Provider {
   readonly metadata: ProviderMetadata;
 
   constructor(options?: { name?: string }) {
     this.metadata = { name: options?.name ?? 'mock-provider' };
   }
+
+  initialize = initializeMock;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onContextChange(oldContext: EvaluationContext, newContext: EvaluationContext): Promise<void> {
@@ -15,7 +19,7 @@ class MockProvider implements Provider {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   resolveBooleanEvaluation = jest.fn((flagKey: string, defaultValue: boolean, context: EvaluationContext) => {
     return {
-      value: true
+      value: true,
     };
   });
 
@@ -35,6 +39,7 @@ class MockProvider implements Provider {
 describe('Evaluation Context', () => {
   afterEach(async () => {
     await OpenFeature.clearContexts();
+    jest.clearAllMocks();
   });
 
   describe('Requirement 3.2.2', () => {
@@ -57,6 +62,42 @@ describe('Evaluation Context', () => {
       await OpenFeature.setContext(defaultContext);
       await OpenFeature.setContext('test', nameContext);
       expect(OpenFeature.getContext('invalid')).toEqual(defaultContext);
+    });
+
+    describe('Set context during provider registration', () => {
+      it('should set the context for the default provider', () => {
+        const context: EvaluationContext = { property1: false };
+        const provider = new MockProvider();
+        OpenFeature.setProvider(provider, context);
+        expect(OpenFeature.getContext()).toEqual(context);
+      });
+
+      it('should set the context for a domain', async () => {
+        const context: EvaluationContext = { property1: false };
+        const domain = 'test';
+        const provider = new MockProvider({ name: domain });
+        OpenFeature.setProvider(domain, provider, context);
+        expect(OpenFeature.getContext()).toEqual({});
+        expect(OpenFeature.getContext(domain)).toEqual(context);
+      });
+
+      it('should set the context for the default provider prior to initialization', async () => {
+        const context: EvaluationContext = { property1: false };
+        const provider = new MockProvider();
+        await OpenFeature.setProviderAndWait(provider, context);
+        expect(initializeMock).toHaveBeenCalledWith(context);
+        expect(OpenFeature.getContext()).toEqual(context);
+      });
+
+      it('should set the context for a domain prior to initialization', async () => {
+        const context: EvaluationContext = { property1: false };
+        const domain = 'test';
+        const provider = new MockProvider({ name: domain });
+        await OpenFeature.setProviderAndWait(domain, provider, context);
+        expect(OpenFeature.getContext()).toEqual({});
+        expect(OpenFeature.getContext(domain)).toEqual(context);
+        expect(initializeMock).toHaveBeenCalledWith(context);
+      });
     });
 
     describe('Context Management', () => {

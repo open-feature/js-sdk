@@ -44,7 +44,7 @@
 
 ### Requirements
 
-- Node.js version 16+
+- Node.js version 18+
 
 ### Install
 
@@ -53,6 +53,9 @@
 ```sh
 npm install --save @openfeature/server-sdk
 ```
+
+> [!TIP]
+> This SDK is designed to run in Node.JS. If you're interested in browser support, check out the [Web SDK](https://openfeature.dev/docs/reference/technologies/client/web/).
 
 #### yarn
 
@@ -157,6 +160,9 @@ const requestContext = {
 
 const boolValue = await client.getBooleanValue('some-flag', false, requestContext);
 ```
+
+Context is merged by the SDK before a flag evaluation occurs.
+The merge order is defined [here](https://openfeature.dev/specification/sections/evaluation-context#requirement-323) in the OpenFeature specification.
 
 ### Hooks
 
