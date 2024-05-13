@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.0](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.3.4...react-sdk-v0.4.0) (2024-05-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* disable suspense by default, add suspense hooks ([#940](https://github.com/open-feature/js-sdk/issues/940))
+
+### ✨ New Features
+
+* disable suspense by default, add suspense hooks ([#940](https://github.com/open-feature/js-sdk/issues/940)) ([6bcef89](https://github.com/open-feature/js-sdk/commit/6bcef8977d0134c131af259dc0190a296e790382))
+* set context during provider init on web ([#919](https://github.com/open-feature/js-sdk/issues/919)) ([7e6c1c6](https://github.com/open-feature/js-sdk/commit/7e6c1c6e7082e75535bf81b4e70c8c57ef870b77))
+
 ## [0.3.4](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.3.3...react-sdk-v0.3.4) (2024-05-01)
 
 
