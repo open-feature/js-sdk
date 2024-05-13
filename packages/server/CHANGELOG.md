@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.14.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.13.5...server-sdk-v1.14.0) (2024-05-13)
+
+
+### ✨ New Features
+
+* remove node 16 ([#875](https://github.com/open-feature/js-sdk/issues/875)) ([c1878e4](https://github.com/open-feature/js-sdk/commit/c1878e4effac3c8c9aa8a34cee4214f628a1e4ca))
+* set context during provider init on web ([#919](https://github.com/open-feature/js-sdk/issues/919)) ([7e6c1c6](https://github.com/open-feature/js-sdk/commit/7e6c1c6e7082e75535bf81b4e70c8c57ef870b77))
+
+
+### 🐛 Bug Fixes
+
+* remove export of OpenFeatureClient ([#794](https://github.com/open-feature/js-sdk/issues/794)) ([3d197f2](https://github.com/open-feature/js-sdk/commit/3d197f2ea74f00ef904fc6a6960160d0cf4ded9a))
+* removes exports of OpenFeatureClient class and makes event props readonly ([#918](https://github.com/open-feature/js-sdk/issues/918)) ([e9a25c2](https://github.com/open-feature/js-sdk/commit/e9a25c21cb17c3b5700bca652e3c0ed15e8f49b4))
+* run error hook when provider returns reason error or error code ([#926](https://github.com/open-feature/js-sdk/issues/926)) ([c6d0b5d](https://github.com/open-feature/js-sdk/commit/c6d0b5da9c7f4c11319422fbe8c668a7613b044d))
+
+
+### 🧹 Chore
+
+* **main:** release core 1.2.0 ([#927](https://github.com/open-feature/js-sdk/issues/927)) ([692ad5b](https://github.com/open-feature/js-sdk/commit/692ad5b27a052a4c5abba81fe1caa071edd59ee7))
+
+
+### 📚 Documentation
+
+* add tip about supported usage in the install section ([#941](https://github.com/open-feature/js-sdk/issues/941)) ([f0de667](https://github.com/open-feature/js-sdk/commit/f0de66770be778d7a51063e706c9cccbba4b214e))
+
 ## [1.13.5](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.13.4...server-sdk-v1.13.5) (2024-04-18)
 
 
