@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.1.5-experimental](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.1.4-experimental...nestjs-sdk-v0.1.5-experimental) (2024-05-13)
+
+
+### ✨ New Features
+
+* remove node 16 ([#875](https://github.com/open-feature/js-sdk/issues/875)) ([c1878e4](https://github.com/open-feature/js-sdk/commit/c1878e4effac3c8c9aa8a34cee4214f628a1e4ca))
+
+
+### 🐛 Bug Fixes
+
+* removes exports of OpenFeatureClient class and makes event props readonly ([#918](https://github.com/open-feature/js-sdk/issues/918)) ([e9a25c2](https://github.com/open-feature/js-sdk/commit/e9a25c21cb17c3b5700bca652e3c0ed15e8f49b4))
+
+
+### 🧹 Chore
+
+* **deps:** update dependency supertest to v7 ([#939](https://github.com/open-feature/js-sdk/issues/939)) ([9083df8](https://github.com/open-feature/js-sdk/commit/9083df8463d6f970111dedee114aedc0a20e2a3c))
+
 ## [0.1.4-experimental](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.1.3-experimental...nestjs-sdk-v0.1.4-experimental) (2024-04-18)
 
 

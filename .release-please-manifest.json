@@ -1,5 +1,5 @@
 {
-  "packages/nest": "0.1.4-experimental",
+  "packages/nest": "0.1.5-experimental",
   "packages/react": "0.3.4",
   "packages/client": "1.0.3",
   "packages/server": "1.14.0",
