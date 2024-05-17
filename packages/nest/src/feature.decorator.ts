@@ -26,7 +26,7 @@ interface FeatureClientProps {
  * @param {FeatureClientProps} [props] The options for injecting the client.
  * @returns {PropertyDecorator & ParameterDecorator} The decorator function.
  */
-export const FeatureClient = (props?: FeatureClientProps) => Inject(getOpenFeatureClientToken(props?.domain));
+export const OpenFeatureClient = (props?: FeatureClientProps) => Inject(getOpenFeatureClientToken(props?.domain));
 
 /**
  * Options for injecting a feature flag into a route handler.
