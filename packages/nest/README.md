@@ -137,13 +137,13 @@ It is also possible to inject the default or domain scoped OpenFeature clients i
 
 ```ts
 import { Injectable } from '@nestjs/common';
-import { FeatureClient, Client } from '@openfeature/nestjs-sdk';
+import { OpenFeatureClient, Client } from '@openfeature/nestjs-sdk';
 
 @Injectable()
 export class OpenFeatureTestService {
   constructor(
-    @FeatureClient() private defaultClient: Client,
-    @FeatureClient({ domain: 'my-domain' }) private scopedClient: Client,
+    @OpenFeatureClient() private defaultClient: Client,
+    @OpenFeatureClient({ domain: 'my-domain' }) private scopedClient: Client,
   ) {}
 
   public async getBoolean() {

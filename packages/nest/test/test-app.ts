@@ -1,14 +1,14 @@
 import { Controller, Get, Injectable, UseInterceptors } from '@nestjs/common';
 import { Observable, map } from 'rxjs';
-import { BooleanFeatureFlag, ObjectFeatureFlag, NumberFeatureFlag, FeatureClient, StringFeatureFlag } from '../src';
+import { BooleanFeatureFlag, ObjectFeatureFlag, NumberFeatureFlag, OpenFeatureClient, StringFeatureFlag } from '../src';
 import { Client, EvaluationDetails, FlagValue } from '@openfeature/server-sdk';
 import { EvaluationContextInterceptor } from '../src';
 
 @Injectable()
 export class OpenFeatureTestService {
   constructor(
-    @FeatureClient() public defaultClient: Client,
-    @FeatureClient({ domain: 'domainScopedClient' }) public domainScopedClient: Client,
+    @OpenFeatureClient() public defaultClient: Client,
+    @OpenFeatureClient({ domain: 'domainScopedClient' }) public domainScopedClient: Client,
   ) {}
 
   public async serviceMethod(flag: EvaluationDetails<FlagValue>) {
