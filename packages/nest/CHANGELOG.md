@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.0-experimental](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.1.5-experimental...nestjs-sdk-v0.2.0-experimental) (2024-05-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* rename FeatureClient decorator to OpenFeatureClient ([#949](https://github.com/open-feature/js-sdk/issues/949))
+
+### ✨ New Features
+
+* rename FeatureClient decorator to OpenFeatureClient ([#949](https://github.com/open-feature/js-sdk/issues/949)) ([a531238](https://github.com/open-feature/js-sdk/commit/a531238124510e6aa150ff619972f8880346507b))
+
 ## [0.1.5-experimental](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.1.4-experimental...nestjs-sdk-v0.1.5-experimental) (2024-05-13)
 
 
