@@ -1,4 +1,4 @@
-import { OpenFeatureError } from './open-feature-error-abstract';
+import { ErrorOptions, OpenFeatureError } from './open-feature-error-abstract';
 import { ErrorCode } from '../evaluation';
 
 export class FlagNotFoundError extends OpenFeatureError {

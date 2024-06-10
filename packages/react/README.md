@@ -61,7 +61,7 @@ In addition to the feature provided by the [web sdk](https://openfeature.dev/doc
 
 ### Requirements
 
-- ES2022-compatible web browser (Chrome, Edge, Firefox, etc)
+- ES2015-compatible web browser (Chrome, Edge, Firefox, etc)
 - React version 16.8+
 
 ### Install
