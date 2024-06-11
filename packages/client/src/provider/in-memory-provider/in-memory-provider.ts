@@ -38,7 +38,7 @@ export class InMemoryProvider implements Provider {
       }
       this._context = context;
     } catch (err) {
-      throw new Error('initialization failure', { cause: err });
+      throw new GeneralError('initialization failure', { cause: err });
     }
   }
 

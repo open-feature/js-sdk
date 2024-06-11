@@ -8,7 +8,7 @@ node 16+, npm 8+ are recommended.
 
 ### Compilation Target(s)
 
-We target `es2022`, and publish both ES-modules and CommonJS modules.
+We target `es2015`, and publish both ES-modules and CommonJS modules.
 
 ### Installation and Dependencies
 
