@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1-experimental](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.2.0-experimental...nestjs-sdk-v0.2.1-experimental) (2024-06-11)
+
+
+### ✨ New Features
+
+* lower compilation target to es2015 ([#957](https://github.com/open-feature/js-sdk/issues/957)) ([c2d6c17](https://github.com/open-feature/js-sdk/commit/c2d6c1761ae19f937deaff2f011a0380f8af7350))
+
 ## [0.2.0-experimental](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.1.5-experimental...nestjs-sdk-v0.2.0-experimental) (2024-05-19)
 
 
