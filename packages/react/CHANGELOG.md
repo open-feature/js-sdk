@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.0...react-sdk-v0.4.1) (2024-06-11)
+
+
+### ✨ New Features
+
+* lower compilation target to es2015 ([#957](https://github.com/open-feature/js-sdk/issues/957)) ([c2d6c17](https://github.com/open-feature/js-sdk/commit/c2d6c1761ae19f937deaff2f011a0380f8af7350))
+
 ## [0.4.0](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.3.4...react-sdk-v0.4.0) (2024-05-13)
 
 
