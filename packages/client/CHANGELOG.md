@@ -1,6 +1,18 @@
 # Changelog
 
 
+## [1.2.0](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.1.0...web-sdk-v1.2.0) (2024-06-11)
+
+
+### ✨ New Features
+
+* lower compilation target to es2015 ([#957](https://github.com/open-feature/js-sdk/issues/957)) ([c2d6c17](https://github.com/open-feature/js-sdk/commit/c2d6c1761ae19f937deaff2f011a0380f8af7350))
+
+
+### 🧹 Chore
+
+* **main:** release core 1.3.0 ([#958](https://github.com/open-feature/js-sdk/issues/958)) ([25086c5](https://github.com/open-feature/js-sdk/commit/25086c5456d81fa040ce95ea1a067543408e3150))
+
 ## [1.1.0](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.0.3...web-sdk-v1.1.0) (2024-05-13)
 
 
