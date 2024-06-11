@@ -1,5 +1,12 @@
 # Changelog 
 
+## [1.3.0](https://github.com/open-feature/js-sdk/compare/core-v1.2.0...core-v1.3.0) (2024-06-11)
+
+
+### ✨ New Features
+
+* lower compilation target to es2015 ([#957](https://github.com/open-feature/js-sdk/issues/957)) ([c2d6c17](https://github.com/open-feature/js-sdk/commit/c2d6c1761ae19f937deaff2f011a0380f8af7350))
+
 ## [1.2.0](https://github.com/open-feature/js-sdk/compare/core-v1.1.0...core-v1.2.0) (2024-05-13)
 
 
