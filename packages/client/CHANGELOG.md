@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.2.1](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.2.0...web-sdk-v1.2.1) (2024-06-12)
+
+
+### 🐛 Bug Fixes
+
+* **web-sdk:** pin core version to 1.3.0 ([#964](https://github.com/open-feature/js-sdk/issues/964)) ([3cde37a](https://github.com/open-feature/js-sdk/commit/3cde37a5ee29e71a0eb3fd8680b081d865a588f9))
+
 ## [1.2.0](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.1.0...web-sdk-v1.2.0) (2024-06-11)
 
 
