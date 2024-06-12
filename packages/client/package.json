@@ -46,7 +46,7 @@
   },
   "homepage": "https://github.com/open-feature/js-sdk#readme",
   "peerDependencies": {
-    "@openfeature/core": "1.2.0"
+    "@openfeature/core": "1.3.0"
   },
   "devDependencies": {
     "@openfeature/core": "1.3.0"
