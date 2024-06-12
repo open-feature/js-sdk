@@ -1,5 +1,11 @@
 # Changelog
 
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/web-sdk bumped from * to 1.2.1
+
 ## [0.4.1](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.0...react-sdk-v0.4.1) (2024-06-11)
 
 
