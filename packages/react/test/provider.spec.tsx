@@ -5,7 +5,7 @@ import * as React from 'react';
 import { OpenFeatureProvider, useOpenFeatureClient, useWhenProviderReady } from '../src';
 import { TestingProvider } from './test.utils';
 
-describe('provider', () => {
+describe('OpenFeatureProvider', () => {
   /**
    * artificial delay for various async operations for our provider,
    * multiples of it are used in assertions as well

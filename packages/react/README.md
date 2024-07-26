@@ -54,6 +54,7 @@ In addition to the feature provided by the [web sdk](https://openfeature.dev/doc
     - [Re-rendering with Context Changes](#re-rendering-with-context-changes)
     - [Re-rendering with Flag Configuration Changes](#re-rendering-with-flag-configuration-changes)
     - [Suspense Support](#suspense-support)
+  - [Testing](#testing)
 - [FAQ and troubleshooting](#faq-and-troubleshooting)
 - [Resources](#resources)
 
@@ -277,6 +278,69 @@ function Fallback() {
 ```
 
 This can be disabled in the hook options (or in the [OpenFeatureProvider](#openfeatureprovider-context-provider)).
+
+### Testing
+
+The React SDK includes a built-in context provider for testing.
+This allows you to easily test components that use evaluation hooks, such as `useFlag`.
+If you try to test a component that uses an evaluation hook, you might see an error message like:
+
+```
+No OpenFeature client available - components using OpenFeature must be wrapped with an <OpenFeatureProvider>.
+```
+
+You can resolve this by simply wrapping your component under test in the OpenFeatureTestProvider:
+
+```tsx
+// use default values for all evaluations
+<OpenFeatureTestProvider>
+  <TestComponent />
+</OpenFeatureTestProvider>
+```
+
+The basic configuration above will simply use the default value provided in code.
+If you'd like to control the values returned by the evaluation hooks, you can pass a map of flag keys and values:
+
+```tsx
+// return `true` for all evaluations of `'my-boolean-flag'`
+<OpenFeatureTestProvider flagValueMap={{ 'my-boolean-flag': true }}>
+  <TestComponent />
+</OpenFeatureTestProvider>
+```
+
+Additionally, you can pass an artificial delay for the provider startup to test your suspense boundaries or loaders/spinners impacted by feature flags:
+
+```tsx
+// delay the provider start by 1000ms and then return `true` for all evaluations of `'my-boolean-flag'`
+<OpenFeatureTestProvider delayMs={1000} flagValueMap={{ 'my-boolean-flag': true }}>
+  <TestComponent />
+</OpenFeatureTestProvider>
+```
+
+For maximum control, you can also pass your own mock provider implementation.
+The type of this option is `Partial<Provider>`, so you can pass an incomplete implementation:
+
+```tsx
+class MyTestProvider implements Partial<Provider> {
+  metadata = {
+    name: 'my test provider',
+  };
+  resolveBooleanEvaluation(): ResolutionDetails<boolean> {
+    return {
+      value: true,
+      variant: 'my-variant',
+      reason: 'MY_REASON',
+    };
+  }
+}
+```
+
+```tsx
+// use your custom testing provider
+<OpenFeatureTestProvider provider={new MyTestProvider()}>
+  <TestComponent />
+</OpenFeatureTestProvider>,
+```
 
 ## FAQ and troubleshooting
 
