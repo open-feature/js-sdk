@@ -17,7 +17,7 @@ function TestComponent() {
 
 describe('OpenFeatureTestProvider', () => {
   describe('no args', () => {
-    it('renders default ', async () => {
+    it('renders default', async () => {
       render(
         <OpenFeatureTestProvider>
           <TestComponent />
@@ -28,7 +28,7 @@ describe('OpenFeatureTestProvider', () => {
   });
 
   describe('flagValueMap set', () => {
-    it('renders value ', async () => {
+    it('renders value from map', async () => {
       render(
         <OpenFeatureTestProvider flagValueMap={{ [FLAG_KEY]: true }}>
           <TestComponent />
@@ -69,7 +69,7 @@ describe('OpenFeatureTestProvider', () => {
       }
     }
 
-    it('renders default ', async () => {
+    it('renders provider-returned value', async () => {
       render(
         <OpenFeatureTestProvider provider={new MyTestProvider()}>
           <TestComponent />
