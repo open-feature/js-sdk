@@ -283,7 +283,7 @@ This can be disabled in the hook options (or in the [OpenFeatureProvider](#openf
 
 The React SDK includes a built-in context provider for testing.
 This allows you to easily test components that use evaluation hooks, such as `useFlag`.
-If you try to test a component that uses an evaluation hook, you might see an error message like:
+If you try to test a component (in this case, `MyComponent`) which uses an evaluation hook, you might see an error message like:
 
 ```
 No OpenFeature client available - components using OpenFeature must be wrapped with an <OpenFeatureProvider>.
@@ -294,7 +294,7 @@ You can resolve this by simply wrapping your component under test in the OpenFea
 ```tsx
 // use default values for all evaluations
 <OpenFeatureTestProvider>
-  <TestComponent />
+  <MyComponent />
 </OpenFeatureTestProvider>
 ```
 
@@ -304,7 +304,7 @@ If you'd like to control the values returned by the evaluation hooks, you can pa
 ```tsx
 // return `true` for all evaluations of `'my-boolean-flag'`
 <OpenFeatureTestProvider flagValueMap={{ 'my-boolean-flag': true }}>
-  <TestComponent />
+  <MyComponent />
 </OpenFeatureTestProvider>
 ```
 
@@ -313,7 +313,7 @@ Additionally, you can pass an artificial delay for the provider startup to test 
 ```tsx
 // delay the provider start by 1000ms and then return `true` for all evaluations of `'my-boolean-flag'`
 <OpenFeatureTestProvider delayMs={1000} flagValueMap={{ 'my-boolean-flag': true }}>
-  <TestComponent />
+  <MyComponent />
 </OpenFeatureTestProvider>
 ```
 
@@ -338,7 +338,7 @@ class MyTestProvider implements Partial<Provider> {
 ```tsx
 // use your custom testing provider
 <OpenFeatureTestProvider provider={new MyTestProvider()}>
-  <TestComponent />
+  <MyComponent />
 </OpenFeatureTestProvider>,
 ```
 
