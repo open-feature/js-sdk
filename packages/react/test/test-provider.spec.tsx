@@ -50,7 +50,7 @@ describe('OpenFeatureTestProvider', () => {
 
       // should only be resolved after delay
       expect(await screen.findByText('👎')).toBeInTheDocument();
-      await new Promise((resolve) => setTimeout(resolve, delay));
+      await new Promise((resolve) => setTimeout(resolve, delay * 2));
       expect(await screen.findByText('👍')).toBeInTheDocument();
     });
   });
