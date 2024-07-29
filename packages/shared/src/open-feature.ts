@@ -161,7 +161,7 @@ export abstract class OpenFeatureCommonAPI<
       if (shouldRunNow) {
         // run immediately, we're in the matching state
         try {
-          handler({ domain, providerName: provider.metadata.name });
+          handler({ domain, providerName: provider.metadata?.name });
         } catch (err) {
           this._logger?.error('Error running event handler:', err);
         }
@@ -218,7 +218,7 @@ export abstract class OpenFeatureCommonAPI<
     }
 
     const oldProvider = this.getProviderForClient(domain);
-    const providerName = provider.metadata.name;
+    const providerName = provider.metadata?.name;
 
     // ignore no-ops
     if (oldProvider === provider) {
@@ -227,9 +227,9 @@ export abstract class OpenFeatureCommonAPI<
     }
 
     if (!provider.runsOn) {
-      this._logger.debug(`Provider '${provider.metadata.name}' has not defined its intended use.`);
+      this._logger.debug(`Provider '${providerName}' has not defined its intended use.`);
     } else if (provider.runsOn !== this._runsOn) {
-      throw new GeneralError(`Provider '${provider.metadata.name}' is intended for use on the ${provider.runsOn}.`);
+      throw new GeneralError(`Provider '${providerName}' is intended for use on the ${provider.runsOn}.`);
     }
 
     const emitters = this.getAssociatedEventEmitters(domain);
@@ -329,7 +329,7 @@ export abstract class OpenFeatureCommonAPI<
           ...details,
           clientName: domain,
           domain,
-          providerName: clientProvider.metadata.name,
+          providerName: clientProvider.metadata?.name,
         });
       }),
     );
@@ -368,13 +368,13 @@ export abstract class OpenFeatureCommonAPI<
       const handler = async (details?: EventDetails) => {
         // on each event type, fire the associated handlers
         emitters.forEach((emitter) => {
-          emitter?.emit(eventType, { ...details, clientName: domain, domain, providerName: newProvider.metadata.name });
+          emitter?.emit(eventType, { ...details, clientName: domain, domain, providerName: newProvider.metadata?.name });
         });
         this._apiEmitter.emit(eventType, {
           ...details,
           clientName: domain,
           domain,
-          providerName: newProvider.metadata.name,
+          providerName: newProvider.metadata?.name,
         });
       };
 
@@ -428,7 +428,7 @@ export abstract class OpenFeatureCommonAPI<
   }
 
   private handleShutdownError(provider: P, err: unknown) {
-    this._logger.error(`Error during shutdown of provider ${provider.metadata.name}: ${err}`);
+    this._logger.error(`Error during shutdown of provider ${provider.metadata?.name}: ${err}`);
     this._logger.error((err as Error)?.stack);
   }
 }

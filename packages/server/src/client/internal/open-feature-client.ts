@@ -80,9 +80,9 @@ export class OpenFeatureClient implements Client {
       // run immediately, we're in the matching state
       try {
         handler({
-          clientName: this.metadata.name,
-          domain: this.metadata.domain,
-          providerName: this._provider.metadata.name,
+          clientName: this.metadata?.name,
+          domain: this.metadata?.domain,
+          providerName: this._provider.metadata?.name,
         });
       } catch (err) {
         this._logger?.error('Error running event handler:', err);
