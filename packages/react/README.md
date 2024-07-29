@@ -322,9 +322,7 @@ The type of this option is `Partial<Provider>`, so you can pass an incomplete im
 
 ```tsx
 class MyTestProvider implements Partial<Provider> {
-  metadata = {
-    name: 'my test provider',
-  };
+  // implement the relevant resolver
   resolveBooleanEvaluation(): ResolutionDetails<boolean> {
     return {
       value: true,
