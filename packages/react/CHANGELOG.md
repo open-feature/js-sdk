@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.2](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.1...react-sdk-v0.4.2) (2024-07-29)
+
+
+### ✨ New Features
+
+* add test provider ([#971](https://github.com/open-feature/js-sdk/issues/971)) ([1c12d4d](https://github.com/open-feature/js-sdk/commit/1c12d4d548195bfc8c2f898a90ea97063aa8b3f7))
+
 ## [0.4.1](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.0...react-sdk-v0.4.1) (2024-06-11)
 
 
