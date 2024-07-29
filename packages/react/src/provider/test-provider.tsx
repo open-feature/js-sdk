@@ -30,6 +30,7 @@ type TestProviderProps = Omit<React.ComponentProps<typeof OpenFeatureProvider>, 
     | {
         /**
          * An optional partial provider to pass for full control over the flag resolution for this OpenFeatureTestProvider context.
+         * Any un-implemented methods or properties will no-op.
          */
         provider?: Partial<Provider>;
         flagValueMap?: never;
@@ -37,7 +38,8 @@ type TestProviderProps = Omit<React.ComponentProps<typeof OpenFeatureProvider>, 
       }
   );
 
-const TEST_VARIANT = 'test-variant';
+  const TEST_VARIANT = 'test-variant';
+  const TEST_PROVIDER = 'test-provider';
 
 // internal provider which is basically the in-memory provider with a simpler config and some optional fake delays
 class TestProvider extends InMemoryProvider {
@@ -79,7 +81,7 @@ class TestProvider extends InMemoryProvider {
 export function OpenFeatureTestProvider(testProviderOptions: TestProviderProps) {
   const { flagValueMap, provider } = testProviderOptions;
   const effectiveProvider = (
-    flagValueMap ? new TestProvider(flagValueMap, testProviderOptions.delayMs) : provider || NOOP_PROVIDER
+    flagValueMap ? new TestProvider(flagValueMap, testProviderOptions.delayMs) : mixInNoop(provider) || NOOP_PROVIDER
   ) as Provider;
   testProviderOptions.domain
     ? OpenFeature.setProvider(testProviderOptions.domain, effectiveProvider)
@@ -90,4 +92,20 @@ export function OpenFeatureTestProvider(testProviderOptions: TestProviderProps) 
       {testProviderOptions.children}
     </OpenFeatureProvider>
   );
+}
+
+// mix in the no-op provider when the partial is passed
+function mixInNoop(provider: Partial<Provider> = {}) {
+  // fill in any missing methods with no-ops
+  for (const prop of Object.getOwnPropertyNames(Object.getPrototypeOf(NOOP_PROVIDER)).filter(prop => prop !== 'constructor')) {
+    const patchedProvider = provider as {[key: string]: keyof Provider};
+    if (!Object.getPrototypeOf(patchedProvider)[prop] && !patchedProvider[prop]) {
+      patchedProvider[prop] = Object.getPrototypeOf(NOOP_PROVIDER)[prop];
+    }
+  }
+  // fill in the metadata if missing
+  if (!provider.metadata || !provider.metadata.name) {
+    (provider.metadata as unknown) = { name: TEST_PROVIDER };
+  }
+  return provider;
 }

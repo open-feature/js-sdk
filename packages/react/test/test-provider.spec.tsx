@@ -7,11 +7,12 @@ import { OpenFeatureTestProvider, useFlag } from '../src';
 const FLAG_KEY = 'thumbs';
 
 function TestComponent() {
-  const { value: thumbs } = useFlag(FLAG_KEY, false);
+  const { value: thumbs, reason } = useFlag(FLAG_KEY, false);
   return (
     <>
       <div>{thumbs ? '👍' : '👎'}</div>
-    </>
+      <div>reason: {`${reason}`}</div>
+      </>
   );
 }
 
@@ -56,20 +57,20 @@ describe('OpenFeatureTestProvider', () => {
   });
 
   describe('provider set', () => {
-    class MyTestProvider implements Partial<Provider> {
-      metadata = {
-        name: 'my test provider',
-      };
-      resolveBooleanEvaluation(): ResolutionDetails<boolean> {
-        return {
-          value: true,
-          variant: 'test-variant',
-          reason: 'MY_REASON',
-        };
-      }
-    }
+    const reason = 'MY_REASON';
 
     it('renders provider-returned value', async () => {
+
+      class MyTestProvider implements Partial<Provider> {
+        resolveBooleanEvaluation(): ResolutionDetails<boolean> {
+          return {
+            value: true,
+            variant: 'test-variant',
+            reason,
+          };
+        }
+      }
+
       render(
         <OpenFeatureTestProvider provider={new MyTestProvider()}>
           <TestComponent />
@@ -77,6 +78,22 @@ describe('OpenFeatureTestProvider', () => {
       );
 
       expect(await screen.findByText('👍')).toBeInTheDocument();
+      expect(await screen.findByText(/reason/)).toBeInTheDocument();
+    });
+
+    it('falls back to no-op for missing methods', async () => {
+
+      class MyEmptyProvider implements Partial<Provider> {
+      }
+
+      render(
+        <OpenFeatureTestProvider provider={new MyEmptyProvider()}>
+          <TestComponent />
+        </OpenFeatureTestProvider>,
+      );
+
+      expect(await screen.findByText('👎')).toBeInTheDocument();
+      expect(await screen.findByText(/No-op/)).toBeInTheDocument();
     });
   });
 });
