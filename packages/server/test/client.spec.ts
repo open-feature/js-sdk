@@ -5,6 +5,7 @@ import {
   EvaluationContext,
   EvaluationDetails,
   FlagNotFoundError,
+  Hook,
   JsonArray,
   JsonObject,
   JsonValue,
@@ -18,6 +19,8 @@ import {
   TransactionContextPropagator,
 } from '../src';
 import { OpenFeatureClient } from '../src/client/internal/open-feature-client';
+import { isDeepStrictEqual } from 'node:util';
+import { HookContext } from '@openfeature/core';
 
 const BOOLEAN_VALUE = true;
 const STRING_VALUE = 'val';
@@ -740,9 +743,35 @@ describe('OpenFeatureClient', () => {
         // Set Client Context
         const client = OpenFeature.getClient('contextual', 'test', clientContext);
         // Set Hook Context
-        client.addHooks({ before: () => beforeHookContext });
+        const hook = {
+          before: jest.fn((hookContext: HookContext) => {
+            // we have to put this assertion here because of limitations in jest with expect.objectContaining and mutability
+            if (isDeepStrictEqual(hookContext.context, {
+              ...globalContext,
+              ...transactionContext,
+              ...clientContext,
+              ...invocationContext,
+              // before hook context should be missing here (and not overridden)
+            })) {
+              return beforeHookContext;
+            }
+          }),
+          after: jest.fn((hookContext: HookContext) => {
+            // we have to put this assertion here because of limitations in jest with expect.objectContaining and mutability
+            if (isDeepStrictEqual(hookContext.context, {
+              ...globalContext,
+              ...transactionContext,
+              ...clientContext,
+              ...invocationContext,
+              ...beforeHookContext,
+            })) {
+              return beforeHookContext;
+            }
+          }),
+        } as unknown as Hook;
 
-        await client.getBooleanValue(flagKey, defaultValue, invocationContext);
+        await client.getBooleanValue(flagKey, defaultValue, invocationContext, { hooks: [hook] });
+
         expect(provider.resolveBooleanEvaluation).toHaveBeenCalledWith(
           expect.anything(),
           expect.anything(),
