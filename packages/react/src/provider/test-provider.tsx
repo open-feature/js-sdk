@@ -44,6 +44,10 @@ type TestProviderProps = Omit<React.ComponentProps<typeof OpenFeatureProvider>, 
 class TestProvider extends InMemoryProvider {
 
   // initially make this undefined, we still set it if a delay is specified
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore - For maximum compatibility with previous versions, we ignore a possible TS error here,
+  // since "initialize" was previously defined in superclass.
+  // We can safely remove this ts-ignore in a few versions
   initialize: Provider['initialize'] = undefined;
 
   // "place-holder" init function which we only assign if want a delay
