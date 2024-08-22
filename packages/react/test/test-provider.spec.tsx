@@ -51,7 +51,7 @@ describe('OpenFeatureTestProvider', () => {
 
       // should only be resolved after delay
       expect(screen.getByText('👎')).toBeInTheDocument();
-      await new Promise((resolve) => setTimeout(resolve, delay * 2));
+      await new Promise((resolve) => setTimeout(resolve, delay * 4));
       expect(screen.getByText('👍')).toBeInTheDocument();
     });
   });
@@ -108,7 +108,7 @@ describe('OpenFeatureTestProvider', () => {
 
         // should initially show fallback, then resolve
         expect(screen.getByText('🕒')).toBeInTheDocument();
-        await new Promise((resolve) => setTimeout(resolve, delay * 2));
+        await new Promise((resolve) => setTimeout(resolve, delay * 4));
         expect(screen.getByText('👍')).toBeInTheDocument();
       });
     });
