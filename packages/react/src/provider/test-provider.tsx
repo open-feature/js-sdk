@@ -1,5 +1,4 @@
 import {
-  EvaluationContext,
   InMemoryProvider,
   JsonValue,
   NOOP_PROVIDER,
