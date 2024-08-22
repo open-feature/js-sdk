@@ -1,7 +1,7 @@
 {
   "packages/nest": "0.2.1-experimental",
   "packages/react": "0.4.2",
-  "packages/client": "1.2.1",
+  "packages/client": "1.2.2",
   "packages/server": "1.15.0",
   "packages/shared": "1.3.0"
 }
