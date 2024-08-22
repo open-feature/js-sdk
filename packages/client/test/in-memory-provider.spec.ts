@@ -1,44 +1,7 @@
-import { FlagNotFoundError, GeneralError, InMemoryProvider, ProviderEvents, StandardResolutionReasons, TypeMismatchError } from '../src';
-import { FlagConfiguration } from '../src/provider/in-memory-provider/flag-configuration';
+import { FlagNotFoundError, InMemoryProvider, ProviderEvents, StandardResolutionReasons, TypeMismatchError } from '../src';
 import { VariantNotFoundError } from '../src/provider/in-memory-provider/variant-not-found-error';
 
 describe('in-memory provider', () => {
-  describe('initialize', () => {
-    it('Should not throw for valid flags', async () => {
-      const booleanFlagSpec = {
-        'a-boolean-flag': {
-          variants: {
-            on: true,
-            off: false,
-          },
-          disabled: false,
-          defaultVariant: 'on',
-        },
-      };
-      const provider = new InMemoryProvider(booleanFlagSpec);
-      await provider.initialize();
-    });
-
-    it('Should throw on invalid flags', async () => {
-      const throwingFlagSpec: FlagConfiguration = {
-        'a-boolean-flag': {
-          variants: {
-            on: true,
-            off: false,
-          },
-          disabled: false,
-          defaultVariant: 'on',
-          contextEvaluator: () => {
-            throw new GeneralError('context eval error');
-          },
-        },
-      };
-      const provider = new InMemoryProvider(throwingFlagSpec);
-      const someContext = {};
-      await expect(provider.initialize(someContext)).rejects.toThrow();
-    });
-  });
-
   describe('boolean flags', () => {
     const provider = new InMemoryProvider({});
     it('resolves to default variant with reason static', async () => {
@@ -531,8 +494,6 @@ describe('in-memory provider', () => {
         },
       });
 
-      await provider.initialize();
-
       const firstResolution = provider.resolveStringEvaluation('some-flag', 'deafaultFirstResolution');
 
       expect(firstResolution).toEqual({
@@ -576,8 +537,6 @@ describe('in-memory provider', () => {
       };
 
       const provider = new InMemoryProvider(flagsSpec);
-
-      await provider.initialize();
 
       // I passed configuration by reference, so maybe I can mess
       // with it behind the providers back!
