@@ -1,6 +1,6 @@
 {
   "name": "@openfeature/react-sdk",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "OpenFeature React SDK",
   "main": "./dist/cjs/index.js",
   "files": [
