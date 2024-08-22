@@ -43,6 +43,15 @@ type TestProviderProps = Omit<React.ComponentProps<typeof OpenFeatureProvider>, 
 
 // internal provider which is basically the in-memory provider with a simpler config and some optional fake delays
 class TestProvider extends InMemoryProvider {
+
+  // initially make this undefined, we still set it if a delay is specified
+  initialize: Provider['initialize'] = undefined;
+
+  // "place-holder" init function which we only assign if want a delay
+  private delayedInitialize = async () => {
+    await new Promise<void>((resolve) => setTimeout(resolve, this.delay));
+  };
+
   constructor(
     flagValueMap: FlagValueMap,
     private delay = 0,
@@ -61,10 +70,8 @@ class TestProvider extends InMemoryProvider {
       };
     }, {});
     super(flagConfig);
-  }
-
-  async initialize(context?: EvaluationContext | undefined): Promise<void> {
-    await Promise.all([super.initialize(context), new Promise<void>((resolve) => setTimeout(resolve, this.delay))]);
+    // only define and init if there's a non-zero delay specified
+    this.initialize = this.delay ? this.delayedInitialize.bind(this) : undefined;
   }
 
   async onContextChange() {
