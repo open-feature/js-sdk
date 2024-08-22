@@ -31,30 +31,17 @@ export class InMemoryProvider implements Provider {
     this._flagConfiguration = { ...flagConfiguration };
   }
 
-  async initialize(context?: EvaluationContext | undefined): Promise<void> {
-    try {
-      for (const key in this._flagConfiguration) {
-        this.resolveFlagWithReason(key, context);
-      }
-      this._context = context;
-    } catch (err) {
-      throw new GeneralError('initialization failure', { cause: err });
-    }
-  }
-
   /**
    * Overwrites the configured flags.
    * @param { FlagConfiguration } flagConfiguration new flag configuration
    */
   async putConfiguration(flagConfiguration: FlagConfiguration) {
-    const flagsChanged = Object.entries(flagConfiguration)
-      .filter(([key, value]) => this._flagConfiguration[key] !== value)
-      .map(([key]) => key);
-
-    this._flagConfiguration = { ...flagConfiguration };
-
     try {
-      await this.initialize(this._context);
+      const flagsChanged = Object.entries(flagConfiguration)
+        .filter(([key, value]) => this._flagConfiguration[key] !== value)
+        .map(([key]) => key);
+
+      this._flagConfiguration = { ...flagConfiguration };
       this.events.emit(ProviderEvents.ConfigurationChanged, { flagsChanged });
     } catch (err) {
       this.events.emit(ProviderEvents.Error);
@@ -98,8 +85,12 @@ export class InMemoryProvider implements Provider {
     return this.resolveAndCheckFlag<T>(flagKey, defaultValue, context || this._context, logger);
   }
 
-  private resolveAndCheckFlag<T extends JsonValue | FlagValueType>(flagKey: string,
-    defaultValue: T, context?: EvaluationContext, logger?: Logger): ResolutionDetails<T> {
+  private resolveAndCheckFlag<T extends JsonValue | FlagValueType>(
+    flagKey: string,
+    defaultValue: T,
+    context?: EvaluationContext,
+    logger?: Logger,
+  ): ResolutionDetails<T> {
     if (!(flagKey in this._flagConfiguration)) {
       const message = `no flag found with key ${flagKey}`;
       logger?.debug(message);
