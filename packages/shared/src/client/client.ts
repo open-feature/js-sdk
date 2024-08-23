@@ -1,7 +1,6 @@
-import { Metadata } from '../types';
 import { ProviderMetadata } from '../provider/provider';
 
-export interface ClientMetadata extends Metadata {
+export interface ClientMetadata {
   /**
    * @deprecated alias of "domain", use domain instead
    */
