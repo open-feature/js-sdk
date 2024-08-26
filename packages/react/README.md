@@ -285,9 +285,7 @@ The React SDK includes a built-in context provider for testing.
 This allows you to easily test components that use evaluation hooks, such as `useFlag`.
 If you try to test a component (in this case, `MyComponent`) which uses an evaluation hook, you might see an error message like:
 
-```
-No OpenFeature client available - components using OpenFeature must be wrapped with an <OpenFeatureProvider>.
-```
+> No OpenFeature client available - components using OpenFeature must be wrapped with an `<OpenFeatureProvider>`.
 
 You can resolve this by simply wrapping your component under test in the OpenFeatureTestProvider:
 
