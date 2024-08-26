@@ -248,7 +248,7 @@ describe('evaluation', () => {
     });
   });
 
-  describe('re-rending and suspense', () => {
+  describe('re-rendering and suspense', () => {
     /**
      * artificial delay for various async operations for our provider,
      * multiples of it are used in assertions as well
@@ -772,12 +772,12 @@ describe('evaluation', () => {
       });
     });
 
-    describe('HookFlagQuery',  () => {
+    describe('HookFlagQuery', () => {
       it('should return details', () => {
         const details: EvaluationDetails<string> = {
           flagKey: 'flag-key',
-          flagMetadata : {},
-          value: 'string'
+          flagMetadata: {},
+          value: 'string',
         };
         const hookFlagQuery = new HookFlagQuery(details);
         expect(hookFlagQuery.details).toEqual(details);
@@ -785,7 +785,7 @@ describe('evaluation', () => {
 
       it('should return flag metadata', () => {
         const flagMetadata = {
-          'ping': 'pong'
+          ping: 'pong',
         };
         const details: EvaluationDetails<boolean> = {
           flagKey: 'with-flagMetadata',
@@ -797,22 +797,26 @@ describe('evaluation', () => {
       });
 
       it.each([
-        [{
-          flagKey: 'i-dont-exist',
-          flagMetadata: {},
-          errorMessage: 'no flag found with key i-dont-exist',
-          errorCode: ErrorCode.FLAG_NOT_FOUND,
-          value: true
-        }],
-        [{
-          flagKey: 'i-dont-exist',
-          flagMetadata: {},
-          errorMessage: 'no flag found with key i-dont-exist',
-          errorCode: undefined,
-          reason: StandardResolutionReasons.ERROR,
-          value: true
-        }],
-      ])('should return errors if reason is error or errorCode is set',(details) => {;
+        [
+          {
+            flagKey: 'i-dont-exist',
+            flagMetadata: {},
+            errorMessage: 'no flag found with key i-dont-exist',
+            errorCode: ErrorCode.FLAG_NOT_FOUND,
+            value: true,
+          },
+        ],
+        [
+          {
+            flagKey: 'i-dont-exist',
+            flagMetadata: {},
+            errorMessage: 'no flag found with key i-dont-exist',
+            errorCode: undefined,
+            reason: StandardResolutionReasons.ERROR,
+            value: true,
+          },
+        ],
+      ])('should return errors if reason is error or errorCode is set', (details) => {
         const hookFlagQuery = new HookFlagQuery(details);
         expect(hookFlagQuery.isError).toEqual(true);
         expect(hookFlagQuery.errorCode).toEqual(details.errorCode);
@@ -820,30 +824,42 @@ describe('evaluation', () => {
       });
 
       it.each([
-        [{
-          flagKey: 'isAuthorative-true',
-          flagMetadata : {},
-          value: 7,
-        }, true],
-        [{
-          flagKey: 'with-error',
-          flagMetadata : {},
-          value: 7,
-          errorCode: ErrorCode.FLAG_NOT_FOUND
-        }, false],
-        [{
-          flagKey: 'with-reason-stale',
-          flagMetadata : {},
-          value: 7,
-          reason: StandardResolutionReasons.STALE
-        }, false],
-        [{
-          flagKey: 'with-reason-disabled',
-          flagMetadata : {},
-          value: 7,
-          reason: StandardResolutionReasons.DISABLED
-        }, false],
-      ])('should return isAuthorative if Reason != STALE/DISABLED and errorCode unset',(details, expected) => {
+        [
+          {
+            flagKey: 'isAuthoritative-true',
+            flagMetadata: {},
+            value: 7,
+          },
+          true,
+        ],
+        [
+          {
+            flagKey: 'with-error',
+            flagMetadata: {},
+            value: 7,
+            errorCode: ErrorCode.FLAG_NOT_FOUND,
+          },
+          false,
+        ],
+        [
+          {
+            flagKey: 'with-reason-stale',
+            flagMetadata: {},
+            value: 7,
+            reason: StandardResolutionReasons.STALE,
+          },
+          false,
+        ],
+        [
+          {
+            flagKey: 'with-reason-disabled',
+            flagMetadata: {},
+            value: 7,
+            reason: StandardResolutionReasons.DISABLED,
+          },
+          false,
+        ],
+      ])('should return isAuthoritative if Reason != STALE/DISABLED and errorCode unset', (details, expected) => {
         const hookFlagQuery = new HookFlagQuery(details);
         expect(hookFlagQuery.isAuthoritative).toEqual(expected);
       });
