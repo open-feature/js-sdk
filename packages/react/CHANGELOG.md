@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.3](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.2...react-sdk-v0.4.3) (2024-08-22)
+
+
+### 🐛 Bug Fixes
+
+* race condition in test provider with suspense ([#980](https://github.com/open-feature/js-sdk/issues/980)) ([0f187fe](https://github.com/open-feature/js-sdk/commit/0f187fe0b584e66b6283531eb7879c320967f921))
+
+
+### 🧹 Chore
+
+* fix flaky test timing ([ad46ade](https://github.com/open-feature/js-sdk/commit/ad46ade143b10366103d4ac199d728e8ae5ba7e8))
+
 ## [0.4.2](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.1...react-sdk-v0.4.2) (2024-07-29)
 
 

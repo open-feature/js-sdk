@@ -6,8 +6,8 @@ import { OpenFeatureTestProvider, useFlag } from '../src';
 
 const FLAG_KEY = 'thumbs';
 
-function TestComponent() {
-  const { value: thumbs, reason } = useFlag(FLAG_KEY, false);
+function TestComponent(props: { suspend: boolean }) {
+  const { value: thumbs, reason } = useFlag(FLAG_KEY, false, { suspend: props.suspend });
   return (
     <>
       <div>{thumbs ? '👍' : '👎'}</div>
@@ -21,10 +21,10 @@ describe('OpenFeatureTestProvider', () => {
     it('renders default', async () => {
       render(
         <OpenFeatureTestProvider>
-          <TestComponent />
+          <TestComponent suspend={false} />
         </OpenFeatureTestProvider>,
       );
-      expect(await screen.findByText('👎')).toBeInTheDocument();
+      expect(screen.getByText('👎')).toBeInTheDocument();
     });
   });
 
@@ -32,11 +32,11 @@ describe('OpenFeatureTestProvider', () => {
     it('renders value from map', async () => {
       render(
         <OpenFeatureTestProvider flagValueMap={{ [FLAG_KEY]: true }}>
-          <TestComponent />
+          <TestComponent suspend={false} />
         </OpenFeatureTestProvider>,
       );
 
-      expect(await screen.findByText('👍')).toBeInTheDocument();
+      expect(screen.getByText('👍')).toBeInTheDocument();
     });
   });
 
@@ -45,14 +45,14 @@ describe('OpenFeatureTestProvider', () => {
       const delay = 100;
       render(
         <OpenFeatureTestProvider delayMs={delay} flagValueMap={{ [FLAG_KEY]: true }}>
-          <TestComponent />
+          <TestComponent suspend={false} />
         </OpenFeatureTestProvider>,
       );
 
       // should only be resolved after delay
-      expect(await screen.findByText('👎')).toBeInTheDocument();
-      await new Promise((resolve) => setTimeout(resolve, delay * 2));
-      expect(await screen.findByText('👍')).toBeInTheDocument();
+      expect(screen.getByText('👎')).toBeInTheDocument();
+      await new Promise((resolve) => setTimeout(resolve, delay * 4));
+      expect(screen.getByText('👍')).toBeInTheDocument();
     });
   });
 
@@ -60,7 +60,6 @@ describe('OpenFeatureTestProvider', () => {
     const reason = 'MY_REASON';
 
     it('renders provider-returned value', async () => {
-
       class MyTestProvider implements Partial<Provider> {
         resolveBooleanEvaluation(): ResolutionDetails<boolean> {
           return {
@@ -73,27 +72,60 @@ describe('OpenFeatureTestProvider', () => {
 
       render(
         <OpenFeatureTestProvider provider={new MyTestProvider()}>
-          <TestComponent />
+          <TestComponent suspend={false} />
         </OpenFeatureTestProvider>,
       );
 
-      expect(await screen.findByText('👍')).toBeInTheDocument();
-      expect(await screen.findByText(/reason/)).toBeInTheDocument();
+      expect(screen.getByText('👍')).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(`${reason}`))).toBeInTheDocument();
     });
 
     it('falls back to no-op for missing methods', async () => {
-
-      class MyEmptyProvider implements Partial<Provider> {
-      }
+      class MyEmptyProvider implements Partial<Provider> {}
 
       render(
         <OpenFeatureTestProvider provider={new MyEmptyProvider()}>
-          <TestComponent />
+          <TestComponent suspend={false} />
         </OpenFeatureTestProvider>,
       );
 
-      expect(await screen.findByText('👎')).toBeInTheDocument();
-      expect(await screen.findByText(/No-op/)).toBeInTheDocument();
+      expect(screen.getByText('👎')).toBeInTheDocument();
+      expect(screen.getByText(/No-op/)).toBeInTheDocument();
+    });
+  });
+
+  describe('component under test suspends', () => {
+    describe('delay non-zero', () => {
+      it('renders fallback then value after delay', async () => {
+        const delay = 100;
+        render(
+          <OpenFeatureTestProvider delayMs={delay} flagValueMap={{ [FLAG_KEY]: true }}>
+            <React.Suspense fallback={<>🕒</>}>
+              <TestComponent suspend={true} />
+            </React.Suspense>
+          </OpenFeatureTestProvider>,
+        );
+
+        // should initially show fallback, then resolve
+        expect(screen.getByText('🕒')).toBeInTheDocument();
+        await new Promise((resolve) => setTimeout(resolve, delay * 4));
+        expect(screen.getByText('👍')).toBeInTheDocument();
+      });
+    });
+
+    describe('delay zero', () => {
+      it('renders value immediately', async () => {
+        render(
+          <OpenFeatureTestProvider delayMs={0} flagValueMap={{ [FLAG_KEY]: true }}>
+            <React.Suspense fallback={<>🕒</>}>
+              <TestComponent suspend={true} />
+            </React.Suspense>
+          </OpenFeatureTestProvider>,
+        );
+
+        // should resolve immediately since delay is falsy
+        expect(screen.getByText('👍')).toBeInTheDocument();
+      });
     });
   });
 });

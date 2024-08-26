@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.2.2](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.2.1...web-sdk-v1.2.2) (2024-08-22)
+
+
+### 🐛 Bug Fixes
+
+* race condition in test provider with suspense ([#980](https://github.com/open-feature/js-sdk/issues/980)) ([0f187fe](https://github.com/open-feature/js-sdk/commit/0f187fe0b584e66b6283531eb7879c320967f921))
+
 ## [1.2.1](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.2.0...web-sdk-v1.2.1) (2024-06-12)
 
 

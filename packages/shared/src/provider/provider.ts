@@ -82,7 +82,7 @@ export { ClientProviderStatus as AllProviderStatus };
 /**
  * Static data about the provider.
  */
-export interface ProviderMetadata extends Metadata {
+export interface ProviderMetadata extends Readonly<Metadata> {
   readonly name: string;
 }
 
@@ -99,7 +99,7 @@ export interface CommonProvider<S extends ClientProviderStatus | ServerProviderS
   /**
    * @deprecated the SDK now maintains the provider's state; there's no need for providers to implement this field.
    * Returns a representation of the current readiness of the provider.
-   * 
+   *
    * _Providers which do not implement this method are assumed to be ready immediately._
    */
   readonly status?: S;
