@@ -1,6 +1,12 @@
 # Changelog
 
 
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/core bumped from 1.3.0 to 1.4.0
+
 ## [1.2.2](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.2.1...web-sdk-v1.2.2) (2024-08-22)
 
 
