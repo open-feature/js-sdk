@@ -3,7 +3,7 @@
     "entryPointStrategy": "packages",
     "entryPoints": [
         "packages/server",
-        "packages/client",
+        "packages/web",
         "packages/shared",
     ],
     "sort": [

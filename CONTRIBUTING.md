@@ -19,7 +19,7 @@ We value having as few runtime dependencies as possible. The addition of any dep
 ### Modules
 
 This repository uses [NPM workspaces](https://docs.npmjs.com/cli/v9/using-npm/workspaces) to establish a simple monorepo.
-Within the root project, there is one common project (`packages/shared`) which features common interfaces and code, consumed by the published modules (`packages/server` and `packages/client`).
+Within the root project, there is one common project (`packages/shared`) which features common interfaces and code, consumed by the published modules (`packages/server` and `packages/web`).
 The shared module is built and published separately, and is a peer dependency of the SDK packages.
 Consumers need not install it separately, since `npm` and `yarn` automatically install required peers.
 In order to prevent regressions cause by incompatibilities due to version mismatches, the SDKs are locked to a particular version of the `@openfeature/core` module, and the CI enforces that it's released before any dependant SDKs (see [the related workflow](./.github/workflows/audit-pending-releases.yml)).
@@ -36,9 +36,9 @@ npm run e2e-server
 ```
 for the server e2e tests and
 ```
-npm run e2e-client
+npm run e2e-web
 ```
-for the client e2e tests.
+for the web e2e tests.
 
 ### Packaging
 

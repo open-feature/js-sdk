@@ -11,7 +11,7 @@
       "extra-files": ["README.md"],
       "versioning": "default"
     },
-    "packages/client": {
+    "packages/web": {
       "release-type": "node",
       "prerelease": false,
       "bump-minor-pre-major": true,
