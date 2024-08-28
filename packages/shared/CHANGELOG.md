@@ -1,5 +1,12 @@
 # Changelog 
 
+## [1.4.0](https://github.com/open-feature/js-sdk/compare/core-v1.3.0...core-v1.4.0) (2024-08-28)
+
+
+### ✨ New Features
+
+* updated the Metadata type to allow for custom properties ([#975](https://github.com/open-feature/js-sdk/issues/975)) ([16b0d74](https://github.com/open-feature/js-sdk/commit/16b0d743404da1f82d5fbada1ad5bedc0d253417))
+
 ## [1.3.0](https://github.com/open-feature/js-sdk/compare/core-v1.2.0...core-v1.3.0) (2024-06-11)
 
 
