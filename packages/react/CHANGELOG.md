@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.4](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.3...react-sdk-v0.4.4) (2024-08-28)
+
+
+### 🧹 Chore
+
+* move client/ dir to web/ ([#991](https://github.com/open-feature/js-sdk/issues/991)) ([df4e72e](https://github.com/open-feature/js-sdk/commit/df4e72eabc3370801303470ca37263a0d4d9bb38))
+
+
+### 📚 Documentation
+
+* **react:** update the error message ([#978](https://github.com/open-feature/js-sdk/issues/978)) ([429c4ae](https://github.com/open-feature/js-sdk/commit/429c4ae941b66a1aa82b5aeea4bdb8b57bd05022))
+
 ## [0.4.3](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.2...react-sdk-v0.4.3) (2024-08-22)
 
 
