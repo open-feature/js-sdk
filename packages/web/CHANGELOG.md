@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [1.2.3](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.2.2...web-sdk-v1.2.3) (2024-08-28)
+
+
+### 🧹 Chore
+
+* **main:** release core 1.4.0 ([#984](https://github.com/open-feature/js-sdk/issues/984)) ([01344b2](https://github.com/open-feature/js-sdk/commit/01344b28c1381d9de3aefde89be841b597a00b70))
+* move client/ dir to web/ ([#991](https://github.com/open-feature/js-sdk/issues/991)) ([df4e72e](https://github.com/open-feature/js-sdk/commit/df4e72eabc3370801303470ca37263a0d4d9bb38))
+
 ## [1.2.2](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.2.1...web-sdk-v1.2.2) (2024-08-22)
 
 
