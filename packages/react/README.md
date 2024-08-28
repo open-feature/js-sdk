@@ -190,7 +190,7 @@ This is analogous to:
 OpenFeature.getClient('my-domain');
 ```
 
-For more information about `domains`, refer to the [web SDK](https://github.com/open-feature/js-sdk/blob/main/packages/client/README.md).
+For more information about `domains`, refer to the [web SDK](https://github.com/open-feature/js-sdk/blob/main/packages/web/README.md).
 
 #### Re-rendering with Context Changes
 

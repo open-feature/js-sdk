@@ -124,10 +124,10 @@ export default {
       },
     },
     {
-      displayName: 'client',
+      displayName: 'web',
       testEnvironment: 'node',
       preset: 'ts-jest',
-      testMatch: ['<rootDir>/packages/client/test/**/*.spec.ts'],
+      testMatch: ['<rootDir>/packages/web/test/**/*.spec.ts'],
       moduleNameMapper: {
         '@openfeature/core': '<rootDir>/packages/shared/src',
       },
@@ -143,10 +143,10 @@ export default {
       },
     },
     {
-      displayName: 'client-e2e',
+      displayName: 'web-e2e',
       testEnvironment: 'node',
       preset: 'ts-jest',
-      testMatch: ['<rootDir>/packages/client/e2e/**/*.spec.ts'],
+      testMatch: ['<rootDir>/packages/web/e2e/**/*.spec.ts'],
       modulePathIgnorePatterns: ['.*/node-modules/'],
       moduleNameMapper: {
         '^uuid$': require.resolve('uuid'),
@@ -178,7 +178,7 @@ export default {
       testMatch: ['<rootDir>/packages/react/test/**/*.spec.{ts,tsx}'],
       moduleNameMapper: {
         '@openfeature/core': '<rootDir>/packages/shared/src',
-        '@openfeature/web-sdk': '<rootDir>/packages/client/src',
+        '@openfeature/web-sdk': '<rootDir>/packages/web/src',
       },
       transform: {
         '^.+\\.(ts|tsx)$': [
