@@ -8,10 +8,10 @@
     "e2e-server": "git submodule update --init --recursive && shx cp test-harness/features/evaluation.feature packages/server/e2e/features && jest --selectProjects=server-e2e --verbose",
     "e2e-web": "git submodule update --init --recursive && shx cp test-harness/features/evaluation.feature packages/web/e2e/features && jest --selectProjects=web-e2e --verbose",
     "e2e": "npm run e2e-server && npm run e2e-web",
-    "lint": "npm run lint --workspace=packages/shared --workspace=packages/server --workspace=packages/web --workspace=packages/react --workspace=packages/nest",
+    "lint": "npm run lint --workspace=packages/shared --workspace=packages/server --workspace=packages/web --workspace=packages/react --workspace=packages/angular --workspace=packages/nest",
     "clean": "shx rm -rf ./dist",
-    "build": "npm run build --workspace=packages/shared --workspace=packages/server --workspace=packages/web --workspace=packages/react --workspace=packages/nest",
-    "publish-all": "npm run publish-if-not-exists --workspace=packages/shared --workspace=packages/server --workspace=packages/web --workspace=packages/react --workspace=packages/nest",
+    "build": "npm run build --workspace=packages/shared --workspace=packages/server --workspace=packages/web --workspace=packages/react --workspace=packages/angular --workspace=packages/nest",
+    "publish-all": "npm run publish-if-not-exists --workspace=packages/shared --workspace=packages/server --workspace=packages/web --workspace=packages/react --workspace=packages/angular --workspace=packages/nest",
     "docs": "typedoc",
     "core-version": "npm run version --workspace=packages/shared",
     "update-core-peers": "export OPENFEATURE_CORE_VERSION=$(npm run --silent core-version) && npm run update-core-peer --workspace=packages/server --workspace=packages/web"
@@ -76,6 +76,7 @@
     "packages/server",
     "packages/web",
     "packages/react",
+    "packages/angular",
     "packages/nest"
   ]
 }
