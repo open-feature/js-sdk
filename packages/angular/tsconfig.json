@@ -5,7 +5,9 @@
     "paths": {
       "angular": [
         "./dist/angular"
-      ]
+      ],
+      "@openfeature/core": [ "../shared/src" ],
+      "@openfeature/web-sdk": [ "../web/src" ]
     },
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
@@ -28,7 +30,7 @@
     "lib": [
       "ES2022",
       "dom"
-    ]
+    ],
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

@@ -197,7 +197,7 @@ export class BooleanFeatureFlagDirective extends FeatureFlagDirective<boolean> i
 @Directive({
   selector: '[numberFeatureFlag]',
 })
-export class NumberFeatureFlagDirective extends FeatureFlagDirective<number> {
+export class NumberFeatureFlagDirective extends FeatureFlagDirective<number> implements OnChanges {
   @Input({ required: true }) numberFeatureFlag: string;
   @Input({ required: true }) numberFeatureFlagDefault: number;
   @Input({ required: true }) numberFeatureFlagValue: number;
@@ -233,7 +233,7 @@ export class NumberFeatureFlagDirective extends FeatureFlagDirective<number> {
 @Directive({
   selector: '[stringFeatureFlag]',
 })
-export class StringFeatureFlagDirective extends FeatureFlagDirective<string> {
+export class StringFeatureFlagDirective extends FeatureFlagDirective<string> implements OnChanges {
   @Input({ required: true }) stringFeatureFlag: string;
   @Input({ required: true }) stringFeatureFlagDefault: string;
   @Input({ required: true }) stringFeatureFlagValue: string;
@@ -269,7 +269,7 @@ export class StringFeatureFlagDirective extends FeatureFlagDirective<string> {
 @Directive({
   selector: '[objectFeatureFlag]',
 })
-export class ObjectFeatureFlagDirective<T extends JsonValue> extends FeatureFlagDirective<T> {
+export class ObjectFeatureFlagDirective<T extends JsonValue> extends FeatureFlagDirective<T> implements OnChanges {
   @Input({ required: true }) objectFeatureFlag: string;
   @Input({ required: true }) objectFeatureFlagDefault: T;
   @Input({ required: true }) objectFeatureFlagValue: T;

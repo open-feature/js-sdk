@@ -9,5 +9,11 @@
   "dependencies": {
     "tslib": "^2.3.0"
   },
+  "devDependencies": {
+    "@openfeature/core": "*",
+    "@openfeature/web-sdk": "*",
+    "@angular/common": "^17.3.0",
+    "@angular/core": "^17.3.0"
+  },
   "sideEffects": false
 }
