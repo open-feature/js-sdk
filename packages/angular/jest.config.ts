@@ -14,6 +14,8 @@ const config: Config = {
   testEnvironment: 'jsdom',
   preset: 'jest-preset-angular',
   setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
+  modulePathIgnorePatterns: ['<rootDir>/dist'],
+  testMatch: ['<rootDir>/projects/angular-sdk/src/**/*.spec.{ts,tsx}'],
 };
 
 export default config;

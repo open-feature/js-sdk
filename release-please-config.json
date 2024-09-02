@@ -27,7 +27,7 @@
       "extra-files": ["README.md"],
       "versioning": "default"
     },
-    "packages/angular/project/angular-sdk": {
+    "packages/angular/projects/angular-sdk": {
       "release-type": "node",
       "prerelease": false,
       "bump-minor-pre-major": true,

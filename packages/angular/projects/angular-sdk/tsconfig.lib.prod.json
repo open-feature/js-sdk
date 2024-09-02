@@ -4,6 +4,11 @@
   "compilerOptions": {
     "declarationMap": false
   },
+  "paths": {
+    "angular": [
+      "./dist/angular"
+    ]
+  },
   "angularCompilerOptions": {
     "compilationMode": "partial"
   }

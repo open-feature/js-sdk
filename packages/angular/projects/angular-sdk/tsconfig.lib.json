@@ -6,7 +6,12 @@
     "declaration": true,
     "declarationMap": true,
     "inlineSources": true,
-    "types": []
+    "types": [],
+    "paths": {
+      "angular": [
+        "./dist/angular"
+      ],
+    }
   },
   "exclude": [
     "**/*.spec.ts"

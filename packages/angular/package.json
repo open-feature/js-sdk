@@ -4,13 +4,15 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
     "lint": "ng lint",
     "watch": "ng build --watch --configuration development",
-    "test": "jest"
+    "test": "jest",
+    "build": "ng build && npm run postbuild",
+    "postbuild": "shx cp ./../../LICENSE ./dist/angular/LICENSE",
+    "publish-if-not-exists": "cp $NPM_CONFIG_USERCONFIG .npmrc && if [ \"$(npm --prefix dist/angular run current-deployed-version -s)\" = \"$(npm --prefix dist/angular run current-version -s)\" ]; then echo 'already published, skipping'; else npm --prefix dist/angular publish --access public; fi"
   },
   "private": true,
-  "dependencies": {
+  "devDependencies": {
     "@angular/animations": "^17.2.0",
     "@angular/common": "^17.2.0",
     "@angular/compiler": "^17.2.0",
@@ -19,11 +21,6 @@
     "@angular/platform-browser": "^17.2.0",
     "@angular/platform-browser-dynamic": "^17.2.0",
     "@angular/router": "^17.2.0",
-    "rxjs": "~7.8.0",
-    "tslib": "^2.3.0",
-    "zone.js": "~0.14.3"
-  },
-  "devDependencies": {
     "@angular-devkit/build-angular": "^17.3.8",
     "@angular-eslint/builder": "17.5.2",
     "@angular-eslint/eslint-plugin": "17.5.2",
@@ -36,6 +33,13 @@
     "@typescript-eslint/parser": "7.11.0",
     "eslint": "^8.57.0",
     "jest-preset-angular": "^14.2.2",
-    "ng-packagr": "^17.3.0"
+    "ng-packagr": "^17.3.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.14.3",
+    "typescript": "^4.7.4"
+  },
+  "overrides": {
+    "typescript": "^4.7.4"
   }
 }
