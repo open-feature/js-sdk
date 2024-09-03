@@ -26,10 +26,12 @@ import {
 import { TestingProvider } from './test.utils';
 import { HookFlagQuery } from '../src/evaluation/hook-flag-query';
 import { startTransition, useState } from 'react';
+import { FlagConfiguration } from '../../client/src/provider/in-memory-provider/flag-configuration';
 
 describe('evaluation', () => {
   const EVALUATION = 'evaluation';
   const BOOL_FLAG_KEY = 'boolean-flag';
+  const CONTEXT_BOOL_FLAG_KEY = 'context-sensitive-flag';
   const BOOL_FLAG_VARIANT = 'on';
   const BOOL_FLAG_VALUE = true;
   const STRING_FLAG_KEY = 'string-flag';
@@ -46,42 +48,54 @@ describe('evaluation', () => {
   const REASON_ATTR_VALUE = StandardResolutionReasons.STATIC;
   const TYPE_ATTR = 'data-type';
   const BUTTON_TEXT = 'button';
+  const FLAG_CONFIG: FlagConfiguration = {
+    [BOOL_FLAG_KEY]: {
+      disabled: false,
+      variants: {
+        [BOOL_FLAG_VARIANT]: BOOL_FLAG_VALUE,
+        off: false,
+      },
+      defaultVariant: BOOL_FLAG_VARIANT,
+    },
+    [STRING_FLAG_KEY]: {
+      disabled: false,
+      variants: {
+        [STRING_FLAG_VARIANT]: STRING_FLAG_VALUE,
+        parting: 'bye',
+      },
+      defaultVariant: STRING_FLAG_VARIANT,
+    },
+    [NUMBER_FLAG_KEY]: {
+      disabled: false,
+      variants: {
+        [NUMBER_FLAG_VARIANT]: NUMBER_FLAG_VALUE,
+        '2^1': 2,
+      },
+      defaultVariant: NUMBER_FLAG_VARIANT,
+    },
+    [OBJECT_FLAG_KEY]: {
+      disabled: false,
+      variants: {
+        [OBJECT_FLAG_VARIANT]: OBJECT_FLAG_VALUE,
+        empty: {},
+      },
+      defaultVariant: OBJECT_FLAG_VARIANT,
+    },
+    [CONTEXT_BOOL_FLAG_KEY]: {
+      disabled: false,
+      defaultVariant: 'off',
+      variants: {
+        off: false,
+        on: true,
+      },
+      contextEvaluator(ctx) {
+        return ctx.change ? 'on' : 'off';
+      },
+    },
+  };
 
   const makeProvider = () => {
-    return new InMemoryProvider({
-      [BOOL_FLAG_KEY]: {
-        disabled: false,
-        variants: {
-          [BOOL_FLAG_VARIANT]: BOOL_FLAG_VALUE,
-          off: false,
-        },
-        defaultVariant: BOOL_FLAG_VARIANT,
-      },
-      [STRING_FLAG_KEY]: {
-        disabled: false,
-        variants: {
-          [STRING_FLAG_VARIANT]: STRING_FLAG_VALUE,
-          parting: 'bye',
-        },
-        defaultVariant: STRING_FLAG_VARIANT,
-      },
-      [NUMBER_FLAG_KEY]: {
-        disabled: false,
-        variants: {
-          [NUMBER_FLAG_VARIANT]: NUMBER_FLAG_VALUE,
-          '2^1': 2,
-        },
-        defaultVariant: NUMBER_FLAG_VARIANT,
-      },
-      [OBJECT_FLAG_KEY]: {
-        disabled: false,
-        variants: {
-          [OBJECT_FLAG_VARIANT]: OBJECT_FLAG_VALUE,
-          empty: {},
-        },
-        defaultVariant: OBJECT_FLAG_VARIANT,
-      },
-    });
+    return new InMemoryProvider(FLAG_CONFIG);
   };
 
   OpenFeature.setProvider(EVALUATION, makeProvider());
@@ -246,6 +260,164 @@ describe('evaluation', () => {
         expect(objectElement).toHaveAttribute(REASON_ATTR, REASON_ATTR_VALUE);
       });
     });
+
+    describe('re-render', () => {
+      const RERENDER_DOMAIN = 'rerender';
+      const rerenderProvider = new InMemoryProvider(FLAG_CONFIG);
+
+      function TestComponentFactory() {
+        let renderCount = 0;
+
+        return function TestComponent() {
+          const {
+            value: booleanVal,
+            reason: boolReason,
+            variant: boolVariant,
+            type: booleanType,
+          } = useFlag(BOOL_FLAG_KEY, false);
+
+          const {
+            value: contextBooleanVal,
+            reason: contextBoolReason,
+            variant: contextBoolVariant,
+            type: contextBooleanType,
+          } = useFlag('context-sensitive-flag', false);
+
+          const {
+            value: stringVal,
+            reason: stringReason,
+            variant: stringVariant,
+            type: stringType,
+          } = useFlag(STRING_FLAG_KEY, 'default');
+
+          const {
+            value: numberVal,
+            reason: numberReason,
+            variant: numberVariant,
+            type: numberType,
+          } = useFlag(NUMBER_FLAG_KEY, 0);
+
+          const {
+            value: objectVal,
+            reason: objectReason,
+            variant: objectVariant,
+            type: objectType,
+          } = useFlag(OBJECT_FLAG_KEY, {});
+
+          renderCount++;
+          return (
+            <>
+              <div data-testid="render-count">{renderCount}</div>
+              <div data-type={booleanType} data-variant={boolVariant} data-reason={boolReason}>{`${booleanVal}`}</div>
+              <div
+                data-type={contextBooleanType}
+                data-variant={contextBoolVariant}
+                data-reason={contextBoolReason}
+              >{`${contextBooleanVal}`}</div>
+              <div data-type={stringType} data-variant={stringVariant} data-reason={stringReason}>
+                {stringVal}
+              </div>
+              <div data-type={numberType} data-variant={numberVariant} data-reason={numberReason}>{`${numberVal}`}</div>
+              <div data-type={objectType} data-variant={objectVariant} data-reason={objectReason}>
+                {JSON.stringify(objectVal)}
+              </div>
+            </>
+          );
+        };
+      }
+
+      OpenFeature.setProvider(RERENDER_DOMAIN, rerenderProvider);
+
+      beforeEach(async () => {
+        await rerenderProvider.putConfiguration(FLAG_CONFIG);
+        await OpenFeature.setContext(RERENDER_DOMAIN, {});
+      });
+
+      it('should not rerender on context change because the evaluated values did not change', async () => {
+        const TestComponent = TestComponentFactory();
+        render(
+          <OpenFeatureProvider domain={RERENDER_DOMAIN}>
+            <TestComponent></TestComponent>
+          </OpenFeatureProvider>,
+        );
+
+        expect(screen.queryByTestId('render-count')).toHaveTextContent('1');
+
+        await act(async () => {
+          await OpenFeature.setContext(RERENDER_DOMAIN, {});
+        });
+
+        expect(screen.queryByTestId('render-count')).toHaveTextContent('1');
+      });
+
+      it('should rerender on context change because the evaluated values changed', async () => {
+        const TestComponent = TestComponentFactory();
+        render(
+          <OpenFeatureProvider domain={RERENDER_DOMAIN}>
+            <TestComponent></TestComponent>
+          </OpenFeatureProvider>,
+        );
+
+        expect(screen.queryByTestId('render-count')).toHaveTextContent('1');
+
+        await act(async () => {
+          await OpenFeature.setContext(RERENDER_DOMAIN, { change: true });
+        });
+
+        expect(screen.queryByTestId('render-count')).toHaveTextContent('2');
+      });
+
+      it('should not rerender on flag change because the evaluated values did not change', async () => {
+        const TestComponent = TestComponentFactory();
+        render(
+          <OpenFeatureProvider domain={RERENDER_DOMAIN}>
+            <TestComponent></TestComponent>
+          </OpenFeatureProvider>,
+        );
+
+        expect(screen.queryByTestId('render-count')).toHaveTextContent('1');
+
+        await act(async () => {
+          await rerenderProvider.putConfiguration({
+            ...FLAG_CONFIG,
+            'new-flag': {
+              disabled: false,
+              defaultVariant: 'off',
+              variants: {
+                off: false,
+                on: true,
+              },
+            },
+          });
+        });
+
+        expect(screen.queryByTestId('render-count')).toHaveTextContent('1');
+      });
+
+      it('should rerender on flag change because the evaluated values changed', async () => {
+        const TestComponent = TestComponentFactory();
+        render(
+          <OpenFeatureProvider domain={RERENDER_DOMAIN}>
+            <TestComponent></TestComponent>
+          </OpenFeatureProvider>,
+        );
+
+        expect(screen.queryByTestId('render-count')).toHaveTextContent('1');
+
+        await act(async () => {
+          await rerenderProvider.putConfiguration({
+            ...FLAG_CONFIG,
+            [BOOL_FLAG_KEY]: {
+              ...FLAG_CONFIG[BOOL_FLAG_KEY],
+              // Change the default variant to trigger a rerender
+              defaultVariant: 'off',
+            },
+          });
+        });
+
+        expect(screen.queryByTestId('render-count')).toHaveTextContent('2');
+      });
+    });
   });
 
   describe('re-rendering and suspense', () => {
@@ -289,7 +461,6 @@ describe('evaluation', () => {
     };
 
     describe('updateOnConfigurationChanged=true (default)', () => {
-
       function TestComponent() {
         const { value } = useFlag(SUSPENSE_FLAG_KEY, DEFAULT);
         return (
@@ -297,7 +468,7 @@ describe('evaluation', () => {
             <div>{value}</div>
           </>
         );
-      } 
+      }
 
       it('should re-render after flag config changes', async () => {
         const provider = suspendingProvider();
@@ -334,7 +505,6 @@ describe('evaluation', () => {
     });
 
     describe.each([useFlag, useSuspenseFlag])('suspendUntilReady=true', (hook) => {
-
       const SUSPEND_UNTIL_READY_ON = 'suspendUntilReady';
 
       function TestComponent() {
@@ -344,7 +514,7 @@ describe('evaluation', () => {
             <div>{value}</div>
           </>
         );
-      }  
+      }
 
       it('should suspend until ready and then render', async () => {
         OpenFeature.setProvider(SUSPEND_UNTIL_READY_ON, suspendingProvider());
@@ -420,7 +590,6 @@ describe('evaluation', () => {
     });
 
     describe('suspendWhileReconciling=true', () => {
-      
       const SUSPEND_WHILE_RECONCILING_ON = 'suspendWhileReconciling=true';
 
       it('should suspend until reconciled and then render', async () => {
@@ -474,7 +643,7 @@ describe('evaluation', () => {
       it('should show the previous UI while reconciling during a transition', async () => {
         await OpenFeature.setContext(SUSPEND_WHILE_RECONCILING_ON, {});
         OpenFeature.setProvider(SUSPEND_WHILE_RECONCILING_ON, suspendingProvider());
-  
+
         function Component() {
           const { value } = useFlag(SUSPENSE_FLAG_KEY, DEFAULT, { suspendWhileReconciling: true });
           return <div>{value}</div>;
@@ -488,20 +657,20 @@ describe('evaluation', () => {
             </React.Suspense>
           </OpenFeatureProvider>,
         );
-  
+
         // initially should be default, because suspendUntilReady={false}
         expect(screen.queryByText(DEFAULT)).toBeInTheDocument();
-  
+
         // update the context without awaiting
         act(() => {
           startTransition(() => {
             OpenFeature.setContext(SUSPEND_WHILE_RECONCILING_ON, { user: TARGETED_USER });
           });
         });
-  
+
         // we should still see the same UI, because this is a transition update
         expect(screen.queryByText(DEFAULT)).toBeInTheDocument();
-  
+
         // make sure we updated after reconciling
         await waitFor(() => expect(screen.queryByText(TARGETED_FLAG_VALUE)).toBeInTheDocument(), {
           timeout: DELAY * 2,
@@ -510,8 +679,7 @@ describe('evaluation', () => {
     });
 
     describe.each([useFlag, useSuspenseFlag])('suspend=true', () => {
-      
-      const SUSPEND_ON = 'suspend=true';      
+      const SUSPEND_ON = 'suspend=true';
 
       it('should suspend on ready and reconcile and then render', async () => {
         await OpenFeature.setContext(SUSPEND_ON, {});
@@ -544,7 +712,9 @@ describe('evaluation', () => {
         expect(screen.queryByText(FALLBACK)).toBeInTheDocument();
 
         // expect to see value once we are ready
-        await waitFor(() => expect(screen.queryByText(STATIC_FLAG_VALUE_A)).toBeInTheDocument(), { timeout: DELAY * 2 });
+        await waitFor(() => expect(screen.queryByText(STATIC_FLAG_VALUE_A)).toBeInTheDocument(), {
+          timeout: DELAY * 2,
+        });
 
         // update the context without awaiting
         act(() => {
@@ -565,7 +735,6 @@ describe('evaluation', () => {
     });
 
     describe('suspend=false (default)', () => {
-
       const SUSPEND_OFF = 'suspend=false';
 
       function TestComponent() {
@@ -575,7 +744,7 @@ describe('evaluation', () => {
             <div>{value}</div>
           </>
         );
-      } 
+      }
       it('should not suspend until reconciled and then render', async () => {
         await OpenFeature.setContext(SUSPEND_OFF, {});
         OpenFeature.setProvider(SUSPEND_OFF, suspendingProvider());
