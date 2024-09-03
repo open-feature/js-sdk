@@ -17,8 +17,8 @@ export function isEqual(value: FlagValue, other: FlagValue): boolean {
   }
 
   if (typeof value === 'object' && value !== null && other !== null) {
-    const valueKeys = Object.keys(value as object);
-    const otherKeys = Object.keys(other as object);
+    const valueKeys = Object.keys(value);
+    const otherKeys = Object.keys(other);
 
     if (valueKeys.length !== otherKeys.length) {
       return false;

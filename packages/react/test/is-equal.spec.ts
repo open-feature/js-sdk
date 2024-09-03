@@ -36,4 +36,15 @@ describe('isEqual', () => {
     const obj2 = { address: { country: 'USA', city: 'New York' }, age: 30, name: 'John' };
     expect(isEqual(obj1, obj2)).toBe(true);
   });
+  it('should return true for equal arrays', () => {
+    const arr1 = [1, 2, 3];
+    const arr2 = [1, 2, 3];
+    expect(isEqual(arr1, arr2)).toBe(true);
+  });
+
+  it('should return false for different arrays', () => {
+    const arr1 = [1, 2, 3];
+    const arr2 = [3, 2, 1];
+    expect(isEqual(arr1, arr2)).toBe(false);
+  });
 });
