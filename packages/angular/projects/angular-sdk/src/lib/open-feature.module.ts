@@ -1,12 +1,6 @@
 import { InjectionToken, ModuleWithProviders, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OpenFeature, Provider } from '@openfeature/web-sdk';
-import {
-  BooleanFeatureFlagDirective,
-  NumberFeatureFlagDirective,
-  ObjectFeatureFlagDirective,
-  StringFeatureFlagDirective,
-} from './feature-flag.directive';
 
 export interface OpenFeatureConfig {
   provider: Provider;

@@ -62,27 +62,12 @@ export abstract class FeatureFlagDirective<T extends FlagValue> implements OnDes
     templateRef: TemplateRef<FeatureFlagDirectiveContext<T>>,
   ) {
     this._thenTemplateRef = templateRef;
-
-    this._flagChangeHandler = () => {
-      const result = this.getFlagDetails(this._featureFlagKey, this._featureFlagDefault);
-      this.onFlagValue(result, this._client.providerStatus);
-    };
-
-    if (this._client) {
-      this.disposeClient(this._client);
-    }
-
-    this._client = this.initClient();
+    this.initClient();
   }
 
   set featureFlagDomain(domain: string | undefined) {
     this._featureFlagDomain = domain;
-
-    if (this._client) {
-      this.disposeClient(this._client);
-    }
-
-    this._client = this.initClient();
+    this.initClient();
   }
 
   ngOnChanges(): void {
@@ -96,13 +81,21 @@ export abstract class FeatureFlagDirective<T extends FlagValue> implements OnDes
     }
   }
 
-  private initClient(): Client {
-    const client = OpenFeature.getClient(this._featureFlagDomain);
-    client.addHandler(ClientProviderEvents.ContextChanged, this._flagChangeHandler);
-    client.addHandler(ClientProviderEvents.ConfigurationChanged, this._flagChangeHandler);
-    client.addHandler(ClientProviderEvents.Ready, this._flagChangeHandler);
-    client.addHandler(ClientProviderEvents.Reconciling, this._flagChangeHandler);
-    return client;
+  private initClient(): void {
+    if (this._client) {
+      this.disposeClient(this._client);
+    }
+
+    this._client = OpenFeature.getClient(this._featureFlagDomain);
+    this._flagChangeHandler = () => {
+      const result = this.getFlagDetails(this._featureFlagKey, this._featureFlagDefault);
+      this.onFlagValue(result, this._client.providerStatus);
+    };
+
+    this._client.addHandler(ClientProviderEvents.ContextChanged, this._flagChangeHandler);
+    this._client.addHandler(ClientProviderEvents.ConfigurationChanged, this._flagChangeHandler);
+    this._client.addHandler(ClientProviderEvents.Ready, this._flagChangeHandler);
+    this._client.addHandler(ClientProviderEvents.Reconciling, this._flagChangeHandler);
   }
 
   private disposeClient(client: Client) {
