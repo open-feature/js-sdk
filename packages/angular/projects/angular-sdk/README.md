@@ -63,7 +63,7 @@ In addition to the feature provided by the [web sdk](https://openfeature.dev/doc
 ### Requirements
 
 - ES2022-compatible web browser (Chrome, Edge, Firefox, etc)
-- Angular version 17.3+
+- Angular version 16+
 
 ### Install
 
@@ -85,7 +85,7 @@ yarn add @openfeature/angular-sdk @openfeature/web-sdk @openfeature/core
 The following list contains the peer dependencies of `@openfeature/angular-sdk`.
 See the [package.json](./package.json) for the required versions.
 
-* `@openfeature/angular-sdk`
+* `@openfeature/web-sdk`
 * `@angular/common`
 * `@angular/core`
 
@@ -98,8 +98,7 @@ To include the OpenFeature Angular directives in your application, you need to i
 ```typescript
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { OpenFeatureModule } from 'openfeature-angular';
-import { OpenFeatureConfig } from 'openfeature-js';
+import { OpenFeatureModule } from '@openfeature/angular-sdk';
 
 @NgModule({
   declarations: [

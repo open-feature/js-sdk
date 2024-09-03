@@ -16,19 +16,9 @@ export interface OpenFeatureConfig {
 export const OPEN_FEATURE_CONFIG_TOKEN = new InjectionToken<OpenFeatureConfig>('OPEN_FEATURE_CONFIG_TOKEN');
 
 @NgModule({
-  declarations: [
-    BooleanFeatureFlagDirective,
-    NumberFeatureFlagDirective,
-    StringFeatureFlagDirective,
-    ObjectFeatureFlagDirective,
-  ],
+  declarations: [],
   imports: [CommonModule],
-  exports: [
-    BooleanFeatureFlagDirective,
-    NumberFeatureFlagDirective,
-    StringFeatureFlagDirective,
-    ObjectFeatureFlagDirective,
-  ],
+  exports: [],
 })
 export class OpenFeatureModule {
   static forRoot(config: OpenFeatureConfig): ModuleWithProviders<OpenFeatureModule> {

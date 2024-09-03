@@ -5,10 +5,21 @@ import { By } from '@angular/platform-browser';
 import { Client, ClientProviderEvents, FlagValue, InMemoryProvider, OpenFeature } from '@openfeature/web-sdk';
 import { TestingProvider } from '../test/test.utils';
 import { v4 } from 'uuid';
+import {
+  BooleanFeatureFlagDirective,
+  NumberFeatureFlagDirective,
+  ObjectFeatureFlagDirective,
+  StringFeatureFlagDirective,
+} from './feature-flag.directive';
 
 @Component({
   standalone: true,
-  imports: [OpenFeatureModule],
+  imports: [
+    BooleanFeatureFlagDirective,
+    NumberFeatureFlagDirective,
+    StringFeatureFlagDirective,
+    ObjectFeatureFlagDirective,
+  ],
   template: `
     <ng-container>
       <div class="case-1">

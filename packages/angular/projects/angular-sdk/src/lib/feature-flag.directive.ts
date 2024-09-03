@@ -30,6 +30,7 @@ class FeatureFlagDirectiveContext<T extends FlagValue> {
 }
 
 @Directive({
+  standalone: true,
   selector: '[featureFlag]',
 })
 export abstract class FeatureFlagDirective<T extends FlagValue> implements OnDestroy, OnChanges {
@@ -66,6 +67,12 @@ export abstract class FeatureFlagDirective<T extends FlagValue> implements OnDes
       const result = this.getFlagDetails(this._featureFlagKey, this._featureFlagDefault);
       this.onFlagValue(result, this._client.providerStatus);
     };
+
+    if (this._client) {
+      this.disposeClient(this._client);
+    }
+
+    this._client = this.initClient();
   }
 
   set featureFlagDomain(domain: string | undefined) {
@@ -159,11 +166,45 @@ export abstract class FeatureFlagDirective<T extends FlagValue> implements OnDes
   }
 }
 
+/**
+ * A structural directive that conditionally includes a template based on the evaluation
+ * of a boolean feature flag.
+ * When the flag evaluates to true, Angular renders the template provided in a `then` clause,
+ * and when false, Angular renders the template provided in an optional `else` clause.
+ * The default template for the `else` clause is blank.
+ *
+ * Usage example:
+ *
+ * ```
+ * <div *booleanFeatureFlag="flagKey; else: elseTemplate">Content to render when flag is true.</div>
+ * <ng-template #elseTemplate>Content to render when flag is false.</ng-template>
+ * ```
+ *
+ * @usageNotes
+ *
+ * You can specify templates for other statuses such as initializing and reconciling.
+ *
+ * ```
+ * <div *booleanFeatureFlag="flagKey; else: elseTemplate; initializing: initializingTemplate; reconciling: reconcilingTemplate">Content to render when flag is true.</div>
+ * <ng-template #elseTemplate>Content to render when flag is false.</ng-template>
+ * <ng-template #initializingTemplate>Loading...</ng-template>
+ * <ng-template #reconcilingTemplate>Reconfiguring...</ng-template>
+ * ```
+ *
+ */
 @Directive({
+  standalone: true,
   selector: '[booleanFeatureFlag]',
 })
 export class BooleanFeatureFlagDirective extends FeatureFlagDirective<boolean> implements OnChanges {
+  /**
+   * The key of the boolean feature flag.
+   */
   @Input({ required: true }) booleanFeatureFlag: string;
+
+  /**
+   * The default value for the boolean feature flag.
+   */
   @Input({ required: true }) booleanFeatureFlagDefault: boolean;
 
   override ngOnChanges() {
@@ -173,33 +214,84 @@ export class BooleanFeatureFlagDirective extends FeatureFlagDirective<boolean> i
     super.ngOnChanges();
   }
 
+  /**
+   * The domain of the boolean feature flag.
+   */
   @Input({ required: false })
   set booleanFeatureFlagDomain(domain: string | undefined) {
     super.featureFlagDomain = domain;
   }
 
+  /**
+   * Template to be displayed when the feature flag is false.
+   */
   @Input()
   set booleanFeatureFlagElse(tpl: TemplateRef<FeatureFlagDirectiveContext<boolean>>) {
     this._elseTemplateRef = tpl;
   }
 
+  /**
+   * Template to be displayed when the provider is not ready.
+   */
   @Input()
   set booleanFeatureFlagInitializing(tpl: TemplateRef<FeatureFlagDirectiveContext<boolean>>) {
     this._initializingTemplateRef = tpl;
   }
 
+  /**
+   * Template to be displayed when the provider is reconciling.
+   */
   @Input()
   set booleanFeatureFlagReconciling(tpl: TemplateRef<FeatureFlagDirectiveContext<boolean>>) {
     this._reconcilingTemplateRef = tpl;
   }
 }
 
+/**
+ * A structural directive that conditionally includes a template based on the evaluation
+ * of a number feature flag.
+ * When the flag matches the provided value, Angular renders the template provided
+ * in a `then` clause, and when it doesn't match, Angular renders the template provided
+ * in an optional `else` clause.
+ * The default template for the `else` clause is blank.
+ *
+ * Usage example:
+ *
+ * ```
+ * <div *numberFeatureFlag="flagKey; value: flagValue; else: elseTemplate">Content to render when flag matches value.</div>
+ * <ng-template #elseTemplate>Content to render when flag does not match value.</ng-template>
+ * ```
+ *
+ * @usageNotes
+ *
+ * You can specify templates for other statuses such as initializing and reconciling.
+ *
+ * ```
+ * <div *numberFeatureFlag="flagKey; value: flagValue; else: elseTemplate; initializing: initializingTemplate; reconciling: reconcilingTemplate">Content to render when flag matches value.</div>
+ * <ng-template #elseTemplate>Content to render when flag does not match value.</ng-template>
+ * <ng-template #initializingTemplate>Loading...</ng-template>
+ * <ng-template #reconcilingTemplate>Reconfiguring...</ng-template>
+ * ```
+ *
+ */
 @Directive({
+  standalone: true,
   selector: '[numberFeatureFlag]',
 })
 export class NumberFeatureFlagDirective extends FeatureFlagDirective<number> implements OnChanges {
+  /**
+   * The key of the number feature flag.
+   */
   @Input({ required: true }) numberFeatureFlag: string;
+
+  /**
+   * The default value for the number feature flag.
+   */
   @Input({ required: true }) numberFeatureFlagDefault: number;
+
+  /**
+   * The expected value of this number feature flag, for which the `then` template should be rendered.
+   */
   @Input({ required: true }) numberFeatureFlagValue: number;
 
   override ngOnChanges() {
@@ -209,33 +301,84 @@ export class NumberFeatureFlagDirective extends FeatureFlagDirective<number> imp
     super.ngOnChanges();
   }
 
+  /**
+   * The domain of the number feature flag.
+   */
   @Input({ required: false })
   set numberFeatureFlagDomain(domain: string | undefined) {
     super.featureFlagDomain = domain;
   }
 
+  /**
+   * Template to be displayed when the feature flag does not match value.
+   */
   @Input()
   set numberFeatureFlagElse(tpl: TemplateRef<FeatureFlagDirectiveContext<number>>) {
     this._elseTemplateRef = tpl;
   }
 
+  /**
+   * Template to be displayed when the feature flag is not ready.
+   */
   @Input()
   set numberFeatureFlagInitializing(tpl: TemplateRef<FeatureFlagDirectiveContext<number>>) {
     this._initializingTemplateRef = tpl;
   }
 
+  /**
+   * Template to be displayed when the feature flag is not ready.
+   */
   @Input()
   set numberFeatureFlagReconciling(tpl: TemplateRef<FeatureFlagDirectiveContext<number>>) {
     this._reconcilingTemplateRef = tpl;
   }
 }
 
+/**
+ * A structural directive that conditionally includes a template based on the evaluation
+ * of a string feature flag.
+ * When the flag matches the provided value, Angular renders the template provided
+ * in a `then` clause, and when it doesn't match, Angular renders the template provided
+ * in an optional `else` clause.
+ * The default template for the `else` clause is blank.
+ *
+ * Usage example:
+ *
+ * ```
+ * <div *stringFeatureFlag="flagKey; value: flagValue; else: elseTemplate">Content to render when flag matches value.</div>
+ * <ng-template #elseTemplate>Content to render when flag does not match value.</ng-template>
+ * ```
+ *
+ * @usageNotes
+ *
+ * You can specify templates for other statuses such as initializing and reconciling.
+ *
+ * ```
+ * <div *stringFeatureFlag="flagKey; value: flagValue; else: elseTemplate; initializing: initializingTemplate; reconciling: reconcilingTemplate">Content to render when flag matches value.</div>
+ * <ng-template #elseTemplate>Content to render when flag does not match value.</ng-template>
+ * <ng-template #initializingTemplate>Loading...</ng-template>
+ * <ng-template #reconcilingTemplate>Reconfiguring...</ng-template>
+ * ```
+ *
+ */
 @Directive({
+  standalone: true,
   selector: '[stringFeatureFlag]',
 })
 export class StringFeatureFlagDirective extends FeatureFlagDirective<string> implements OnChanges {
+  /**
+   * The key of the string feature flag.
+   */
   @Input({ required: true }) stringFeatureFlag: string;
+
+  /**
+   * The default value for the string feature flag.
+   */
   @Input({ required: true }) stringFeatureFlagDefault: string;
+
+  /**
+   * The expected value of this string feature flag, for which the `then` template should be rendered.
+   */
   @Input({ required: true }) stringFeatureFlagValue: string;
 
   override ngOnChanges() {
@@ -245,33 +388,84 @@ export class StringFeatureFlagDirective extends FeatureFlagDirective<string> imp
     super.ngOnChanges();
   }
 
+  /**
+   * The domain for the string feature flag.
+   */
   @Input({ required: false })
   set stringFeatureFlagDomain(domain: string | undefined) {
     super.featureFlagDomain = domain;
   }
 
+  /**
+   * Template to be displayed when the feature flag does not match value.
+   */
   @Input()
   set stringFeatureFlagElse(tpl: TemplateRef<FeatureFlagDirectiveContext<string>>) {
     this._elseTemplateRef = tpl;
   }
 
+  /**
+   * Template to be displayed when the feature flag is not ready.
+   */
   @Input()
   set stringFeatureFlagInitializing(tpl: TemplateRef<FeatureFlagDirectiveContext<string>>) {
     this._initializingTemplateRef = tpl;
   }
 
+  /**
+   * Template to be displayed when the feature flag is reconciling.
+   */
   @Input()
   set stringFeatureFlagReconciling(tpl: TemplateRef<FeatureFlagDirectiveContext<string>>) {
     this._reconcilingTemplateRef = tpl;
   }
 }
 
+/**
+ * A structural directive that conditionally includes a template based on the evaluation
+ * of an object feature flag.
+ * When the flag matches the provided value, Angular renders the template provided
+ * in a `then` clause, and when it doesn't match, Angular renders the template provided
+ * in an optional `else` clause.
+ * The default template for the `else` clause is blank.
+ *
+ * Usage example:
+ *
+ * ```
+ * <div *objectFeatureFlag="flagKey; value: flagValue; else: elseTemplate">Content to render when flag matches value.</div>
+ * <ng-template #elseTemplate>Content to render when flag does not match value.</ng-template>
+ * ```
+ *
+ * @usageNotes
+ *
+ * You can specify templates for other statuses such as initializing and reconciling.
+ *
+ * ```
+ * <div *objectFeatureFlag="flagKey; value: flagValue; else: elseTemplate; initializing: initializingTemplate; reconciling: reconcilingTemplate">Content to render when flag matches value.</div>
+ * <ng-template #elseTemplate>Content to render when flag does not match value.</ng-template>
+ * <ng-template #initializingTemplate>Loading...</ng-template>
+ * <ng-template #reconcilingTemplate>Reconfiguring...</ng-template>
+ * ```
+ *
+ */
 @Directive({
+  standalone: true,
   selector: '[objectFeatureFlag]',
 })
 export class ObjectFeatureFlagDirective<T extends JsonValue> extends FeatureFlagDirective<T> implements OnChanges {
+  /**
+   * The key of the object feature flag.
+   */
   @Input({ required: true }) objectFeatureFlag: string;
+
+  /**
+   * The default value for the object feature flag.
+   */
   @Input({ required: true }) objectFeatureFlagDefault: T;
+
+  /**
+   * The expected value of this object feature flag, for which the `then` template should be rendered.
+   */
   @Input({ required: true }) objectFeatureFlagValue: T;
 
   override ngOnChanges() {
@@ -281,21 +475,33 @@ export class ObjectFeatureFlagDirective<T extends JsonValue> extends FeatureFlag
     super.ngOnChanges();
   }
 
+  /**
+   * The domain for the object feature flag.
+   */
   @Input({ required: false })
   set objectFeatureFlagDomain(domain: string | undefined) {
     super.featureFlagDomain = domain;
   }
 
+  /**
+   * Template to be displayed when the feature flag does not match value.
+   */
   @Input()
   set objectFeatureFlagElse(tpl: TemplateRef<FeatureFlagDirectiveContext<T>>) {
     this._elseTemplateRef = tpl;
   }
 
+  /**
+   * Template to be displayed when the feature flag is not ready.
+   */
   @Input()
   set objectFeatureFlagInitializing(tpl: TemplateRef<FeatureFlagDirectiveContext<T>>) {
     this._initializingTemplateRef = tpl;
   }
 
+  /**
+   * Template to be displayed when the feature flag is reconciling.
+   */
   @Input()
   set objectFeatureFlagReconciling(tpl: TemplateRef<FeatureFlagDirectiveContext<T>>) {
     this._reconcilingTemplateRef = tpl;
