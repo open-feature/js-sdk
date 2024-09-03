@@ -26,7 +26,6 @@ import {
 import { TestingProvider } from './test.utils';
 import { HookFlagQuery } from '../src/evaluation/hook-flag-query';
 import { startTransition, useState } from 'react';
-import { FlagConfiguration } from '../../client/src/provider/in-memory-provider/flag-configuration';
 
 describe('evaluation', () => {
   const EVALUATION = 'evaluation';
@@ -48,7 +47,7 @@ describe('evaluation', () => {
   const REASON_ATTR_VALUE = StandardResolutionReasons.STATIC;
   const TYPE_ATTR = 'data-type';
   const BUTTON_TEXT = 'button';
-  const FLAG_CONFIG: FlagConfiguration = {
+  const FLAG_CONFIG: ConstructorParameters<typeof InMemoryProvider>[0] = {
     [BOOL_FLAG_KEY]: {
       disabled: false,
       variants: {
