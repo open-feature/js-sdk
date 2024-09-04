@@ -293,7 +293,11 @@ function attachHandlersAndResolve<T extends FlagValue>(
   const updateEvaluationDetailsRef = () => {
     const updatedEvaluationDetails = resolver(client).call(client, flagKey, defaultValue, options);
 
-    // Avoid re-rendering if the value hasn't changed
+    /**
+     * Avoid re-rendering if the value hasn't changed. We could expose a means
+     * to define a custom comparison function if users require a more
+     * sophisticated comparison in the future.
+     */
     if (!isEqual(updatedEvaluationDetails.value, evaluationDetails.value)) {
       setEvaluationDetails(updatedEvaluationDetails);
     }
