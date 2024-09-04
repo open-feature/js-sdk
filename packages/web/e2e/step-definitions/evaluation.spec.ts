@@ -10,7 +10,7 @@ import { defineFeature, loadFeature } from 'jest-cucumber';
 import { InMemoryProvider, OpenFeature } from '../../src';
 import flagConfiguration from './flags-config';
 // load the feature file.
-const feature = loadFeature('packages/client/e2e/features/evaluation.feature');
+const feature = loadFeature('packages/web/e2e/features/evaluation.feature');
 
 // get a client (flagd provider registered in setup)
 const client = OpenFeature.getClient();

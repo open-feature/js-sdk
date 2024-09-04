@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.15.1](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.15.0...server-sdk-v1.15.1) (2024-08-28)
+
+
+### 🧹 Chore
+
+* add assertion for hook context contents ([#977](https://github.com/open-feature/js-sdk/issues/977)) ([964d65b](https://github.com/open-feature/js-sdk/commit/964d65b7751d1a78a932e928d1ecfd9c071e1109))
+* **main:** release core 1.4.0 ([#984](https://github.com/open-feature/js-sdk/issues/984)) ([01344b2](https://github.com/open-feature/js-sdk/commit/01344b28c1381d9de3aefde89be841b597a00b70))
+
 ## [1.15.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.14.0...server-sdk-v1.15.0) (2024-06-11)
 
 
