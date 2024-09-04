@@ -15,6 +15,7 @@ import { useOpenFeatureClient } from '../provider/use-open-feature-client';
 import { useOpenFeatureClientStatus } from '../provider/use-open-feature-client-status';
 import { FlagQuery } from '../query';
 import { HookFlagQuery } from './hook-flag-query';
+import { isEqual } from '../common/is-equal';
 
 // This type is a bit wild-looking, but I think we need it.
 // We have to use the conditional, because otherwise useFlag('key', false) would return false, not boolean (too constrained).
@@ -32,7 +33,7 @@ type ConstrainedFlagQuery<T> = FlagQuery<
 >;
 
 // suspense options removed for the useSuspenseFlag hooks
-type NoSuspenseOptions = Omit<ReactFlagEvaluationOptions, 'suspend' | 'suspendUntilReady' | 'suspendWhileReconciling'>
+type NoSuspenseOptions = Omit<ReactFlagEvaluationOptions, 'suspend' | 'suspendUntilReady' | 'suspendWhileReconciling'>;
 
 /**
  * Evaluates a feature flag generically, returning an react-flavored queryable object.
@@ -50,15 +51,15 @@ export function useFlag<T extends FlagValue = FlagValue>(
   defaultValue: T,
   options?: ReactFlagEvaluationOptions,
 ): FlagQuery<
-T extends boolean
-  ? boolean
-  : T extends number
-    ? number
-    : T extends string
-      ? string
-      : T extends JsonValue
-        ? T
-        : JsonValue
+  T extends boolean
+    ? boolean
+    : T extends number
+      ? number
+      : T extends string
+        ? string
+        : T extends JsonValue
+          ? T
+          : JsonValue
 > {
   // use the default value to determine the resolver to call
   const query =
@@ -74,7 +75,7 @@ T extends boolean
 }
 
 // alias to the return value of useFlag, used to keep useSuspenseFlag consistent
-type UseFlagReturn<T extends FlagValue> = ReturnType<typeof useFlag<T>>
+type UseFlagReturn<T extends FlagValue> = ReturnType<typeof useFlag<T>>;
 
 /**
  * Equivalent to {@link useFlag} with `options: { suspend: true }`
@@ -266,7 +267,9 @@ export function useObjectFlagDetails<T extends JsonValue = JsonValue>(
 function attachHandlersAndResolve<T extends FlagValue>(
   flagKey: string,
   defaultValue: T,
-  resolver: (client: Client) => (flagKey: string, defaultValue: T, options?: FlagEvaluationOptions) => EvaluationDetails<T>,
+  resolver: (
+    client: Client,
+  ) => (flagKey: string, defaultValue: T, options?: FlagEvaluationOptions) => EvaluationDetails<T>,
   options?: ReactFlagEvaluationOptions,
 ): EvaluationDetails<T> {
   // highest priority > evaluation hook options > provider options > default options > lowest priority
@@ -283,12 +286,21 @@ function attachHandlersAndResolve<T extends FlagValue>(
     suspendUntilReady(client);
   }
 
-  const [evalutationDetails, setEvaluationDetails] = useState<EvaluationDetails<T>>(
+  const [evaluationDetails, setEvaluationDetails] = useState<EvaluationDetails<T>>(
     resolver(client).call(client, flagKey, defaultValue, options),
   );
 
   const updateEvaluationDetailsRef = () => {
-    setEvaluationDetails(resolver(client).call(client, flagKey, defaultValue, options));
+    const updatedEvaluationDetails = resolver(client).call(client, flagKey, defaultValue, options);
+
+    /**
+     * Avoid re-rendering if the value hasn't changed. We could expose a means
+     * to define a custom comparison function if users require a more
+     * sophisticated comparison in the future.
+     */
+    if (!isEqual(updatedEvaluationDetails.value, evaluationDetails.value)) {
+      setEvaluationDetails(updatedEvaluationDetails);
+    }
   };
 
   useEffect(() => {
@@ -319,5 +331,5 @@ function attachHandlersAndResolve<T extends FlagValue>(
     };
   }, []);
 
-  return evalutationDetails;
+  return evaluationDetails;
 }
