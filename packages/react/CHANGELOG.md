@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.5](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.4...react-sdk-v0.4.5) (2024-09-04)
+
+
+### ✨ New Features
+
+* **react:** prevent rerenders when value is unchanged ([#987](https://github.com/open-feature/js-sdk/issues/987)) ([b7fc08e](https://github.com/open-feature/js-sdk/commit/b7fc08e27d225bdbf72c1985e7eef85adcd896b0))
+
 ## [0.4.4](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.3...react-sdk-v0.4.4) (2024-08-28)
 
 
