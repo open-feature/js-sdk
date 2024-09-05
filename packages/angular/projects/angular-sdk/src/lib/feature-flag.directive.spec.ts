@@ -136,7 +136,7 @@ import {
             default: false;
             domain: domain;
             else: elseTemplateWithContext;
-            let value = $implicit;
+            let value;
             let evaluationDetails = evaluationDetails
           "
           class="flag-status"
@@ -146,6 +146,14 @@ import {
         <ng-template #elseTemplateWithContext let-value let-evaluationDetails="evaluationDetails">
           <div class="flag-status">else {{ value }} {{ evaluationDetails.reason }}</div>
         </ng-template>
+      </div>
+      <div class="case-11">
+        <div
+          *stringFeatureFlag="'test-flag'; default: 'default'; domain: domain; let value = $implicit"
+          class="flag-status"
+        >
+          {{ value }}
+        </div>
       </div>
     </ng-container>
   `,
@@ -482,6 +490,19 @@ describe('FeatureFlagDirective', () => {
         },
       });
       await expectRenderedText(fixture, 'case-10', 'else false STATIC');
+    });
+
+    it('should always render if no expected value is given', async () => {
+      const { fixture } = await createTestingModule({
+        flagConfiguration: {
+          'test-flag': {
+            variants: { default: 'flag-value' },
+            defaultVariant: 'default',
+            disabled: false,
+          },
+        },
+      });
+      await expectRenderedText(fixture, 'case-11', 'flag-value');
     });
   });
 });

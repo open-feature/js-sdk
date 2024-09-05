@@ -30,30 +30,30 @@
 </p>
 <!-- x-hide-in-docs-start -->
 
-[OpenFeature](https://openfeature.dev) is an open specification that provides a vendor-agnostic, community-driven API for feature flagging that works with your favorite feature flag management tool or in-house solution.
+[OpenFeature](https://openfeature.dev) is an open specification that provides a vendor-agnostic, community-driven API
+for feature flagging that works with your favorite feature flag management tool or in-house solution.
 
 <!-- x-hide-in-docs-end -->
 
 ## Overview
 
-The OpenFeature Angular SDK adds Angular-specific functionality to the [OpenFeature Web SDK](https://openfeature.dev/docs/reference/technologies/client/web).
-
-In addition to the feature provided by the [web sdk](https://openfeature.dev/docs/reference/technologies/client/web), capabilities include:
+The OpenFeature Angular SDK adds Angular-specific functionality to
+the [OpenFeature Web SDK](https://openfeature.dev/docs/reference/technologies/client/web).
 
 ## Table of Contents
 
 - [Quick start](#quick-start)
-  - [Requirements](#requirements)
-  - [Install](#install)
-    - [npm](#npm)
-    - [yarn](#yarn)
-    - [Required peer dependencies](#required-peer-dependencies)
-  - [Minimal Example](#minimal-example)
-  - [Flag Types](#flag-types)
-    - [Boolean Feature Flag](#boolean-feature-flag)
-    - [Number Feature Flag](#number-feature-flag)
-    - [String Feature Flag](#string-feature-flag)
-    - [Object Feature Flag](#object-feature-flag)
+    - [Requirements](#requirements)
+    - [Install](#install)
+        - [npm](#npm)
+        - [yarn](#yarn)
+        - [Required peer dependencies](#required-peer-dependencies)
+    - [Minimal Example](#minimal-example)
+    - [Flag Types](#flag-types)
+        - [Boolean Feature Flag](#boolean-feature-flag)
+        - [Number Feature Flag](#number-feature-flag)
+        - [String Feature Flag](#string-feature-flag)
+        - [Object Feature Flag](#object-feature-flag)
 - [Inputs](#inputs)
 - [Contributing](#contributing)
 - [License](#license)
@@ -62,7 +62,7 @@ In addition to the feature provided by the [web sdk](https://openfeature.dev/doc
 
 ### Requirements
 
-- ES2022-compatible web browser (Chrome, Edge, Firefox, etc)
+- ES2015-compatible web browser (Chrome, Edge, Firefox, etc)
 - Angular version 16+
 
 ### Install
@@ -93,7 +93,8 @@ See the [package.json](./package.json) for the required versions.
 
 #### Module
 
-To include the OpenFeature Angular directives in your application, you need to import the `OpenFeatureModule` and configure it using the `forRoot` method.
+To include the OpenFeature Angular directives in your application, you need to import the `OpenFeatureModule` and
+configure it using the `forRoot` method.
 
 ```typescript
 import { NgModule } from '@angular/core';
@@ -108,6 +109,7 @@ import { OpenFeatureModule } from '@openfeature/angular-sdk';
     CommonModule,
     OpenFeatureModule.forRoot({
       provider: yourFeatureProvider,
+      // domainBoundProviders are optional, mostly needed if more than one provider is needed
       domainBoundProviders: {
         domain1: new YourOpenFeatureProvider(),
         domain2: new YourOtherOpenFeatureProvider(),
@@ -123,19 +125,40 @@ export class AppModule {
 
 You don't need to provide all the templates. Here's a minimal example using a boolean feature flag:
 
-If `initializing` and `reconciling` are not given, the feature flag value that is returned by the provider will determine what will be rendered.
+If `initializing` and `reconciling` are not given, the feature flag value that is returned by the provider will
+determine what will be rendered.
 
 ```html
+
 <div *booleanFeatureFlag="'isFeatureEnabled'; default: true">
   This is shown when the feature flag is enabled.
 </div>
 ```
 
-This example shows content when the feature flag `isFeatureEnabled` is true with a default value of true. No `else`, `initializing`, or `reconciling` templates are required in this case.
+This example shows content when the feature flag `isFeatureEnabled` is true with a default value of true.
+No `else`, `initializing`, or `reconciling` templates are required in this case.
 
-#### Flag Types
+#### How to use
 
-The library provides four primary directives for feature flags:
+The library provides four primary directives for feature flags, `booleanFeatureFlag`,
+`numberFeatureFlag`, `stringFeatureFlag` and `objectFeatureFlag`.
+
+The first value given to the directive is the flag key that should be evaluated.
+
+For all directives, the default value passed to OpenFeature has to be provided by the `default` parameter.
+
+For all non-boolean directives, the value to compare the evaluation result to can be provided by the `value` parameter.
+This parameter is optional, if omitted, the `thenTemplate` will always be rendered.
+
+The `domain` parameter is _optional_ and will be used as domain when getting the OpenFeature provider.
+
+The template referenced in `else` will be rendered if the evaluated feature flag is `false` for the `booleanFeatureFlag`
+directive and if the `value` does not match evaluated flag value for all other directives.
+This parameter is _optional_.
+
+The template referenced in `initializing` and `reconciling` will be rendered if OpenFeature provider is in the
+corresponding states.
+This parameter is _optional_, if omitted, the `then` and `else` templates will be rendered according to the flag value.
 
 ##### Boolean Feature Flag
 
@@ -203,4 +226,33 @@ The library provides four primary directives for feature flags:
 <ng-template #objectFeatureReconciling>
   This is shown when the feature flag is reconciling.
 </ng-template>
+```
+
+##### Consuming the evaluation details
+
+The `evaluation details` can be used when rendering the templates.
+The directives [`$implicit`](https://angular.dev/guide/directives/structural-directives#structural-directive-shorthand) value will be bound to the flag value and additionally the value `evaluationDetails` will be
+bound to the whole evaluation details.
+They can be referenced in all templates.
+
+The following example shows `value` being implicitly bound and `details` being bound to the evaluation details.
+
+```html
+<div *stringFeatureFlag="'themeColor'; value: 'dark'; default: 'light'; else: stringFeatureElse; let value; let details = evaluationDetails">
+  It was a match!
+  The theme color is {{ value }} because of {{ details.reason }}
+</div>
+<ng-template #stringFeatureElse let-value let-details="evaluationDetails">
+  It was no match!
+  The theme color is {{ value }} because of {{ details.reason }}
+</ng-template>
+```
+
+When the expected flag value is omitted, the template will always be rendered.
+This can be used to just render the flag value or details without conditional rendering.
+
+```html
+<div *stringFeatureFlag="'themeColor'; default: 'light'; let value;">
+  The theme color is {{ value }}.
+</div>
 ```
