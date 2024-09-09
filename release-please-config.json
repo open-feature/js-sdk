@@ -29,7 +29,7 @@
     },
     "packages/angular/projects/angular-sdk": {
       "release-type": "node",
-      "prerelease": false,
+      "prerelease": true,
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true,
       "extra-files": ["README.md"],
