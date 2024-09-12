@@ -129,7 +129,6 @@ If `initializing` and `reconciling` are not given, the feature flag value that i
 determine what will be rendered.
 
 ```html
-
 <div *booleanFeatureFlag="'isFeatureEnabled'; default: true">
   This is shown when the feature flag is enabled.
 </div>
@@ -152,6 +151,9 @@ This parameter is optional, if omitted, the `thenTemplate` will always be render
 
 The `domain` parameter is _optional_ and will be used as domain when getting the OpenFeature provider.
 
+The `updateOnConfigurationChanged` and `updateOnContextChanged` parameter are _optional_ and used to disable the
+automatic re-rendering on flag value or context change. They are set to `true` by default.
+
 The template referenced in `else` will be rendered if the evaluated feature flag is `false` for the `booleanFeatureFlag`
 directive and if the `value` does not match evaluated flag value for all other directives.
 This parameter is _optional_.
@@ -163,7 +165,8 @@ This parameter is _optional_, if omitted, the `then` and `else` templates will b
 ##### Boolean Feature Flag
 
 ```html
-<div *booleanFeatureFlag="'isFeatureEnabled'; default: true; domain: 'userDomain'; else: booleanFeatureElse; initializing: booleanFeatureInitializing; reconciling: booleanFeatureReconciling">
+<div
+  *booleanFeatureFlag="'isFeatureEnabled'; default: true; domain: 'userDomain'; else: booleanFeatureElse; initializing: booleanFeatureInitializing; reconciling: booleanFeatureReconciling">
   This is shown when the feature flag is enabled.
 </div>
 <ng-template #booleanFeatureElse>
@@ -180,7 +183,8 @@ This parameter is _optional_, if omitted, the `then` and `else` templates will b
 ##### Number Feature Flag
 
 ```html
-<div *numberFeatureFlag="'discountRate'; value: 10; default: 5; domain: 'userDomain'; else: numberFeatureElse; initializing: numberFeatureInitializing; reconciling: numberFeatureReconciling">
+<div
+  *numberFeatureFlag="'discountRate'; value: 10; default: 5; domain: 'userDomain'; else: numberFeatureElse; initializing: numberFeatureInitializing; reconciling: numberFeatureReconciling">
   This is shown when the feature flag matches the specified discount rate.
 </div>
 <ng-template #numberFeatureElse>
@@ -197,7 +201,8 @@ This parameter is _optional_, if omitted, the `then` and `else` templates will b
 ##### String Feature Flag
 
 ```html
-<div *stringFeatureFlag="'themeColor'; value: 'dark'; default: 'light'; domain: 'userDomain'; else: stringFeatureElse; initializing: stringFeatureInitializing; reconciling: stringFeatureReconciling">
+<div
+  *stringFeatureFlag="'themeColor'; value: 'dark'; default: 'light'; domain: 'userDomain'; else: stringFeatureElse; initializing: stringFeatureInitializing; reconciling: stringFeatureReconciling">
   This is shown when the feature flag matches the specified theme color.
 </div>
 <ng-template #stringFeatureElse>
@@ -214,7 +219,8 @@ This parameter is _optional_, if omitted, the `then` and `else` templates will b
 ##### Object Feature Flag
 
 ```html
-<div *objectFeatureFlag="'userConfig'; value: { theme: 'dark' }; default: { theme: 'light' }; domain: 'userDomain'; else: objectFeatureElse; initializing: objectFeatureInitializing; reconciling: objectFeatureReconciling">
+<div
+  *objectFeatureFlag="'userConfig'; value: { theme: 'dark' }; default: { theme: 'light' }; domain: 'userDomain'; else: objectFeatureElse; initializing: objectFeatureInitializing; reconciling: objectFeatureReconciling">
   This is shown when the feature flag matches the specified user configuration.
 </div>
 <ng-template #objectFeatureElse>
@@ -228,21 +234,35 @@ This parameter is _optional_, if omitted, the `then` and `else` templates will b
 </ng-template>
 ```
 
+##### Opting-out of automatic re-rendering
+
+By default, the directive re-renders when the flag value changes or the context changes.
+
+In cases, this is not desired, re-rendering can be disabled for both events:
+
+```html
+<div *booleanFeatureFlag="'isFeatureEnabled'; default: true; updateOnContextChanged: false; updateOnConfigurationChanged: false;">
+  This is shown when the feature flag is enabled.
+</div>
+```
+
 ##### Consuming the evaluation details
 
 The `evaluation details` can be used when rendering the templates.
-The directives [`$implicit`](https://angular.dev/guide/directives/structural-directives#structural-directive-shorthand) value will be bound to the flag value and additionally the value `evaluationDetails` will be
+The directives [`$implicit`](https://angular.dev/guide/directives/structural-directives#structural-directive-shorthand)
+value will be bound to the flag value and additionally the value `evaluationDetails` will be
 bound to the whole evaluation details.
 They can be referenced in all templates.
 
 The following example shows `value` being implicitly bound and `details` being bound to the evaluation details.
 
 ```html
-<div *stringFeatureFlag="'themeColor'; value: 'dark'; default: 'light'; else: stringFeatureElse; let value; let details = evaluationDetails">
+<div
+  *stringFeatureFlag="'themeColor'; value: 'dark'; default: 'light'; else: stringFeatureElse; let value; let details = evaluationDetails">
   It was a match!
   The theme color is {{ value }} because of {{ details.reason }}
 </div>
-<ng-template #stringFeatureElse let-value let-details="evaluationDetails">
+<ng-template #stringFeatureElse let-value let-details='evaluationDetails'>
   It was no match!
   The theme color is {{ value }} because of {{ details.reason }}
 </ng-template>

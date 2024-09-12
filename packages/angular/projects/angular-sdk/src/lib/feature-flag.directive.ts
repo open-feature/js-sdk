@@ -42,7 +42,14 @@ export abstract class FeatureFlagDirective<T extends FlagValue> implements OnDes
 
   protected _client: Client;
   protected _lastEvaluationResult: EvaluationDetails<T>;
-  protected _flagChangeHandler: EventHandler<ClientProviderEvents> | null = null;
+
+  protected _readyHandler: EventHandler<ClientProviderEvents.Ready> | null = null;
+  protected _flagChangeHandler: EventHandler<ClientProviderEvents.ConfigurationChanged> | null = null;
+  protected _contextChangeHandler: EventHandler<ClientProviderEvents.Error> | null = null;
+  protected _reconcilingHandler: EventHandler<ClientProviderEvents.Reconciling> | null = null;
+
+  protected _updateOnContextChanged: boolean = true;
+  protected _updateOnConfigurationChanged: boolean = true;
 
   protected _thenTemplateRef: TemplateRef<FeatureFlagDirectiveContext<T>> | null;
   protected _thenViewRef: EmbeddedViewRef<unknown> | null;
@@ -85,25 +92,49 @@ export abstract class FeatureFlagDirective<T extends FlagValue> implements OnDes
     if (this._client) {
       this.disposeClient(this._client);
     }
-
     this._client = OpenFeature.getClient(this._featureFlagDomain);
-    this._flagChangeHandler = () => {
+
+    const baseHandler = () => {
       const result = this.getFlagDetails(this._featureFlagKey, this._featureFlagDefault);
       this.onFlagValue(result, this._client.providerStatus);
     };
 
-    this._client.addHandler(ClientProviderEvents.ContextChanged, this._flagChangeHandler);
+    this._flagChangeHandler = () => {
+      if (this._updateOnConfigurationChanged) {
+        baseHandler();
+      }
+    };
+
+    this._contextChangeHandler = () => {
+      if (this._updateOnContextChanged) {
+        baseHandler();
+      }
+    };
+
+    this._readyHandler = () => baseHandler();
+    this._reconcilingHandler = () => baseHandler();
+
     this._client.addHandler(ClientProviderEvents.ConfigurationChanged, this._flagChangeHandler);
-    this._client.addHandler(ClientProviderEvents.Ready, this._flagChangeHandler);
-    this._client.addHandler(ClientProviderEvents.Reconciling, this._flagChangeHandler);
+    this._client.addHandler(ClientProviderEvents.ContextChanged, this._contextChangeHandler);
+    this._client.addHandler(ClientProviderEvents.Ready, this._readyHandler);
+    this._client.addHandler(ClientProviderEvents.Reconciling, this._reconcilingHandler);
   }
 
   private disposeClient(client: Client) {
+    if (this._contextChangeHandler()) {
+      client.removeHandler(ClientProviderEvents.ContextChanged, this._contextChangeHandler);
+    }
+
     if (this._flagChangeHandler) {
-      client.removeHandler(ClientProviderEvents.ContextChanged, this._flagChangeHandler);
       client.removeHandler(ClientProviderEvents.ConfigurationChanged, this._flagChangeHandler);
-      client.removeHandler(ClientProviderEvents.Ready, this._flagChangeHandler);
-      client.removeHandler(ClientProviderEvents.Reconciling, this._flagChangeHandler);
+    }
+
+    if (this._readyHandler) {
+      client.removeHandler(ClientProviderEvents.Ready, this._readyHandler);
+    }
+
+    if (this._reconcilingHandler) {
+      client.removeHandler(ClientProviderEvents.Reconciling, this._reconcilingHandler);
     }
   }
 
@@ -227,6 +258,28 @@ export class BooleanFeatureFlagDirective extends FeatureFlagDirective<boolean> i
   }
 
   /**
+   * Update the component if the provider emits a ConfigurationChanged event.
+   * Set to false to prevent components from re-rendering when flag value changes
+   * are received by the associated provider.
+   * Defaults to true.
+   */
+  @Input({ required: false })
+  set booleanFeatureFlagUpdateOnConfigurationChanged(enabled: boolean | undefined) {
+    this._updateOnConfigurationChanged = enabled ?? true;
+  }
+
+  /**
+   * Update the component when the OpenFeature context changes.
+   * Set to false to prevent components from re-rendering when attributes which
+   * may be factors in flag evaluation change.
+   * Defaults to true.
+   */
+  @Input({ required: false })
+  set booleanFeatureFlagUpdateOnContextChanged(enabled: boolean | undefined) {
+    this._updateOnContextChanged = enabled ?? true;
+  }
+
+  /**
    * Template to be displayed when the feature flag is false.
    */
   @Input()
@@ -322,6 +375,28 @@ export class NumberFeatureFlagDirective extends FeatureFlagDirective<number> imp
   @Input({ required: false })
   set numberFeatureFlagDomain(domain: string | undefined) {
     super.featureFlagDomain = domain;
+  }
+
+  /**
+   * Update the component if the provider emits a ConfigurationChanged event.
+   * Set to false to prevent components from re-rendering when flag value changes
+   * are received by the associated provider.
+   * Defaults to true.
+   */
+  @Input({ required: false })
+  set numberFeatureFlagUpdateOnConfigurationChanged(enabled: boolean | undefined) {
+    this._updateOnConfigurationChanged = enabled ?? true;
+  }
+
+  /**
+   * Update the component when the OpenFeature context changes.
+   * Set to false to prevent components from re-rendering when attributes which
+   * may be factors in flag evaluation change.
+   * Defaults to true.
+   */
+  @Input({ required: false })
+  set numberFeatureFlagUpdateOnContextChanged(enabled: boolean | undefined) {
+    this._updateOnContextChanged = enabled ?? true;
   }
 
   /**
@@ -423,6 +498,28 @@ export class StringFeatureFlagDirective extends FeatureFlagDirective<string> imp
   }
 
   /**
+   * Update the component if the provider emits a ConfigurationChanged event.
+   * Set to false to prevent components from re-rendering when flag value changes
+   * are received by the associated provider.
+   * Defaults to true.
+   */
+  @Input({ required: false })
+  set stringFeatureFlagUpdateOnConfigurationChanged(enabled: boolean | undefined) {
+    this._updateOnConfigurationChanged = enabled ?? true;
+  }
+
+  /**
+   * Update the component when the OpenFeature context changes.
+   * Set to false to prevent components from re-rendering when attributes which
+   * may be factors in flag evaluation change.
+   * Defaults to true.
+   */
+  @Input({ required: false })
+  set stringFeatureFlagUpdateOnContextChanged(enabled: boolean | undefined) {
+    this._updateOnContextChanged = enabled ?? true;
+  }
+
+  /**
    * Template to be displayed when the feature flag does not match value.
    */
   @Input()
@@ -518,6 +615,28 @@ export class ObjectFeatureFlagDirective<T extends JsonValue> extends FeatureFlag
   @Input({ required: false })
   set objectFeatureFlagDomain(domain: string | undefined) {
     super.featureFlagDomain = domain;
+  }
+
+  /**
+   * Update the component if the provider emits a ConfigurationChanged event.
+   * Set to false to prevent components from re-rendering when flag value changes
+   * are received by the associated provider.
+   * Defaults to true.
+   */
+  @Input({ required: false })
+  set objectFeatureFlagUpdateOnConfigurationChanged(enabled: boolean | undefined) {
+    this._updateOnConfigurationChanged = enabled ?? true;
+  }
+
+  /**
+   * Update the component when the OpenFeature context changes.
+   * Set to false to prevent components from re-rendering when attributes which
+   * may be factors in flag evaluation change.
+   * Defaults to true.
+   */
+  @Input({ required: false })
+  set objectFeatureFlagUpdateOnContextChanged(enabled: boolean | undefined) {
+    this._updateOnContextChanged = enabled ?? true;
   }
 
   /**

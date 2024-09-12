@@ -155,6 +155,23 @@ import {
           {{ value }}
         </div>
       </div>
+      <div class="case-12">
+        <div
+          *booleanFeatureFlag="
+            'test-flag';
+            default: true;
+            else: elseTemplate;
+            domain: domain;
+            updateOnConfigurationChanged: false
+          "
+          class="flag-status"
+        >
+          Flag On
+        </div>
+        <ng-template #elseTemplate>
+          <div class="flag-status">Flag Off</div>
+        </ng-template>
+      </div>
     </ng-container>
   `,
 })
@@ -378,6 +395,28 @@ describe('FeatureFlagDirective', () => {
 
       fixture.componentInstance.specialFlagKey = 'new-test-flag';
       await expectRenderedText(fixture, 'case-6', 'Flag Off');
+    });
+
+    it('should opt-out of re-rendering when flag value changes', async () => {
+      const { fixture, client, provider } = await createTestingModule({
+        flagConfiguration: {
+          'test-flag': {
+            variants: { default: true },
+            defaultVariant: 'default',
+            disabled: false,
+          },
+          'new-test-flag': {
+            variants: { default: false },
+            defaultVariant: 'default',
+            disabled: false,
+          },
+        },
+      });
+      await waitForClientReady(client);
+      await expectRenderedText(fixture, 'case-12', 'Flag On');
+
+      await updateFlagValue(provider, false);
+      await expectRenderedText(fixture, 'case-12', 'Flag On');
     });
 
     it('should evaluate on flag domain change', async () => {
