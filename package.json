@@ -81,6 +81,7 @@
     "packages/web",
     "packages/react",
     "packages/angular",
+    "packages/angular/projects/angular-sdk",
     "packages/nest"
   ]
 }
