@@ -27,6 +27,14 @@
       "extra-files": ["README.md"],
       "versioning": "default"
     },
+    "packages/angular/projects/angular-sdk": {
+      "release-type": "node",
+      "prerelease": true,
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": true,
+      "extra-files": ["README.md"],
+      "versioning": "default"
+    },
     "packages/nest": {
       "release-type": "node",
       "prerelease": true,

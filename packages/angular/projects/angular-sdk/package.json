@@ -1,0 +1,24 @@
+{
+  "name": "@openfeature/angular-sdk",
+  "version": "0.0.1-experimental",
+  "scripts": {
+    "current-published-version": "npm show $npm_package_name@$npm_package_version version",
+    "current-version": "echo $npm_package_version",
+    "prepack": "shx cp ./../../LICENSE ./LICENSE"
+  },
+  "peerDependencies": {
+    "@angular/common": "^16.2.12 || ^17.3.0",
+    "@angular/core": "^16.2.12 || ^17.3.0",
+    "@openfeature/web-sdk": "^1.2.3"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@openfeature/core": "*",
+    "@openfeature/web-sdk": "*",
+    "@angular/common": "^17.3.0",
+    "@angular/core": "^17.3.0"
+  },
+  "sideEffects": false
+}

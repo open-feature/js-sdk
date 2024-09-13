@@ -189,6 +189,7 @@ export default {
         ],
       },
     },
+    '<rootDir>/packages/angular',
   ],
 
   // Use this configuration option to add custom reporters to Jest

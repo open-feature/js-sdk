@@ -4,14 +4,14 @@
   "private": true,
   "description": "OpenFeature SDK for JavaScript",
   "scripts": {
-    "test": "jest --selectProjects=shared --selectProjects=server --selectProjects=web --selectProjects=react --silent",
+    "test": "jest --selectProjects=shared --selectProjects=server --selectProjects=web --selectProjects=react --selectProjects=angular --silent",
     "e2e-server": "git submodule update --init --recursive && shx cp test-harness/features/evaluation.feature packages/server/e2e/features && jest --selectProjects=server-e2e --verbose",
     "e2e-web": "git submodule update --init --recursive && shx cp test-harness/features/evaluation.feature packages/web/e2e/features && jest --selectProjects=web-e2e --verbose",
     "e2e": "npm run e2e-server && npm run e2e-web",
-    "lint": "npm run lint --workspace=packages/shared --workspace=packages/server --workspace=packages/web --workspace=packages/react --workspace=packages/nest",
+    "lint": "npm run lint --workspace=packages/shared --workspace=packages/server --workspace=packages/web --workspace=packages/react --workspace=packages/angular --workspace=packages/nest",
     "clean": "shx rm -rf ./dist",
-    "build": "npm run build --workspace=packages/shared --workspace=packages/server --workspace=packages/web --workspace=packages/react --workspace=packages/nest",
-    "publish-all": "npm run publish-if-not-exists --workspace=packages/shared --workspace=packages/server --workspace=packages/web --workspace=packages/react --workspace=packages/nest",
+    "build": "npm run build --workspace=packages/shared --workspace=packages/server --workspace=packages/web --workspace=packages/react --workspace=packages/angular --workspace=packages/nest",
+    "publish-all": "npm run publish-if-not-exists --workspace=packages/shared --workspace=packages/server --workspace=packages/web --workspace=packages/react --workspace=packages/angular --workspace=packages/nest",
     "docs": "typedoc",
     "core-version": "npm run version --workspace=packages/shared",
     "update-core-peers": "export OPENFEATURE_CORE_VERSION=$(npm run --silent core-version) && npm run update-core-peer --workspace=packages/server --workspace=packages/web"
@@ -43,8 +43,6 @@
     "@types/node": "^20.11.16",
     "@types/react": "^18.2.55",
     "@types/uuid": "^9.0.8",
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "@typescript-eslint/parser": "^7.0.0",
     "esbuild": "^0.20.0",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
@@ -60,22 +58,29 @@
     "jest-environment-jsdom": "^29.7.0",
     "jest-environment-node": "^29.7.0",
     "jest-junit": "^16.0.0",
+    "ng-packagr": "^17.3.0",
     "prettier": "^3.2.5",
     "react": "^18.2.0",
     "rollup": "^3.29.4",
     "rollup-plugin-dts": "^5.3.1",
+    "rxjs": "~7.8.0",
     "shx": "^0.3.4",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
+    "tslib": "^2.3.0",
     "typedoc": "^0.25.7",
     "typescript": "^4.7.4",
     "uuid": "^9.0.1"
+  },
+  "overrides": {
+    "typescript": "^4.7.4"
   },
   "workspaces": [
     "packages/shared",
     "packages/server",
     "packages/web",
     "packages/react",
+    "packages/angular",
     "packages/nest"
   ]
 }
