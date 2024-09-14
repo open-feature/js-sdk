@@ -9,7 +9,7 @@
     "test": "jest",
     "build": "ng build && npm run postbuild",
     "postbuild": "shx cp ./../../LICENSE ./dist/angular/LICENSE",
-    "publish-if-not-exists": "cp $NPM_CONFIG_USERCONFIG .npmrc && if [ \"$(npm --prefix dist/angular run current-deployed-version -s)\" = \"$(npm --prefix dist/angular run current-version -s)\" ]; then echo 'already published, skipping'; else npm --prefix dist/angular publish --access public; fi"
+    "publish-if-not-exists": "cp $NPM_CONFIG_USERCONFIG .npmrc && if [ \"$(npm --prefix dist/angular run current-deployed-version -s)\" = \"$(npm --prefix dist/angular run current-version -s)\" ]; then echo 'already published, skipping'; else cd dist/angular && npm publish --access public; fi"
   },
   "private": true,
   "devDependencies": {
