@@ -40,23 +40,27 @@ for feature flagging that works with your favorite feature flag management tool 
 The OpenFeature Angular SDK adds Angular-specific functionality to
 the [OpenFeature Web SDK](https://openfeature.dev/docs/reference/technologies/client/web).
 
-## Table of Contents
+In addition to the features provided by the [web sdk](https://openfeature.dev/docs/reference/technologies/client/web), capabilities include:
 
+- [Overview](#overview)
 - [Quick start](#quick-start)
-    - [Requirements](#requirements)
-    - [Install](#install)
-        - [npm](#npm)
-        - [yarn](#yarn)
-        - [Required peer dependencies](#required-peer-dependencies)
-    - [Minimal Example](#minimal-example)
-    - [Flag Types](#flag-types)
-        - [Boolean Feature Flag](#boolean-feature-flag)
-        - [Number Feature Flag](#number-feature-flag)
-        - [String Feature Flag](#string-feature-flag)
-        - [Object Feature Flag](#object-feature-flag)
-- [Inputs](#inputs)
-- [Contributing](#contributing)
-- [License](#license)
+  - [Requirements](#requirements)
+  - [Install](#install)
+    - [npm](#npm)
+    - [yarn](#yarn)
+    - [Required peer dependencies](#required-peer-dependencies)
+  - [Usage](#usage)
+    - [Module](#module)
+      - [Minimal Example](#minimal-example)
+    - [How to use](#how-to-use)
+      - [Boolean Feature Flag](#boolean-feature-flag)
+      - [Number Feature Flag](#number-feature-flag)
+      - [String Feature Flag](#string-feature-flag)
+      - [Object Feature Flag](#object-feature-flag)
+      - [Opting-out of automatic re-rendering](#opting-out-of-automatic-re-rendering)
+      - [Consuming the evaluation details](#consuming-the-evaluation-details)
+- [FAQ and troubleshooting](#faq-and-troubleshooting)
+- [Resources](#resources)
 
 ## Quick start
 
@@ -89,7 +93,7 @@ See the [package.json](./package.json) for the required versions.
 * `@angular/common`
 * `@angular/core`
 
-#### Usage
+### Usage
 
 #### Module
 
@@ -276,3 +280,15 @@ This can be used to just render the flag value or details without conditional re
   The theme color is {{ value }}.
 </div>
 ```
+
+## FAQ and troubleshooting
+
+> I can import things form the `@openfeature/angular-sdk`, `@openfeature/web-sdk`, and `@openfeature/core`; which should I use?
+
+The `@openfeature/angular-sdk` re-exports everything from its peers (`@openfeature/web-sdk` and `@openfeature/core`), and adds the Angular-specific features.
+You can import everything from the `@openfeature/angular-sdk` directly.
+Avoid importing anything from `@openfeature/web-sdk` or `@openfeature/core`.
+
+## Resources
+
+ - [Example repo](https://github.com/open-feature/angular-test-app)
