@@ -20,5 +20,14 @@
     "@angular/common": "^17.3.0",
     "@angular/core": "^17.3.0"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "keywords": [
+    "openfeature",
+    "feature",
+    "flags",
+    "toggles",
+    "browser",
+    "web",
+    "angular"
+  ]
 }
