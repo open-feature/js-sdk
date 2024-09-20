@@ -12,9 +12,7 @@ export type OccurrenceValue =
  */
 export type OccurrenceDetails = {
   /**
-   * A string uniquely identifying the subject (end-user, or client service) of a flag evaluation.
-   * Providers may require this field for fractional flag evaluation, rules, or overrides targeting specific users.
-   * Such providers may behave unpredictably if a targeting key is not specified at flag resolution.
+   * A numeric value associated with this event.
    */
   value?: number;
 } & Record<string, OccurrenceValue>;
