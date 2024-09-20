@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.2.4](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.2.3...web-sdk-v1.2.4) (2024-09-20)
+
+
+### 🧹 Chore
+
+* **web:** bump core peer version ([#1018](https://github.com/open-feature/js-sdk/issues/1018)) ([970335e](https://github.com/open-feature/js-sdk/commit/970335e92bbaa7bf093120da3fab03659b0c11bf))
+
 ## [1.2.3](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.2.2...web-sdk-v1.2.3) (2024-08-28)
 
 
