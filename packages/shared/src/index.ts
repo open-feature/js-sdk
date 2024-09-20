@@ -7,4 +7,5 @@ export * from './logger';
 export * from './provider';
 export * from './evaluation';
 export * from './type-guards';
+export * from './tracking';
 export * from './open-feature';

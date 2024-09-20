@@ -1,4 +1,12 @@
-import { CommonProvider, EvaluationContext, JsonValue, Logger, ResolutionDetails, ServerProviderStatus } from '@openfeature/core';
+import {
+  CommonProvider,
+  EvaluationContext,
+  JsonValue,
+  Logger,
+  OccurrenceDetails,
+  ResolutionDetails,
+  ServerProviderStatus,
+} from '@openfeature/core';
 import { Hook } from '../hooks';
 
 export { ServerProviderStatus as ProviderStatus };
@@ -57,4 +65,12 @@ export interface Provider extends CommonProvider<ServerProviderStatus> {
     context: EvaluationContext,
     logger: Logger,
   ): Promise<ResolutionDetails<T>>;
+
+  /**
+   * Track a thing
+   * @param occurrenceKey
+   * @param context
+   * @param occurrenceDetails
+   */
+  track?(occurrenceKey: string, context: EvaluationContext, occurrenceDetails: OccurrenceDetails): void;
 }
