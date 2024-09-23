@@ -1,6 +1,6 @@
 {
   "packages/nest": "0.2.1-experimental",
-  "packages/react": "0.4.5",
+  "packages/react": "0.4.6",
   "packages/angular": "0.0.1-experimental",
   "packages/web": "1.2.4",
   "packages/server": "1.15.1",
