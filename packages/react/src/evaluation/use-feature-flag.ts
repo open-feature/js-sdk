@@ -1,6 +1,8 @@
 import {
   Client,
+  ClientProviderEvents,
   EvaluationDetails,
+  EventHandler,
   FlagEvaluationOptions,
   FlagValue,
   JsonValue,
@@ -16,6 +18,7 @@ import { useOpenFeatureClientStatus } from '../provider/use-open-feature-client-
 import { FlagQuery } from '../query';
 import { HookFlagQuery } from './hook-flag-query';
 import { isEqual } from '../common/is-equal';
+import { isEmpty } from '../common/is-empty';
 
 // This type is a bit wild-looking, but I think we need it.
 // We have to use the conditional, because otherwise useFlag('key', false) would return false, not boolean (too constrained).
@@ -309,6 +312,15 @@ function attachHandlersAndResolve<T extends FlagValue>(
     }
   };
 
+  const configurationChangeCallback: EventHandler<ClientProviderEvents.ConfigurationChanged> = (eventDetails) => {
+    if (
+      isEmpty(eventDetails?.flagsChanged) ||
+      eventDetails?.flagsChanged?.includes(evaluationDetailsRef.current.flagKey)
+    ) {
+      updateEvaluationDetailsCallback();
+    }
+  };
+
   useEffect(() => {
     if (status === ProviderStatus.NOT_READY) {
       // update when the provider is ready
@@ -329,11 +341,11 @@ function attachHandlersAndResolve<T extends FlagValue>(
   useEffect(() => {
     if (defaultedOptions.updateOnConfigurationChanged) {
       // update when the provider configuration changes
-      client.addHandler(ProviderEvents.ConfigurationChanged, updateEvaluationDetailsCallback);
+      client.addHandler(ProviderEvents.ConfigurationChanged, configurationChangeCallback);
     }
     return () => {
       // cleanup the handlers
-      client.removeHandler(ProviderEvents.ConfigurationChanged, updateEvaluationDetailsCallback);
+      client.removeHandler(ProviderEvents.ConfigurationChanged, configurationChangeCallback);
     };
   }, []);
 
