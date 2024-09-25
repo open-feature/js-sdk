@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.3-experimental](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.2-experimental...angular-sdk-v0.0.3-experimental) (2024-09-22)
+
+
+### 🧹 Chore
+
+* add npm keywords for angular ([#1015](https://github.com/open-feature/js-sdk/issues/1015)) ([6b11165](https://github.com/open-feature/js-sdk/commit/6b11165aa102e62fb8cd4dd218643e2ef0e733cf))
+
+
+### 📚 Documentation
+
+* **angular:** improve angular readme layout ([#1013](https://github.com/open-feature/js-sdk/issues/1013)) ([ee52da9](https://github.com/open-feature/js-sdk/commit/ee52da9a01fe71fd5b4a4734659a06c48b6dc62c))
+
 ## [0.0.2-experimental](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.1-experimental...angular-sdk-v0.0.2-experimental) (2024-09-14)
 
 

@@ -7,7 +7,7 @@ import {
   ProviderEvents,
   ProviderStatus,
 } from '@openfeature/web-sdk';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { DEFAULT_OPTIONS, ReactFlagEvaluationOptions, normalizeOptions } from '../common/options';
 import { suspendUntilReady } from '../common/suspense';
 import { useProviderOptions } from '../provider/context';
@@ -290,7 +290,13 @@ function attachHandlersAndResolve<T extends FlagValue>(
     resolver(client).call(client, flagKey, defaultValue, options),
   );
 
-  const updateEvaluationDetailsRef = () => {
+  // Maintain a mutable reference to the evaluation details to have a up-to-date reference in the handlers.
+  const evaluationDetailsRef = useRef<EvaluationDetails<T>>(evaluationDetails);
+  useEffect(() => {
+    evaluationDetailsRef.current = evaluationDetails;
+  }, [evaluationDetails]);
+
+  const updateEvaluationDetailsCallback = () => {
     const updatedEvaluationDetails = resolver(client).call(client, flagKey, defaultValue, options);
 
     /**
@@ -298,7 +304,7 @@ function attachHandlersAndResolve<T extends FlagValue>(
      * to define a custom comparison function if users require a more
      * sophisticated comparison in the future.
      */
-    if (!isEqual(updatedEvaluationDetails.value, evaluationDetails.value)) {
+    if (!isEqual(updatedEvaluationDetails.value, evaluationDetailsRef.current.value)) {
       setEvaluationDetails(updatedEvaluationDetails);
     }
   };
@@ -306,28 +312,28 @@ function attachHandlersAndResolve<T extends FlagValue>(
   useEffect(() => {
     if (status === ProviderStatus.NOT_READY) {
       // update when the provider is ready
-      client.addHandler(ProviderEvents.Ready, updateEvaluationDetailsRef);
+      client.addHandler(ProviderEvents.Ready, updateEvaluationDetailsCallback);
     }
 
     if (defaultedOptions.updateOnContextChanged) {
       // update when the context changes
-      client.addHandler(ProviderEvents.ContextChanged, updateEvaluationDetailsRef);
+      client.addHandler(ProviderEvents.ContextChanged, updateEvaluationDetailsCallback);
     }
     return () => {
       // cleanup the handlers
-      client.removeHandler(ProviderEvents.Ready, updateEvaluationDetailsRef);
-      client.removeHandler(ProviderEvents.ContextChanged, updateEvaluationDetailsRef);
+      client.removeHandler(ProviderEvents.Ready, updateEvaluationDetailsCallback);
+      client.removeHandler(ProviderEvents.ContextChanged, updateEvaluationDetailsCallback);
     };
   }, []);
 
   useEffect(() => {
     if (defaultedOptions.updateOnConfigurationChanged) {
       // update when the provider configuration changes
-      client.addHandler(ProviderEvents.ConfigurationChanged, updateEvaluationDetailsRef);
+      client.addHandler(ProviderEvents.ConfigurationChanged, updateEvaluationDetailsCallback);
     }
     return () => {
       // cleanup the handlers
-      client.removeHandler(ProviderEvents.ConfigurationChanged, updateEvaluationDetailsRef);
+      client.removeHandler(ProviderEvents.ConfigurationChanged, updateEvaluationDetailsCallback);
     };
   }, []);
 

@@ -1,6 +1,6 @@
 {
   "name": "@openfeature/angular-sdk",
-  "version": "0.0.2-experimental",
+  "version": "0.0.3-experimental",
   "scripts": {
     "current-published-version": "npm show $npm_package_name@$npm_package_version version",
     "current-version": "echo $npm_package_version",
@@ -20,5 +20,14 @@
     "@angular/common": "^17.3.0",
     "@angular/core": "^17.3.0"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "keywords": [
+    "openfeature",
+    "feature",
+    "flags",
+    "toggles",
+    "browser",
+    "web",
+    "angular"
+  ]
 }

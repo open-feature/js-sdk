@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.6](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.5...react-sdk-v0.4.6) (2024-09-23)
+
+
+### 🐛 Bug Fixes
+
+* failure to re-render on changes ([#1021](https://github.com/open-feature/js-sdk/issues/1021)) ([c927044](https://github.com/open-feature/js-sdk/commit/c927044c4934f0b8edfd2cdbbc0d60ad546b3dbc))
+
 ## [0.4.5](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.4...react-sdk-v0.4.5) (2024-09-04)
 
 
