@@ -37,7 +37,8 @@
     },
     "packages/nest": {
       "release-type": "node",
-      "prerelease": true,
+      "release-as": "0.2.2",
+      "prerelease": false,
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true,
       "extra-files": ["README.md"],
