@@ -369,6 +369,24 @@ describe('evaluation', () => {
         expect(screen.queryByTestId('render-count')).toHaveTextContent('2');
       });
 
+      it('should not render on flag change because the provider did not include changed flags in the change event', async () => {
+        const TestComponent = TestComponentFactory();
+        render(
+          <OpenFeatureProvider domain={RERENDER_DOMAIN}>
+            <TestComponent></TestComponent>
+          </OpenFeatureProvider>,
+        );
+
+        expect(screen.queryByTestId('render-count')).toHaveTextContent('1');
+        await act(async () => {
+          await rerenderProvider.putConfiguration({
+            ...FLAG_CONFIG,
+          });
+        });
+
+        expect(screen.queryByTestId('render-count')).toHaveTextContent('1');
+      });
+
       it('should not rerender on flag change because the evaluated values did not change', async () => {
         const TestComponent = TestComponentFactory();
         render(

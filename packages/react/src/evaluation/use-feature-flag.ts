@@ -18,7 +18,6 @@ import { useOpenFeatureClientStatus } from '../provider/use-open-feature-client-
 import { FlagQuery } from '../query';
 import { HookFlagQuery } from './hook-flag-query';
 import { isEqual } from '../common/is-equal';
-import { isEmpty } from '../common/is-empty';
 
 // This type is a bit wild-looking, but I think we need it.
 // We have to use the conditional, because otherwise useFlag('key', false) would return false, not boolean (too constrained).
@@ -267,6 +266,11 @@ export function useObjectFlagDetails<T extends JsonValue = JsonValue>(
   );
 }
 
+// Function to determine if a flag should be re-evaluated based on a list of changed flags.
+function shouldEvaluateFlag(flagKey: string, flagsChanged?: string[]): boolean {
+  return !!flagsChanged && flagsChanged.includes(flagKey);
+}
+
 function attachHandlersAndResolve<T extends FlagValue>(
   flagKey: string,
   defaultValue: T,
@@ -313,10 +317,7 @@ function attachHandlersAndResolve<T extends FlagValue>(
   };
 
   const configurationChangeCallback: EventHandler<ClientProviderEvents.ConfigurationChanged> = (eventDetails) => {
-    if (
-      isEmpty(eventDetails?.flagsChanged) ||
-      eventDetails?.flagsChanged?.includes(evaluationDetailsRef.current.flagKey)
-    ) {
+    if (shouldEvaluateFlag(flagKey, eventDetails?.flagsChanged)) {
       updateEvaluationDetailsCallback();
     }
   };
