@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.4-experimental](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.3-experimental...angular-sdk-v0.0.4-experimental) (2024-09-30)
+
+
+### 🐛 Bug Fixes
+
+* **angular:** add package description ([#1026](https://github.com/open-feature/js-sdk/issues/1026)) ([dc63ca8](https://github.com/open-feature/js-sdk/commit/dc63ca8b9d6fe8c16089e95f0e336d5e3f759f3b))
+
 ## [0.0.3-experimental](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.2-experimental...angular-sdk-v0.0.3-experimental) (2024-09-22)
 
 
