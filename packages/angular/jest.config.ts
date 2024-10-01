@@ -16,6 +16,10 @@ const config: Config = {
   setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
   modulePathIgnorePatterns: ['<rootDir>/dist'],
   testMatch: ['<rootDir>/projects/angular-sdk/src/**/*.spec.{ts,tsx}'],
+  moduleNameMapper: {
+    '@openfeature/core': '<rootDir>/../shared/src',
+    '@openfeature/web-sdk': '<rootDir>/../web/src',
+  },
 };
 
 export default config;
