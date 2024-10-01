@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.7](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.6...react-sdk-v0.4.7) (2024-10-01)
+
+
+### ✨ New Features
+
+* avoid re-resolving flags unaffected by a change event ([#1024](https://github.com/open-feature/js-sdk/issues/1024)) ([b8f9b4e](https://github.com/open-feature/js-sdk/commit/b8f9b4ebaf4bdd93669fc6da09d9f97a498174d9))
+
 ## [0.4.6](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.5...react-sdk-v0.4.6) (2024-09-23)
 
 
