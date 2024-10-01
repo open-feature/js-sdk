@@ -1,17 +1,15 @@
-import {
-  EvaluationContext,
-  Hook,
-  InMemoryProvider,
-  OpenFeature,
-  StandardResolutionReasons,
-  EvaluationDetails,
-  ErrorCode,
-} from '@openfeature/web-sdk';
 import '@testing-library/jest-dom'; // see: https://testing-library.com/docs/react-testing-library/setup
 import { act, render, renderHook, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import {
+  ErrorCode,
+  EvaluationContext,
+  EvaluationDetails,
+  Hook,
+  InMemoryProvider,
+  OpenFeature,
   OpenFeatureProvider,
+  StandardResolutionReasons,
   useBooleanFlagDetails,
   useBooleanFlagValue,
   useFlag,
@@ -26,6 +24,7 @@ import {
 import { TestingProvider } from './test.utils';
 import { HookFlagQuery } from '../src/evaluation/hook-flag-query';
 import { startTransition, useState } from 'react';
+import { jest } from '@jest/globals';
 
 describe('evaluation', () => {
   const EVALUATION = 'evaluation';
@@ -332,6 +331,10 @@ describe('evaluation', () => {
         await OpenFeature.setContext(RERENDER_DOMAIN, {});
       });
 
+      afterEach(() => {
+        jest.clearAllMocks();
+      });
+
       it('should not rerender on context change because the evaluated values did not change', async () => {
         const TestComponent = TestComponentFactory();
         render(
@@ -366,6 +369,24 @@ describe('evaluation', () => {
         expect(screen.queryByTestId('render-count')).toHaveTextContent('2');
       });
 
+      it('should not render on flag change because the provider did not include changed flags in the change event', async () => {
+        const TestComponent = TestComponentFactory();
+        render(
+          <OpenFeatureProvider domain={RERENDER_DOMAIN}>
+            <TestComponent></TestComponent>
+          </OpenFeatureProvider>,
+        );
+
+        expect(screen.queryByTestId('render-count')).toHaveTextContent('1');
+        await act(async () => {
+          await rerenderProvider.putConfiguration({
+            ...FLAG_CONFIG,
+          });
+        });
+
+        expect(screen.queryByTestId('render-count')).toHaveTextContent('1');
+      });
+
       it('should not rerender on flag change because the evaluated values did not change', async () => {
         const TestComponent = TestComponentFactory();
         render(
@@ -393,8 +414,37 @@ describe('evaluation', () => {
         expect(screen.queryByTestId('render-count')).toHaveTextContent('1');
       });
 
+      it('should not rerender on flag change because the config values did not change', async () => {
+        const TestComponent = TestComponentFactory();
+        const resolverSpy = jest.spyOn(rerenderProvider, 'resolveBooleanEvaluation');
+        render(
+          <OpenFeatureProvider domain={RERENDER_DOMAIN}>
+            <TestComponent></TestComponent>
+          </OpenFeatureProvider>,
+        );
+
+        expect(screen.queryByTestId('render-count')).toHaveTextContent('1');
+
+        await act(async () => {
+          await rerenderProvider.putConfiguration({
+            ...FLAG_CONFIG,
+          });
+        });
+
+        expect(screen.queryByTestId('render-count')).toHaveTextContent('1');
+        // The resolver should not be called again because the flag config did not change
+        expect(resolverSpy).toHaveBeenNthCalledWith(
+          1,
+          BOOL_FLAG_KEY,
+          expect.anything(),
+          expect.anything(),
+          expect.anything(),
+        );
+      });
+
       it('should rerender on flag change because the evaluated values changed', async () => {
         const TestComponent = TestComponentFactory();
+        const resolverSpy = jest.spyOn(rerenderProvider, 'resolveBooleanEvaluation');
         render(
           <OpenFeatureProvider domain={RERENDER_DOMAIN}>
             <TestComponent></TestComponent>
@@ -415,6 +465,26 @@ describe('evaluation', () => {
         });
 
         expect(screen.queryByTestId('render-count')).toHaveTextContent('2');
+
+        await act(async () => {
+          await rerenderProvider.putConfiguration({
+            ...FLAG_CONFIG,
+            [BOOL_FLAG_KEY]: {
+              ...FLAG_CONFIG[BOOL_FLAG_KEY],
+              // Change the default variant to trigger a rerender
+              defaultVariant: 'on',
+            },
+          });
+        });
+
+        expect(screen.queryByTestId('render-count')).toHaveTextContent('3');
+        expect(resolverSpy).toHaveBeenNthCalledWith(
+          3,
+          BOOL_FLAG_KEY,
+          expect.anything(),
+          expect.anything(),
+          expect.anything(),
+        );
       });
     });
   });

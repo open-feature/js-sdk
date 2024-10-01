@@ -1,6 +1,8 @@
 import {
   Client,
+  ClientProviderEvents,
   EvaluationDetails,
+  EventHandler,
   FlagEvaluationOptions,
   FlagValue,
   JsonValue,
@@ -264,6 +266,11 @@ export function useObjectFlagDetails<T extends JsonValue = JsonValue>(
   );
 }
 
+// determines if a flag should be re-evaluated based on a list of changed flags
+function shouldEvaluateFlag(flagKey: string, flagsChanged?: string[]): boolean {
+  return !!flagsChanged && flagsChanged.includes(flagKey);
+}
+
 function attachHandlersAndResolve<T extends FlagValue>(
   flagKey: string,
   defaultValue: T,
@@ -309,6 +316,12 @@ function attachHandlersAndResolve<T extends FlagValue>(
     }
   };
 
+  const configurationChangeCallback: EventHandler<ClientProviderEvents.ConfigurationChanged> = (eventDetails) => {
+    if (shouldEvaluateFlag(flagKey, eventDetails?.flagsChanged)) {
+      updateEvaluationDetailsCallback();
+    }
+  };
+
   useEffect(() => {
     if (status === ProviderStatus.NOT_READY) {
       // update when the provider is ready
@@ -329,11 +342,11 @@ function attachHandlersAndResolve<T extends FlagValue>(
   useEffect(() => {
     if (defaultedOptions.updateOnConfigurationChanged) {
       // update when the provider configuration changes
-      client.addHandler(ProviderEvents.ConfigurationChanged, updateEvaluationDetailsCallback);
+      client.addHandler(ProviderEvents.ConfigurationChanged, configurationChangeCallback);
     }
     return () => {
       // cleanup the handlers
-      client.removeHandler(ProviderEvents.ConfigurationChanged, updateEvaluationDetailsCallback);
+      client.removeHandler(ProviderEvents.ConfigurationChanged, configurationChangeCallback);
     };
   }, []);
 
