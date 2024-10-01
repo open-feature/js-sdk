@@ -28,7 +28,7 @@
     "useDefineForClassFields": false,
     "strictNullChecks": false,
     "lib": [
-      "ES2022",
+      "ES2015",
       "dom"
     ],
   },
