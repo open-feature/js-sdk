@@ -266,7 +266,7 @@ export function useObjectFlagDetails<T extends JsonValue = JsonValue>(
   );
 }
 
-// Function to determine if a flag should be re-evaluated based on a list of changed flags.
+// determines if a flag should be re-evaluated based on a list of changed flags
 function shouldEvaluateFlag(flagKey: string, flagsChanged?: string[]): boolean {
   return !!flagsChanged && flagsChanged.includes(flagKey);
 }
