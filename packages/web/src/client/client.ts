@@ -2,8 +2,14 @@ import { ClientMetadata, EvaluationLifeCycle, Eventing, ManageLogger } from '@op
 import { Features } from '../evaluation';
 import { ProviderStatus } from '../provider';
 import { ProviderEvents } from '../events';
+import { Tracking } from '../tracking';
 
-export interface Client extends EvaluationLifeCycle<Client>, Features, ManageLogger<Client>, Eventing<ProviderEvents> {
+export interface Client
+  extends EvaluationLifeCycle<Client>,
+    Features,
+    ManageLogger<Client>,
+    Eventing<ProviderEvents>,
+    Tracking {
   readonly metadata: ClientMetadata;
   /**
    * Returns the status of the associated provider.

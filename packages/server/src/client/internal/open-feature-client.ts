@@ -9,6 +9,7 @@ import {
   HookContext,
   JsonValue,
   Logger,
+  OccurrenceDetails,
   OpenFeatureError,
   ProviderFatalError,
   ProviderNotReadyError,
@@ -219,6 +220,10 @@ export class OpenFeatureClient implements Client {
     options?: FlagEvaluationOptions,
   ): Promise<EvaluationDetails<T>> {
     return this.evaluate<T>(flagKey, this._provider.resolveObjectEvaluation, defaultValue, 'object', context, options);
+  }
+
+  track(occurrenceKey: string, context: EvaluationContext, occurrenceDetails: OccurrenceDetails): void {
+    return this._provider.track?.(occurrenceKey, context, occurrenceDetails);
   }
 
   private async evaluate<T extends FlagValue>(
