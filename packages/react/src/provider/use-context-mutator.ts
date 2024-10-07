@@ -1,23 +1,24 @@
+import { useContext } from 'react';
 import { OpenFeature, EvaluationContext } from '@openfeature/web-sdk';
-
-type DomainContextMutator = (domain: string, updatedContext: EvaluationContext) => Promise<void>; 
+import { Context } from './context';
 
 /**
- * 
+ *
  * A hook for accessing context mutating functions.
- * 
+ *
  */
 export function useContextMutator() {
+  async function mutateContext(updatedContext: EvaluationContext): Promise<void> {
+    const { domain } = useContext(Context) || {};
 
-  async function mutateContext(domainOrUpdatedContext: string | EvaluationContext, updatedContextOrUndefined?: EvaluationContext): Promise<void> {
-    if (typeof domainOrUpdatedContext === 'string' && updatedContextOrUndefined) {
-      await OpenFeature.setContext(domainOrUpdatedContext, updatedContextOrUndefined);
-    } else if (typeof domainOrUpdatedContext !== 'string') {
-      OpenFeature.setContext(domainOrUpdatedContext);
+    if (!domain) {
+      throw new Error('No domain set for your context');
     }
+
+    OpenFeature.setContext(domain, updatedContext);
   }
-  
+
   return {
-    mutateContext, 
+    mutateContext,
   };
 }

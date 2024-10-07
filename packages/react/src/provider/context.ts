@@ -7,7 +7,7 @@ import { NormalizedOptions, ReactFlagEvaluationOptions, normalizeOptions } from 
  * DO NOT EXPORT PUBLICLY
  * @internal
  */
-export const Context = React.createContext<{ client: Client; options: ReactFlagEvaluationOptions } | undefined>(undefined);
+export const Context = React.createContext<{ client: Client; domain?: string; options: ReactFlagEvaluationOptions } | undefined>(undefined);
 
 /**
  * Get a normalized copy of the options used for this OpenFeatureProvider, see {@link normalizeOptions}.
