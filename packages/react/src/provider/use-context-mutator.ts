@@ -8,11 +8,13 @@ import { Context } from './context';
  *
  */
 export function useContextMutator() {
-  async function mutateContext(updatedContext: EvaluationContext): Promise<void> {
-    const { domain } = useContext(Context) || {};
+  const { domain } = useContext(Context) || {};
 
+  async function mutateContext(updatedContext: EvaluationContext): Promise<void> {
     if (!domain) {
-      throw new Error('No domain set for your context');
+      // Set the global context
+      OpenFeature.setContext(updatedContext);
+      return;
     }
 
     OpenFeature.setContext(domain, updatedContext);
