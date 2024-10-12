@@ -8,19 +8,21 @@ import { Context } from './context';
  *
  */
 export function useContextMutator() {
-  const { domain } = useContext(Context) || {};
+    const { domain } = useContext(Context) || {};
+    const previousContext = useRef(null);
 
-  async function mutateContext(updatedContext: EvaluationContext): Promise<void> {
-    if (!domain) {
-      // Set the global context
-      OpenFeature.setContext(updatedContext);
-      return;
-    }
+    const mutateContext = useCallback(async (updatedContext: EvaluationContext) => {
+        if (previousContext.current !== updatedContext) {
+            if (!domain) {
+                OpenFeature.setContext(updatedContext);
+            } else {
+                OpenFeature.setContext(domain, updatedContext);
+            }
+            previousContext.current = updatedContext;
+        }
+    }, [domain]);
 
-    OpenFeature.setContext(domain, updatedContext);
-  }
-
-  return {
-    mutateContext,
-  };
+    return {
+        mutateContext,
+    };
 }
