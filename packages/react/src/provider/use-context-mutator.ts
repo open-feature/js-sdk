@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useCallback, useContext, useRef } from 'react';
 import { OpenFeature, EvaluationContext } from '@openfeature/web-sdk';
 import { Context } from './context';
 
@@ -9,7 +9,7 @@ import { Context } from './context';
  */
 export function useContextMutator() {
     const { domain } = useContext(Context) || {};
-    const previousContext = useRef(null);
+    const previousContext = useRef<null | EvaluationContext>(null);
 
     const mutateContext = useCallback(async (updatedContext: EvaluationContext) => {
         if (previousContext.current !== updatedContext) {
