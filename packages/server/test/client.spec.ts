@@ -10,18 +10,20 @@ import type {
   Provider,
   ResolutionDetails,
   TransactionContext,
-  TransactionContextPropagator} from '../src';
+  TransactionContextPropagator,
+} from '../src';
 import {
   ErrorCode,
   FlagNotFoundError,
   OpenFeature,
   ProviderFatalError,
   ProviderStatus,
-  StandardResolutionReasons
+  StandardResolutionReasons,
 } from '../src';
 import { OpenFeatureClient } from '../src/client/internal/open-feature-client';
 import { isDeepStrictEqual } from 'node:util';
 import type { HookContext } from '@openfeature/core';
+import type { TrackingEventDetails } from '@openfeature/core';
 
 const BOOLEAN_VALUE = true;
 const STRING_VALUE = 'val';
@@ -57,6 +59,11 @@ const MOCK_PROVIDER: Provider = {
   metadata: {
     name: 'mock',
   },
+
+  track: jest.fn((): void => {
+    return;
+  }),
+
   resolveBooleanEvaluation: jest.fn((): Promise<ResolutionDetails<boolean>> => {
     return Promise.resolve({
       value: BOOLEAN_VALUE,
@@ -64,6 +71,7 @@ const MOCK_PROVIDER: Provider = {
       reason: REASON,
     });
   }),
+
   resolveStringEvaluation: jest.fn(<U extends string>(): Promise<ResolutionDetails<U>> => {
     return Promise.resolve({
       value: STRING_VALUE,
@@ -71,6 +79,7 @@ const MOCK_PROVIDER: Provider = {
       reason: REASON,
     }) as Promise<ResolutionDetails<U>>;
   }) as <U>() => Promise<ResolutionDetails<U>>,
+
   resolveNumberEvaluation: jest.fn((): Promise<ResolutionDetails<number>> => {
     return Promise.resolve({
       value: NUMBER_VALUE,
@@ -78,6 +87,7 @@ const MOCK_PROVIDER: Provider = {
       reason: REASON,
     });
   }),
+
   resolveObjectEvaluation: jest.fn(<U extends JsonValue>(): Promise<ResolutionDetails<U>> => {
     const details = Promise.resolve<ResolutionDetails<U>>({
       value: OBJECT_VALUE as U,
@@ -558,7 +568,7 @@ describe('OpenFeatureClient', () => {
       },
       initialize: () => {
         return Promise.resolve();
-      }
+      },
     } as unknown as Provider;
     it('status must be READY if init resolves', async () => {
       await OpenFeature.setProviderAndWait('1.7.1, 1.7.3', initProvider);
@@ -574,7 +584,7 @@ describe('OpenFeatureClient', () => {
       },
       initialize: async () => {
         return Promise.reject(new GeneralError());
-      }
+      },
     } as unknown as Provider;
     it('status must be ERROR if init rejects', async () => {
       await expect(OpenFeature.setProviderAndWait('1.7.4', errorProvider)).rejects.toThrow();
@@ -590,7 +600,7 @@ describe('OpenFeatureClient', () => {
       },
       initialize: () => {
         return Promise.reject(new ProviderFatalError());
-      }
+      },
     } as unknown as Provider;
     it('must short circuit and return PROVIDER_FATAL code if provider FATAL', async () => {
       await expect(OpenFeature.setProviderAndWait('1.7.5, 1.7.6, 1.7.8', fatalProvider)).rejects.toThrow();
@@ -613,7 +623,7 @@ describe('OpenFeatureClient', () => {
         return new Promise(() => {
           return; // promise never resolves
         });
-      }
+      },
     } as unknown as Provider;
     it('must short circuit and return PROVIDER_NOT_READY code if provider NOT_READY', async () => {
       OpenFeature.setProviderAndWait('1.7.7', neverReadyProvider).catch(() => {
@@ -747,25 +757,29 @@ describe('OpenFeatureClient', () => {
         const hook = {
           before: jest.fn((hookContext: HookContext) => {
             // we have to put this assertion here because of limitations in jest with expect.objectContaining and mutability
-            if (isDeepStrictEqual(hookContext.context, {
-              ...globalContext,
-              ...transactionContext,
-              ...clientContext,
-              ...invocationContext,
-              // before hook context should be missing here (and not overridden)
-            })) {
+            if (
+              isDeepStrictEqual(hookContext.context, {
+                ...globalContext,
+                ...transactionContext,
+                ...clientContext,
+                ...invocationContext,
+                // before hook context should be missing here (and not overridden)
+              })
+            ) {
               return beforeHookContext;
             }
           }),
           after: jest.fn((hookContext: HookContext) => {
             // we have to put this assertion here because of limitations in jest with expect.objectContaining and mutability
-            if (isDeepStrictEqual(hookContext.context, {
-              ...globalContext,
-              ...transactionContext,
-              ...clientContext,
-              ...invocationContext,
-              ...beforeHookContext,
-            })) {
+            if (
+              isDeepStrictEqual(hookContext.context, {
+                ...globalContext,
+                ...transactionContext,
+                ...clientContext,
+                ...invocationContext,
+                ...beforeHookContext,
+              })
+            ) {
               return beforeHookContext;
             }
           }),
@@ -806,5 +820,48 @@ describe('OpenFeatureClient', () => {
     expect(await client.addHooks().clearHooks().setContext({}).setLogger(console).getBooleanValue('test', true)).toBe(
       true,
     );
+  });
+
+  describe('tracking', () => {
+    describe('Requirement 2.7.1, Requirement 6.1.2.1', () => {
+      const eventName = 'test-tracking-event';
+      const trackingValue = 1234;
+      const details: TrackingEventDetails = {
+        value: trackingValue,
+      };
+      const globalContextKey = 'globalKey';
+      const clientContextKey = 'clientKey';
+      const invocationContextKey = 'invocationKey';
+      const globalContextValue = 'globalValue';
+      const clientContextValue = 'clientValue';
+      const invocationContextValue = 'invocationValue';
+
+      it('should no-op and not throw if tracking not defined on provider', async () => {
+        await OpenFeature.setProviderAndWait({ ...MOCK_PROVIDER, initialize: undefined });
+        const client = OpenFeature.getClient();
+
+        expect(() => {
+          client.track(eventName, details);
+        }).not.toThrow();
+      });
+
+      it('should call provider with correct context', async () => {
+        await OpenFeature.setProviderAndWait({ ...MOCK_PROVIDER });
+        OpenFeature.setContext({ [globalContextKey]: globalContextValue });
+        const client = OpenFeature.getClient();
+        client.setContext({ [clientContextKey]: clientContextValue });
+        client.track(eventName, { [invocationContextKey]: invocationContextValue }, details);
+
+        expect(MOCK_PROVIDER.track).toHaveBeenCalledWith(
+          eventName,
+          expect.objectContaining({
+            [globalContextKey]: globalContextValue,
+            [clientContextKey]: clientContextValue,
+            [invocationContextKey]: invocationContextValue,
+          }),
+          expect.objectContaining({ value: trackingValue }),
+        );
+      });
+    });
   });
 });

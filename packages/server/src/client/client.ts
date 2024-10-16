@@ -8,12 +8,14 @@ import type {
 import type { Features } from '../evaluation';
 import type { ProviderStatus } from '../provider';
 import type { ProviderEvents } from '../events';
+import type { Tracking } from '../tracking';
 
 export interface Client
   extends EvaluationLifeCycle<Client>,
     Features,
     ManageContext<Client>,
     ManageLogger<Client>,
+    Tracking,
     Eventing<ProviderEvents> {
   readonly metadata: ClientMetadata;
   /**

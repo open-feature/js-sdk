@@ -1,13 +1,6 @@
+import type { JsonValue } from '../types/structure';
+
 export type FlagValueType = 'boolean' | 'string' | 'number' | 'object';
-
-export type PrimitiveValue = null | boolean | string | number;
-export type JsonObject = { [key: string]: JsonValue };
-export type JsonArray = JsonValue[];
-
-/**
- * Represents a JSON node value.
- */
-export type JsonValue = PrimitiveValue | JsonObject | JsonArray;
 
 /**
  * Represents a JSON node value, or Date.

@@ -8,6 +8,7 @@ import type {
   HookContext,
   JsonValue,
   Logger,
+  TrackingEventDetails,
   OpenFeatureError,
   ResolutionDetails} from '@openfeature/core';
 import {
@@ -223,6 +224,19 @@ export class OpenFeatureClient implements Client {
     return this.evaluate<T>(flagKey, this._provider.resolveObjectEvaluation, defaultValue, 'object', context, options);
   }
 
+  track(occurrenceKey: string, context: EvaluationContext, occurrenceDetails: TrackingEventDetails): void {
+
+    this.shortCircuitIfNotReady();
+
+    const mergedContext = this.mergeContexts(context);
+
+    if (typeof this._provider.track === 'function') {
+      return this._provider.track?.(occurrenceKey, mergedContext, occurrenceDetails);
+    } else {
+      this._logger.debug('Provider does not implement track function: will no-op.');
+    }
+  }
+
   private async evaluate<T extends FlagValue>(
     flagKey: string,
     resolver: (
@@ -246,13 +260,7 @@ export class OpenFeatureClient implements Client {
     ];
     const allHooksReversed = [...allHooks].reverse();
 
-    // merge global and client contexts
-    const mergedContext = {
-      ...OpenFeature.getContext(),
-      ...OpenFeature.getTransactionContext(),
-      ...this._context,
-      ...invocationContext,
-    };
+    const mergedContext = this.mergeContexts(invocationContext);
 
     // this reference cannot change during the course of evaluation
     // it may be used as a key in WeakMaps
@@ -269,12 +277,7 @@ export class OpenFeatureClient implements Client {
     try {
       const frozenContext = await this.beforeHooks(allHooks, hookContext, options);
 
-      // short circuit evaluation entirely if provider is in a bad state
-      if (this.providerStatus === ProviderStatus.NOT_READY) {
-        throw new ProviderNotReadyError('provider has not yet initialized');
-      } else if (this.providerStatus === ProviderStatus.FATAL) {
-        throw new ProviderFatalError('provider is in an irrecoverable error state');
-      }
+      this.shortCircuitIfNotReady();
 
       // run the referenced resolver, binding the provider.
       const resolution = await resolver.call(this._provider, flagKey, defaultValue, frozenContext, this._logger);
@@ -379,5 +382,24 @@ export class OpenFeatureClient implements Client {
 
   private get _logger() {
     return this._clientLogger || this.globalLogger();
+  }
+
+  private mergeContexts(invocationContext: EvaluationContext) {
+    // merge global and client contexts
+    return {
+      ...OpenFeature.getContext(),
+      ...OpenFeature.getTransactionContext(),
+      ...this._context,
+      ...invocationContext,
+    };
+  }
+
+  private shortCircuitIfNotReady() {
+    // short circuit evaluation entirely if provider is in a bad state
+    if (this.providerStatus === ProviderStatus.NOT_READY) {
+      throw new ProviderNotReadyError('provider has not yet initialized');
+    } else if (this.providerStatus === ProviderStatus.FATAL) {
+      throw new ProviderFatalError('provider is in an irrecoverable error state');
+    }
   }
 }

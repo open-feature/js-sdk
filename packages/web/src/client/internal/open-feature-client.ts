@@ -8,8 +8,9 @@ import type {
   HookContext,
   JsonValue,
   Logger,
+  TrackingEventDetails,
   OpenFeatureError,
-  ResolutionDetails} from '@openfeature/core';
+  ResolutionDetails } from '@openfeature/core';
 import {
   ErrorCode,
   ProviderFatalError,
@@ -181,6 +182,21 @@ export class OpenFeatureClient implements Client {
     return this.evaluate<T>(flagKey, this._provider.resolveObjectEvaluation, defaultValue, 'object', options);
   }
 
+  track(occurrenceKey: string, occurrenceDetails: TrackingEventDetails): void {
+
+    this.shortCircuitIfNotReady();
+
+    const context = {
+      ...OpenFeature.getContext(this?.options?.domain),
+    };
+
+    if (typeof this._provider.track === 'function') {
+      return this._provider.track?.(occurrenceKey, context, occurrenceDetails);
+    } else {
+      this._logger.debug('Provider does not implement track function: will no-op.');
+    }
+  }
+
   private evaluate<T extends FlagValue>(
     flagKey: string,
     resolver: (flagKey: string, defaultValue: T, context: EvaluationContext, logger: Logger) => ResolutionDetails<T>,
@@ -217,12 +233,7 @@ export class OpenFeatureClient implements Client {
     try {
       this.beforeHooks(allHooks, hookContext, options);
 
-      // short circuit evaluation entirely if provider is in a bad state
-      if (this.providerStatus === ProviderStatus.NOT_READY) {
-        throw new ProviderNotReadyError('provider has not yet initialized');
-      } else if (this.providerStatus === ProviderStatus.FATAL) {
-        throw new ProviderFatalError('provider is in an irrecoverable error state');
-      }
+      this.shortCircuitIfNotReady();
 
       // run the referenced resolver, binding the provider.
       const resolution = resolver.call(this._provider, flagKey, defaultValue, context, this._logger);
@@ -316,5 +327,14 @@ export class OpenFeatureClient implements Client {
 
   private get _logger() {
     return this._clientLogger || this.globalLogger();
+  }
+
+  private shortCircuitIfNotReady() {
+    // short circuit evaluation entirely if provider is in a bad state
+    if (this.providerStatus === ProviderStatus.NOT_READY) {
+      throw new ProviderNotReadyError('provider has not yet initialized');
+    } else if (this.providerStatus === ProviderStatus.FATAL) {
+      throw new ProviderFatalError('provider is in an irrecoverable error state');
+    }
   }
 }

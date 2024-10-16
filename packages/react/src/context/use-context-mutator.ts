@@ -15,7 +15,7 @@ export type ContextMutationOptions = {
 
 export type ContextMutation = {
   /**
-   * A function to set the desired context (see: {@link ContextMutationOptions} for details).
+   * Context-aware function to set the desired context (see: {@link ContextMutationOptions} for details).
    * There's generally no need to await the result of this function; flag evaluation hooks will re-render when the context is updated.
    * This promise never rejects.
    * @param updatedContext
@@ -25,10 +25,10 @@ export type ContextMutation = {
 };
 
 /**
- * Get function(s) for mutating the evaluation context associated with this domain, or the default context if `defaultContext: true`.
+ * Get context-aware tracking function(s) for mutating the evaluation context associated with this domain, or the default context if `defaultContext: true`.
  * See the {@link https://openfeature.dev/docs/reference/technologies/client/web/#targeting-and-context|documentation} for more information.
  * @param {ContextMutationOptions} options options for the generated function
- * @returns {ContextMutation} function(s) to mutate context
+ * @returns {ContextMutation} context-aware function(s) to mutate evaluation context
  */
 export function useContextMutator(options: ContextMutationOptions = { defaultContext: false }): ContextMutation {
     const { domain } = useContext(Context) || {};
