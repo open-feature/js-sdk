@@ -1,5 +1,5 @@
-import { JsonValue, ResolutionDetails } from '@openfeature/core';
-import { Provider } from './provider';
+import type { JsonValue, ResolutionDetails } from '@openfeature/core';
+import type { Provider } from './provider';
 
 const REASON_NO_OP = 'No-op';
 

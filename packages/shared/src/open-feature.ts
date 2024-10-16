@@ -1,20 +1,24 @@
-import { GeneralError, OpenFeatureError } from './errors';
-import { ErrorCode, EvaluationContext } from './evaluation';
-import {
-  AllProviderEvents,
+import type { OpenFeatureError } from './errors';
+import { GeneralError } from './errors';
+import type { EvaluationContext } from './evaluation';
+import { ErrorCode } from './evaluation';
+import type {
   AnyProviderEvent,
   EventDetails,
   EventHandler,
   Eventing,
-  GenericEventEmitter,
+  GenericEventEmitter} from './events';
+import {
+  AllProviderEvents,
   statusMatchesEvent,
 } from './events';
 import { isDefined } from './filter';
-import { BaseHook, EvaluationLifeCycle } from './hooks';
-import { DefaultLogger, Logger, ManageLogger, SafeLogger } from './logger';
-import { ClientProviderStatus, CommonProvider, ProviderMetadata, ServerProviderStatus } from './provider';
+import type { BaseHook, EvaluationLifeCycle } from './hooks';
+import type { Logger, ManageLogger} from './logger';
+import { DefaultLogger, SafeLogger } from './logger';
+import type { ClientProviderStatus, CommonProvider, ProviderMetadata, ServerProviderStatus } from './provider';
 import { objectOrUndefined, stringOrUndefined } from './type-guards';
-import { Paradigm } from './types';
+import type { Paradigm } from './types';
 
 type AnyProviderStatus = ClientProviderStatus | ServerProviderStatus;
 

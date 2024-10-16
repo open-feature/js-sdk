@@ -1,24 +1,27 @@
-import {
+import type {
   DynamicModule,
-  Module,
   FactoryProvider as NestFactoryProvider,
   ValueProvider,
   ClassProvider,
-  Provider as NestProvider,
+  Provider as NestProvider} from '@nestjs/common';
+import {
+  Module,
   ExecutionContext,
 } from '@nestjs/common';
-import {
+import type {
   Client,
   Hook,
-  OpenFeature,
   Provider,
   EvaluationContext,
   ServerProviderEvents,
   EventHandler,
-  Logger,
+  Logger} from '@openfeature/server-sdk';
+import {
+  OpenFeature,
   AsyncLocalStorageTransactionContextPropagator,
 } from '@openfeature/server-sdk';
-import { ContextFactory, ContextFactoryToken } from './context-factory';
+import type { ContextFactory} from './context-factory';
+import { ContextFactoryToken } from './context-factory';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { EvaluationContextInterceptor } from './evaluation-context-interceptor';
 import { ShutdownService } from './shutdown.service';

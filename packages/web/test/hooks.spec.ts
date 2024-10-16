@@ -1,12 +1,13 @@
-import {
+import type {
   Provider,
   ResolutionDetails,
   Client,
   FlagValueType,
   EvaluationContext,
+  Hook} from '../src';
+import {
   GeneralError,
   OpenFeature,
-  Hook,
   StandardResolutionReasons,
   ErrorCode,
 } from '../src';

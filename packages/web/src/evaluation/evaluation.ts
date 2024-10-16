@@ -1,4 +1,4 @@
-import { EvaluationDetails, BaseHook, HookHints, JsonValue } from '@openfeature/core';
+import type { EvaluationDetails, BaseHook, HookHints, JsonValue } from '@openfeature/core';
 
 export interface FlagEvaluationOptions {
   hooks?: BaseHook[];

@@ -1,5 +1,6 @@
-import { ClientProviderStatus, CommonProvider, EvaluationContext, JsonValue, Logger, ResolutionDetails } from '@openfeature/core';
-import { Hook } from '../hooks';
+import type { CommonProvider, EvaluationContext, JsonValue, Logger, ResolutionDetails } from '@openfeature/core';
+import { ClientProviderStatus } from '@openfeature/core';
+import type { Hook } from '../hooks';
 
 export { ClientProviderStatus as ProviderStatus };
 

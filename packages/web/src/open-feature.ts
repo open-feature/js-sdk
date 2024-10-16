@@ -1,18 +1,20 @@
-import {
+import type {
   ClientProviderStatus,
   EvaluationContext,
   GenericEventEmitter,
-  ManageContext,
+  ManageContext} from '@openfeature/core';
+import {
   OpenFeatureCommonAPI,
   ProviderWrapper,
   objectOrUndefined,
   stringOrUndefined,
 } from '@openfeature/core';
-import { Client } from './client';
+import type { Client } from './client';
 import { OpenFeatureClient } from './client/internal/open-feature-client';
 import { OpenFeatureEventEmitter, ProviderEvents } from './events';
-import { Hook } from './hooks';
-import { NOOP_PROVIDER, Provider, ProviderStatus } from './provider';
+import type { Hook } from './hooks';
+import type { Provider} from './provider';
+import { NOOP_PROVIDER, ProviderStatus } from './provider';
 
 // use a symbol as a key for the global singleton
 const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/web-sdk/api');

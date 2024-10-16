@@ -1,7 +1,9 @@
-import { Logger, ManageLogger, SafeLogger } from '../logger';
-import { ProviderEventEmitter } from './provider-event-emitter';
-import { EventContext, EventDetails, EventHandler } from './eventing';
-import { AllProviderEvents, AnyProviderEvent } from './events';
+import type { Logger, ManageLogger} from '../logger';
+import { SafeLogger } from '../logger';
+import type { ProviderEventEmitter } from './provider-event-emitter';
+import type { EventContext, EventDetails, EventHandler } from './eventing';
+import type { AnyProviderEvent } from './events';
+import { AllProviderEvents } from './events';
 
 /**
  * The GenericEventEmitter should only be used within the SDK. It supports additional properties that can be included

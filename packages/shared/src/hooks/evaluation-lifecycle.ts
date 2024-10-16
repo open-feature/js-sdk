@@ -1,4 +1,4 @@
-import { BaseHook } from './hook';
+import type { BaseHook } from './hook';
 
 export interface EvaluationLifeCycle<T> {
   /**

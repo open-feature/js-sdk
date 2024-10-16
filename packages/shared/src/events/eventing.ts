@@ -1,5 +1,6 @@
-import { ErrorCode } from '../evaluation';
-import { ClientProviderEvents, ServerProviderEvents, AnyProviderEvent } from './events';
+import type { ErrorCode } from '../evaluation';
+import type { ClientProviderEvents, ServerProviderEvents} from './events';
+import { AnyProviderEvent } from './events';
 
 export type EventMetadata = {
   [key: string]: string | boolean | number;

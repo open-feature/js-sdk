@@ -1,4 +1,4 @@
-import { BaseHook, EvaluationContext, FlagValue } from '@openfeature/core';
+import type { BaseHook, EvaluationContext, FlagValue } from '@openfeature/core';
 
 export type Hook = BaseHook<
   FlagValue,

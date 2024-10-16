@@ -1,9 +1,10 @@
-import {
+import type {
   EvaluationContext,
   EvaluationDetails,
   JsonObject,
   JsonValue,
-  ResolutionDetails,
+  ResolutionDetails} from '@openfeature/core';
+import {
   StandardResolutionReasons,
 } from '@openfeature/core';
 import { defineFeature, loadFeature } from 'jest-cucumber';

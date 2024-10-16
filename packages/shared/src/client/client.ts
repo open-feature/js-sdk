@@ -1,4 +1,4 @@
-import { ProviderMetadata } from '../provider/provider';
+import type { ProviderMetadata } from '../provider/provider';
 
 export interface ClientMetadata {
   /**

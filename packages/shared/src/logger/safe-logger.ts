@@ -1,4 +1,4 @@
-import { Logger } from './logger';
+import type { Logger } from './logger';
 import { DefaultLogger } from './default-logger';
 
 export const LOG_LEVELS: Array<keyof Logger> = ['error', 'warn', 'info', 'debug'];

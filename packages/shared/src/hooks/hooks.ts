@@ -1,7 +1,7 @@
-import { ProviderMetadata } from '../provider';
-import { ClientMetadata } from '../client';
-import { EvaluationContext, FlagValue, FlagValueType } from '../evaluation';
-import { Logger } from '../logger';
+import type { ProviderMetadata } from '../provider';
+import type { ClientMetadata } from '../client';
+import type { EvaluationContext, FlagValue, FlagValueType } from '../evaluation';
+import type { Logger } from '../logger';
 
 export type HookHints = Readonly<Record<string, unknown>>;
 

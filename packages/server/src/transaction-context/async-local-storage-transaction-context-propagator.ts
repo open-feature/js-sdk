@@ -1,5 +1,5 @@
-import { EvaluationContext } from '@openfeature/core';
-import { TransactionContext, TransactionContextPropagator } from './transaction-context';
+import type { EvaluationContext } from '@openfeature/core';
+import type { TransactionContext, TransactionContextPropagator } from './transaction-context';
 import { AsyncLocalStorage } from 'async_hooks';
 
 export class AsyncLocalStorageTransactionContextPropagator implements TransactionContextPropagator {

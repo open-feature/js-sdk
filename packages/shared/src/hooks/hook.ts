@@ -1,5 +1,5 @@
-import { BeforeHookContext, HookContext, HookHints } from './hooks';
-import { EvaluationDetails, FlagValue } from '../evaluation';
+import type { BeforeHookContext, HookContext, HookHints } from './hooks';
+import type { EvaluationDetails, FlagValue } from '../evaluation';
 
 export interface BaseHook<T extends FlagValue = FlagValue, BeforeHookReturn = unknown, HooksReturn = unknown> {
   /**

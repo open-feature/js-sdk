@@ -1,18 +1,19 @@
-import {
+import type {
   EvaluationContext,
-  FlagNotFoundError,
   FlagValueType,
-  GeneralError,
   JsonValue,
   Logger,
+  ResolutionDetails} from '@openfeature/core';
+import {
+  FlagNotFoundError,
+  GeneralError,
   OpenFeatureError,
-  ResolutionDetails,
   StandardResolutionReasons,
   TypeMismatchError,
 } from '@openfeature/core';
-import { Provider } from '../provider';
+import type { Provider } from '../provider';
 import { OpenFeatureEventEmitter, ProviderEvents } from '../../events';
-import { FlagConfiguration, Flag } from './flag-configuration';
+import type { FlagConfiguration, Flag } from './flag-configuration';
 import { VariantNotFoundError } from './variant-not-found-error';
 
 /**

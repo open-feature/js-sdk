@@ -1,11 +1,12 @@
 import '@testing-library/jest-dom'; // see: https://testing-library.com/docs/react-testing-library/setup
 import { act, render, renderHook, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
-import {
-  ErrorCode,
+import type {
   EvaluationContext,
   EvaluationDetails,
-  Hook,
+  Hook} from '../src/';
+import {
+  ErrorCode,
   InMemoryProvider,
   OpenFeature,
   OpenFeatureProvider,

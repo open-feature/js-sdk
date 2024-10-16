@@ -1,7 +1,8 @@
 import { Controller, Get, Injectable, UseInterceptors } from '@nestjs/common';
-import { Observable, map } from 'rxjs';
+import type { Observable} from 'rxjs';
+import { map } from 'rxjs';
 import { BooleanFeatureFlag, ObjectFeatureFlag, NumberFeatureFlag, OpenFeatureClient, StringFeatureFlag } from '../src';
-import { Client, EvaluationDetails, FlagValue } from '@openfeature/server-sdk';
+import type { Client, EvaluationDetails, FlagValue } from '@openfeature/server-sdk';
 import { EvaluationContextInterceptor } from '../src';
 
 @Injectable()

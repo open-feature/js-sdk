@@ -1,15 +1,17 @@
 import { v4 as uuid } from 'uuid';
-import {
+import type {
   JsonValue,
+  Provider,
+  ProviderMetadata,
+  ResolutionDetails,
+  StaleEvent
+} from '../src';
+import {
   NOOP_PROVIDER,
   OpenFeature,
   OpenFeatureEventEmitter,
-  Provider,
   ProviderEvents,
-  ProviderMetadata,
-  ProviderStatus,
-  ResolutionDetails,
-  StaleEvent
+  ProviderStatus
 } from '../src';
 
 const TIMEOUT = 1000;

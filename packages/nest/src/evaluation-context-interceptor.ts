@@ -1,5 +1,7 @@
-import { CallHandler, ExecutionContext, Inject, Injectable, NestInterceptor } from '@nestjs/common';
-import { ContextFactory, ContextFactoryToken } from './context-factory';
+import type { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import type { ContextFactory} from './context-factory';
+import { ContextFactoryToken } from './context-factory';
 import { Observable } from 'rxjs';
 import { OpenFeature } from '@openfeature/server-sdk';
 import { OpenFeatureModule } from './open-feature.module';
