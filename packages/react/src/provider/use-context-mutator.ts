@@ -7,13 +7,20 @@ import { Context } from './context';
  * A hook for accessing context mutating functions.
  *
  */
-export function useContextMutator() {
+export function useContextMutator({
+  setGlobal
+}: {
+  /**
+   * Apply changes to the global context instead of the domain scoped context applied at the React Provider
+   */
+  setGlobal?: boolean;
+} = {}) {
     const { domain } = useContext(Context) || {};
     const previousContext = useRef<null | EvaluationContext>(null);
 
-    const mutateContext = useCallback(async (updatedContext: EvaluationContext) => {
+    const setContext = useCallback(async (updatedContext: EvaluationContext) => {
         if (previousContext.current !== updatedContext) {
-            if (!domain) {
+            if (!domain || setGlobal) {
                 OpenFeature.setContext(updatedContext);
             } else {
                 OpenFeature.setContext(domain, updatedContext);
@@ -23,6 +30,6 @@ export function useContextMutator() {
     }, [domain]);
 
     return {
-        mutateContext,
+        setContext,
     };
 }
