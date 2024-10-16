@@ -1,5 +1,6 @@
 import EventEmitter from 'events';
-import { GenericEventEmitter, Logger, AllProviderEvents, ReadyEvent, AnyProviderEvent } from '../src';
+import type { Logger, ReadyEvent, AnyProviderEvent } from '../src';
+import { GenericEventEmitter, AllProviderEvents } from '../src';
 
 // create concrete class to test the abstract functionality.
 class TestEventEmitter extends GenericEventEmitter<AnyProviderEvent> {

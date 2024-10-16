@@ -1,14 +1,16 @@
 import { createParamDecorator, Inject } from '@nestjs/common';
-import {
+import type {
   EvaluationContext,
   EvaluationDetails,
   FlagValue,
-  JsonValue,
+  JsonValue} from '@openfeature/server-sdk';
+import {
   OpenFeature,
   Client,
 } from '@openfeature/server-sdk';
 import { getOpenFeatureClientToken } from './open-feature.module';
-import { from, Observable } from 'rxjs';
+import type { Observable } from 'rxjs';
+import { from } from 'rxjs';
 
 /**
  * Options for injecting an OpenFeature client into a constructor.

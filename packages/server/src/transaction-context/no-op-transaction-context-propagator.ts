@@ -1,5 +1,5 @@
-import { EvaluationContext } from '@openfeature/core';
-import { TransactionContext, TransactionContextPropagator } from './transaction-context';
+import type { EvaluationContext } from '@openfeature/core';
+import type { TransactionContext, TransactionContextPropagator } from './transaction-context';
 
 class NoopTransactionContextPropagator implements TransactionContextPropagator {
   getTransactionContext(): EvaluationContext {

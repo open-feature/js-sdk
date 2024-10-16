@@ -1,4 +1,5 @@
-import { OpenFeature, BaseHook, Logger, Provider, DefaultLogger, SafeLogger } from '../src';
+import type { BaseHook, Logger, Provider} from '../src';
+import { OpenFeature, DefaultLogger, SafeLogger } from '../src';
 
 class MockedLogger implements Logger {
   error = jest.fn();

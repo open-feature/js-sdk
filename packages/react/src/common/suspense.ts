@@ -1,4 +1,5 @@
-import { Client, ProviderEvents } from '@openfeature/web-sdk';
+import type { Client} from '@openfeature/web-sdk';
+import { ProviderEvents } from '@openfeature/web-sdk';
 
 /**
  * Suspends until the client is ready to evaluate feature flags.

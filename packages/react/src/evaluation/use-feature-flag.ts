@@ -1,21 +1,23 @@
-import {
+import type {
   Client,
   ClientProviderEvents,
   EvaluationDetails,
   EventHandler,
   FlagEvaluationOptions,
   FlagValue,
-  JsonValue,
+  JsonValue} from '@openfeature/web-sdk';
+import {
   ProviderEvents,
   ProviderStatus,
 } from '@openfeature/web-sdk';
 import { useEffect, useRef, useState } from 'react';
-import { DEFAULT_OPTIONS, ReactFlagEvaluationOptions, normalizeOptions } from '../common/options';
+import type { ReactFlagEvaluationOptions} from '../common/options';
+import { DEFAULT_OPTIONS, normalizeOptions } from '../common/options';
 import { suspendUntilReady } from '../common/suspense';
 import { useProviderOptions } from '../provider/context';
 import { useOpenFeatureClient } from '../provider/use-open-feature-client';
 import { useOpenFeatureClientStatus } from '../provider/use-open-feature-client-status';
-import { FlagQuery } from '../query';
+import type { FlagQuery } from '../query';
 import { HookFlagQuery } from './hook-flag-query';
 import { isEqual } from '../common/is-equal';
 

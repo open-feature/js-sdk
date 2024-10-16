@@ -1,4 +1,5 @@
-import { EvaluationContext, OpenFeature } from '@openfeature/web-sdk';
+import type { EvaluationContext} from '@openfeature/web-sdk';
+import { OpenFeature } from '@openfeature/web-sdk';
 import '@testing-library/jest-dom'; // see: https://testing-library.com/docs/react-testing-library/setup
 import { render, renderHook, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';

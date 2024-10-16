@@ -1,5 +1,6 @@
-import { EvaluationContext } from '@openfeature/core';
-import { ExecutionContext, Inject } from '@nestjs/common';
+import type { EvaluationContext } from '@openfeature/core';
+import type { ExecutionContext} from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 
 /**
  * A factory function for creating an OpenFeature {@link EvaluationContext} from Nest {@link ExecutionContext}.

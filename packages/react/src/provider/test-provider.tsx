@@ -1,12 +1,13 @@
+import type {
+  JsonValue,
+  Provider} from '@openfeature/web-sdk';
 import {
   InMemoryProvider,
-  JsonValue,
   NOOP_PROVIDER,
-  OpenFeature,
-  Provider,
+  OpenFeature
 } from '@openfeature/web-sdk';
 import React from 'react';
-import { NormalizedOptions } from '../common/options';
+import type { NormalizedOptions } from '../common/options';
 import { OpenFeatureProvider } from './provider';
 
 type FlagValueMap = { [flagKey: string]: JsonValue };

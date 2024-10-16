@@ -1,6 +1,6 @@
-import { EvaluationContext } from '../evaluation';
-import { AnyProviderEvent, ProviderEventEmitter } from '../events';
-import { Metadata, Paradigm } from '../types';
+import type { EvaluationContext } from '../evaluation';
+import type { AnyProviderEvent, ProviderEventEmitter } from '../events';
+import type { Metadata, Paradigm } from '../types';
 
 // TODO: with TypeScript 5+, we can use computed string properties,
 // so we can extract all of these into a shared set of string consts and use that in both enums

@@ -1,6 +1,7 @@
-import { Client } from '@openfeature/web-sdk';
+import type { Client } from '@openfeature/web-sdk';
 import React from 'react';
-import { NormalizedOptions, ReactFlagEvaluationOptions, normalizeOptions } from '../common/options';
+import type { NormalizedOptions, ReactFlagEvaluationOptions} from '../common/options';
+import { normalizeOptions } from '../common/options';
 
 /**
  * The underlying React context.

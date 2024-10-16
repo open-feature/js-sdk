@@ -1,11 +1,12 @@
-import {
-  OpenFeature,
+import type {
   Provider,
   ResolutionDetails,
   Client,
   FlagValueType,
   EvaluationContext,
-  Hook,
+  Hook} from '../src';
+import {
+  OpenFeature,
   StandardResolutionReasons,
   ErrorCode,
 } from '../src';

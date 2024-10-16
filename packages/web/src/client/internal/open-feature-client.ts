@@ -1,6 +1,5 @@
-import {
+import type {
   ClientMetadata,
-  ErrorCode,
   EvaluationContext,
   EvaluationDetails,
   EventHandler,
@@ -10,21 +9,24 @@ import {
   JsonValue,
   Logger,
   OpenFeatureError,
+  ResolutionDetails} from '@openfeature/core';
+import {
+  ErrorCode,
   ProviderFatalError,
   ProviderNotReadyError,
-  ResolutionDetails,
   SafeLogger,
   StandardResolutionReasons,
   instantiateErrorByErrorCode,
   statusMatchesEvent,
 } from '@openfeature/core';
-import { FlagEvaluationOptions } from '../../evaluation';
-import { ProviderEvents } from '../../events';
-import { InternalEventEmitter } from '../../events/internal/internal-event-emitter';
-import { Hook } from '../../hooks';
+import type { FlagEvaluationOptions } from '../../evaluation';
+import type { ProviderEvents } from '../../events';
+import type { InternalEventEmitter } from '../../events/internal/internal-event-emitter';
+import type { Hook } from '../../hooks';
 import { OpenFeature } from '../../open-feature';
-import { Provider, ProviderStatus } from '../../provider';
-import { Client } from './../client';
+import type { Provider} from '../../provider';
+import { ProviderStatus } from '../../provider';
+import type { Client } from './../client';
 
 type OpenFeatureClientOptions = {
   /**

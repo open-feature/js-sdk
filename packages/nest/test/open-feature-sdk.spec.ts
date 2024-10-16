@@ -1,5 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
+import type { INestApplication } from '@nestjs/common';
 import supertest from 'supertest';
 import { OpenFeatureController, OpenFeatureControllerContextScopedController, OpenFeatureTestService } from './test-app';
 import { exampleContextFactory, getOpenFeatureDefaultTestModule } from './fixtures';

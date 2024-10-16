@@ -1,4 +1,4 @@
-import { FlagEvaluationOptions } from '@openfeature/web-sdk';
+import type { FlagEvaluationOptions } from '@openfeature/web-sdk';
 
 export type ReactFlagEvaluationOptions = ({
   /**

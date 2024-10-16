@@ -1,6 +1,6 @@
-import { ManageLogger } from '../logger';
-import { EventContext, EventHandler } from './eventing';
-import { AnyProviderEvent } from './events';
+import type { ManageLogger } from '../logger';
+import type { EventContext, EventHandler } from './eventing';
+import type { AnyProviderEvent } from './events';
 
 /**
  * Event emitter to be optionally implemented by providers.

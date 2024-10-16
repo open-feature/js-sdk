@@ -1,17 +1,18 @@
-import {
+import type {
   Client,
-  ErrorCode,
   EvaluationDetails,
-  FlagNotFoundError,
-  GeneralError,
   JsonArray,
   JsonObject,
   JsonValue,
-  OpenFeature,
   Provider,
+  ResolutionDetails} from '../src';
+import {
+  ErrorCode,
+  FlagNotFoundError,
+  GeneralError,
+  OpenFeature,
   ProviderFatalError,
   ProviderStatus,
-  ResolutionDetails,
   StandardResolutionReasons,
 } from '../src';
 import { OpenFeatureClient } from '../src/client/internal/open-feature-client';

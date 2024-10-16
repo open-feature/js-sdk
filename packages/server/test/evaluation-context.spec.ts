@@ -1,4 +1,5 @@
-import { EvaluationContext, OpenFeature } from '../src';
+import type { EvaluationContext} from '../src';
+import { OpenFeature } from '../src';
 
 describe('Evaluation Context', () => {
   afterEach(async () => {

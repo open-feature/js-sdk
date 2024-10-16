@@ -1,3 +1,3 @@
-import { BaseHook, FlagValue } from '@openfeature/core';
+import type { BaseHook, FlagValue } from '@openfeature/core';
 
 export type Hook = BaseHook<FlagValue, void, void>;
