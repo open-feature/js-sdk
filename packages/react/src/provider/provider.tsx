@@ -36,5 +36,5 @@ export function OpenFeatureProvider({ client, domain, children, ...options }: Pr
     client = OpenFeature.getClient(domain);
   }
 
-  return <Context.Provider value={{ client, options }}>{children}</Context.Provider>;
+  return <Context.Provider value={{ client, options, domain }}>{children}</Context.Provider>;
 }
