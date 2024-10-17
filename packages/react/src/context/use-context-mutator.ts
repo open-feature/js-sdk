@@ -23,7 +23,7 @@ export type ContextMutation = {
 /**
  * Get function(s) for mutating the evaluation context associated with this domain, or the default context if `global: true`.
  * @param {ContextMutationOptions} options options for the generated function
- * @returns {ContextMutation}function to mutate context
+ * @returns {ContextMutation} function(s) to mutate context
  */
 export function useContextMutator(options: ContextMutationOptions = {}): ContextMutation {
     const { domain } = useContext(Context) || {};
