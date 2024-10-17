@@ -1,5 +1,12 @@
 # Changelog 
 
+## [1.4.1](https://github.com/open-feature/js-sdk/compare/core-v1.4.0...core-v1.4.1) (2024-10-17)
+
+
+### 🧹 Chore
+
+* import type lint rule and fixes ([#1039](https://github.com/open-feature/js-sdk/issues/1039)) ([01fcb93](https://github.com/open-feature/js-sdk/commit/01fcb933d2cbd131a0f4a005173cdd1906087e18))
+
 ## [1.4.0](https://github.com/open-feature/js-sdk/compare/core-v1.3.0...core-v1.4.0) (2024-08-28)
 
 
