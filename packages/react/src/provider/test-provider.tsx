@@ -7,7 +7,7 @@ import {
   OpenFeature
 } from '@openfeature/web-sdk';
 import React from 'react';
-import type { NormalizedOptions } from '../common/options';
+import type { NormalizedOptions } from '../common';
 import { OpenFeatureProvider } from './provider';
 
 type FlagValueMap = { [flagKey: string]: JsonValue };

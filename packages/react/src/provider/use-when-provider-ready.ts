@@ -1,10 +1,8 @@
 import { ProviderStatus } from '@openfeature/web-sdk';
-import type { ReactFlagEvaluationOptions} from '../common/options';
-import { DEFAULT_OPTIONS, normalizeOptions } from '../common/options';
-import { useProviderOptions } from './context';
 import { useOpenFeatureClient } from './use-open-feature-client';
 import { useOpenFeatureClientStatus } from './use-open-feature-client-status';
-import { suspendUntilReady } from '../common/suspense';
+import type { ReactFlagEvaluationOptions} from '../common';
+import { DEFAULT_OPTIONS, useProviderOptions, normalizeOptions, suspendUntilReady } from '../common';
 
 type Options = Pick<ReactFlagEvaluationOptions, 'suspendUntilReady'>;
 
