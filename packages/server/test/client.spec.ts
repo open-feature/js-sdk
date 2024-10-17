@@ -826,7 +826,7 @@ describe('OpenFeatureClient', () => {
     describe('Requirement 2.7.1, Requirement 6.1.2.1', () => {
       const eventName = 'test-tracking-event';
       const trackingValue = 1234;
-      const details: TrackingEventDetails = {
+      const trackingDetails: TrackingEventDetails = {
         value: trackingValue,
       };
       const globalContextKey = 'globalKey';
@@ -841,7 +841,7 @@ describe('OpenFeatureClient', () => {
         const client = OpenFeature.getClient();
 
         expect(() => {
-          client.track(eventName, details);
+          client.track(eventName, trackingDetails);
         }).not.toThrow();
       });
 
@@ -850,7 +850,7 @@ describe('OpenFeatureClient', () => {
         OpenFeature.setContext({ [globalContextKey]: globalContextValue });
         const client = OpenFeature.getClient();
         client.setContext({ [clientContextKey]: clientContextValue });
-        client.track(eventName, { [invocationContextKey]: invocationContextValue }, details);
+        client.track(eventName, { [invocationContextKey]: invocationContextValue }, trackingDetails);
 
         expect(MOCK_PROVIDER.track).toHaveBeenCalledWith(
           eventName,
