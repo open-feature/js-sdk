@@ -1,5 +1,5 @@
 import React from 'react';
-import { Context } from './context';
+import { Context } from '../common';
 import type { Client } from '@openfeature/web-sdk';
 
 /**

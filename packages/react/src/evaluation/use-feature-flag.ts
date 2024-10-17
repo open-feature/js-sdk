@@ -11,15 +11,12 @@ import {
   ProviderStatus,
 } from '@openfeature/web-sdk';
 import { useEffect, useRef, useState } from 'react';
-import type { ReactFlagEvaluationOptions} from '../common/options';
-import { DEFAULT_OPTIONS, normalizeOptions } from '../common/options';
-import { suspendUntilReady } from '../common/suspense';
-import { useProviderOptions } from '../provider/context';
+import type { ReactFlagEvaluationOptions} from '../common';
+import { DEFAULT_OPTIONS, isEqual, normalizeOptions, suspendUntilReady, useProviderOptions } from '../common';
 import { useOpenFeatureClient } from '../provider/use-open-feature-client';
 import { useOpenFeatureClientStatus } from '../provider/use-open-feature-client-status';
 import type { FlagQuery } from '../query';
 import { HookFlagQuery } from './hook-flag-query';
-import { isEqual } from '../common/is-equal';
 
 // This type is a bit wild-looking, but I think we need it.
 // We have to use the conditional, because otherwise useFlag('key', false) would return false, not boolean (too constrained).

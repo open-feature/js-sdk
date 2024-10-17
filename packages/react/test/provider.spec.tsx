@@ -252,7 +252,7 @@ describe('OpenFeatureProvider', () => {
       }));
       const GlobalComponent = ({ name }: { name: string }) => {
         const flagValue = useStringFlagValue<'b' | 'a'>('globalFlagsHere', 'a');
-  
+
         return (
           <div>
             <MutateButton />
