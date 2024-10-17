@@ -5,33 +5,38 @@ import { Context } from '../common';
 
 export type ContextMutationOptions = {
   /**
-   * Apply changes to the default context instead of the domain scoped context applied at the <OpenFeatureProvider/>.
-   * Note, if the <OpenFeatureProvider/> has no domain specified, the default is used.
+   * Mutate the default context instead of the domain scoped context applied at the `<OpenFeatureProvider/>`.
+   * Note, if the `<OpenFeatureProvider/>` has no domain specified, the default is used.
+   * See the {@link https://openfeature.dev/docs/reference/technologies/client/web/#manage-evaluation-context-for-domains|documentation} for more information.
+   * @default false
    */
-  default?: boolean;
+  defaultContext?: boolean;
 };
 
 export type ContextMutation = {
   /**
    * A function to set the desired context (see: {@link ContextMutationOptions} for details).
+   * There's generally no need to await the result of this function; flag evaluation hooks will re-render when the context is updated.
+   * This promise never rejects.
    * @param updatedContext
-   * @returns
+   * @returns Promise for awaiting the context update
    */
-  setContext: (updatedContext: EvaluationContext) => Promise<void>
+  setContext: (updatedContext: EvaluationContext) => Promise<void>;
 };
 
 /**
  * Get function(s) for mutating the evaluation context associated with this domain, or the default context if `global: true`.
+ * See the {@link https://openfeature.dev/docs/reference/technologies/client/web/#targeting-and-context|documentation} for more information.
  * @param {ContextMutationOptions} options options for the generated function
  * @returns {ContextMutation} function(s) to mutate context
  */
-export function useContextMutator(options: ContextMutationOptions = {}): ContextMutation {
+export function useContextMutator(options: ContextMutationOptions = { defaultContext: false }): ContextMutation {
     const { domain } = useContext(Context) || {};
     const previousContext = useRef<null | EvaluationContext>(null);
 
     const setContext = useCallback(async (updatedContext: EvaluationContext) => {
         if (previousContext.current !== updatedContext) {
-            if (!domain || options?.default) {
+            if (!domain || options?.defaultContext) {
                 OpenFeature.setContext(updatedContext);
             } else {
                 OpenFeature.setContext(domain, updatedContext);
