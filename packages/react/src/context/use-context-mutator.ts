@@ -25,7 +25,7 @@ export type ContextMutation = {
 };
 
 /**
- * Get function(s) for mutating the evaluation context associated with this domain, or the default context if `global: true`.
+ * Get function(s) for mutating the evaluation context associated with this domain, or the default context if `defaultContext: true`.
  * See the {@link https://openfeature.dev/docs/reference/technologies/client/web/#targeting-and-context|documentation} for more information.
  * @param {ContextMutationOptions} options options for the generated function
  * @returns {ContextMutation} function(s) to mutate context
