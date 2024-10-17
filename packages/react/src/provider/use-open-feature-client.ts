@@ -1,6 +1,6 @@
 import React from 'react';
 import { Context } from './context';
-import { Client } from '@openfeature/web-sdk';
+import type { Client } from '@openfeature/web-sdk';
 
 /**
  * Get the {@link Client} instance for this OpenFeatureProvider context.

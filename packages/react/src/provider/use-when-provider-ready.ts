@@ -1,5 +1,6 @@
 import { ProviderStatus } from '@openfeature/web-sdk';
-import { DEFAULT_OPTIONS, ReactFlagEvaluationOptions, normalizeOptions } from '../common/options';
+import type { ReactFlagEvaluationOptions} from '../common/options';
+import { DEFAULT_OPTIONS, normalizeOptions } from '../common/options';
 import { useProviderOptions } from './context';
 import { useOpenFeatureClient } from './use-open-feature-client';
 import { useOpenFeatureClientStatus } from './use-open-feature-client-status';

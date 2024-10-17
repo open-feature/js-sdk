@@ -1,4 +1,4 @@
-import { Provider, ResolutionDetails } from '@openfeature/web-sdk';
+import type { Provider, ResolutionDetails } from '@openfeature/web-sdk';
 import '@testing-library/jest-dom'; // see: https://testing-library.com/docs/react-testing-library/setup
 import { render, screen } from '@testing-library/react';
 import * as React from 'react';

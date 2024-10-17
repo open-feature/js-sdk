@@ -1,6 +1,6 @@
 import { GenericEventEmitter } from '@openfeature/core';
 import { EventEmitter } from 'eventemitter3';
-import { ProviderEmittableEvents } from './events';
+import type { ProviderEmittableEvents } from './events';
 
 /**
  * The OpenFeatureEventEmitter can be used by provider developers to emit

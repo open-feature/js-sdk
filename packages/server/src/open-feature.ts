@@ -1,22 +1,25 @@
-import {
+import type {
   EvaluationContext,
   ManageContext,
+  ServerProviderStatus} from '@openfeature/core';
+import {
   OpenFeatureCommonAPI,
   ProviderWrapper,
-  ServerProviderStatus,
   objectOrUndefined,
   stringOrUndefined,
 } from '@openfeature/core';
-import { Client } from './client';
+import type { Client } from './client';
 import { OpenFeatureClient } from './client/internal/open-feature-client';
 import { OpenFeatureEventEmitter } from './events';
-import { Hook } from './hooks';
-import { NOOP_PROVIDER, Provider, ProviderStatus } from './provider';
-import {
+import type { Hook } from './hooks';
+import type { Provider} from './provider';
+import { NOOP_PROVIDER, ProviderStatus } from './provider';
+import type {
   ManageTransactionContextPropagator,
-  NOOP_TRANSACTION_CONTEXT_PROPAGATOR,
   TransactionContext,
-  TransactionContextPropagator,
+  TransactionContextPropagator} from './transaction-context';
+import {
+  NOOP_TRANSACTION_CONTEXT_PROPAGATOR
 } from './transaction-context';
 
 // use a symbol as a key for the global singleton

@@ -1,4 +1,5 @@
-import { ErrorOptions, OpenFeatureError } from './open-feature-error-abstract';
+import type { ErrorOptions} from './open-feature-error-abstract';
+import { OpenFeatureError } from './open-feature-error-abstract';
 import { ErrorCode } from '../evaluation';
 
 export class GeneralError extends OpenFeatureError {

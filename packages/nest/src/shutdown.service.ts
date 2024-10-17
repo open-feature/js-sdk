@@ -1,4 +1,5 @@
-import { Injectable, OnApplicationShutdown } from '@nestjs/common';
+import type { OnApplicationShutdown } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { OpenFeature } from '@openfeature/server-sdk';
 
 @Injectable()

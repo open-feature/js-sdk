@@ -1,4 +1,5 @@
-import { EvaluationContext, JsonValue, OpenFeature, Provider, ProviderMetadata, ResolutionDetails } from '../src';
+import type { EvaluationContext, JsonValue, Provider, ProviderMetadata, ResolutionDetails } from '../src';
+import { OpenFeature } from '../src';
 
 const initializeMock = jest.fn();
 

@@ -1,5 +1,5 @@
 import { InMemoryProvider } from '@openfeature/server-sdk';
-import { ExecutionContext } from '@nestjs/common';
+import type { ExecutionContext } from '@nestjs/common';
 import { OpenFeatureModule } from '../src';
 
 export const defaultProvider = new InMemoryProvider({

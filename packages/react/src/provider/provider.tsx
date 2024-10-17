@@ -1,6 +1,7 @@
-import { Client, OpenFeature } from '@openfeature/web-sdk';
+import type { Client} from '@openfeature/web-sdk';
+import { OpenFeature } from '@openfeature/web-sdk';
 import * as React from 'react';
-import { ReactFlagEvaluationOptions } from '../common/options';
+import type { ReactFlagEvaluationOptions } from '../common/options';
 import { Context } from './context';
 
 type ClientOrDomain =

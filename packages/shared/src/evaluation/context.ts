@@ -1,4 +1,4 @@
-import { PrimitiveValue } from './evaluation';
+import type { PrimitiveValue } from './evaluation';
 
 export type EvaluationContextValue =
   | PrimitiveValue

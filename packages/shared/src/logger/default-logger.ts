@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import { Logger } from './logger';
+import type { Logger } from './logger';
 
 export class DefaultLogger implements Logger {
   error(...args: unknown[]): void {

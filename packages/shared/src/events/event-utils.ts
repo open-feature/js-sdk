@@ -1,5 +1,7 @@
-import { AllProviderStatus, ClientProviderStatus, ServerProviderStatus } from '../provider';
-import { AllProviderEvents, AnyProviderEvent } from './events';
+import type { ClientProviderStatus, ServerProviderStatus } from '../provider';
+import { AllProviderStatus } from '../provider';
+import type { AnyProviderEvent } from './events';
+import { AllProviderEvents } from './events';
 
 const eventStatusMap = {
     [AllProviderStatus.READY]: AllProviderEvents.Ready,

@@ -243,20 +243,20 @@ For more details, please refer to the [providers](#providers) section.
 #### Manage evaluation context for domains
 
 By default, domain-scoped clients use the global context.
-This can be overridden by explicitly setting context when registering the provider or by references the domain when updating context:
+This can be overridden by explicitly setting context when registering the provider or by referencing the domain when updating context:
 
 ```ts
 OpenFeature.setProvider("my-domain", new NewCachedProvider(), { targetingKey: localStorage.getItem("targetingKey") });
 ```
 
-To change context after the provider has been registered, use `setContext` with a name:
+To change context after the provider has been registered, use `setContext` with a domain:
 
 ```ts
 await OpenFeature.setContext("my-domain", { targetingKey: localStorage.getItem("targetingKey") })
 ```
 
-Once context has been defined for a named client, it will override the global context for all clients using the associated provider.
-Context can be cleared using for a named provider using `OpenFeature.clearContext("my-domain")` or call `OpenFeature.clearContexts()` to reset all context.
+Once a domain's context has been defined, it will override the global context for all clients bound to the domain.
+Context can be cleared for a domain by calling `OpenFeature.clearContext("my-domain")` or `OpenFeature.clearContexts()` to reset all context.
 
 ### Eventing
 

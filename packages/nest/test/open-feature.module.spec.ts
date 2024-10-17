@@ -1,6 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { getOpenFeatureClientToken, OpenFeatureModule, ServerProviderEvents } from '../src';
-import { Client, OpenFeature } from '@openfeature/server-sdk';
+import type { Client} from '@openfeature/server-sdk';
+import { OpenFeature } from '@openfeature/server-sdk';
 import { getOpenFeatureDefaultTestModule } from './fixtures';
 
 describe('OpenFeatureModule', () => {

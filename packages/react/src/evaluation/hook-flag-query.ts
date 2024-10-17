@@ -1,9 +1,10 @@
-import {
+import type {
   EvaluationDetails,
-  FlagValue,
+  FlagValue} from '@openfeature/web-sdk';
+import {
   StandardResolutionReasons
 } from '@openfeature/web-sdk';
-import { FlagQuery } from '../query';
+import type { FlagQuery } from '../query';
 
 
 // FlagQuery implementation, do not export

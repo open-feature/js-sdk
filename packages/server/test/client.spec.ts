@@ -1,26 +1,27 @@
 import { GeneralError } from '@openfeature/core';
-import {
+import type {
   Client,
-  ErrorCode,
   EvaluationContext,
   EvaluationDetails,
-  FlagNotFoundError,
   Hook,
   JsonArray,
   JsonObject,
   JsonValue,
-  OpenFeature,
   Provider,
+  ResolutionDetails,
+  TransactionContext,
+  TransactionContextPropagator} from '../src';
+import {
+  ErrorCode,
+  FlagNotFoundError,
+  OpenFeature,
   ProviderFatalError,
   ProviderStatus,
-  ResolutionDetails,
-  StandardResolutionReasons,
-  TransactionContext,
-  TransactionContextPropagator,
+  StandardResolutionReasons
 } from '../src';
 import { OpenFeatureClient } from '../src/client/internal/open-feature-client';
 import { isDeepStrictEqual } from 'node:util';
-import { HookContext } from '@openfeature/core';
+import type { HookContext } from '@openfeature/core';
 
 const BOOLEAN_VALUE = true;
 const STRING_VALUE = 'val';

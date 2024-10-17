@@ -1,4 +1,4 @@
-import { ErrorCode } from '../evaluation';
+import type { ErrorCode } from '../evaluation';
 
 /**
  * Error Options were added in ES2022. Manually adding the type so that an
