@@ -1,5 +1,6 @@
 import { useCallback, useContext, useRef } from 'react';
-import { OpenFeature, EvaluationContext } from '@openfeature/web-sdk';
+import type { EvaluationContext } from '@openfeature/web-sdk';
+import { OpenFeature } from '@openfeature/web-sdk';
 import { Context } from './context';
 
 /**
