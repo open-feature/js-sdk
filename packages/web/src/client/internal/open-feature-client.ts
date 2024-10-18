@@ -183,17 +183,22 @@ export class OpenFeatureClient implements Client {
   }
 
   track(occurrenceKey: string, occurrenceDetails: TrackingEventDetails): void {
+    try {
+      this.shortCircuitIfNotReady();
 
-    this.shortCircuitIfNotReady();
+      // copy and freeze the context
+      const context = {
+        ...OpenFeature.getContext(this?.options?.domain),
+      };
+      Object.freeze(context);
 
-    const context = {
-      ...OpenFeature.getContext(this?.options?.domain),
-    };
-
-    if (typeof this._provider.track === 'function') {
-      return this._provider.track?.(occurrenceKey, context, occurrenceDetails);
-    } else {
-      this._logger.debug('Provider does not implement track function: will no-op.');
+      if (typeof this._provider.track === 'function') {
+        return this._provider.track?.(occurrenceKey, context, occurrenceDetails);
+      } else {
+        this._logger.debug('Provider does not support the track function; will no-op.');
+      }
+    } catch (err) {
+      this._logger.debug('Error recording tracking event.', err);
     }
   }
 

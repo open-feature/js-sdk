@@ -837,11 +837,25 @@ describe('OpenFeatureClient', () => {
       const invocationContextValue = 'invocationValue';
 
       it('should no-op and not throw if tracking not defined on provider', async () => {
-        await OpenFeature.setProviderAndWait({ ...MOCK_PROVIDER, initialize: undefined });
+        await OpenFeature.setProviderAndWait({ ...MOCK_PROVIDER, track: undefined });
         const client = OpenFeature.getClient();
 
         expect(() => {
-          client.track(eventName, trackingDetails);
+          client.track(eventName, {}, trackingDetails);
+        }).not.toThrow();
+      });
+
+      it('should no-op and not throw if provider throws', async () => {
+        await OpenFeature.setProviderAndWait({
+          ...MOCK_PROVIDER,
+          track: () => {
+            throw new Error('fake error');
+          },
+        });
+        const client = OpenFeature.getClient();
+
+        expect(() => {
+          client.track(eventName, {}, trackingDetails);
         }).not.toThrow();
       });
 
