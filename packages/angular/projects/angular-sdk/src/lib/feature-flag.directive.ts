@@ -5,6 +5,7 @@ import {
   Input,
   OnChanges,
   OnDestroy,
+  OnInit,
   TemplateRef,
   ViewContainerRef,
 } from '@angular/core';
@@ -33,7 +34,7 @@ class FeatureFlagDirectiveContext<T extends FlagValue> {
   standalone: true,
   selector: '[featureFlag]',
 })
-export abstract class FeatureFlagDirective<T extends FlagValue> implements OnDestroy, OnChanges {
+export abstract class FeatureFlagDirective<T extends FlagValue> implements OnInit, OnDestroy, OnChanges {
   protected _featureFlagDefault: T;
   protected _featureFlagDomain: string | undefined;
 
@@ -69,11 +70,14 @@ export abstract class FeatureFlagDirective<T extends FlagValue> implements OnDes
     templateRef: TemplateRef<FeatureFlagDirectiveContext<T>>,
   ) {
     this._thenTemplateRef = templateRef;
-    this.initClient();
   }
 
   set featureFlagDomain(domain: string | undefined) {
     this._featureFlagDomain = domain;
+    this.initClient();
+  }
+
+  ngOnInit(): void {
     this.initClient();
   }
 
@@ -200,7 +204,7 @@ export abstract class FeatureFlagDirective<T extends FlagValue> implements OnDes
  * Usage examples:
  *
  * ```
- * <div *booleanFeatureFlag="'flagKey'; default: 0; let value">{{ value }}</div>
+ * <div *booleanFeatureFlag="'flagKey'; default: false; let value">{{ value }}</div>
  * ```
  * ```
  * <div *booleanFeatureFlag="flagKey; default: false; else: elseTemplate">Content to render when flag is true.</div>
