@@ -158,14 +158,14 @@ If a domain has no associated provider, the default provider is used.</p>
 <p>Domains can be defined on a provider during registration.
 For more details, please refer to the <a href="#md:providers">providers</a> section.</p>
 <a id="md:manage-evaluation-context-for-domains" class="tsd-anchor"></a><h4><a href="#md:manage-evaluation-context-for-domains">Manage evaluation context for domains</a></h4><p>By default, domain-scoped clients use the global context.
-This can be overridden by explicitly setting context when registering the provider or by references the domain when updating context:</p>
+This can be overridden by explicitly setting context when registering the provider or by referencing the domain when updating context:</p>
 <pre><code class="language-ts"><span class="hl-6">OpenFeature</span><span class="hl-1">.</span><span class="hl-0">setProvider</span><span class="hl-1">(</span><span class="hl-2">&quot;my-domain&quot;</span><span class="hl-1">, </span><span class="hl-3">new</span><span class="hl-1"> </span><span class="hl-0">NewCachedProvider</span><span class="hl-1">(), { </span><span class="hl-6">targetingKey:</span><span class="hl-1"> </span><span class="hl-6">localStorage</span><span class="hl-1">.</span><span class="hl-0">getItem</span><span class="hl-1">(</span><span class="hl-2">&quot;targetingKey&quot;</span><span class="hl-1">) });</span>
 </code><button>Copy</button></pre>
-<p>To change context after the provider has been registered, use <code>setContext</code> with a name:</p>
+<p>To change context after the provider has been registered, use <code>setContext</code> with a domain:</p>
 <pre><code class="language-ts"><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-6">OpenFeature</span><span class="hl-1">.</span><span class="hl-0">setContext</span><span class="hl-1">(</span><span class="hl-2">&quot;my-domain&quot;</span><span class="hl-1">, { </span><span class="hl-6">targetingKey:</span><span class="hl-1"> </span><span class="hl-6">localStorage</span><span class="hl-1">.</span><span class="hl-0">getItem</span><span class="hl-1">(</span><span class="hl-2">&quot;targetingKey&quot;</span><span class="hl-1">) })</span>
 </code><button>Copy</button></pre>
-<p>Once context has been defined for a named client, it will override the global context for all clients using the associated provider.
-Context can be cleared using for a named provider using <code>OpenFeature.clearContext(&quot;my-domain&quot;)</code> or call <code>OpenFeature.clearContexts()</code> to reset all context.</p>
+<p>Once a domain&#39;s context has been defined, it will override the global context for all clients bound to the domain.
+Context can be cleared for a domain by calling <code>OpenFeature.clearContext(&quot;my-domain&quot;)</code> or <code>OpenFeature.clearContexts()</code> to reset all context.</p>
 <a id="md:eventing" class="tsd-anchor"></a><h3><a href="#md:eventing">Eventing</a></h3><p>Events allow you to react to state changes in the provider or underlying flag management system, such as flag definition changes, provider readiness, or error conditions.
 Initialization events (<code>PROVIDER_READY</code> on success, <code>PROVIDER_ERROR</code> on failure) are dispatched for every provider.
 Some providers support additional events, such as <code>PROVIDER_CONFIGURATION_CHANGED</code>.</p>
