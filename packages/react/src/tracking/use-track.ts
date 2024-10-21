@@ -1,4 +1,4 @@
-import type { TrackingEventDetails } from '@openfeature/web-sdk';
+import type { Tracking, TrackingEventDetails } from '@openfeature/web-sdk';
 import { useCallback } from 'react';
 import { useOpenFeatureClient } from '../provider';
 
@@ -9,7 +9,7 @@ export type Track = {
    * @param trackingEventName an identifier for the event
    * @param trackingEventDetails the details of the tracking event
    */
-  track: (trackingEventName: string, trackingEventDetails?: TrackingEventDetails) => void;
+  track: Tracking['track'];
 };
 
 /**
