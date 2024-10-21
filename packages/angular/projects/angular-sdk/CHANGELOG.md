@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.5-experimental](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.4-experimental...angular-sdk-v0.0.5-experimental) (2024-10-21)
+
+
+### 🐛 Bug Fixes
+
+* **angular:** fix race condition on initialization ([#1052](https://github.com/open-feature/js-sdk/issues/1052)) ([12eaa97](https://github.com/open-feature/js-sdk/commit/12eaa9758d9deb788d74488ef03f18cbd31c0cbe))
+
+
 ## [0.0.4-experimental](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.3-experimental...angular-sdk-v0.0.4-experimental) (2024-09-30)
 
 
