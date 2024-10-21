@@ -73,6 +73,10 @@ export abstract class FeatureFlagDirective<T extends FlagValue> implements OnIni
   }
 
   set featureFlagDomain(domain: string | undefined) {
+    /**
+     * We have to handle the change of the domain explicitly because we need to get a new client when the domain changes.
+     * This can not be done if we simply relay the onChanges method.
+     */
     this._featureFlagDomain = domain;
     this.initClient();
   }
