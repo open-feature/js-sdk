@@ -186,14 +186,12 @@ export class OpenFeatureClient implements Client {
     try {
       this.shortCircuitIfNotReady();
 
-      // copy and freeze the context
-      const context = {
-        ...OpenFeature.getContext(this?.options?.domain),
-      };
-      Object.freeze(context);
-
       if (typeof this._provider.track === 'function') {
-        return this._provider.track?.(occurrenceKey, context, occurrenceDetails);
+        // copy and freeze the context
+        const frozenContext = Object.freeze({
+          ...OpenFeature.getContext(this?.options?.domain),
+        });
+        return this._provider.track?.(occurrenceKey, frozenContext, occurrenceDetails);
       } else {
         this._logger.debug('Provider does not support the track function; will no-op.');
       }

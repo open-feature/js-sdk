@@ -228,11 +228,10 @@ export class OpenFeatureClient implements Client {
     try {
       this.shortCircuitIfNotReady();
 
-      const mergedContext = this.mergeContexts(context);
-      Object.freeze(mergedContext);
-
       if (typeof this._provider.track === 'function') {
-        return this._provider.track?.(occurrenceKey, mergedContext, occurrenceDetails);
+        // freeze the merged context
+        const frozenContext = Object.freeze(this.mergeContexts(context));
+        return this._provider.track?.(occurrenceKey, frozenContext, occurrenceDetails);
       } else {
         this._logger.debug('Provider does not support the track function; will no-op.');
       }
