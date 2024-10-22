@@ -1,4 +1,4 @@
-import type { CommonProvider, EvaluationContext, JsonValue, Logger, ResolutionDetails } from '@openfeature/core';
+import type { CommonProvider, EvaluationContext, JsonValue, Logger, TrackingEventDetails, ResolutionDetails } from '@openfeature/core';
 import { ClientProviderStatus } from '@openfeature/core';
 import type { Hook } from '../hooks';
 
@@ -72,4 +72,12 @@ export interface Provider extends CommonProvider<ClientProviderStatus> {
     context: EvaluationContext,
     logger: Logger,
   ): ResolutionDetails<T>;
+
+  /**
+   * Track a user action or application state, usually representing a business objective or outcome.
+   * @param trackingEventName
+   * @param context
+   * @param trackingEventDetails
+   */
+  track?(trackingEventName: string, context?: EvaluationContext, trackingEventDetails?: TrackingEventDetails): void;
 }

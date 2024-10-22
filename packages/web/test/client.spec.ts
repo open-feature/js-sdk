@@ -1,11 +1,5 @@
-import type {
-  Client,
-  EvaluationDetails,
-  JsonArray,
-  JsonObject,
-  JsonValue,
-  Provider,
-  ResolutionDetails} from '../src';
+import type { TrackingEventDetails } from '@openfeature/core';
+import type { Client, EvaluationDetails, JsonArray, JsonObject, JsonValue, Provider, ResolutionDetails } from '../src';
 import {
   ErrorCode,
   FlagNotFoundError,
@@ -61,6 +55,10 @@ const MOCK_PROVIDER: Provider = {
   onContextChange(): Promise<void> {
     return Promise.resolve(undefined);
   },
+
+  track: jest.fn((): void => {
+    return;
+  }),
 
   resolveNumberEvaluation: jest.fn((): ResolutionDetails<number> => {
     return {
@@ -399,7 +397,7 @@ describe('OpenFeatureClient', () => {
       },
       initialize: () => {
         return Promise.resolve();
-      }
+      },
     } as unknown as Provider;
     it('status must be READY if init resolves', async () => {
       await OpenFeature.setProviderAndWait('1.7.1, 1.7.3', initProvider);
@@ -415,7 +413,7 @@ describe('OpenFeatureClient', () => {
       },
       initialize: async () => {
         return Promise.reject(new GeneralError());
-      }
+      },
     } as unknown as Provider;
     it('status must be ERROR if init rejects', async () => {
       await expect(OpenFeature.setProviderAndWait('1.7.4', errorProvider)).rejects.toThrow();
@@ -431,7 +429,7 @@ describe('OpenFeatureClient', () => {
       },
       initialize: () => {
         return Promise.reject(new ProviderFatalError());
-      }
+      },
     } as unknown as Provider;
     it('must short circuit and return PROVIDER_FATAL code if provider FATAL', async () => {
       await expect(OpenFeature.setProviderAndWait('1.7.5, 1.7.6, 1.7.8', fatalProvider)).rejects.toThrow();
@@ -454,7 +452,7 @@ describe('OpenFeatureClient', () => {
         return new Promise(() => {
           return; // promise never resolves
         });
-      }
+      },
     } as unknown as Provider;
     it('must short circuit and return PROVIDER_NOT_READY code if provider NOT_READY', async () => {
       OpenFeature.setProviderAndWait('1.7.7', neverReadyProvider).catch(() => {
@@ -635,6 +633,54 @@ describe('OpenFeatureClient', () => {
     it('should return READY if initialize not defined', async () => {
       await OpenFeature.setProviderAndWait({ ...MOCK_PROVIDER, initialize: undefined });
       expect(OpenFeature.getClient().providerStatus).toEqual(ProviderStatus.READY);
+    });
+  });
+
+  describe('tracking', () => {
+    describe('Requirement 2.7.1, Requirement 6.1.2.1', () => {
+      const eventName = 'test-tracking-event';
+      const trackingValue = 1234;
+      const trackingDetails: TrackingEventDetails = {
+        value: trackingValue,
+      };
+      const contextKey = 'key';
+      const contextValue = 'val';
+
+      it('should no-op and not throw if tracking not defined on provider', async () => {
+        await OpenFeature.setProviderAndWait({ ...MOCK_PROVIDER, track: undefined });
+        const client = OpenFeature.getClient();
+
+        expect(() => {
+          client.track(eventName, trackingDetails);
+        }).not.toThrow();
+      });
+
+      it('should no-op and not throw if provider throws', async () => {
+        await OpenFeature.setProviderAndWait({
+          ...MOCK_PROVIDER,
+          track: () => {
+            throw new Error('fake error');
+          },
+        });
+        const client = OpenFeature.getClient();
+
+        expect(() => {
+          client.track(eventName, trackingDetails);
+        }).not.toThrow();
+      });
+
+      it('should call provider with correct context', async () => {
+        await OpenFeature.setProviderAndWait({ ...MOCK_PROVIDER });
+        await OpenFeature.setContext({ [contextKey]: contextValue });
+        const client = OpenFeature.getClient();
+        client.track(eventName, trackingDetails);
+
+        expect(MOCK_PROVIDER.track).toHaveBeenCalledWith(
+          eventName,
+          expect.objectContaining({ [contextKey]: contextValue }),
+          expect.objectContaining({ value: trackingValue }),
+        );
+      });
     });
   });
 });
