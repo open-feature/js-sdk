@@ -34,7 +34,7 @@
     "@typescript-eslint/parser": "7.18.0",
     "eslint": "^8.57.0",
     "jest-preset-angular": "^14.2.2",
-    "ng-packagr": "^17.3.0",
+    "ng-packagr": "^18.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3",

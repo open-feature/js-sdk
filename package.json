@@ -59,7 +59,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "jest-environment-node": "^29.7.0",
     "jest-junit": "^16.0.0",
-    "ng-packagr": "^17.3.0",
+    "ng-packagr": "^18.0.0",
     "prettier": "^3.2.5",
     "react": "^18.2.0",
     "rollup": "^4.0.0",
