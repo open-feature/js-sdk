@@ -1,6 +1,25 @@
 # Changelog
 
 
+## [1.2.5](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.2.4...web-sdk-v1.2.5) (2024-10-22)
+
+
+### 🧹 Chore
+
+* import type lint rule and fixes ([#1039](https://github.com/open-feature/js-sdk/issues/1039)) ([01fcb93](https://github.com/open-feature/js-sdk/commit/01fcb933d2cbd131a0f4a005173cdd1906087e18))
+
+
+### 📚 Documentation
+
+* update domain context terminology ([#1037](https://github.com/open-feature/js-sdk/issues/1037)) ([924802b](https://github.com/open-feature/js-sdk/commit/924802b21d70889631e1fb0fb02225a7f8d2638d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/core bumped from 1.4.0 to 1.4.1
+
 ## [1.2.4](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.2.3...web-sdk-v1.2.4) (2024-09-20)
 
 
