@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.15.2](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.15.1...server-sdk-v1.15.2) (2024-10-22)
+
+
+### 🧹 Chore
+
+* import type lint rule and fixes ([#1039](https://github.com/open-feature/js-sdk/issues/1039)) ([01fcb93](https://github.com/open-feature/js-sdk/commit/01fcb933d2cbd131a0f4a005173cdd1906087e18))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/core bumped from 1.4.0 to 1.4.1
+
 ## [1.15.1](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.15.0...server-sdk-v1.15.1) (2024-08-28)
 
 
