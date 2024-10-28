@@ -8,13 +8,6 @@
 * **angular:** add Angular 18 support ([#1063](https://github.com/open-feature/js-sdk/issues/1063)) ([e62d6d4](https://github.com/open-feature/js-sdk/commit/e62d6d4b7e4a5d0f40592a2c73e7124d22eec98e))
 
 
-### Dependencies
-
-* The following workspace dependencies were updated
-  * devDependencies
-    * @openfeature/core bumped from * to 1.4.1
-    * @openfeature/web-sdk bumped from * to 1.2.5
-
 ## [0.0.5-experimental](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.4-experimental...angular-sdk-v0.0.5-experimental) (2024-10-21)
 
 
