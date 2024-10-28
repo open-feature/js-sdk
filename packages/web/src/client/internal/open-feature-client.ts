@@ -24,7 +24,6 @@ import type { FlagEvaluationOptions } from '../../evaluation';
 import type { ProviderEvents } from '../../events';
 import type { InternalEventEmitter } from '../../events/internal/internal-event-emitter';
 import type { Hook } from '../../hooks';
-import { OpenFeature } from '../../open-feature';
 import type { Provider} from '../../provider';
 import { ProviderStatus } from '../../provider';
 import type { Client } from './../client';
@@ -53,6 +52,8 @@ export class OpenFeatureClient implements Client {
     private readonly providerAccessor: () => Provider,
     private readonly providerStatusAccessor: () => ProviderStatus,
     private readonly emitterAccessor: () => InternalEventEmitter,
+    private readonly apiContextAccessor: (domain?: string) => EvaluationContext,
+    private readonly apiHooksAccessor: () => Hook[],
     private readonly globalLogger: () => Logger,
     private readonly options: OpenFeatureClientOptions,
   ) {}
@@ -189,7 +190,7 @@ export class OpenFeatureClient implements Client {
       if (typeof this._provider.track === 'function') {
         // copy and freeze the context
         const frozenContext = Object.freeze({
-          ...OpenFeature.getContext(this?.options?.domain),
+          ...this.apiContextAccessor(this?.options?.domain),
         });
         return this._provider.track?.(occurrenceKey, frozenContext, occurrenceDetails);
       } else {
@@ -210,7 +211,7 @@ export class OpenFeatureClient implements Client {
     // merge global, client, and evaluation context
 
     const allHooks = [
-      ...OpenFeature.getHooks(),
+      ...this.apiHooksAccessor(),
       ...this.getHooks(),
       ...(options.hooks || []),
       ...(this._provider.hooks || []),
@@ -218,7 +219,7 @@ export class OpenFeatureClient implements Client {
     const allHooksReversed = [...allHooks].reverse();
 
     const context = {
-      ...OpenFeature.getContext(this?.options?.domain),
+      ...this.apiContextAccessor(this?.options?.domain),
     };
 
     // this reference cannot change during the course of evaluation

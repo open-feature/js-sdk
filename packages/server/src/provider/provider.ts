@@ -3,7 +3,6 @@ import type {
   EvaluationContext,
   JsonValue,
   Logger,
-  TrackingEventDetails,
   ResolutionDetails} from '@openfeature/core';
 import {
   ServerProviderStatus,
@@ -66,12 +65,4 @@ export interface Provider extends CommonProvider<ServerProviderStatus> {
     context: EvaluationContext,
     logger: Logger,
   ): Promise<ResolutionDetails<T>>;
-
-  /**
-   * Track a user action or application state, usually representing a business objective or outcome.
-   * @param trackingEventName
-   * @param context
-   * @param trackingEventDetails
-   */
-  track?(trackingEventName: string, context?: EvaluationContext, trackingEventDetails?: TrackingEventDetails): void;
 }
