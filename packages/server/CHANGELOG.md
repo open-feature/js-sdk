@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.16.1](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.16.0...server-sdk-v1.16.1) (2024-10-29)
+
+
+### 📚 Documentation
+
+* add tracking sections ([#1068](https://github.com/open-feature/js-sdk/issues/1068)) ([e131faf](https://github.com/open-feature/js-sdk/commit/e131faffad9025e9c7194f39558bf3b3cec31807))
+
 ## [1.16.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.15.1...server-sdk-v1.16.0) (2024-10-29)
 
 
