@@ -64,7 +64,7 @@ npm install --save @openfeature/web-sdk
 yarn add @openfeature/web-sdk @openfeature/core
 ```
 
-> [!NOTE]  
+> [!NOTE]
 > `@openfeature/core` contains common components used by all OpenFeature JavaScript implementations.
 > Every SDK version has a requirement on a single, specific version of this dependency.
 > For more information, and similar implications on libraries developed with OpenFeature see [considerations when extending](#considerations).
@@ -102,6 +102,7 @@ See [here](https://open-feature.github.io/js-sdk/modules/_openfeature_web_sdk.ht
 | ✅      | [Logging](#logging)                 | Integrate with popular logging packages.                                                                                           |
 | ✅      | [Domains](#domains)                 | Logically bind clients with providers.                                                                                             |
 | ✅      | [Eventing](#eventing)               | React to state changes in the provider or flag management system.                                                                  |
+| ✅      | [Tracking](#tracking)               | Associate user actions with feature flag evaluations, particularly for A/B testing.                                                |
 | ✅      | [Shutdown](#shutdown)               | Gracefully clean up a provider during application shutdown.                                                                        |
 | ✅      | [Extending](#extending)             | Extend OpenFeature with custom providers and hooks.                                                                                |
 
@@ -281,6 +282,21 @@ client.addHandler(ProviderEvents.Error, (eventDetails) => {
 });
 ```
 
+### Tracking
+
+The tracking API allows you to use OpenFeature abstractions and objects to associate user actions with feature flag evaluations.
+This is essential for robust experimentation powered by feature flags.
+For example, a flag enhancing the appearance of a UI component might drive user engagement to a new feature; to test this hypothesis, telemetry collected by a [hook](#hooks) or [provider](#providers) can be associated with telemetry reported in the client's `track` function.
+
+```ts
+// flag is evaluated
+client.getBooleanValue('new-feature', false);
+
+// new feature is used and track function is called recording the usage
+useNewFeature();
+client.track('new-feature-used');
+```
+
 ### Shutdown
 
 The OpenFeature API provides a close function to perform a cleanup of all registered providers.
@@ -339,7 +355,7 @@ class MyProvider implements Provider {
   }
 
   // implement with "new OpenFeatureEventEmitter()", and use "emit()" to emit events
-  events?: ProviderEventEmitter<AnyProviderEvent> | undefined; 
+  events?: ProviderEventEmitter<AnyProviderEvent> | undefined;
 
   initialize?(context?: EvaluationContext | undefined): Promise<void> {
     // code to initialize your provider
