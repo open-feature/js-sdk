@@ -1,4 +1,10 @@
-import type { CommonProvider, EvaluationContext, JsonValue, Logger, ResolutionDetails } from '@openfeature/core';
+import type {
+  CommonProvider,
+  EvaluationContext,
+  JsonValue,
+  Logger,
+  ResolutionDetails,
+} from '@openfeature/core';
 import { ClientProviderStatus } from '@openfeature/core';
 import type { Hook } from '../hooks';
 
