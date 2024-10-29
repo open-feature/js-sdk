@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.8](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.7...react-sdk-v0.4.8) (2024-10-29)
+
+
+### 🧹 Chore
+
+* bump minimum web peer ([#1072](https://github.com/open-feature/js-sdk/issues/1072)) ([eca8205](https://github.com/open-feature/js-sdk/commit/eca8205da7945395d19c09a4da67cd4c2d516227))
+
+
+### 📚 Documentation
+
+* add tracking sections ([#1068](https://github.com/open-feature/js-sdk/issues/1068)) ([e131faf](https://github.com/open-feature/js-sdk/commit/e131faffad9025e9c7194f39558bf3b3cec31807))
+
 ## [0.4.7](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.6...react-sdk-v0.4.7) (2024-10-29)
 
 
