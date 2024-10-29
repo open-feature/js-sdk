@@ -1,6 +1,24 @@
 # Changelog
 
 
+## [1.3.0](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.2.4...web-sdk-v1.3.0) (2024-10-29)
+
+
+### ✨ New Features
+
+* implement tracking as per spec ([#1020](https://github.com/open-feature/js-sdk/issues/1020)) ([80f182e](https://github.com/open-feature/js-sdk/commit/80f182e1afbd3a705bf3de6a0d9886ccb3424b44))
+
+
+### 🧹 Chore
+
+* import type lint rule and fixes ([#1039](https://github.com/open-feature/js-sdk/issues/1039)) ([01fcb93](https://github.com/open-feature/js-sdk/commit/01fcb933d2cbd131a0f4a005173cdd1906087e18))
+* **main:** release core 1.5.0 ([#1040](https://github.com/open-feature/js-sdk/issues/1040)) ([fe3ad8e](https://github.com/open-feature/js-sdk/commit/fe3ad8eeb9219ff08ba287cab228016da0b88e88))
+
+
+### 📚 Documentation
+
+* update domain context terminology ([#1037](https://github.com/open-feature/js-sdk/issues/1037)) ([924802b](https://github.com/open-feature/js-sdk/commit/924802b21d70889631e1fb0fb02225a7f8d2638d))
+
 ## [1.2.4](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.2.3...web-sdk-v1.2.4) (2024-09-20)
 
 
