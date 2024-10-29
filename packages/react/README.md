@@ -287,7 +287,7 @@ For example, a flag enhancing the appearance of a UI component might drive user 
 
 The React SDK includes a hook for firing tracking events in the <OpenFeatureProvider> context in use:
 
-```ts
+```tsx
       function MyComponent() {
 
         // get a tracking function for this <OpenFeatureProvider>.
