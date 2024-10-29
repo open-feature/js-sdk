@@ -64,7 +64,7 @@ npm install --save @openfeature/server-sdk
 yarn add @openfeature/server-sdk @openfeature/core
 ```
 
-> [!NOTE]  
+> [!NOTE]
 > `@openfeature/core` contains common components used by all OpenFeature JavaScript implementations.
 > Every SDK version has a requirement on a single, specific version of this dependency.
 > For more information, and similar implications on libraries developed with OpenFeature see [considerations when extending](#considerations).
@@ -96,15 +96,16 @@ See [here](https://open-feature.github.io/js-sdk/modules/_openfeature_server_sdk
 
 | Status | Features                                                            | Description                                                                                                                           |
 | ------ | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| ✅     | [Providers](#providers)                                             | Integrate with a commercial, open source, or in-house feature management tool.                                                        |
-| ✅     | [Targeting](#targeting)                                             | Contextually-aware flag evaluation using [evaluation context](/docs/reference/concepts/evaluation-context).                           |
-| ✅     | [Hooks](#hooks)                                                     | Add functionality to various stages of the flag evaluation life-cycle.                                                                |
-| ✅     | [Logging](#logging)                                                 | Integrate with popular logging packages.                                                                                              |
-| ✅     | [Domains](#domains)                                                 | Logically bind clients with providers.                                                                                                |
-| ✅     | [Eventing](#eventing)                                               | React to state changes in the provider or flag management system.                                                                     |
-| ✅     | [Shutdown](#shutdown)                                               | Gracefully clean up a provider during application shutdown.                                                                           |
-| ✅     | [Transaction Context Propagation](#transaction-context-propagation) | Set a specific [evaluation context](/docs/reference/concepts/evaluation-context) for a transaction (e.g. an HTTP request or a thread) |
-| ✅     | [Extending](#extending)                                             | Extend OpenFeature with custom providers and hooks.                                                                                   |
+| ✅      | [Providers](#providers)                                             | Integrate with a commercial, open source, or in-house feature management tool.                                                        |
+| ✅      | [Targeting](#targeting)                                             | Contextually-aware flag evaluation using [evaluation context](/docs/reference/concepts/evaluation-context).                           |
+| ✅      | [Hooks](#hooks)                                                     | Add functionality to various stages of the flag evaluation life-cycle.                                                                |
+| ✅      | [Logging](#logging)                                                 | Integrate with popular logging packages.                                                                                              |
+| ✅      | [Domains](#domains)                                                 | Logically bind clients with providers.                                                                                                |
+| ✅      | [Eventing](#eventing)                                               | React to state changes in the provider or flag management system.                                                                     |
+| ✅      | [Transaction Context Propagation](#transaction-context-propagation) | Set a specific [evaluation context](/docs/reference/concepts/evaluation-context) for a transaction (e.g. an HTTP request or a thread) |
+| ✅      | [Tracking](#tracking)                                               | Associate user actions with feature flag evaluations, particularly for A/B testing.                                                   |
+| ✅      | [Shutdown](#shutdown)                                               | Gracefully clean up a provider during application shutdown.                                                                           |
+| ✅      | [Extending](#extending)                                             | Extend OpenFeature with custom providers and hooks.                                                                                   |
 
 <sub>Implemented: ✅ | In-progress: ⚠️ | Not implemented yet: ❌</sub>
 
@@ -287,6 +288,21 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     next();
   });
 })
+```
+
+### Tracking
+
+The tracking API allows you to use OpenFeature abstractions and objects to associate user actions with feature flag evaluations.
+This is essential for robust experimentation powered by feature flags.
+For example, a flag enhancing the appearance of a UI component might drive user engagement to a new feature; to test this hypothesis, telemetry collected by a [hook](#hooks) or [provider](#providers) can be associated with telemetry reported in the client's `track` function.
+
+```ts
+// flag is evaluated
+await client.getBooleanValue('new-feature', false);
+
+// new feature is used and track function is called recording the usage
+useNewFeature();
+client.track('new-feature-used');
 ```
 
 ### Shutdown

@@ -54,6 +54,7 @@ In addition to the feature provided by the [web sdk](https://openfeature.dev/doc
     - [Re-rendering with Context Changes](#re-rendering-with-context-changes)
     - [Re-rendering with Flag Configuration Changes](#re-rendering-with-flag-configuration-changes)
     - [Suspense Support](#suspense-support)
+    - [Tracking](#tracking)
   - [Testing](#testing)
 - [FAQ and troubleshooting](#faq-and-troubleshooting)
 - [Resources](#resources)
@@ -132,7 +133,7 @@ function App() {
 
 #### Evaluation hooks
 
-Within the provider, you can use the various evaluation hooks to evaluate flags. 
+Within the provider, you can use the various evaluation hooks to evaluate flags.
 
 ```tsx
 function Page() {
@@ -236,7 +237,7 @@ Note that if your provider doesn't support updates, this configuration has no im
 
 #### Suspense Support
 
-> [!NOTE]  
+> [!NOTE]
 > React suspense is an experimental feature and subject to change in future versions.
 
 
@@ -274,10 +275,31 @@ function Fallback() {
   // component to render before READY.
   return <p>Waiting for provider to be ready...</p>;
 }
-
 ```
 
 This can be disabled in the hook options (or in the [OpenFeatureProvider](#openfeatureprovider-context-provider)).
+
+#### Tracking
+
+The tracking API allows you to use OpenFeature abstractions and objects to associate user actions with feature flag evaluations.
+This is essential for robust experimentation powered by feature flags.
+For example, a flag enhancing the appearance of a UI component might drive user engagement to a new feature; to test this hypothesis, telemetry collected by a [hook](#hooks) or [provider](#providers) can be associated with telemetry reported in the client's `track` function.
+
+The React SDK includes a hook for firing tracking events in the <OpenFeatureProvider> context in use:
+
+```ts
+      function MyComponent() {
+
+        // get a tracking function for this <OpenFeatureProvider>.
+        const { track } = useTrack();
+
+        // call the tracking event
+        // can be done in render, useEffect, or in handlers, depending on your use case
+        track(eventName, trackingDetails);
+
+        return <>...</>;
+      }
+```
 
 ### Testing
 
