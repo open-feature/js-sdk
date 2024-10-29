@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.4.7](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.6...react-sdk-v0.4.7) (2024-10-29)
+
+
+### ✨ New Features
+
+* avoid re-resolving flags unaffected by a change event ([#1024](https://github.com/open-feature/js-sdk/issues/1024)) ([b8f9b4e](https://github.com/open-feature/js-sdk/commit/b8f9b4ebaf4bdd93669fc6da09d9f97a498174d9))
+* implement tracking as per spec ([#1020](https://github.com/open-feature/js-sdk/issues/1020)) ([80f182e](https://github.com/open-feature/js-sdk/commit/80f182e1afbd3a705bf3de6a0d9886ccb3424b44))
+* use mutate context hook ([#1031](https://github.com/open-feature/js-sdk/issues/1031)) ([ec3d967](https://github.com/open-feature/js-sdk/commit/ec3d967f8b9dd0854706a904a5360f0a0b843595))
+
+
+### 🧹 Chore
+
+* add js docs for context mutator hook ([#1045](https://github.com/open-feature/js-sdk/issues/1045)) ([def3fe8](https://github.com/open-feature/js-sdk/commit/def3fe8dafc3d6ed3451a493e76842b7d2e8363c))
+* import type lint rule and fixes ([#1039](https://github.com/open-feature/js-sdk/issues/1039)) ([01fcb93](https://github.com/open-feature/js-sdk/commit/01fcb933d2cbd131a0f4a005173cdd1906087e18))
+
 ## [0.4.6](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.5...react-sdk-v0.4.6) (2024-09-23)
 
 
