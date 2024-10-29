@@ -50,6 +50,6 @@
     "@openfeature/core": "1.4.0"
   },
   "devDependencies": {
-    "@openfeature/core": "1.4.0"
+    "@openfeature/core": "1.5.0"
   }
 }
