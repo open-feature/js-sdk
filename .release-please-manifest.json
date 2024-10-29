@@ -3,7 +3,7 @@
   "packages/react": "0.4.7",
   "packages/angular": "0.0.1-experimental",
   "packages/web": "1.3.0",
-  "packages/server": "1.16.0",
+  "packages/server": "1.16.1",
   "packages/shared": "1.5.0",
   "packages/angular/projects/angular-sdk": "0.0.6-experimental"
 }
