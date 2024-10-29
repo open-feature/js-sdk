@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.16.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.15.1...server-sdk-v1.16.0) (2024-10-29)
+
+
+### ✨ New Features
+
+* implement tracking as per spec ([#1020](https://github.com/open-feature/js-sdk/issues/1020)) ([80f182e](https://github.com/open-feature/js-sdk/commit/80f182e1afbd3a705bf3de6a0d9886ccb3424b44))
+
+
+### 🧹 Chore
+
+* import type lint rule and fixes ([#1039](https://github.com/open-feature/js-sdk/issues/1039)) ([01fcb93](https://github.com/open-feature/js-sdk/commit/01fcb933d2cbd131a0f4a005173cdd1906087e18))
+* **main:** release core 1.5.0 ([#1040](https://github.com/open-feature/js-sdk/issues/1040)) ([fe3ad8e](https://github.com/open-feature/js-sdk/commit/fe3ad8eeb9219ff08ba287cab228016da0b88e88))
+
 ## [1.15.1](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.15.0...server-sdk-v1.15.1) (2024-08-28)
 
 
