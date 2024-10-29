@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.2.1-experimental...nestjs-sdk-v0.2.2) (2024-10-29)
+
+
+### 🧹 Chore
+
+* import type lint rule and fixes ([#1039](https://github.com/open-feature/js-sdk/issues/1039)) ([01fcb93](https://github.com/open-feature/js-sdk/commit/01fcb933d2cbd131a0f4a005173cdd1906087e18))
+
 ## [0.2.1-experimental](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.2.0-experimental...nestjs-sdk-v0.2.1-experimental) (2024-06-11)
 
 
