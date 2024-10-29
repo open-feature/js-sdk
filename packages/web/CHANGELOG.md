@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.3.1](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.3.0...web-sdk-v1.3.1) (2024-10-29)
+
+
+### 📚 Documentation
+
+* add tracking sections ([#1068](https://github.com/open-feature/js-sdk/issues/1068)) ([e131faf](https://github.com/open-feature/js-sdk/commit/e131faffad9025e9c7194f39558bf3b3cec31807))
+
 ## [1.3.0](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.2.4...web-sdk-v1.3.0) (2024-10-29)
 
 
