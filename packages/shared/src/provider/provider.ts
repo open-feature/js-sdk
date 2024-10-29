@@ -1,5 +1,6 @@
 import type { EvaluationContext } from '../evaluation';
 import type { AnyProviderEvent, ProviderEventEmitter } from '../events';
+import type { TrackingEventDetails } from '../tracking';
 import type { Metadata, Paradigm } from '../types';
 
 // TODO: with TypeScript 5+, we can use computed string properties,
@@ -125,4 +126,12 @@ export interface CommonProvider<S extends ClientProviderStatus | ServerProviderS
    * @param context
    */
   initialize?(context?: EvaluationContext): Promise<void>;
+
+  /**
+   * Track a user action or application state, usually representing a business objective or outcome.
+   * @param trackingEventName
+   * @param context
+   * @param trackingEventDetails
+   */
+  track?(trackingEventName: string, context?: EvaluationContext, trackingEventDetails?: TrackingEventDetails): void;
 }

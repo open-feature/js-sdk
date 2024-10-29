@@ -38,8 +38,7 @@ export class InMemoryProvider implements Provider {
    */
   async putConfiguration(flagConfiguration: FlagConfiguration) {
     try {
-      const flagsChanged = Object.entries(flagConfiguration)
-        .filter(([key, value]) => this._flagConfiguration[key] !== value)
+      const flagsChanged = Object.entries({...flagConfiguration, ...this._flagConfiguration})
         .map(([key]) => key);
 
       this._flagConfiguration = { ...flagConfiguration };
