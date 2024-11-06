@@ -294,26 +294,17 @@ export class OpenFeatureClient implements Client {
       };
 
       if (evaluationDetails.errorCode) {
-        throw instantiateErrorByErrorCode(evaluationDetails.errorCode);
+        const err = instantiateErrorByErrorCode(evaluationDetails.errorCode);
+        await this.errorHooks(allHooksReversed, hookContext, err, options);
+        return this.getErrorEvaluationDetails(flagKey, defaultValue, err);
       }
 
       await this.afterHooks(allHooksReversed, hookContext, evaluationDetails, options);
 
       return evaluationDetails;
     } catch (err: unknown) {
-      const errorMessage: string = (err as Error)?.message;
-      const errorCode: ErrorCode = (err as OpenFeatureError)?.code || ErrorCode.GENERAL;
-
       await this.errorHooks(allHooksReversed, hookContext, err, options);
-
-      return {
-        errorCode,
-        errorMessage,
-        value: defaultValue,
-        reason: StandardResolutionReasons.ERROR,
-        flagMetadata: Object.freeze({}),
-        flagKey,
-      };
+      return this.getErrorEvaluationDetails(flagKey, defaultValue, err);
     } finally {
       await this.finallyHooks(allHooksReversed, hookContext, options);
     }
@@ -406,5 +397,23 @@ export class OpenFeatureClient implements Client {
     } else if (this.providerStatus === ProviderStatus.FATAL) {
       throw new ProviderFatalError('provider is in an irrecoverable error state');
     }
+  }
+
+  private getErrorEvaluationDetails<T extends FlagValue>(
+    flagKey: string,
+    defaultValue: T,
+    err: unknown,
+  ): EvaluationDetails<T> {
+    const errorMessage: string = (err as Error)?.message;
+    const errorCode: ErrorCode = (err as OpenFeatureError)?.code || ErrorCode.GENERAL;
+
+    return {
+      errorCode,
+      errorMessage,
+      value: defaultValue,
+      reason: StandardResolutionReasons.ERROR,
+      flagMetadata: Object.freeze({}),
+      flagKey,
+    };
   }
 }
