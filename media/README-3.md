@@ -149,7 +149,7 @@ function Page() {
 }
 ```
 
-You can use the strongly-typed flag value and flag evaluation detail hooks as well, if you prefer.
+You can use the strongly typed flag value and flag evaluation detail hooks as well if you prefer.
 
 ```tsx
 import { useBooleanFlagValue } from '@openfeature/react-sdk';
@@ -175,7 +175,7 @@ const {
 Multiple providers can be used by passing a `domain` to the `OpenFeatureProvider`:
 
 ```tsx
-// Flags within this domain will use the a client/provider associated with `my-domain`,
+// Flags within this domain will use the client/provider associated with `my-domain`,
 function App() {
   return (
     <OpenFeatureProvider domain={'my-domain'}>
@@ -238,11 +238,11 @@ Note that if your provider doesn't support updates, this configuration has no im
 #### Suspense Support
 
 > [!NOTE]
-> React suspense is an experimental feature and subject to change in future versions.
+> React suspense is an experimental feature and is subject to change in future versions.
 
 
 Frequently, providers need to perform some initial startup tasks.
-It may be desireable not to display components with feature flags until this is complete, or when the context changes.
+It may be desirable not to display components with feature flags until this is complete or when the context changes.
 Built-in [suspense](https://react.dev/reference/react/Suspense) support makes this easy.
 Use `useSuspenseFlag` or pass `{ suspend: true }` in the hook options to leverage this functionality.
 
@@ -283,22 +283,21 @@ This can be disabled in the hook options (or in the [OpenFeatureProvider](#openf
 
 The tracking API allows you to use OpenFeature abstractions and objects to associate user actions with feature flag evaluations.
 This is essential for robust experimentation powered by feature flags.
-For example, a flag enhancing the appearance of a UI component might drive user engagement to a new feature; to test this hypothesis, telemetry collected by a [hook](#hooks) or [provider](#providers) can be associated with telemetry reported in the client's `track` function.
+For example, a flag enhancing the appearance of a UI component might drive user engagement to a new feature; to test this hypothesis, telemetry collected by a [hook](https://openfeature.dev/docs/reference/technologies/client/web/#hooks) or [provider](https://openfeature.dev/docs/reference/technologies/client/web/#providers) can be associated with telemetry reported in the client's `track` function.
 
-The React SDK includes a hook for firing tracking events in the <OpenFeatureProvider> context in use:
+The React SDK includes a hook for firing tracking events in the `<OpenFeatureProvider>` context in use:
 
 ```tsx
-      function MyComponent() {
+function MyComponent() {
+  // get a tracking function for this <OpenFeatureProvider>.
+  const { track } = useTrack();
 
-        // get a tracking function for this <OpenFeatureProvider>.
-        const { track } = useTrack();
+  // call the tracking event
+  // can be done in render, useEffect, or in handlers, depending on your use case
+  track(eventName, trackingDetails);
 
-        // call the tracking event
-        // can be done in render, useEffect, or in handlers, depending on your use case
-        track(eventName, trackingDetails);
-
-        return <>...</>;
-      }
+  return <>...</>;
+}
 ```
 
 ### Testing
@@ -365,23 +364,23 @@ class MyTestProvider implements Partial<Provider> {
 > I get an error that says something like: `A React component suspended while rendering, but no fallback UI was specified.`
 
 The OpenFeature React SDK features built-in [suspense support](#suspense-support).
-This means that it will render your loading fallback automatically while the your provider starts up, and during context reconciliation for any of your components using feature flags!
+This means that it will render your loading fallback automatically while your provider starts up and during context reconciliation for any of your components using feature flags!
 If you use suspense and neglect to create a suspense boundary around any components using feature flags, you will see this error.
 Add a suspense boundary to resolve this issue.
 Alternatively, you can disable this suspense (the default) by removing `suspendWhileReconciling=true`, `suspendUntilReady=true` or `suspend=true` in the [evaluation hooks](#evaluation-hooks) or the [OpenFeatureProvider](#openfeatureprovider-context-provider) (which applies to all evaluation hooks in child components).
 
-> I get odd rendering issues, or errors when components mount, if I use the suspense features.
+> I get odd rendering issues or errors when components mount if I use the suspense features.
 
 In React 16/17's "Legacy Suspense", when a component suspends, its sibling components initially mount and then are hidden.
 This can cause surprising effects and inconsistencies if sibling components are rendered while the provider is still getting ready.
 To fix this, you can upgrade to React 18, which uses "Concurrent Suspense", in which siblings are not mounted until their suspended sibling resolves.
 Alternatively, if you cannot upgrade to React 18, you can use the `useWhenProviderReady` utility hook in any sibling components to prevent them from mounting until the provider is ready.
 
-> I am using multiple `OpenFeatureProvider` contexts, but they are sharing the same provider or evaluation context. Why?
+> I am using multiple `OpenFeatureProvider` contexts, but they share the same provider or evaluation context. Why?
 
 The `OpenFeatureProvider` binds a `client` to all child components, but the provider and context associated with that client is controlled by the `domain` parameter.
 This is consistent with all OpenFeature SDKs.
-To scope an OpenFeatureProvider to a particular provider/context set the `domain` parameter on your `OpenFeatureProvider`:
+To scope an OpenFeatureProvider to a particular provider/context, set the `domain` parameter on your `OpenFeatureProvider`:
 
 ```tsx
 <OpenFeatureProvider domain={'my-domain'}>
@@ -391,7 +390,7 @@ To scope an OpenFeatureProvider to a particular provider/context set the `domain
 
 > I can import things form the `@openfeature/react-sdk`, `@openfeature/web-sdk`, and `@openfeature/core`; which should I use?
 
-The `@openfeature/react-sdk` re-exports everything from its peers (`@openfeature/web-sdk` and `@openfeature/core`), and adds the React-specific features.
+The `@openfeature/react-sdk` re-exports everything from its peers (`@openfeature/web-sdk` and `@openfeature/core`) and adds the React-specific features.
 You can import everything from the `@openfeature/react-sdk` directly.
 Avoid importing anything from `@openfeature/web-sdk` or `@openfeature/core`.
 
