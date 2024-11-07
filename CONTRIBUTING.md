@@ -120,6 +120,16 @@ on each other), the owner should try to get people aligned by:
 - If none of the above worked and the PR has been stuck for more than 2 weeks,
   the owner should bring it to the OpenFeatures [meeting](README.md#contributing).
 
+## Releasing
+
+As with most OpenFeature repos, release-please supports our release process.
+For this SDK specifically, keep in mind this is a monorepo with dependencies with between components.
+If there are multiple release PRs open, ensure that you release them in order consistent with their dependency graph, waiting for each to fully complete.
+For example, if there are pending releases for: `@openfeature/core`, `@openfeature/web-sdk` and `@openfeature/react-sdk`, release them in that order.
+
+Also ensure that if there are changes in an artifact which depend on changes in a dependency, that you reflect that in the `peerDependencies` field.
+For example, if a new release of `@openfeature/web-sdk` depends on features added in `@openfeature/core`, update the required minimum version of the `@openfeature/core` peer in the `@openfeature/web-sdk` package.json.
+
 ## Design Choices
 
 As with other OpenFeature SDKs, js-sdk follows the
