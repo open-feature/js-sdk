@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.16.2](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.16.1...server-sdk-v1.16.2) (2024-11-07)
+
+
+### 🧹 Chore
+
+* loosen peer dependency requirements, remove some ci automation ([#1080](https://github.com/open-feature/js-sdk/issues/1080)) ([ef3ba21](https://github.com/open-feature/js-sdk/commit/ef3ba2167ac95cd0c6a046d206bd60bbcf84e80c))
+
+
+### 🚀 Performance
+
+* avoid using exceptions for flow control ([#1074](https://github.com/open-feature/js-sdk/issues/1074)) ([26264d6](https://github.com/open-feature/js-sdk/commit/26264d6d090b2ed31b27d36e71194b9fa911563b))
+
 ## [1.16.1](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.16.0...server-sdk-v1.16.1) (2024-10-29)
 
 
