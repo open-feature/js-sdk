@@ -1,6 +1,6 @@
 {
   "name": "@openfeature/angular-sdk",
-  "version": "0.0.8-experimental",
+  "version": "0.0.7-experimental",
   "description": "OpenFeature Angular SDK",
   "scripts": {
     "current-published-version": "npm show $npm_package_name@$npm_package_version version",
