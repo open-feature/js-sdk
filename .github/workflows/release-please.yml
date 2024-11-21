@@ -54,6 +54,9 @@ jobs:
     needs: release-please
     runs-on: ubuntu-latest
     if: ${{ needs.release-please.outputs.release_created }}
+    permissions:
+      id-token: write
+      contents: write
     steps:
       # The logic below handles the npm publication:
       - name: Checkout Repository
