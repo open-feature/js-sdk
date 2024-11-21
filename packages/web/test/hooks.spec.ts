@@ -759,14 +759,14 @@ describe('Hooks', () => {
                 done(err);
               }
             },
-            after: (_hookContext, _evaluationDetils, hookHints) => {
+            after: (_hookContext, _evaluationDetails, hookHints) => {
               try {
                 expect(hookHints?.hint).toBeTruthy();
               } catch (err) {
                 done(err);
               }
             },
-            finally: (_, hookHints) => {
+            finally: (_, _evaluationDetails, hookHints) => {
               try {
                 expect(hookHints?.hint).toBeTruthy();
                 done();
