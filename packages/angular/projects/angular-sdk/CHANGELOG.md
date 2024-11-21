@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.0.9-experimental](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.8-experimental...angular-sdk-v0.0.9-experimental) (2024-11-21)
+
+
+### 🧹 Chore
+
+* **angular:** add repository to package.json ([#1093](https://github.com/open-feature/js-sdk/issues/1093)) ([35f000e](https://github.com/open-feature/js-sdk/commit/35f000e0f3c3ff7d60c05883312691d14f01c5fd))
+
 ## [0.0.8-experimental](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.7-experimental...angular-sdk-v0.0.8-experimental) (2024-11-21)
 
 
