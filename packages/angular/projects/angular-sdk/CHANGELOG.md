@@ -1,12 +1,19 @@
 # Changelog
 
 
-## [0.0.7-experimental](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.6-experimental...angular-sdk-v0.0.7-experimental) (2024-11-21)
+## [0.0.8-experimental](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.7-experimental...angular-sdk-v0.0.8-experimental) (2024-11-21)
 
 
 ### ✨ New Features
 
 * **angular:** add angular 19 to peerDependencies ([4893d6f](https://github.com/open-feature/js-sdk/commit/4893d6f0003fbdcdcd4c7c061e9aed49e20b8976))
+
+
+## [0.0.7-experimental](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.6-experimental...angular-sdk-v0.0.7-experimental) (2024-11-21)
+
+
+Note: This version did not release
+
 
 ## [0.0.6-experimental](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.5-experimental...angular-sdk-v0.0.6-experimental) (2024-10-28)
 
