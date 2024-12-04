@@ -1,15 +1,20 @@
 import { useEffect, useState } from 'react';
 import { useOpenFeatureClient } from './use-open-feature-client';
-import type { ProviderStatus } from '@openfeature/web-sdk';
+import { ProviderStatus } from '@openfeature/web-sdk';
 import { ProviderEvents } from '@openfeature/web-sdk';
+import type { ReactFlagEvaluationOptions } from '../common';
+import { DEFAULT_OPTIONS, useProviderOptions, normalizeOptions, suspendUntilReady } from '../common';
+
+type Options = Pick<ReactFlagEvaluationOptions, 'suspendUntilReady'>
 
 /**
  * Get the {@link ProviderStatus} for the OpenFeatureClient.
+ * @param options
  * @returns {ProviderStatus} status of the client for this scope
  */
-export function useOpenFeatureClientStatus(): ProviderStatus {
+export function useOpenFeatureClientStatus(options?: Options) {
   const client = useOpenFeatureClient();
-  const [status, setStatus] = useState(client.providerStatus);
+  const [status, setStatus] = useState<typeof ProviderStatus>(client.providerStatus);
 
   useEffect(() => {
     const updateStatus = () => setStatus(client.providerStatus);
@@ -28,6 +33,12 @@ export function useOpenFeatureClientStatus(): ProviderStatus {
       client.removeHandler(ProviderEvents.Reconciling, updateStatus);
     };
   }, [client]);
+  // highest priority > evaluation hook options > provider options > default options > lowest priority
+  const defaultedOptions = { ...DEFAULT_OPTIONS, ...useProviderOptions(), ...normalizeOptions(options) };
+
+  if (defaultedOptions.suspendUntilReady && status === ProviderStatus.NOT_READY) {
+    suspendUntilReady(client);
+  }
 
   return status;
 }
