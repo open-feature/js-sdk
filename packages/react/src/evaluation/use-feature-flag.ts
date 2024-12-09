@@ -267,7 +267,8 @@ export function useObjectFlagDetails<T extends JsonValue = JsonValue>(
 
 // determines if a flag should be re-evaluated based on a list of changed flags
 function shouldEvaluateFlag(flagKey: string, flagsChanged?: string[]): boolean {
-  return !!flagsChanged && flagsChanged.includes(flagKey);
+  // if flagsChange is missing entirely, we don't know what to re-render
+  return !flagsChanged || flagsChanged.includes(flagKey);
 }
 
 function attachHandlersAndResolve<T extends FlagValue>(

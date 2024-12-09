@@ -1,10 +1,17 @@
+import { jest } from '@jest/globals';
+import type { ProviderEmittableEvents } from '@openfeature/web-sdk';
+import { ClientProviderEvents } from '@openfeature/web-sdk';
+import type { FlagConfiguration } from '@openfeature/web-sdk/src/provider/in-memory-provider/flag-configuration';
 import '@testing-library/jest-dom'; // see: https://testing-library.com/docs/react-testing-library/setup
 import { act, render, renderHook, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
+import { startTransition, useState } from 'react';
 import type {
   EvaluationContext,
   EvaluationDetails,
-  Hook} from '../src/';
+  EventContext,
+  Hook
+} from '../src/';
 import {
   ErrorCode,
   InMemoryProvider,
@@ -20,12 +27,20 @@ import {
   useObjectFlagValue,
   useStringFlagDetails,
   useStringFlagValue,
-  useSuspenseFlag,
+  useSuspenseFlag
 } from '../src/';
-import { TestingProvider } from './test.utils';
 import { HookFlagQuery } from '../src/evaluation/hook-flag-query';
-import { startTransition, useState } from 'react';
-import { jest } from '@jest/globals';
+import { TestingProvider } from './test.utils';
+
+// custom provider to have better control over the emitted events
+class CustomEventInMemoryProvider extends InMemoryProvider {
+
+  putConfigurationWithCustomEvent(flagConfiguration: FlagConfiguration, event: ProviderEmittableEvents, eventContext: EventContext) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this['_flagConfiguration'] = { ...flagConfiguration }; // private access hack
+    this.events.emit(event, eventContext);
+  }
+}
 
 describe('evaluation', () => {
   const EVALUATION = 'evaluation';
@@ -262,7 +277,7 @@ describe('evaluation', () => {
 
     describe('re-render', () => {
       const RERENDER_DOMAIN = 'rerender';
-      const rerenderProvider = new InMemoryProvider(FLAG_CONFIG);
+      const rerenderProvider = new CustomEventInMemoryProvider(FLAG_CONFIG);
 
       function TestComponentFactory() {
         let renderCount = 0;
@@ -370,7 +385,7 @@ describe('evaluation', () => {
         expect(screen.queryByTestId('render-count')).toHaveTextContent('2');
       });
 
-      it('should not render on flag change because the provider did not include changed flags in the change event', async () => {
+      it('should not render on flag change when the provider change event has empty flagsChanged', async () => {
         const TestComponent = TestComponentFactory();
         render(
           <OpenFeatureProvider domain={RERENDER_DOMAIN}>
@@ -380,12 +395,44 @@ describe('evaluation', () => {
 
         expect(screen.queryByTestId('render-count')).toHaveTextContent('1');
         await act(async () => {
-          await rerenderProvider.putConfiguration({
+          await rerenderProvider.putConfigurationWithCustomEvent({
             ...FLAG_CONFIG,
-          });
+            [BOOL_FLAG_KEY]: {
+              ...FLAG_CONFIG[BOOL_FLAG_KEY],
+              // Change the default; this should be ignored and not cause a re-render because flagsChanged is empty
+              defaultVariant: 'off',
+            },
+             // if the flagsChanged is empty, we know nothing has changed, so we don't bother diffing
+          }, ClientProviderEvents.ConfigurationChanged, { flagsChanged: [] });
+
         });
 
         expect(screen.queryByTestId('render-count')).toHaveTextContent('1');
+      });
+
+      it('should re-render on flag change because the provider change event has falsy flagsChanged', async () => {
+        const TestComponent = TestComponentFactory();
+        render(
+          <OpenFeatureProvider domain={RERENDER_DOMAIN}>
+            <TestComponent></TestComponent>
+          </OpenFeatureProvider>,
+        );
+
+        expect(screen.queryByTestId('render-count')).toHaveTextContent('1');
+        await act(async () => {
+          await rerenderProvider.putConfigurationWithCustomEvent({
+            ...FLAG_CONFIG,
+            [BOOL_FLAG_KEY]: {
+              ...FLAG_CONFIG[BOOL_FLAG_KEY],
+              // Change the default variant to trigger a rerender since not only do we check flagsChanged, but we also diff the value
+              defaultVariant: 'off',
+            },
+             // if the flagsChanged is falsy, we don't know what flags changed - so we attempt to diff everything
+          }, ClientProviderEvents.ConfigurationChanged, { flagsChanged: undefined });
+
+        });
+
+        expect(screen.queryByTestId('render-count')).toHaveTextContent('2');
       });
 
       it('should not rerender on flag change because the evaluated values did not change', async () => {
@@ -1105,3 +1152,4 @@ describe('evaluation', () => {
     });
   });
 });
+

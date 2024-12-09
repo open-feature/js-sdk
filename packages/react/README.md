@@ -16,8 +16,8 @@
     <img alt="Specification" src="https://img.shields.io/static/v1?label=specification&message=v0.8.0&color=yellow&style=for-the-badge" />
   </a>
   <!-- x-release-please-start-version -->
-  <a href="https://github.com/open-feature/js-sdk/releases/tag/react-sdk-v0.4.8">
-    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v0.4.8&color=blue&style=for-the-badge" />
+  <a href="https://github.com/open-feature/js-sdk/releases/tag/react-sdk-v0.4.9">
+    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v0.4.9&color=blue&style=for-the-badge" />
   </a>
   <!-- x-release-please-end -->
   <br/>
@@ -233,13 +233,16 @@ function Page() {
 }
 ```
 
-Note that if your provider doesn't support updates, this configuration has no impact.
+If your provider doesn't support updates, this configuration has no impact.
+
+> [!NOTE]
+> If your provider includes a list of [flags changed](https://open-feature.github.io/js-sdk/types/_openfeature_server_sdk.ConfigChangeEvent.html) in its `PROVIDER_CONFIGURATION_CHANGED` event, that list of flags is used to decide which flag evaluation hooks should re-run by diffing the latest value of these flags with the previous render.
+> If your provider event does not the include the `flags changed` list, then the SDK diffs all flags with the previous render to determine which hooks should re-run.
 
 #### Suspense Support
 
 > [!NOTE]
 > React suspense is an experimental feature and is subject to change in future versions.
-
 
 Frequently, providers need to perform some initial startup tasks.
 It may be desirable not to display components with feature flags until this is complete or when the context changes.
