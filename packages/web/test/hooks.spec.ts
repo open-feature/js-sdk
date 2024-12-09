@@ -1,16 +1,5 @@
-import type {
-  Provider,
-  ResolutionDetails,
-  Client,
-  FlagValueType,
-  EvaluationContext,
-  Hook} from '../src';
-import {
-  GeneralError,
-  OpenFeature,
-  StandardResolutionReasons,
-  ErrorCode,
-} from '../src';
+import type { Provider, ResolutionDetails, Client, FlagValueType, EvaluationContext, Hook } from '../src';
+import { GeneralError, OpenFeature, StandardResolutionReasons, ErrorCode } from '../src';
 
 const BOOLEAN_VALUE = true;
 
@@ -280,6 +269,25 @@ describe('Hooks', () => {
         client.getBooleanValue(FLAG_KEY, false, {
           hooks: [errorAndFinallyHook],
         });
+      });
+    });
+
+    describe('Requirement 4.3.8', () => {
+      it('"evaluation details" passed to the "finally" stage matches the evaluation details returned to the application author', () => {
+        OpenFeature.setProvider(MOCK_PROVIDER);
+        let evaluationDetailsHooks;
+
+        const evaluationDetails = client.getBooleanDetails(FLAG_KEY, false, {
+          hooks: [
+            {
+              finally: (_, details) => {
+                evaluationDetailsHooks = details;
+              },
+            },
+          ],
+        });
+
+        expect(evaluationDetailsHooks).toEqual(evaluationDetails);
       });
     });
   });
