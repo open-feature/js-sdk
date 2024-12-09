@@ -10,7 +10,9 @@ import type {
   Logger,
   TrackingEventDetails,
   OpenFeatureError,
-  ResolutionDetails } from '@openfeature/core';
+  FlagMetadata,
+  ResolutionDetails,
+} from '@openfeature/core';
 import {
   ErrorCode,
   ProviderFatalError,
@@ -24,7 +26,7 @@ import type { FlagEvaluationOptions } from '../../evaluation';
 import type { ProviderEvents } from '../../events';
 import type { InternalEventEmitter } from '../../events/internal/internal-event-emitter';
 import type { Hook } from '../../hooks';
-import type { Provider} from '../../provider';
+import type { Provider } from '../../provider';
 import { ProviderStatus } from '../../provider';
 import type { Client } from './../client';
 
@@ -234,35 +236,37 @@ export class OpenFeatureClient implements Client {
       logger: this._logger,
     };
 
-    try {
-      this.beforeHooks(allHooks, hookContext, options);
+    const evaluationDetails = (() => {
+      try {
+        this.beforeHooks(allHooks, hookContext, options);
 
-      this.shortCircuitIfNotReady();
+        this.shortCircuitIfNotReady();
 
-      // run the referenced resolver, binding the provider.
-      const resolution = resolver.call(this._provider, flagKey, defaultValue, context, this._logger);
+        // run the referenced resolver, binding the provider.
+        const resolution = resolver.call(this._provider, flagKey, defaultValue, context, this._logger);
 
-      const evaluationDetails = {
-        ...resolution,
-        flagMetadata: Object.freeze(resolution.flagMetadata ?? {}),
-        flagKey,
-      };
+        const evaluationDetails = {
+          ...resolution,
+          flagMetadata: Object.freeze(resolution.flagMetadata ?? {}),
+          flagKey,
+        };
 
-      if (evaluationDetails.errorCode) {
-        const err = instantiateErrorByErrorCode(evaluationDetails.errorCode);
+        if (evaluationDetails.errorCode) {
+          const err = instantiateErrorByErrorCode(evaluationDetails.errorCode);
+          this.errorHooks(allHooksReversed, hookContext, err, options);
+          return this.getErrorEvaluationDetails(flagKey, defaultValue, err, evaluationDetails.flagMetadata);
+        }
+
+        this.afterHooks(allHooksReversed, hookContext, evaluationDetails, options);
+
+        return evaluationDetails;
+      } catch (err: unknown) {
         this.errorHooks(allHooksReversed, hookContext, err, options);
         return this.getErrorEvaluationDetails(flagKey, defaultValue, err);
       }
-
-      this.afterHooks(allHooksReversed, hookContext, evaluationDetails, options);
-
-      return evaluationDetails;
-    } catch (err: unknown) {
-      this.errorHooks(allHooksReversed, hookContext, err, options);
-      return this.getErrorEvaluationDetails(flagKey, defaultValue, err);
-    } finally {
-      this.finallyHooks(allHooksReversed, hookContext, options);
-    }
+    })();
+    this.finallyHooks(allHooksReversed, hookContext, evaluationDetails, options);
+    return evaluationDetails;
   }
 
   private beforeHooks(hooks: Hook[], hookContext: HookContext, options: FlagEvaluationOptions) {
@@ -301,11 +305,16 @@ export class OpenFeatureClient implements Client {
     }
   }
 
-  private finallyHooks(hooks: Hook[], hookContext: HookContext, options: FlagEvaluationOptions) {
+  private finallyHooks(
+    hooks: Hook[],
+    hookContext: HookContext,
+    evaluationDetails: EvaluationDetails<FlagValue>,
+    options: FlagEvaluationOptions,
+  ) {
     // run "finally" hooks sequentially
     for (const hook of hooks) {
       try {
-        hook?.finally?.(hookContext, options.hookHints);
+        hook?.finally?.(hookContext, evaluationDetails, options.hookHints);
       } catch (err) {
         this._logger.error(`Unhandled error during 'finally' hook: ${err}`);
         if (err instanceof Error) {
@@ -337,6 +346,7 @@ export class OpenFeatureClient implements Client {
     flagKey: string,
     defaultValue: T,
     err: unknown,
+    flagMetadata: FlagMetadata = {},
   ): EvaluationDetails<T> {
     const errorMessage: string = (err as Error)?.message;
     const errorCode: ErrorCode = (err as OpenFeatureError)?.code || ErrorCode.GENERAL;
@@ -346,7 +356,7 @@ export class OpenFeatureClient implements Client {
       errorMessage,
       value: defaultValue,
       reason: StandardResolutionReasons.ERROR,
-      flagMetadata: Object.freeze({}),
+      flagMetadata: Object.freeze(flagMetadata),
       flagKey,
     };
   }
