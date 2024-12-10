@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.3.3](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.3.2...web-sdk-v1.3.3) (2024-12-10)
+
+
+### 📚 Documentation
+
+* fix comment in README for Hook’s after method ([#1102](https://github.com/open-feature/js-sdk/issues/1102)) ([ba8d1ae](https://github.com/open-feature/js-sdk/commit/ba8d1aeec837cb089cda3499d44ecc505ea0c947))
+
 ## [1.3.2](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.3.1...web-sdk-v1.3.2) (2024-11-07)
 
 
