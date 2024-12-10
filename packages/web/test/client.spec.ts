@@ -655,6 +655,18 @@ describe('OpenFeatureClient', () => {
         }).not.toThrow();
       });
 
+      it('provide empty tracking details to provider if not supplied in call', async () => {
+        await OpenFeature.setProviderAndWait({ ...MOCK_PROVIDER });
+        const client = OpenFeature.getClient();
+        client.track(eventName);
+
+        expect(MOCK_PROVIDER.track).toHaveBeenCalledWith(
+          eventName,
+          expect.any(Object),
+          expect.any(Object),
+        );
+      });
+
       it('should no-op and not throw if provider throws', async () => {
         await OpenFeature.setProviderAndWait({
           ...MOCK_PROVIDER,
