@@ -1,6 +1,6 @@
 import type { Client } from '@openfeature/web-sdk';
 import React from 'react';
-import type { NormalizedOptions, ReactFlagEvaluationOptions } from '.';
+import type { NormalizedOptions, ReactFlagEvaluationOptions } from '../options';
 import { normalizeOptions } from '.';
 
 /**

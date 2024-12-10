@@ -11,7 +11,7 @@ import {
   ProviderStatus,
 } from '@openfeature/web-sdk';
 import { useEffect, useRef, useState } from 'react';
-import type { ReactFlagEvaluationOptions } from '../internal';
+import type { ReactFlagEvaluationNoSuspenseOptions, ReactFlagEvaluationOptions } from '../options';
 import { DEFAULT_OPTIONS, isEqual, normalizeOptions, suspendUntilReady, useProviderOptions } from '../internal';
 import { useOpenFeatureClient } from '../provider/use-open-feature-client';
 import { useOpenFeatureClientStatus } from '../provider/use-open-feature-client-status';
@@ -32,9 +32,6 @@ type ConstrainedFlagQuery<T> = FlagQuery<
           ? T
           : JsonValue
 >;
-
-// suspense options removed for the useSuspenseFlag hooks
-type NoSuspenseOptions = Omit<ReactFlagEvaluationOptions, 'suspend' | 'suspendUntilReady' | 'suspendWhileReconciling'>;
 
 /**
  * Evaluates a feature flag generically, returning an react-flavored queryable object.
@@ -84,13 +81,13 @@ type UseFlagReturn<T extends FlagValue> = ReturnType<typeof useFlag<T>>;
  * @param {string} flagKey the flag identifier
  * @template {FlagValue} T A optional generic argument constraining the default.
  * @param {T} defaultValue the default value; used to determine what resolved type should be used.
- * @param {NoSuspenseOptions} options for this evaluation
+ * @param {ReactFlagEvaluationNoSuspenseOptions} options for this evaluation
  * @returns { UseFlagReturn<T> } a queryable object containing useful information about the flag.
  */
 export function useSuspenseFlag<T extends FlagValue = FlagValue>(
   flagKey: string,
   defaultValue: T,
-  options?: NoSuspenseOptions,
+  options?: ReactFlagEvaluationNoSuspenseOptions,
 ): UseFlagReturn<T> {
   return useFlag(flagKey, defaultValue, { ...options, suspendUntilReady: true, suspendWhileReconciling: true });
 }
