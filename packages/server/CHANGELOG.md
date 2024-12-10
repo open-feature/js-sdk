@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.16.3](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.16.2...server-sdk-v1.16.3) (2024-12-10)
+
+
+### 📚 Documentation
+
+* fix comment in README for Hook’s after method ([#1103](https://github.com/open-feature/js-sdk/issues/1103)) ([e335615](https://github.com/open-feature/js-sdk/commit/e3356157d5910d9196e8968c20d4c9a46c4de910))
+
 ## [1.16.2](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.16.1...server-sdk-v1.16.2) (2024-11-07)
 
 
