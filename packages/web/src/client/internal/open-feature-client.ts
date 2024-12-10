@@ -183,7 +183,7 @@ export class OpenFeatureClient implements Client {
     return this.evaluate<T>(flagKey, this._provider.resolveObjectEvaluation, defaultValue, 'object', options);
   }
 
-  track(occurrenceKey: string, occurrenceDetails: TrackingEventDetails): void {
+  track(occurrenceKey: string, occurrenceDetails: TrackingEventDetails = {}): void {
     try {
       this.shortCircuitIfNotReady();
 

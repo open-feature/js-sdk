@@ -133,5 +133,5 @@ export interface CommonProvider<S extends ClientProviderStatus | ServerProviderS
    * @param context
    * @param trackingEventDetails
    */
-  track?(trackingEventName: string, context?: EvaluationContext, trackingEventDetails?: TrackingEventDetails): void;
+  track?(trackingEventName: string, context: EvaluationContext, trackingEventDetails: TrackingEventDetails): void;
 }
