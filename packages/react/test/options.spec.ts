@@ -1,4 +1,4 @@
-import { normalizeOptions } from '../src/common/options';
+import { normalizeOptions } from '../src/internal/options';
 
 describe('normalizeOptions', () => {
   // we spread results from this function, so we never want to return null

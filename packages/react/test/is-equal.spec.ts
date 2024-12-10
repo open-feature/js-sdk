@@ -1,4 +1,4 @@
-import { isEqual } from '../src/common/is-equal';
+import { isEqual } from '../src/internal/is-equal';
 
 describe('isEqual', () => {
   it('should return true for equal primitive values', () => {
