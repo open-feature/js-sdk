@@ -11,8 +11,8 @@ import {
   ProviderStatus,
 } from '@openfeature/web-sdk';
 import { useEffect, useRef, useState } from 'react';
-import type { ReactFlagEvaluationOptions} from '../common';
-import { DEFAULT_OPTIONS, isEqual, normalizeOptions, suspendUntilReady, useProviderOptions } from '../common';
+import type { ReactFlagEvaluationOptions } from '../internal';
+import { DEFAULT_OPTIONS, isEqual, normalizeOptions, suspendUntilReady, useProviderOptions } from '../internal';
 import { useOpenFeatureClient } from '../provider/use-open-feature-client';
 import { useOpenFeatureClientStatus } from '../provider/use-open-feature-client-status';
 import type { FlagQuery } from '../query';
