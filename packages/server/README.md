@@ -383,7 +383,7 @@ import type { Hook, HookContext, EvaluationDetails, FlagValue } from "@openfeatu
 
 export class MyHook implements Hook {
   after(hookContext: HookContext, evaluationDetails: EvaluationDetails<FlagValue>) {
-    // code that runs when there's an error during a flag evaluation
+    // code that runs after flag values are successfully resolved from the provider
   }
 }
 ```
