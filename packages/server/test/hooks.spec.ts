@@ -439,6 +439,30 @@ describe('Hooks', () => {
         });
       });
     });
+
+    describe('Requirement 4.3.8', () => {
+      it('"evaluation details" passed to the "finally" stage matches the evaluation details returned to the application author', async () => {
+        OpenFeature.setProvider(MOCK_PROVIDER);
+        let evaluationDetailsHooks;
+
+        const evaluationDetails = await client.getBooleanDetails(
+          FLAG_KEY,
+          false,
+          {},
+          {
+            hooks: [
+              {
+                finally: (_, details) => {
+                  evaluationDetailsHooks = details;
+                },
+              },
+            ],
+          },
+        );
+
+        expect(evaluationDetailsHooks).toEqual(evaluationDetails);
+      });
+    });
   });
 
   describe('Requirement 4.4.2', () => {
@@ -922,14 +946,14 @@ describe('Hooks', () => {
                 done(err);
               }
             },
-            after: (_hookContext, _evaluationDetils, hookHints) => {
+            after: (_hookContext, _evaluationDetails, hookHints) => {
               try {
                 expect(hookHints?.hint).toBeTruthy();
               } catch (err) {
                 done(err);
               }
             },
-            finally: (_, hookHints) => {
+            finally: (_, _evaluationDetails, hookHints) => {
               try {
                 expect(hookHints?.hint).toBeTruthy();
                 done();
