@@ -1,5 +1,11 @@
 # Changelog
 
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/server-sdk bumped from * to 1.16.3
+
 ## [0.2.2](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.2.1-experimental...nestjs-sdk-v0.2.2) (2024-10-29)
 
 
