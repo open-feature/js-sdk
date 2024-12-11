@@ -859,6 +859,18 @@ describe('OpenFeatureClient', () => {
         }).not.toThrow();
       });
 
+      it('provide empty tracking details to provider if not supplied in call', async () => {
+        await OpenFeature.setProviderAndWait({ ...MOCK_PROVIDER });
+        const client = OpenFeature.getClient();
+        client.track(eventName);
+
+        expect(MOCK_PROVIDER.track).toHaveBeenCalledWith(
+          eventName,
+          expect.any(Object),
+          expect.any(Object),
+        );
+      });
+
       it('should call provider with correct context', async () => {
         await OpenFeature.setProviderAndWait({ ...MOCK_PROVIDER });
         OpenFeature.setContext({ [globalContextKey]: globalContextValue });
