@@ -300,12 +300,11 @@ export class OpenFeatureClient implements Client {
       if (resolutionDetails.errorCode) {
         const err = instantiateErrorByErrorCode(resolutionDetails.errorCode);
         await this.errorHooks(allHooksReversed, hookContext, err, options);
-        return this.getErrorEvaluationDetails(flagKey, defaultValue, err, resolutionDetails.flagMetadata);
+        evaluationDetails = this.getErrorEvaluationDetails(flagKey, defaultValue, err, resolutionDetails.flagMetadata);
+      } else {
+        await this.afterHooks(allHooksReversed, hookContext, resolutionDetails, options);
+        evaluationDetails = resolutionDetails;
       }
-
-      await this.afterHooks(allHooksReversed, hookContext, resolutionDetails, options);
-
-      evaluationDetails = resolutionDetails;
     } catch (err: unknown) {
       await this.errorHooks(allHooksReversed, hookContext, err, options);
       evaluationDetails = this.getErrorEvaluationDetails(flagKey, defaultValue, err);
