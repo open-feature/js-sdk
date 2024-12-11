@@ -236,35 +236,34 @@ export class OpenFeatureClient implements Client {
       logger: this._logger,
     };
 
-    const evaluationDetails = (() => {
-      try {
-        this.beforeHooks(allHooks, hookContext, options);
+    let evaluationDetails: EvaluationDetails<T>;
 
-        this.shortCircuitIfNotReady();
+    try {
+      this.beforeHooks(allHooks, hookContext, options);
 
-        // run the referenced resolver, binding the provider.
-        const resolution = resolver.call(this._provider, flagKey, defaultValue, context, this._logger);
+      this.shortCircuitIfNotReady();
 
-        const evaluationDetails = {
-          ...resolution,
-          flagMetadata: Object.freeze(resolution.flagMetadata ?? {}),
-          flagKey,
-        };
+      // run the referenced resolver, binding the provider.
+      const resolution = resolver.call(this._provider, flagKey, defaultValue, context, this._logger);
 
-        if (evaluationDetails.errorCode) {
-          const err = instantiateErrorByErrorCode(evaluationDetails.errorCode);
-          this.errorHooks(allHooksReversed, hookContext, err, options);
-          return this.getErrorEvaluationDetails(flagKey, defaultValue, err, evaluationDetails.flagMetadata);
-        }
+      const resolutionDetails = {
+        ...resolution,
+        flagMetadata: Object.freeze(resolution.flagMetadata ?? {}),
+        flagKey,
+      };
 
-        this.afterHooks(allHooksReversed, hookContext, evaluationDetails, options);
-
-        return evaluationDetails;
-      } catch (err: unknown) {
+      if (resolutionDetails.errorCode) {
+        const err = instantiateErrorByErrorCode(resolutionDetails.errorCode);
         this.errorHooks(allHooksReversed, hookContext, err, options);
-        return this.getErrorEvaluationDetails(flagKey, defaultValue, err);
+        evaluationDetails = this.getErrorEvaluationDetails(flagKey, defaultValue, err, resolutionDetails.flagMetadata);
+      } else {
+        this.afterHooks(allHooksReversed, hookContext, resolutionDetails, options);
+        evaluationDetails = resolutionDetails;
       }
-    })();
+    } catch (err: unknown) {
+      this.errorHooks(allHooksReversed, hookContext, err, options);
+      evaluationDetails = this.getErrorEvaluationDetails(flagKey, defaultValue, err);
+    }
     this.finallyHooks(allHooksReversed, hookContext, evaluationDetails, options);
     return evaluationDetails;
   }

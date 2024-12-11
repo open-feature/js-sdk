@@ -281,35 +281,35 @@ export class OpenFeatureClient implements Client {
       logger: this._logger,
     };
 
-    const evaluationDetails = await(async () => {
-      try {
-        const frozenContext = await this.beforeHooks(allHooks, hookContext, options);
+    let evaluationDetails: EvaluationDetails<T>;
 
-        this.shortCircuitIfNotReady();
+    try {
+      const frozenContext = await this.beforeHooks(allHooks, hookContext, options);
 
-        // run the referenced resolver, binding the provider.
-        const resolution = await resolver.call(this._provider, flagKey, defaultValue, frozenContext, this._logger);
+      this.shortCircuitIfNotReady();
 
-        const resolutionDetails = {
-          ...resolution,
-          flagMetadata: Object.freeze(resolution.flagMetadata ?? {}),
-          flagKey,
-        };
+      // run the referenced resolver, binding the provider.
+      const resolution = await resolver.call(this._provider, flagKey, defaultValue, frozenContext, this._logger);
 
-        if (resolutionDetails.errorCode) {
-          const err = instantiateErrorByErrorCode(resolutionDetails.errorCode);
-          await this.errorHooks(allHooksReversed, hookContext, err, options);
-          return this.getErrorEvaluationDetails(flagKey, defaultValue, err, resolutionDetails.flagMetadata);
-        }
+      const resolutionDetails = {
+        ...resolution,
+        flagMetadata: Object.freeze(resolution.flagMetadata ?? {}),
+        flagKey,
+      };
 
-        await this.afterHooks(allHooksReversed, hookContext, resolutionDetails, options);
-
-        return resolutionDetails;
-      } catch (err: unknown) {
+      if (resolutionDetails.errorCode) {
+        const err = instantiateErrorByErrorCode(resolutionDetails.errorCode);
         await this.errorHooks(allHooksReversed, hookContext, err, options);
-        return this.getErrorEvaluationDetails(flagKey, defaultValue, err);
+        return this.getErrorEvaluationDetails(flagKey, defaultValue, err, resolutionDetails.flagMetadata);
       }
-    })();
+
+      await this.afterHooks(allHooksReversed, hookContext, resolutionDetails, options);
+
+      evaluationDetails = resolutionDetails;
+    } catch (err: unknown) {
+      await this.errorHooks(allHooksReversed, hookContext, err, options);
+      evaluationDetails = this.getErrorEvaluationDetails(flagKey, defaultValue, err);
+    }
 
     await this.finallyHooks(allHooksReversed, hookContext, evaluationDetails, options);
     return evaluationDetails;
