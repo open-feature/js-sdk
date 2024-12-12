@@ -1,5 +1,17 @@
 # Changelog 
 
+## [1.6.0](https://github.com/open-feature/js-sdk/compare/core-v1.5.0...core-v1.6.0) (2024-12-12)
+
+
+### ✨ New Features
+
+* add evaluation details to finally hook ([#1087](https://github.com/open-feature/js-sdk/issues/1087)) ([2135254](https://github.com/open-feature/js-sdk/commit/2135254c4bee52b4bcadfbf8b99a896cfd930cca))
+
+
+### 🔄 Refactoring
+
+* improve track interface for providers ([#1100](https://github.com/open-feature/js-sdk/issues/1100)) ([5e5b160](https://github.com/open-feature/js-sdk/commit/5e5b16022122b71760634ac90e3fd962aa831c74))
+
 ## [1.5.0](https://github.com/open-feature/js-sdk/compare/core-v1.4.0...core-v1.5.0) (2024-10-29)
 
 
