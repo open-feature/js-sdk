@@ -3,7 +3,7 @@ import type { BaseHook } from './hook';
 import type { BeforeHookContext, HookContext, HookHints } from './hooks';
 import type { FlagValue, EvaluationDetails } from '../evaluation';
 
-import { DefaultLogger, SafeLogger } from '../logger';
+import { VerboseLogger, SafeLogger } from '../logger';
 
 type LoggerPayload = Record<string, unknown>;
 
@@ -20,7 +20,7 @@ const VALUE_KEY = 'value';
 
 export class LoggingHook implements BaseHook {
   readonly includeEvaluationContext: boolean = false;
-  readonly logger = new SafeLogger(new DefaultLogger());
+  readonly logger = new SafeLogger(new VerboseLogger());
 
   constructor(includeEvaluationContext: boolean = false) {
     this.includeEvaluationContext = !!includeEvaluationContext;
