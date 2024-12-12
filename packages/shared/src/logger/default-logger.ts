@@ -11,7 +11,11 @@ export class DefaultLogger implements Logger {
     console.warn(...args);
   }
 
-  info(): void {}
-
-  debug(): void {}
+  info(...args: unknown[]): void {
+    console.info(...args);
+  }
+  
+  debug(...args: unknown[]): void {
+    console.debug(...args);
+  }
 }
