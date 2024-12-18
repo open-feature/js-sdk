@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.10](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.9...react-sdk-v0.4.10) (2024-12-18)
+
+
+### 🔄 Refactoring
+
+* export public option types ([#1101](https://github.com/open-feature/js-sdk/issues/1101)) ([16321c3](https://github.com/open-feature/js-sdk/commit/16321c31f27c5fce2c8e2adea893cf6e7e8ce3de))
+
 ## [0.4.9](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.8...react-sdk-v0.4.9) (2024-12-04)
 
 
