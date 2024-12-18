@@ -2,6 +2,11 @@
 
 ## [1.17.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.16.2...server-sdk-v1.17.0) (2024-12-18)
 
+### ⚠ BREAKING CHANGES
+
+The signature of the `finally` hook stage has been changed. The signature now includes the `evaluation details`, as per the [OpenFeature specification](https://openfeature.dev/specification/sections/hooks#requirement-438). Note that since hooks are still `experimental,` this does not constitute a change requiring a new major version. To migrate, update any hook that implements the `finally` stage to accept `evaluation details` as the second argument.
+
+* add evaluation details to finally hook ([#1087](https://github.com/open-feature/js-sdk/issues/1087)) ([2135254](https://github.com/open-feature/js-sdk/commit/2135254c4bee52b4bcadfbf8b99a896cfd930cca))
 
 ### ✨ New Features
 
