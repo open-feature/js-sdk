@@ -1,6 +1,28 @@
 # Changelog
 
 
+## [1.4.0](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.3.2...web-sdk-v1.4.0) (2024-12-18)
+
+### ⚠ BREAKING CHANGES
+
+The signature of the `finally` hook stage has been changed. The signature now includes the `evaluation details`, as per the [OpenFeature specification](https://openfeature.dev/specification/sections/hooks#requirement-438). Note that since hooks are still `experimental,` this does not constitute a change requiring a new major version. To migrate, update any hook that implements the `finally` stage to accept `evaluation details` as the second argument.
+
+* add evaluation details to finally hook ([#1087](https://github.com/open-feature/js-sdk/issues/1087)) ([2135254](https://github.com/open-feature/js-sdk/commit/2135254c4bee52b4bcadfbf8b99a896cfd930cca))
+
+### ✨ New Features
+
+* add evaluation details to finally hook ([#1087](https://github.com/open-feature/js-sdk/issues/1087)) ([2135254](https://github.com/open-feature/js-sdk/commit/2135254c4bee52b4bcadfbf8b99a896cfd930cca))
+
+
+### 📚 Documentation
+
+* fix comment in README for Hook’s after method ([#1102](https://github.com/open-feature/js-sdk/issues/1102)) ([ba8d1ae](https://github.com/open-feature/js-sdk/commit/ba8d1aeec837cb089cda3499d44ecc505ea0c947))
+
+
+### 🔄 Refactoring
+
+* improve track interface for providers ([#1100](https://github.com/open-feature/js-sdk/issues/1100)) ([5e5b160](https://github.com/open-feature/js-sdk/commit/5e5b16022122b71760634ac90e3fd962aa831c74))
+
 ## [1.3.2](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.3.1...web-sdk-v1.3.2) (2024-11-07)
 
 
