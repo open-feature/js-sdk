@@ -3,6 +3,15 @@
 import type { Logger } from './logger';
 
 export class DefaultLogger implements Logger {
+  
+  private readonly showInfo : boolean = false;
+  private readonly showDebug : boolean = false;
+
+  constructor(showInfo: boolean = false, showDebug: boolean = false){
+    this.showInfo = showInfo;
+    this.showDebug = showDebug;
+  }
+
   error(...args: unknown[]): void {
     console.error(...args);
   }
@@ -11,7 +20,15 @@ export class DefaultLogger implements Logger {
     console.warn(...args);
   }
 
-  info(): void {}
+  info(...args: unknown[]): void {
+    if(this.showInfo) {
+      console.info(...args);
+    }
+  }
   
-  debug(): void {}
+  debug(...args: unknown[]): void {
+    if(this.showDebug) {
+      console.debug(...args);
+    }
+  }
 }
