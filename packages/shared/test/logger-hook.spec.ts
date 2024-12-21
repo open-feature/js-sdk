@@ -1,7 +1,7 @@
 import { GeneralError } from '../src/errors';
 import type { HookContext } from '../src/hooks/hooks';
 import { LoggingHook } from '../src/hooks/logging-hook';
-import { DefaultLogger, SafeLogger } from '../src/logger';
+import { DefaultLogger, LOG_LEVELS, LogLevel, SafeLogger } from '../src/logger';
 
 describe('LoggingHook', () => {
   const FLAG_KEY = 'some-key';
@@ -21,7 +21,7 @@ describe('LoggingHook', () => {
   const ERROR_MESSAGE_KEY = 'error_message';
 
   let hookContext: HookContext;
-  const logger : SafeLogger = new SafeLogger(new DefaultLogger(true, true));
+  const logger : SafeLogger = new SafeLogger(new DefaultLogger(LogLevel.DEBUG));
 
   beforeEach(() => {
     const mockProviderMetaData = { name: PROVIDER_NAME };

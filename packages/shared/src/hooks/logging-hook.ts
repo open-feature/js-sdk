@@ -55,7 +55,8 @@ export class LoggingHook implements BaseHook {
     this.logger.error(payload);
   }
 
-  finally(hookContext: Readonly<HookContext<FlagValue>>, hookHints?: HookHints): void {
+  
+  finally(hookContext: Readonly<HookContext<FlagValue>>, evaluationDetails: EvaluationDetails<FlagValue>, hookHints?: HookHints): void {
     this.logger.info(hookContext, hookHints);
   }
 
