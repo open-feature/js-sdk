@@ -1,33 +1,36 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import type { Logger } from './logger';
+import type { Logger} from './logger';
+import { LogLevel } from './logger';
 
 export class DefaultLogger implements Logger {
   
-  private readonly showInfo : boolean = false;
-  private readonly showDebug : boolean = false;
+  private readonly logLevel : LogLevel;
 
-  constructor(showInfo: boolean = false, showDebug: boolean = false){
-    this.showInfo = showInfo;
-    this.showDebug = showDebug;
+  constructor(logLevel: LogLevel = LogLevel.WARN){
+    this.logLevel = logLevel;
   }
 
   error(...args: unknown[]): void {
-    console.error(...args);
+    if(this.logLevel >=  LogLevel.ERROR) {
+      console.error(...args);
+    }
   }
 
   warn(...args: unknown[]): void {
-    console.warn(...args);
+    if(this.logLevel >=  LogLevel.WARN) {
+      console.warn(...args);
+    }
   }
 
   info(...args: unknown[]): void {
-    if(this.showInfo) {
+    if(this.logLevel >=  LogLevel.INFO) {
       console.info(...args);
     }
   }
   
   debug(...args: unknown[]): void {
-    if(this.showDebug) {
+    if(this.logLevel === LogLevel.DEBUG) {
       console.debug(...args);
     }
   }

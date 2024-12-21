@@ -20,3 +20,10 @@ export interface ManageLogger<T> {
    */
   setLogger(logger: Logger): T;
 }
+
+export enum LogLevel {
+  ERROR = 1,
+  WARN = 2,
+  INFO = 3,
+  DEBUG = 4,
+}

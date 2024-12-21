@@ -2,8 +2,9 @@ import type { OpenFeatureError } from '../errors';
 import type { BaseHook } from './hook';
 import type { BeforeHookContext, HookContext, HookHints } from './hooks';
 import type { FlagValue, EvaluationDetails } from '../evaluation';
+import type { Logger } from '../logger';
+import { DefaultLogger, LogLevel, SafeLogger } from '../logger';
 
-import { DefaultLogger, SafeLogger } from '../logger';
 
 type LoggerPayload = Record<string, unknown>;
 
@@ -20,10 +21,11 @@ const VALUE_KEY = 'value';
 
 export class LoggingHook implements BaseHook {
   readonly includeEvaluationContext: boolean = false;
-  readonly logger = new SafeLogger(new DefaultLogger(true, true));
+  readonly logger: Logger;
 
-  constructor(includeEvaluationContext: boolean = false) {
+  constructor(includeEvaluationContext: boolean = false, logger?: Logger) {
     this.includeEvaluationContext = !!includeEvaluationContext;
+    this.logger = logger || new SafeLogger(new DefaultLogger(LogLevel.DEBUG));
   }
 
   before(hookContext: BeforeHookContext): void {
