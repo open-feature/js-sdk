@@ -16,8 +16,8 @@
     <img alt="Specification" src="https://img.shields.io/static/v1?label=specification&message=v0.8.0&color=yellow&style=for-the-badge" />
   </a>
   <!-- x-release-please-start-version -->
-  <a href="https://github.com/open-feature/js-sdk/releases/tag/web-sdk-v1.3.2">
-    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v1.3.2&color=blue&style=for-the-badge" />
+  <a href="https://github.com/open-feature/js-sdk/releases/tag/web-sdk-v1.4.0">
+    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v1.4.0&color=blue&style=for-the-badge" />
   </a>
   <!-- x-release-please-end -->
   <br/>
@@ -379,7 +379,7 @@ import type { Hook, HookContext, EvaluationDetails, FlagValue } from "@openfeatu
 
 export class MyHook implements Hook {
   after(hookContext: HookContext, evaluationDetails: EvaluationDetails<FlagValue>) {
-    // code that runs when there's an error during a flag evaluation
+    // code that runs after flag values are successfully resolved from the provider
   }
 }
 ```

@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.4.10](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.9...react-sdk-v0.4.10) (2024-12-18)
+
+
+### 🔄 Refactoring
+
+* export public option types ([#1101](https://github.com/open-feature/js-sdk/issues/1101)) ([16321c3](https://github.com/open-feature/js-sdk/commit/16321c31f27c5fce2c8e2adea893cf6e7e8ce3de))
+
+## [0.4.9](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.8...react-sdk-v0.4.9) (2024-12-04)
+
+
+### ✨ New Features
+
+* re-render if flagsChanged is falsy ([#1095](https://github.com/open-feature/js-sdk/issues/1095)) ([78516f4](https://github.com/open-feature/js-sdk/commit/78516f4181c82baf8c42fd64798fc2cfd8ff1056))
+
+
+### 📚 Documentation
+
+* fix typos, links, and format ([#1075](https://github.com/open-feature/js-sdk/issues/1075)) ([418409e](https://github.com/open-feature/js-sdk/commit/418409e3faafc6868a9f893267a4733db9931f93))
+
 ## [0.4.8](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.7...react-sdk-v0.4.8) (2024-10-29)
 
 

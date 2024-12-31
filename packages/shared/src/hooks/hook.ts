@@ -32,9 +32,13 @@ export interface BaseHook<T extends FlagValue = FlagValue, BeforeHookReturn = un
 
   /**
    * Runs after all other hook stages, regardless of success or error.
-   * Errors thrown here are unhandled by the client and will surface in application code.
    * @param hookContext
+   * @param evaluationDetails
    * @param hookHints
    */
-  finally?(hookContext: Readonly<HookContext<T>>, hookHints?: HookHints): HooksReturn;
+  finally?(
+    hookContext: Readonly<HookContext<T>>,
+    evaluationDetails: EvaluationDetails<T>,
+    hookHints?: HookHints,
+  ): HooksReturn;
 }

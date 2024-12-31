@@ -1,7 +1,7 @@
 import { useCallback, useContext, useRef } from 'react';
 import type { EvaluationContext } from '@openfeature/web-sdk';
 import { OpenFeature } from '@openfeature/web-sdk';
-import { Context } from '../common';
+import { Context } from '../internal';
 
 export type ContextMutationOptions = {
   /**
