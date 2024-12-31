@@ -1,18 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useOpenFeatureClient } from './use-open-feature-client';
-import { ProviderStatus } from '@openfeature/web-sdk';
-import { ProviderEvents } from '@openfeature/web-sdk';
-import type { ReactFlagEvaluationOptions } from '../common';
-import { DEFAULT_OPTIONS, useProviderOptions, normalizeOptions, suspendUntilReady } from '../common';
+import { ProviderEvents, type ProviderStatus, } from '@openfeature/web-sdk';
 
-type Options = Pick<ReactFlagEvaluationOptions, 'suspendUntilReady'>
 
 /**
  * Get the {@link ProviderStatus} for the OpenFeatureClient.
  * @param options
  * @returns {ProviderStatus} status of the client for this scope
  */
-export function useOpenFeatureClientStatus(options?: Options) {
+export function useOpenFeatureClientStatus() {
   const client = useOpenFeatureClient();
   const [status, setStatus] = useState<typeof ProviderStatus>(client.providerStatus);
 
