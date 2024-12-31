@@ -10,7 +10,7 @@ import { ProviderEvents, type ProviderStatus, } from '@openfeature/web-sdk';
  */
 export function useOpenFeatureClientStatus() {
   const client = useOpenFeatureClient();
-  const [status, setStatus] = useState<typeof ProviderStatus>(client.providerStatus);
+  const [status, setStatus] = useState<ProviderStatus>(client.providerStatus);
 
   useEffect(() => {
     const updateStatus = () => setStatus(client.providerStatus);
