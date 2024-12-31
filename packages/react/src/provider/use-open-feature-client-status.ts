@@ -33,12 +33,7 @@ export function useOpenFeatureClientStatus(options?: Options) {
       client.removeHandler(ProviderEvents.Reconciling, updateStatus);
     };
   }, [client]);
-  // highest priority > evaluation hook options > provider options > default options > lowest priority
-  const defaultedOptions = { ...DEFAULT_OPTIONS, ...useProviderOptions(), ...normalizeOptions(options) };
 
-  if (defaultedOptions.suspendUntilReady && status === ProviderStatus.NOT_READY) {
-    suspendUntilReady(client);
-  }
 
   return status;
 }
