@@ -5,7 +5,6 @@ import { ProviderEvents, type ProviderStatus, } from '@openfeature/web-sdk';
 
 /**
  * Get the {@link ProviderStatus} for the OpenFeatureClient.
- * @param options
  * @returns {ProviderStatus} status of the client for this scope
  */
 export function useOpenFeatureClientStatus() {
