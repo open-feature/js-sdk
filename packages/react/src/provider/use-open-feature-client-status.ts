@@ -3,7 +3,6 @@ import { useOpenFeatureClient } from './use-open-feature-client';
 import type { ProviderStatus } from '@openfeature/web-sdk';
 import { ProviderEvents } from '@openfeature/web-sdk';
 
-
 /**
  * Get the {@link ProviderStatus} for the OpenFeatureClient.
  * @returns {ProviderStatus} status of the client for this scope
@@ -29,7 +28,6 @@ export function useOpenFeatureClientStatus(): ProviderStatus {
       client.removeHandler(ProviderEvents.Reconciling, updateStatus);
     };
   }, [client]);
-
 
   return status;
 }
