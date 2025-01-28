@@ -1,4 +1,8 @@
 // https://opentelemetry.io/docs/specs/semconv/feature-flags/feature-flags-logs/
+/**
+ * The attributes of an OpenTelemetry compliant event for flag evaluation.
+ * @see https://opentelemetry.io/docs/specs/semconv/feature-flags/feature-flags-logs/
+ */
 export const TELEMETRY_ATTRIBUTE = {
   /**
    * The lookup key of the feature flag.
@@ -72,6 +76,4 @@ export const TELEMETRY_ATTRIBUTE = {
    * - example: `1.0.0`; `2021-01-01`
    */
   VERSION: 'feature_flag.version',
-
-  VALUE: 'value',
 } as const;

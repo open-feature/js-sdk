@@ -2,15 +2,16 @@ import { ErrorCode, StandardResolutionReasons, type EvaluationDetails, type Flag
 import type { HookContext } from '../hooks/hooks';
 import type { JsonValue } from '../types';
 import { TELEMETRY_ATTRIBUTE } from './attributes';
+import { TELEMETRY_EVALUATION_DATA } from './evaluation-data';
 import { TELEMETRY_FLAG_METADATA } from './flag-metadata';
-
-export const EVENT_NAME = 'feature_flag.evaluation';
 
 interface EvaluationEvent {
   name: string;
   attributes: Record<string, string | number | boolean>;
   data: Record<string, JsonValue>;
 }
+
+const FLAG_EVALUATION_EVENT_NAME = 'feature_flag.evaluation';
 
 /**
  * Returns an OpenTelemetry compliant event for flag evaluation.
@@ -32,7 +33,7 @@ export function createEvaluationEvent(
   if (evaluationDetails.variant) {
     attributes[TELEMETRY_ATTRIBUTE.VARIANT] = evaluationDetails.variant;
   } else {
-    data[TELEMETRY_ATTRIBUTE.VALUE] = evaluationDetails.value;
+    data[TELEMETRY_EVALUATION_DATA.VALUE] = evaluationDetails.value;
   }
 
   const contextId =
@@ -59,7 +60,7 @@ export function createEvaluationEvent(
   }
 
   return {
-    name: EVENT_NAME,
+    name: FLAG_EVALUATION_EVENT_NAME,
     attributes,
     data,
   };

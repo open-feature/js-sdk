@@ -1,4 +1,7 @@
-// https://openfeature.dev/specification/appendix-d#flag-metadata
+/**
+ * Well-known flag metadata attributes for telemetry events.
+ * @see https://openfeature.dev/specification/appendix-d#flag-metadata
+ */
 export const TELEMETRY_FLAG_METADATA = {
   /**
    * The context identifier returned in the flag metadata uniquely identifies
