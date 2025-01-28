@@ -1,5 +1,6 @@
 import { ErrorCode, StandardResolutionReasons, type EvaluationDetails, type FlagValue } from '../evaluation/evaluation';
 import type { HookContext } from '../hooks/hooks';
+import type { JsonValue } from '../types';
 import { TELEMETRY_ATTRIBUTE } from './attributes';
 import { TELEMETRY_FLAG_METADATA } from './flag-metadata';
 
@@ -8,6 +9,7 @@ export const EVENT_NAME = 'feature_flag.evaluation';
 interface EvaluationEvent {
   name: string;
   attributes: Record<string, string | number | boolean>;
+  data: Record<string, JsonValue>;
 }
 
 /**
@@ -25,12 +27,12 @@ export function createEvaluationEvent(
     [TELEMETRY_ATTRIBUTE.PROVIDER]: hookContext.providerMetadata.name,
     [TELEMETRY_ATTRIBUTE.REASON]: (evaluationDetails.reason ?? StandardResolutionReasons.UNKNOWN).toLowerCase(),
   };
+  const data: EvaluationEvent['data'] = {};
 
   if (evaluationDetails.variant) {
     attributes[TELEMETRY_ATTRIBUTE.VARIANT] = evaluationDetails.variant;
   } else {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    attributes[TELEMETRY_ATTRIBUTE.VALUE] = evaluationDetails.value as any;
+    data[TELEMETRY_ATTRIBUTE.VALUE] = evaluationDetails.value;
   }
 
   const contextId =
@@ -59,5 +61,6 @@ export function createEvaluationEvent(
   return {
     name: EVENT_NAME,
     attributes,
+    data,
   };
 }

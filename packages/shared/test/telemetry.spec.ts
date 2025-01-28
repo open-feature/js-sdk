@@ -43,8 +43,10 @@ describe('evaluationEvent', () => {
       [TELEMETRY_ATTRIBUTE.KEY]: 'test-flag',
       [TELEMETRY_ATTRIBUTE.PROVIDER]: 'test-provider',
       [TELEMETRY_ATTRIBUTE.REASON]: StandardResolutionReasons.STATIC.toLowerCase(),
-      [TELEMETRY_ATTRIBUTE.VALUE]: true,
       [TELEMETRY_ATTRIBUTE.CONTEXT_ID]: 'test-target',
+    });
+    expect(result.data).toEqual({
+      [TELEMETRY_ATTRIBUTE.VALUE]: true,
     });
   });
 
