@@ -1,4 +1,3 @@
-// https://opentelemetry.io/docs/specs/semconv/feature-flags/feature-flags-logs/
 /**
  * The attributes of an OpenTelemetry compliant event for flag evaluation.
  * @see https://opentelemetry.io/docs/specs/semconv/feature-flags/feature-flags-logs/

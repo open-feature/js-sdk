@@ -15,9 +15,9 @@ const FLAG_EVALUATION_EVENT_NAME = 'feature_flag.evaluation';
 
 /**
  * Returns an OpenTelemetry compliant event for flag evaluation.
- * @param hookContext Contextual information about the flag evaluation
- * @param evaluationDetails The details of the flag evaluation
- * @returns An evaluation event object containing the event name and attributes
+ * @param {HookContext} hookContext Contextual information about the flag evaluation
+ * @param {EvaluationDetails} evaluationDetails The details of the flag evaluation
+ * @returns {EvaluationEvent} An evaluation event object containing the event name and attributes
  */
 export function createEvaluationEvent(
   hookContext: Readonly<HookContext<FlagValue>>,
