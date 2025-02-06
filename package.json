@@ -43,7 +43,7 @@
     "@types/react": "^18.2.55",
     "@types/uuid": "^10.0.0",
     "esbuild": "^0.24.0",
-    "eslint": "^8.56.0",
+    "eslint": "^9.0.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-check-file": "^2.6.2",
