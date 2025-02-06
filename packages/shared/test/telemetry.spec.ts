@@ -1,23 +1,7 @@
 import { createEvaluationEvent } from '../src/telemetry/evaluation-event';
 import { ErrorCode, StandardResolutionReasons, type EvaluationDetails } from '../src/evaluation/evaluation';
 import type { HookContext } from '../src/hooks/hooks';
-import {
-  TELEMETRY_ATTR_FEATURE_FLAG_CONTEXT_ID,
-  TELEMETRY_ATTR_FEATURE_FLAG_ERROR_MESSAGE,
-  TELEMETRY_ATTR_FEATURE_FLAG_ERROR_TYPE,
-  TELEMETRY_ATTR_FEATURE_FLAG_KEY,
-  TELEMETRY_ATTR_FEATURE_FLAG_PROVIDER,
-  TELEMETRY_ATTR_FEATURE_FLAG_REASON,
-  TELEMETRY_ATTR_FEATURE_FLAG_SET_ID,
-  TELEMETRY_ATTR_FEATURE_FLAG_VARIANT,
-  TELEMETRY_ATTR_FEATURE_FLAG_VERSION,
-} from '../src/telemetry/attributes';
-import {
-  TELEMETRY_FLAG_METADATA_CONTEXT_ID,
-  TELEMETRY_FLAG_METADATA_SET_ID,
-  TELEMETRY_FLAG_METADATA_VERSION,
-} from '../src/telemetry/flag-metadata';
-import { TELEMETRY_EVAL_DATA_VALUE } from '../src/telemetry/evaluation-data';
+import { TelemetryAttribute, TelemetryFlagMetadata, TelemetryEvaluationData } from '../src/telemetry';
 
 describe('evaluationEvent', () => {
   const flagKey = 'test-flag';
@@ -55,13 +39,13 @@ describe('evaluationEvent', () => {
 
     expect(result.name).toBe('feature_flag.evaluation');
     expect(result.attributes).toEqual({
-      [TELEMETRY_ATTR_FEATURE_FLAG_KEY]: 'test-flag',
-      [TELEMETRY_ATTR_FEATURE_FLAG_PROVIDER]: 'test-provider',
-      [TELEMETRY_ATTR_FEATURE_FLAG_REASON]: StandardResolutionReasons.STATIC.toLowerCase(),
-      [TELEMETRY_ATTR_FEATURE_FLAG_CONTEXT_ID]: 'test-target',
+      [TelemetryAttribute.KEY]: 'test-flag',
+      [TelemetryAttribute.PROVIDER]: 'test-provider',
+      [TelemetryAttribute.REASON]: StandardResolutionReasons.STATIC.toLowerCase(),
+      [TelemetryAttribute.CONTEXT_ID]: 'test-target',
     });
     expect(result.data).toEqual({
-      [TELEMETRY_EVAL_DATA_VALUE]: true,
+      [TelemetryEvaluationData.VALUE]: true,
     });
   });
 
@@ -76,8 +60,8 @@ describe('evaluationEvent', () => {
 
     const result = createEvaluationEvent(mockHookContext, details);
 
-    expect(result.attributes[TELEMETRY_ATTR_FEATURE_FLAG_VARIANT]).toBe('test-variant');
-    expect(result.attributes[TELEMETRY_EVAL_DATA_VALUE]).toBeUndefined();
+    expect(result.attributes[TelemetryAttribute.VARIANT]).toBe('test-variant');
+    expect(result.attributes[TelemetryEvaluationData.VALUE]).toBeUndefined();
   });
 
   it('should include flag metadata when provided', () => {
@@ -86,17 +70,17 @@ describe('evaluationEvent', () => {
       value: true,
       reason: StandardResolutionReasons.STATIC,
       flagMetadata: {
-        [TELEMETRY_FLAG_METADATA_SET_ID]: 'test-set',
-        [TELEMETRY_FLAG_METADATA_VERSION]: 'v1.0',
-        [TELEMETRY_FLAG_METADATA_CONTEXT_ID]: 'metadata-context',
+        [TelemetryFlagMetadata.SET_ID]: 'test-set',
+        [TelemetryFlagMetadata.VERSION]: 'v1.0',
+        [TelemetryFlagMetadata.CONTEXT_ID]: 'metadata-context',
       },
     };
 
     const result = createEvaluationEvent(mockHookContext, details);
 
-    expect(result.attributes[TELEMETRY_ATTR_FEATURE_FLAG_SET_ID]).toBe('test-set');
-    expect(result.attributes[TELEMETRY_ATTR_FEATURE_FLAG_VERSION]).toBe('v1.0');
-    expect(result.attributes[TELEMETRY_ATTR_FEATURE_FLAG_CONTEXT_ID]).toBe('metadata-context');
+    expect(result.attributes[TelemetryAttribute.SET_ID]).toBe('test-set');
+    expect(result.attributes[TelemetryAttribute.VERSION]).toBe('v1.0');
+    expect(result.attributes[TelemetryAttribute.CONTEXT_ID]).toBe('metadata-context');
   });
 
   it('should handle error cases', () => {
@@ -111,8 +95,8 @@ describe('evaluationEvent', () => {
 
     const result = createEvaluationEvent(mockHookContext, details);
 
-    expect(result.attributes[TELEMETRY_ATTR_FEATURE_FLAG_ERROR_TYPE]).toBe(ErrorCode.GENERAL.toLowerCase());
-    expect(result.attributes[TELEMETRY_ATTR_FEATURE_FLAG_ERROR_MESSAGE]).toBe('test error');
+    expect(result.attributes[TelemetryAttribute.ERROR_CODE]).toBe(ErrorCode.GENERAL.toLowerCase());
+    expect(result.attributes[TelemetryAttribute.ERROR_MESSAGE]).toBe('test error');
   });
 
   it('should use unknown reason when reason is not provided', () => {
@@ -124,6 +108,6 @@ describe('evaluationEvent', () => {
 
     const result = createEvaluationEvent(mockHookContext, details);
 
-    expect(result.attributes[TELEMETRY_ATTR_FEATURE_FLAG_REASON]).toBe(StandardResolutionReasons.UNKNOWN.toLowerCase());
+    expect(result.attributes[TelemetryAttribute.REASON]).toBe(StandardResolutionReasons.UNKNOWN.toLowerCase());
   });
 });
