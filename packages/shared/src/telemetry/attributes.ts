@@ -16,6 +16,7 @@ export const TelemetryAttribute = {
    *
    * - type: `string`
    * - requirement level: `conditionally required`
+   * - condition: `reason` is `error`
    * - example: `flag_not_found`
    */
   ERROR_CODE: 'error.type',
@@ -24,6 +25,7 @@ export const TelemetryAttribute = {
    *
    * - type: `string`
    * - requirement level: `conditionally required`
+   * - condition: variant is defined on the evaluation details
    * - example: `blue`; `on`; `true`
    */
   VARIANT: 'feature_flag.variant',
@@ -66,7 +68,7 @@ export const TelemetryAttribute = {
    * - requirement level: `recommended`
    * - example: `proj-1`; `ab98sgs`; `service1/dev`
    */
-  SET_ID: 'feature_flag.set.id',
+  FLAG_SET_ID: 'feature_flag.set.id',
   /**
    * The version of the ruleset used during the evaluation. This may be any stable value which uniquely identifies the ruleset.
    *

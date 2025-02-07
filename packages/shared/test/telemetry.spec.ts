@@ -70,7 +70,7 @@ describe('evaluationEvent', () => {
       value: true,
       reason: StandardResolutionReasons.STATIC,
       flagMetadata: {
-        [TelemetryFlagMetadata.SET_ID]: 'test-set',
+        [TelemetryFlagMetadata.FLAG_SET_ID]: 'test-set',
         [TelemetryFlagMetadata.VERSION]: 'v1.0',
         [TelemetryFlagMetadata.CONTEXT_ID]: 'metadata-context',
       },
@@ -78,7 +78,7 @@ describe('evaluationEvent', () => {
 
     const result = createEvaluationEvent(mockHookContext, details);
 
-    expect(result.attributes[TelemetryAttribute.SET_ID]).toBe('test-set');
+    expect(result.attributes[TelemetryAttribute.FLAG_SET_ID]).toBe('test-set');
     expect(result.attributes[TelemetryAttribute.VERSION]).toBe('v1.0');
     expect(result.attributes[TelemetryAttribute.CONTEXT_ID]).toBe('metadata-context');
   });

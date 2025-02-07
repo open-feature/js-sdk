@@ -10,6 +10,7 @@ export const TelemetryEvaluationData = {
    *
    * - type: `undefined`
    * - requirement level: `conditionally required`
+   * - condition: variant is not defined on the evaluation details
    * - example: `#ff0000`; `1`; `true`
    */
   VALUE: 'value',

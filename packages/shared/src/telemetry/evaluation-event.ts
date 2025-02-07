@@ -42,9 +42,9 @@ export function createEvaluationEvent(
     attributes[TelemetryAttribute.CONTEXT_ID] = contextId;
   }
 
-  const setId = evaluationDetails.flagMetadata[TelemetryFlagMetadata.SET_ID];
+  const setId = evaluationDetails.flagMetadata[TelemetryFlagMetadata.FLAG_SET_ID];
   if (setId) {
-    attributes[TelemetryAttribute.SET_ID] = setId;
+    attributes[TelemetryAttribute.FLAG_SET_ID] = setId;
   }
 
   const version = evaluationDetails.flagMetadata[TelemetryFlagMetadata.VERSION];
