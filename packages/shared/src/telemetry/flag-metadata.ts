@@ -12,7 +12,7 @@ export const TelemetryFlagMetadata = {
   /**
    * 	A logical identifier for the flag set.
    */
-  SET_ID: 'flagSetId',
+  FLAG_SET_ID: 'flagSetId',
   /**
    * 	A version string (format unspecified) for the flag or flag set.
    */
