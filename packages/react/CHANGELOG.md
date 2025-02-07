@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.11](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.10...react-sdk-v0.4.11) (2025-02-07)
+
+
+### ✨ New Features
+
+* export useOpenFeatureClientStatus hook ([#1082](https://github.com/open-feature/js-sdk/issues/1082)) ([4a6b860](https://github.com/open-feature/js-sdk/commit/4a6b8605444edeaf43355713357fecb97dd850b6))
+
+
+### 🧹 Chore
+
+* update sdk peer ([#1142](https://github.com/open-feature/js-sdk/issues/1142)) ([8bb6206](https://github.com/open-feature/js-sdk/commit/8bb620601e2b8dc7b62d717169b585bd1c886996))
+
 ## [0.4.10](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.9...react-sdk-v0.4.10) (2024-12-18)
 
 
