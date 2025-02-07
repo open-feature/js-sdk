@@ -4,6 +4,6 @@
   "packages/angular": "0.0.1-experimental",
   "packages/web": "1.4.0",
   "packages/server": "1.17.0",
-  "packages/shared": "1.6.0",
+  "packages/shared": "1.7.0",
   "packages/angular/projects/angular-sdk": "0.0.9-experimental"
 }

@@ -1,5 +1,12 @@
 # Changelog 
 
+## [1.7.0](https://github.com/open-feature/js-sdk/compare/core-v1.6.0...core-v1.7.0) (2025-02-07)
+
+
+### ✨ New Features
+
+* add telemetry helper utils ([#1120](https://github.com/open-feature/js-sdk/issues/1120)) ([1e93b3c](https://github.com/open-feature/js-sdk/commit/1e93b3c6fa4494dfb41389043921751e00acafd2))
+
 ## [1.6.0](https://github.com/open-feature/js-sdk/compare/core-v1.5.0...core-v1.6.0) (2024-12-12)
 
 ### ⚠ BREAKING CHANGES
