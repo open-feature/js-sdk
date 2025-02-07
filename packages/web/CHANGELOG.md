@@ -1,6 +1,18 @@
 # Changelog
 
 
+## [1.4.1](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.4.0...web-sdk-v1.4.1) (2025-02-07)
+
+
+### 🐛 Bug Fixes
+
+* msg missing when providers return err resolutions ([#1134](https://github.com/open-feature/js-sdk/issues/1134)) ([bc9f6e4](https://github.com/open-feature/js-sdk/commit/bc9f6e44da3f1c0a66659aee2d0316629ac34fbf))
+
+
+### 🧹 Chore
+
+* update core peer ([8bbd43e](https://github.com/open-feature/js-sdk/commit/8bbd43e579a0c2e0c5b7eec00f94bbcffce04773))
+
 ## [1.4.0](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.3.2...web-sdk-v1.4.0) (2024-12-18)
 
 ### ⚠ BREAKING CHANGES
