@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.17.1](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.17.0...server-sdk-v1.17.1) (2025-02-07)
+
+
+### 🐛 Bug Fixes
+
+* msg missing when providers return err resolutions ([#1134](https://github.com/open-feature/js-sdk/issues/1134)) ([bc9f6e4](https://github.com/open-feature/js-sdk/commit/bc9f6e44da3f1c0a66659aee2d0316629ac34fbf))
+
+
+### 🧹 Chore
+
+* update core peer ([8bbd43e](https://github.com/open-feature/js-sdk/commit/8bbd43e579a0c2e0c5b7eec00f94bbcffce04773))
+
+
+### 📚 Documentation
+
+* fix eval context link ([#1132](https://github.com/open-feature/js-sdk/issues/1132)) ([f6bc695](https://github.com/open-feature/js-sdk/commit/f6bc6951a32fbbed9b35c1bdfd023b02874b87a1))
+
 ## [1.17.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.16.2...server-sdk-v1.17.0) (2024-12-18)
 
 ### ⚠ BREAKING CHANGES

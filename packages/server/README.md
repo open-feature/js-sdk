@@ -16,8 +16,8 @@
     <img alt="Specification" src="https://img.shields.io/static/v1?label=specification&message=v0.8.0&color=yellow&style=for-the-badge" />
   </a>
   <!-- x-release-please-start-version -->
-  <a href="https://github.com/open-feature/js-sdk/releases/tag/server-sdk-v1.17.0">
-    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v1.17.0&color=blue&style=for-the-badge" />
+  <a href="https://github.com/open-feature/js-sdk/releases/tag/server-sdk-v1.17.1">
+    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v1.17.1&color=blue&style=for-the-badge" />
   </a>
   <!-- x-release-please-end -->
   <br/>
@@ -97,12 +97,12 @@ See [here](https://open-feature.github.io/js-sdk/modules/_openfeature_server_sdk
 | Status | Features                                                            | Description                                                                                                                           |
 | ------ | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | ✅      | [Providers](#providers)                                             | Integrate with a commercial, open source, or in-house feature management tool.                                                        |
-| ✅      | [Targeting](#targeting)                                             | Contextually-aware flag evaluation using [evaluation context](/docs/reference/concepts/evaluation-context).                           |
+| ✅      | [Targeting](#targeting)                                             | Contextually-aware flag evaluation using [evaluation context](https://openfeature.dev/docs/reference/concepts/evaluation-context).                           |
 | ✅      | [Hooks](#hooks)                                                     | Add functionality to various stages of the flag evaluation life-cycle.                                                                |
 | ✅      | [Logging](#logging)                                                 | Integrate with popular logging packages.                                                                                              |
 | ✅      | [Domains](#domains)                                                 | Logically bind clients with providers.                                                                                                |
 | ✅      | [Eventing](#eventing)                                               | React to state changes in the provider or flag management system.                                                                     |
-| ✅      | [Transaction Context Propagation](#transaction-context-propagation) | Set a specific [evaluation context](/docs/reference/concepts/evaluation-context) for a transaction (e.g. an HTTP request or a thread) |
+| ✅      | [Transaction Context Propagation](#transaction-context-propagation) | Set a specific [evaluation context](https://openfeature.dev/docs/reference/concepts/evaluation-context) for a transaction (e.g. an HTTP request or a thread) |
 | ✅      | [Tracking](#tracking)                                               | Associate user actions with feature flag evaluations, particularly for A/B testing.                                                   |
 | ✅      | [Shutdown](#shutdown)                                               | Gracefully clean up a provider during application shutdown.                                                                           |
 | ✅      | [Extending](#extending)                                             | Extend OpenFeature with custom providers and hooks.                                                                                   |
