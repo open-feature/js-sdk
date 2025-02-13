@@ -1,5 +1,12 @@
 # Changelog 
 
+## [1.7.1](https://github.com/open-feature/js-sdk/compare/core-v1.7.0...core-v1.7.1) (2025-02-13)
+
+
+### 🐛 Bug Fixes
+
+* export missing telemetry functionality ([#1148](https://github.com/open-feature/js-sdk/issues/1148)) ([dcbc300](https://github.com/open-feature/js-sdk/commit/dcbc30090e7611c60e06d05826f6471f0c8c4009))
+
 ## [1.7.0](https://github.com/open-feature/js-sdk/compare/core-v1.6.0...core-v1.7.0) (2025-02-07)
 
 
