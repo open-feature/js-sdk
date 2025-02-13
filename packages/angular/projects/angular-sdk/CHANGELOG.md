@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [0.0.10](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.9-experimental...angular-sdk-v0.0.10) (2025-02-13)
+
+
+### 🧹 Chore
+
+* **angular:** update angular package to a non-experimental version ([#1147](https://github.com/open-feature/js-sdk/issues/1147)) ([5272f76](https://github.com/open-feature/js-sdk/commit/5272f76c4075ebbd21f9b24dacac8f2d22e31ca9)), closes [#1110](https://github.com/open-feature/js-sdk/issues/1110)
+* update sdk peer ([#1142](https://github.com/open-feature/js-sdk/issues/1142)) ([8bb6206](https://github.com/open-feature/js-sdk/commit/8bb620601e2b8dc7b62d717169b585bd1c886996))
+
 ## [0.0.9-experimental](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.8-experimental...angular-sdk-v0.0.9-experimental) (2024-11-21)
 
 
