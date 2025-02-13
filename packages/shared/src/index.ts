@@ -4,6 +4,7 @@ export * from './client';
 export * from './errors';
 export * from './events';
 export * from './logger';
+export * from './telemetry';
 export * from './provider';
 export * from './evaluation';
 export * from './type-guards';
