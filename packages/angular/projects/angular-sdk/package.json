@@ -1,6 +1,6 @@
 {
   "name": "@openfeature/angular-sdk",
-  "version": "0.0.9-experimental",
+  "version": "0.0.10",
   "description": "OpenFeature Angular SDK",
   "repository": {
     "type": "git",
