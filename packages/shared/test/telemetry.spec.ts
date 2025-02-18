@@ -44,7 +44,7 @@ describe('evaluationEvent', () => {
       [TelemetryAttribute.REASON]: StandardResolutionReasons.STATIC.toLowerCase(),
       [TelemetryAttribute.CONTEXT_ID]: 'test-target',
     });
-    expect(result.data).toEqual({
+    expect(result.body).toEqual({
       [TelemetryEvaluationData.VALUE]: true,
     });
   });

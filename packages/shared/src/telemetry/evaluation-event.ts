@@ -8,7 +8,7 @@ import { TelemetryFlagMetadata } from './flag-metadata';
 type EvaluationEvent = {
   name: string;
   attributes: Record<string, string | number | boolean>;
-  data: Record<string, JsonValue>;
+  body: Record<string, JsonValue>;
 };
 
 const FLAG_EVALUATION_EVENT_NAME = 'feature_flag.evaluation';
@@ -28,12 +28,12 @@ export function createEvaluationEvent(
     [TelemetryAttribute.PROVIDER]: hookContext.providerMetadata.name,
     [TelemetryAttribute.REASON]: (evaluationDetails.reason ?? StandardResolutionReasons.UNKNOWN).toLowerCase(),
   };
-  const data: EvaluationEvent['data'] = {};
+  const body: EvaluationEvent['body'] = {};
 
   if (evaluationDetails.variant) {
     attributes[TelemetryAttribute.VARIANT] = evaluationDetails.variant;
   } else {
-    data[TelemetryEvaluationData.VALUE] = evaluationDetails.value;
+    body[TelemetryEvaluationData.VALUE] = evaluationDetails.value;
   }
 
   const contextId =
@@ -62,6 +62,6 @@ export function createEvaluationEvent(
   return {
     name: FLAG_EVALUATION_EVENT_NAME,
     attributes,
-    data,
+    body,
   };
 }
