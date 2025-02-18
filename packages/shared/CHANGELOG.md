@@ -1,5 +1,12 @@
 # Changelog 
 
+## [1.7.2](https://github.com/open-feature/js-sdk/compare/core-v1.7.1...core-v1.7.2) (2025-02-18)
+
+
+### 🐛 Bug Fixes
+
+* rename evaluation event property from data to body ([4c2b01e](https://github.com/open-feature/js-sdk/commit/4c2b01e36773091038d758ac10bba06056ff4c45))
+
 ## [1.7.1](https://github.com/open-feature/js-sdk/compare/core-v1.7.0...core-v1.7.1) (2025-02-13)
 
 
