@@ -449,7 +449,21 @@ describe('Events', () => {
       expect(OpenFeature.getHandlers(eventType)).toHaveLength(0);
     });
 
-    it('The API provides a function allowing the removal of event handlers', () => {
+    it('The event handler can be removed using an abort signal', () => {
+      const abortController = new AbortController();
+      const handler1 = jest.fn();
+      const handler2 = jest.fn();
+      const eventType = ProviderEvents.Stale;
+
+      OpenFeature.addHandler(eventType, handler1, { signal: abortController.signal });
+      OpenFeature.addHandler(eventType, handler2);
+      expect(OpenFeature.getHandlers(eventType)).toHaveLength(2);
+
+      abortController.abort();
+      expect(OpenFeature.getHandlers(eventType)).toHaveLength(1);
+    });
+
+    it('The API provides a function allowing the removal of event handlers from client', () => {
       const client = OpenFeature.getClient(domain);
       const handler = jest.fn();
       const eventType = ProviderEvents.Stale;
@@ -458,6 +472,21 @@ describe('Events', () => {
       expect(client.getHandlers(eventType)).toHaveLength(1);
       client.removeHandler(eventType, handler);
       expect(client.getHandlers(eventType)).toHaveLength(0);
+    });
+
+    it('The event handler on the client can be removed using an abort signal', () => {
+      const abortController = new AbortController();
+      const client = OpenFeature.getClient(domain);
+      const handler1 = jest.fn();
+      const handler2 = jest.fn();
+      const eventType = ProviderEvents.Stale;
+
+      client.addHandler(eventType, handler1, { signal: abortController.signal });
+      client.addHandler(eventType, handler2);
+      expect(client.getHandlers(eventType)).toHaveLength(2);
+
+      abortController.abort();
+      expect(client.getHandlers(eventType)).toHaveLength(1);
     });
   });
 

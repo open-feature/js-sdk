@@ -14,17 +14,23 @@ class TestEventEmitter extends GenericEventEmitter<AnyProviderEvent> {
   }
 }
 
-// a little function to make sure we're at least waiting for the event loop 
+// a little function to make sure we're at least waiting for the event loop
 // to clear before we start making assertions
 const wait = (millis = 0) => {
-  return new Promise(resolve => {setTimeout(resolve, millis);});
+  return new Promise((resolve) => {
+    setTimeout(resolve, millis);
+  });
 };
 
 describe('GenericEventEmitter', () => {
+  const emitter = new TestEventEmitter();
+
+  afterEach(() => {
+    emitter.removeAllHandlers();
+  });
+
   describe('addHandler should', function () {
     it('attach handler for event type', async function () {
-      const emitter = new TestEventEmitter();
-
       const handler1 = jest.fn();
       emitter.addHandler(AllProviderEvents.Ready, handler1);
       emitter.emit(AllProviderEvents.Ready);
@@ -35,8 +41,6 @@ describe('GenericEventEmitter', () => {
     });
 
     it('attach several handlers for event type', async function () {
-      const emitter = new TestEventEmitter();
-
       const handler1 = jest.fn();
       const handler2 = jest.fn();
       const handler3 = jest.fn();
@@ -64,7 +68,6 @@ describe('GenericEventEmitter', () => {
         debug: () => done(),
       };
 
-      const emitter = new TestEventEmitter();
       emitter.setLogger(logger);
 
       emitter.addHandler(AllProviderEvents.Ready, async () => {
@@ -74,8 +77,6 @@ describe('GenericEventEmitter', () => {
     });
 
     it('trigger handler for event type', async function () {
-      const emitter = new TestEventEmitter();
-
       const handler1 = jest.fn();
       emitter.addHandler(AllProviderEvents.Ready, handler1);
       emitter.emit(AllProviderEvents.Ready);
@@ -87,7 +88,6 @@ describe('GenericEventEmitter', () => {
 
     it('trigger handler for event type with event data', async function () {
       const event: ReadyEvent = { message: 'message' };
-      const emitter = new TestEventEmitter();
 
       const handler1 = jest.fn();
       emitter.addHandler(AllProviderEvents.Ready, handler1);
@@ -99,8 +99,6 @@ describe('GenericEventEmitter', () => {
     });
 
     it('trigger several handlers for event type', async function () {
-      const emitter = new TestEventEmitter();
-
       const handler1 = jest.fn();
       const handler2 = jest.fn();
       const handler3 = jest.fn();
@@ -121,8 +119,6 @@ describe('GenericEventEmitter', () => {
 
   describe('removeHandler should', () => {
     it('remove single handler', async function () {
-      const emitter = new TestEventEmitter();
-
       const handler1 = jest.fn();
       emitter.addHandler(AllProviderEvents.Ready, handler1);
 
@@ -138,8 +134,6 @@ describe('GenericEventEmitter', () => {
 
   describe('removeAllHandlers should', () => {
     it('remove all handlers for event type', async function () {
-      const emitter = new TestEventEmitter();
-
       const handler1 = jest.fn();
       const handler2 = jest.fn();
       emitter.addHandler(AllProviderEvents.Ready, handler1);
@@ -156,8 +150,6 @@ describe('GenericEventEmitter', () => {
     });
 
     it('remove same handler when assigned to multiple events', async function () {
-      const emitter = new TestEventEmitter();
-
       const handler = jest.fn();
       emitter.addHandler(AllProviderEvents.Stale, handler);
       emitter.addHandler(AllProviderEvents.ContextChanged, handler);
@@ -174,8 +166,6 @@ describe('GenericEventEmitter', () => {
     });
 
     it('allow addition/removal of duplicate handlers', async function () {
-      const emitter = new TestEventEmitter();
-
       const handler = jest.fn();
       emitter.addHandler(AllProviderEvents.Stale, handler);
       emitter.addHandler(AllProviderEvents.Stale, handler);
@@ -191,8 +181,6 @@ describe('GenericEventEmitter', () => {
     });
 
     it('allow duplicate event handlers and call them', async function () {
-      const emitter = new TestEventEmitter();
-
       const handler = jest.fn();
       emitter.addHandler(AllProviderEvents.Stale, handler);
       emitter.addHandler(AllProviderEvents.Stale, handler);
@@ -205,8 +193,6 @@ describe('GenericEventEmitter', () => {
     });
 
     it('remove all handlers only for event type', async function () {
-      const emitter = new TestEventEmitter();
-
       const handler1 = jest.fn();
       const handler2 = jest.fn();
       emitter.addHandler(AllProviderEvents.Ready, handler1);
@@ -223,8 +209,6 @@ describe('GenericEventEmitter', () => {
     });
 
     it('remove all handlers if no event type is given', async function () {
-      const emitter = new TestEventEmitter();
-
       const handler1 = jest.fn();
       const handler2 = jest.fn();
       emitter.addHandler(AllProviderEvents.Ready, handler1);

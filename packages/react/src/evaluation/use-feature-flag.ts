@@ -280,6 +280,7 @@ function attachHandlersAndResolve<T extends FlagValue>(
   const defaultedOptions = { ...DEFAULT_OPTIONS, ...useProviderOptions(), ...normalizeOptions(options) };
   const client = useOpenFeatureClient();
   const status = useOpenFeatureClientStatus();
+  const controller = new AbortController();
 
   // suspense
   if (defaultedOptions.suspendUntilReady && status === ProviderStatus.NOT_READY) {
@@ -322,28 +323,23 @@ function attachHandlersAndResolve<T extends FlagValue>(
   useEffect(() => {
     if (status === ProviderStatus.NOT_READY) {
       // update when the provider is ready
-      client.addHandler(ProviderEvents.Ready, updateEvaluationDetailsCallback);
+      client.addHandler(ProviderEvents.Ready, updateEvaluationDetailsCallback, { signal: controller.signal });
     }
 
     if (defaultedOptions.updateOnContextChanged) {
       // update when the context changes
-      client.addHandler(ProviderEvents.ContextChanged, updateEvaluationDetailsCallback);
+      client.addHandler(ProviderEvents.ContextChanged, updateEvaluationDetailsCallback, { signal: controller.signal });
     }
-    return () => {
-      // cleanup the handlers
-      client.removeHandler(ProviderEvents.Ready, updateEvaluationDetailsCallback);
-      client.removeHandler(ProviderEvents.ContextChanged, updateEvaluationDetailsCallback);
-    };
-  }, []);
 
-  useEffect(() => {
     if (defaultedOptions.updateOnConfigurationChanged) {
       // update when the provider configuration changes
-      client.addHandler(ProviderEvents.ConfigurationChanged, configurationChangeCallback);
+      client.addHandler(ProviderEvents.ConfigurationChanged, configurationChangeCallback, {
+        signal: controller.signal,
+      });
     }
     return () => {
       // cleanup the handlers
-      client.removeHandler(ProviderEvents.ConfigurationChanged, configurationChangeCallback);
+      controller.abort();
     };
   }, []);
 

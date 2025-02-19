@@ -12,6 +12,7 @@ import type {
   OpenFeatureError,
   FlagMetadata,
   ResolutionDetails,
+  EventOptions,
 } from '@openfeature/core';
 import {
   ErrorCode,
@@ -74,7 +75,7 @@ export class OpenFeatureClient implements Client {
     return this.providerStatusAccessor();
   }
 
-  addHandler(eventType: ProviderEvents, handler: EventHandler): void {
+  addHandler(eventType: ProviderEvents, handler: EventHandler, options: EventOptions): void {
     this.emitterAccessor().addHandler(eventType, handler);
     const shouldRunNow = statusMatchesEvent(eventType, this.providerStatus);
 
@@ -89,6 +90,12 @@ export class OpenFeatureClient implements Client {
       } catch (err) {
         this._logger?.error('Error running event handler:', err);
       }
+    }
+
+    if (options?.signal && typeof options.signal.addEventListener === 'function') {
+      options.signal.addEventListener('abort', () => {
+        this.removeHandler(eventType, handler);
+      });
     }
   }
 

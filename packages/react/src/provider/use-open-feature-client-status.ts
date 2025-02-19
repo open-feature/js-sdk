@@ -10,22 +10,18 @@ import { ProviderEvents } from '@openfeature/web-sdk';
 export function useOpenFeatureClientStatus(): ProviderStatus {
   const client = useOpenFeatureClient();
   const [status, setStatus] = useState<ProviderStatus>(client.providerStatus);
+  const controller = new AbortController();
 
   useEffect(() => {
     const updateStatus = () => setStatus(client.providerStatus);
-    client.addHandler(ProviderEvents.ConfigurationChanged, updateStatus);
-    client.addHandler(ProviderEvents.ContextChanged, updateStatus);
-    client.addHandler(ProviderEvents.Error, updateStatus);
-    client.addHandler(ProviderEvents.Ready, updateStatus);
-    client.addHandler(ProviderEvents.Stale, updateStatus);
-    client.addHandler(ProviderEvents.Reconciling, updateStatus);
+    client.addHandler(ProviderEvents.ConfigurationChanged, updateStatus, { signal: controller.signal });
+    client.addHandler(ProviderEvents.ContextChanged, updateStatus, { signal: controller.signal });
+    client.addHandler(ProviderEvents.Error, updateStatus, { signal: controller.signal });
+    client.addHandler(ProviderEvents.Ready, updateStatus, { signal: controller.signal });
+    client.addHandler(ProviderEvents.Stale, updateStatus, { signal: controller.signal });
+    client.addHandler(ProviderEvents.Reconciling, updateStatus, { signal: controller.signal });
     return () => {
-      client.removeHandler(ProviderEvents.ConfigurationChanged, updateStatus);
-      client.removeHandler(ProviderEvents.ContextChanged, updateStatus);
-      client.removeHandler(ProviderEvents.Error, updateStatus);
-      client.removeHandler(ProviderEvents.Ready, updateStatus);
-      client.removeHandler(ProviderEvents.Stale, updateStatus);
-      client.removeHandler(ProviderEvents.Reconciling, updateStatus);
+      controller.abort();
     };
   }, [client]);
 

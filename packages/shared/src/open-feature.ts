@@ -7,14 +7,13 @@ import type {
   EventDetails,
   EventHandler,
   Eventing,
-  GenericEventEmitter} from './events';
-import {
-  AllProviderEvents,
-  statusMatchesEvent,
+  EventOptions,
+  GenericEventEmitter,
 } from './events';
+import { AllProviderEvents, statusMatchesEvent } from './events';
 import { isDefined } from './filter';
 import type { BaseHook, EvaluationLifeCycle } from './hooks';
-import type { Logger, ManageLogger} from './logger';
+import type { Logger, ManageLogger } from './logger';
 import { DefaultLogger, SafeLogger } from './logger';
 import type { ClientProviderStatus, CommonProvider, ProviderMetadata, ServerProviderStatus } from './provider';
 import { objectOrUndefined, stringOrUndefined } from './type-guards';
@@ -154,8 +153,9 @@ export abstract class OpenFeatureCommonAPI<
    * API (global) events run for all providers.
    * @param {AnyProviderEvent} eventType The provider event type to listen to
    * @param {EventHandler} handler The handler to run on occurrence of the event type
+   * @param {EventOptions} options Optional options such as signal for aborting
    */
-  addHandler<T extends AnyProviderEvent>(eventType: T, handler: EventHandler): void {
+  addHandler<T extends AnyProviderEvent>(eventType: T, handler: EventHandler, options?: EventOptions): void {
     [...new Map([[undefined, this._defaultProvider]]), ...this._domainScopedProviders].forEach((keyProviderTuple) => {
       const domain = keyProviderTuple[0];
       const provider = keyProviderTuple[1].provider;
@@ -173,6 +173,11 @@ export abstract class OpenFeatureCommonAPI<
     });
 
     this._apiEmitter.addHandler(eventType, handler);
+    if (options?.signal && typeof options.signal.addEventListener === 'function') {
+      options.signal.addEventListener('abort', () => {
+        this.removeHandler(eventType, handler);
+      });
+    }
   }
 
   /**
@@ -248,7 +253,7 @@ export abstract class OpenFeatureCommonAPI<
     // initialize the provider if it implements "initialize" and it's not already registered
     if (typeof provider.initialize === 'function' && !this.allProviders.includes(provider)) {
       initializationPromise = provider
-        .initialize?.(domain ? this._domainScopedContext.get(domain) ?? this._context : this._context)
+        .initialize?.(domain ? (this._domainScopedContext.get(domain) ?? this._context) : this._context)
         ?.then(() => {
           wrappedProvider.status = this._statusEnumType.READY;
           // fetch the most recent event emitters, some may have been added during init
