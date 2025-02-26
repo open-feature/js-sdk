@@ -31,7 +31,7 @@ type ProviderProps = {
    * @param {ProviderProps} properties props for the context provider
    * @returns {OpenFeatureProvider} context provider
    */
-export function OpenFeatureProvider({ client, domain, children, ...options }: ProviderProps) {
+export function OpenFeatureProvider({ client, domain, children, ...options }: ProviderProps): JSX.Element {
   if (!client) {
     client = OpenFeature.getClient(domain);
   }
