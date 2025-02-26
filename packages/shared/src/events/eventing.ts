@@ -66,6 +66,9 @@ export type EventDetails<
 export type EventHandler<
   T extends ServerProviderEvents | ClientProviderEvents = ServerProviderEvents | ClientProviderEvents,
 > = (eventDetails?: EventDetails<T>) => Promise<unknown> | unknown;
+export type EventOptions = {
+  signal?: AbortSignal;
+};
 
 export interface Eventing<T extends ServerProviderEvents | ClientProviderEvents> {
   /**
@@ -73,6 +76,7 @@ export interface Eventing<T extends ServerProviderEvents | ClientProviderEvents>
    * The handlers are called in the order they have been added.
    * @param eventType The provider event type to listen to
    * @param {EventHandler} handler The handler to run on occurrence of the event type
+   * @param {EventOptions} options Optional options such as signal for aborting
    */
   addHandler(
     eventType: T extends ClientProviderEvents
@@ -83,14 +87,17 @@ export interface Eventing<T extends ServerProviderEvents | ClientProviderEvents>
         ? ClientProviderEvents.ConfigurationChanged
         : ServerProviderEvents.ConfigurationChanged
     >,
+    options?: EventOptions,
   ): void;
   addHandler(
     eventType: T extends ClientProviderEvents ? ClientNotChangeEvents : ServerNotChangeEvents,
     handler: EventHandler<T extends ClientProviderEvents ? ClientNotChangeEvents : ServerNotChangeEvents>,
+    options?: EventOptions,
   ): void;
   addHandler(
     eventType: T extends ClientProviderEvents ? ClientProviderEvents : ServerProviderEvents,
     handler: EventHandler<T extends ClientProviderEvents ? ClientProviderEvents : ServerProviderEvents>,
+    options?: EventOptions,
   ): void;
 
   /**
