@@ -138,6 +138,27 @@ export class OpenFeatureAPI
     return this;
   }
 
+  /**
+   * Get the default provider.
+   *
+   * Note that it isn't recommended to interact with the provider directly, but rather through
+   * an OpenFeature client.
+   * @returns {Provider} Default Provider
+   */
+  getProvider(): Provider;
+  /**
+   * Get the provider bound to the specified domain.
+   *
+   * Note that it isn't recommended to interact with the provider directly, but rather through
+   * an OpenFeature client.
+   * @param {string} domain An identifier which logically binds clients with providers
+   * @returns {Provider} Domain-scoped provider
+   */
+  getProvider(domain?: string): Provider;
+  getProvider(domain?: string): Provider {
+    return this.getProviderForClient(domain);
+  }
+
   setContext(context: EvaluationContext): this {
     this._context = context;
     return this;

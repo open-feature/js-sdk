@@ -75,8 +75,8 @@ describe('OpenFeature', () => {
     it('should set the default provider if no domain is provided', () => {
       const provider = mockProvider();
       OpenFeature.setProvider(provider);
-      const client = OpenFeature.getClient();
-      expect(client.metadata.providerMetadata.name).toEqual(provider.metadata.name);
+      const registeredProvider = OpenFeature.getProvider();
+      expect(registeredProvider).toEqual(provider);
     });
 
     it('should not change providers associated with a domain when setting a new default provider', () => {
@@ -86,11 +86,11 @@ describe('OpenFeature', () => {
       OpenFeature.setProvider(provider);
       OpenFeature.setProvider(domain, fakeProvider);
 
-      const defaultClient = OpenFeature.getClient();
-      const domainSpecificClient = OpenFeature.getClient(domain);
+      const defaultProvider = OpenFeature.getProvider();
+      const domainSpecificProvider = OpenFeature.getProvider(domain);
 
-      expect(defaultClient.metadata.providerMetadata.name).toEqual(provider.metadata.name);
-      expect(domainSpecificClient.metadata.providerMetadata.name).toEqual(fakeProvider.metadata.name);
+      expect(defaultProvider).toEqual(provider);
+      expect(domainSpecificProvider).toEqual(fakeProvider);
     });
 
     it('should bind a new provider to existing clients in a matching domain', () => {

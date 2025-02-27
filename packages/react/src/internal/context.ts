@@ -5,7 +5,8 @@ import { normalizeOptions } from '.';
 
 /**
  * The underlying React context.
- * DO NOT EXPORT PUBLICLY
+ *
+ * **DO NOT EXPORT PUBLICLY**
  * @internal
  */
 export const Context = React.createContext<
@@ -14,7 +15,8 @@ export const Context = React.createContext<
 
 /**
  * Get a normalized copy of the options used for this OpenFeatureProvider, see {@link normalizeOptions}.
- * DO NOT EXPORT PUBLICLY
+ *
+ * **DO NOT EXPORT PUBLICLY**
  * @internal
  * @returns {NormalizedOptions} normalized options the defaulted options, not defaulted or normalized.
  */

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Context } from '../internal';
-import type { Client } from '@openfeature/web-sdk';
+import { type Client } from '@openfeature/web-sdk';
+import { MissingContextError } from '../internal/errors';
 
 /**
  * Get the {@link Client} instance for this OpenFeatureProvider context.
@@ -11,9 +12,7 @@ export function useOpenFeatureClient(): Client {
   const { client } = React.useContext(Context) || {};
 
   if (!client) {
-    throw new Error(
-      'No OpenFeature client available - components using OpenFeature must be wrapped with an <OpenFeatureProvider>. If you are seeing this in a test, see: https://openfeature.dev/docs/reference/technologies/client/web/react#testing',
-    );
+    throw new MissingContextError('No OpenFeature client available');
   }
 
   return client;
