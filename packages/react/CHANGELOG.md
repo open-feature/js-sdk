@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.4.12](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.11...react-sdk-v0.4.12) (2025-02-27)
+
+
+### ✨ New Features
+
+* add support for abort controllers to event handlers ([#1151](https://github.com/open-feature/js-sdk/issues/1151)) ([6a22483](https://github.com/open-feature/js-sdk/commit/6a224830fa4e62fc30a7802536f6f6fc3f772038))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/core bumped from * to 1.8.0
+    * @openfeature/web-sdk bumped from * to 1.5.0
+
 ## [0.4.11](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.10...react-sdk-v0.4.11) (2025-02-07)
 
 
