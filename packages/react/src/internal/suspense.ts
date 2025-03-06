@@ -23,7 +23,6 @@ export function suspendUntilInitialized(provider: Provider, client: Client) {
   if (!statusPromiseRef) {
     // Noop provider is never ready, so we resolve immediately
     const statusPromise = provider !== NOOP_PROVIDER ? isProviderReady(client) : Promise.resolve();
-    // Storing the promise globally because
     globalProviderSuspenseStatus.set(provider, statusPromise);
     // Use will throw the promise and React will trigger a rerender when it's resolved
     use(statusPromise);
