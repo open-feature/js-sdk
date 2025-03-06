@@ -206,6 +206,27 @@ export class OpenFeatureAPI
   }
 
   /**
+   * Get the default provider.
+   *
+   * Note that it isn't recommended to interact with the provider directly, but rather through
+   * an OpenFeature client.
+   * @returns {Provider} Default Provider
+   */
+  getProvider(): Provider;
+  /**
+   * Get the provider bound to the specified domain.
+   *
+   * Note that it isn't recommended to interact with the provider directly, but rather through
+   * an OpenFeature client.
+   * @param {string} domain An identifier which logically binds clients with providers
+   * @returns {Provider} Domain-scoped provider
+   */
+  getProvider(domain?: string): Provider;
+  getProvider(domain?: string): Provider {
+    return this.getProviderForClient(domain);
+  }
+
+  /**
    * Sets the evaluation context globally.
    * This will be used by all providers that have not bound to a domain.
    * @param {EvaluationContext} context Evaluation context
@@ -325,9 +346,9 @@ export class OpenFeatureAPI
   }
 
   /**
-   * A factory function for creating new named OpenFeature clients. Clients can contain
-   * their own state (e.g. logger, hook, context). Multiple clients can be used
-   * to segment feature flag configuration.
+   * A factory function for creating new domain-scoped OpenFeature clients. Clients
+   * can contain their own state (e.g. logger, hook, context). Multiple domains
+   * can be used to segment feature flag configuration.
    *
    * If there is already a provider bound to this name via {@link this.setProvider setProvider}, this provider will be used.
    * Otherwise, the default provider is used until a provider is assigned to that name.
