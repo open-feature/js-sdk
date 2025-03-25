@@ -1,13 +1,6 @@
-import {
-  applyDecorators,
-  CallHandler,
-  ExecutionContext,
-  HttpException,
-  mixin,
-  NestInterceptor,
-  NotFoundException,
-  UseInterceptors,
-} from '@nestjs/common';
+import type { CallHandler, ExecutionContext, HttpException, NestInterceptor } from '@nestjs/common';
+import { applyDecorators, mixin, NotFoundException, UseInterceptors } from '@nestjs/common';
+import type { Client } from '@openfeature/server-sdk';
 import { OpenFeature } from '@openfeature/server-sdk';
 
 /**
@@ -57,8 +50,8 @@ function getClientForEvaluation(domain?: string) {
  * @Get('/')
  * public async handleGetRequest()
  * ```
- * @param {RequireFlagsEnabledProps} options The options for injecting the feature flag.
- * @returns {Decorator}
+ * @param {RequireFlagsEnabledProps} props The options for injecting the feature flag.
+ * @returns {ClassDecorator & MethodDecorator} The decorator that can be used to require Boolean Feature Flags to be enabled for a controller or a specific route.
  */
 export const RequireFlagsEnabled = (props: RequireFlagsEnabledProps): ClassDecorator & MethodDecorator =>
   applyDecorators(UseInterceptors(FlagsEnabledInterceptor(props)));
