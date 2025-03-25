@@ -1,7 +1,14 @@
-import { Controller, Get, Injectable, UseInterceptors } from '@nestjs/common';
-import type { Observable} from 'rxjs';
+import { Controller, ForbiddenException, Get, Injectable, UseInterceptors } from '@nestjs/common';
+import type { Observable } from 'rxjs';
 import { map } from 'rxjs';
-import { BooleanFeatureFlag, ObjectFeatureFlag, NumberFeatureFlag, OpenFeatureClient, StringFeatureFlag } from '../src';
+import {
+  BooleanFeatureFlag,
+  ObjectFeatureFlag,
+  NumberFeatureFlag,
+  OpenFeatureClient,
+  StringFeatureFlag,
+  RequireFlagsEnabled,
+} from '../src';
 import type { Client, EvaluationDetails, FlagValue } from '@openfeature/server-sdk';
 import { EvaluationContextInterceptor } from '../src';
 
@@ -84,11 +91,28 @@ export class OpenFeatureController {
   public async handleDynamicContextInServiceRequest() {
     return this.testService.serviceMethodWithDynamicContext('testBooleanFlag');
   }
+
+  @RequireFlagsEnabled({
+    flagKeys: ['testBooleanFlag'],
+  })
+  @Get('/flags-enabled')
+  public async handleGuardedBooleanRequest() {
+    return 'Get Boolean Flag Success!';
+  }
+
+  @RequireFlagsEnabled({
+    flagKeys: ['testBooleanFlag'],
+    exception: new ForbiddenException(),
+  })
+  @Get('/flags-enabled-custom-exception')
+  public async handleBooleanRequestWithCustomException() {
+    return 'Get Boolean Flag Success!';
+  }
 }
 
 @Controller()
 @UseInterceptors(EvaluationContextInterceptor)
-export class OpenFeatureControllerContextScopedController {
+export class OpenFeatureContextScopedController {
   constructor(private testService: OpenFeatureTestService) {}
 
   @Get('/controller-context')
@@ -100,5 +124,28 @@ export class OpenFeatureControllerContextScopedController {
     feature: Observable<EvaluationDetails<number>>,
   ) {
     return feature.pipe(map((details) => this.testService.serviceMethod(details)));
+  }
+
+  @RequireFlagsEnabled({
+    flagKeys: ['testBooleanFlag'],
+    domain: 'domainScopedClient',
+  })
+  @Get('/controller-context/flags-enabled')
+  public async handleBooleanRequest() {
+    return 'Get Boolean Flag Success!';
+  }
+}
+
+@Controller('require-flags-enabled')
+@RequireFlagsEnabled({
+  flagKeys: ['testBooleanFlag'],
+  exception: new ForbiddenException(),
+})
+export class OpenFeatureRequireFlagsEnabledController {
+  constructor() {}
+
+  @Get('/')
+  public async handleGetRequest() {
+    return 'Hello, world!';
   }
 }
