@@ -147,10 +147,26 @@ describe('OpenFeature SDK', () => {
           });
           await supertest(app.getHttpServer()).get('/flags-enabled-custom-exception').expect(403);
         });
+
+        it('should throw a custom exception if the flag is disabled with context', async () => {
+          jest.spyOn(defaultProvider, 'resolveBooleanEvaluation').mockResolvedValueOnce({
+            value: false,
+            reason: 'DISABLED',
+          });
+          await supertest(app.getHttpServer())
+            .get('/flags-enabled-custom-exception-with-context')
+            .set('x-user-id', '123')
+            .expect(403);
+        });
       });
 
       describe('OpenFeatureControllerRequireFlagsEnabled', () => {
         it('should allow access to the RequireFlagsEnabled controller', async () => {
+          // Only mock the first flag evaluation for Flag with key `testBooleanFlag2`, the second flag evaluation will use the default variation for flag with key `testBooleanFlag`
+          jest.spyOn(defaultProvider, 'resolveBooleanEvaluation').mockResolvedValueOnce({
+            value: true,
+            reason: 'TARGETING_MATCH',
+          });
           await supertest(app.getHttpServer()).get('/require-flags-enabled').expect(200).expect('Hello, world!');
         });
 
