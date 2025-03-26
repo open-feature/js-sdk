@@ -23,6 +23,11 @@ export const defaultProvider = new InMemoryProvider({
     variants: { default: { client: 'default' } },
     disabled: false,
   },
+  testBooleanFlag2: {
+    defaultVariant: 'default',
+    variants: { default: false, enabled: true },
+    disabled: false,
+  },
 });
 
 export const providers = {

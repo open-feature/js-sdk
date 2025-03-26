@@ -93,7 +93,7 @@ export class OpenFeatureController {
   }
 
   @RequireFlagsEnabled({
-    flagKeys: ['testBooleanFlag'],
+    flags: [{ flagKey: 'testBooleanFlag' }],
   })
   @Get('/flags-enabled')
   public async handleGuardedBooleanRequest() {
@@ -101,11 +101,23 @@ export class OpenFeatureController {
   }
 
   @RequireFlagsEnabled({
-    flagKeys: ['testBooleanFlag'],
+    flags: [{ flagKey: 'testBooleanFlag' }],
     exception: new ForbiddenException(),
   })
   @Get('/flags-enabled-custom-exception')
   public async handleBooleanRequestWithCustomException() {
+    return 'Get Boolean Flag Success!';
+  }
+
+  @RequireFlagsEnabled({
+    flags: [{ flagKey: 'testBooleanFlag' }],
+    exception: new ForbiddenException(),
+    context: {
+      targetingKey: 'user-id',
+    },
+  })
+  @Get('/flags-enabled-custom-exception-with-context')
+  public async handleBooleanRequestWithCustomExceptionAndContext() {
     return 'Get Boolean Flag Success!';
   }
 }
@@ -127,7 +139,7 @@ export class OpenFeatureContextScopedController {
   }
 
   @RequireFlagsEnabled({
-    flagKeys: ['testBooleanFlag'],
+    flags: [{ flagKey: 'testBooleanFlag' }],
     domain: 'domainScopedClient',
   })
   @Get('/controller-context/flags-enabled')
@@ -138,7 +150,7 @@ export class OpenFeatureContextScopedController {
 
 @Controller('require-flags-enabled')
 @RequireFlagsEnabled({
-  flagKeys: ['testBooleanFlag'],
+  flags: [{ flagKey: 'testBooleanFlag2', defaultValue: true }, { flagKey: 'testBooleanFlag' }],
   exception: new ForbiddenException(),
 })
 export class OpenFeatureRequireFlagsEnabledController {
