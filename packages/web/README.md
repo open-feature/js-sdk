@@ -172,7 +172,7 @@ await OpenFeature.setContext({ targetingKey: localStorage.getItem("targetingKey"
 ```
 
 Context is global and setting it is `async`.
-Providers may implement an `onContextChanged` method that receives the old and newer contexts.
+Providers may implement an `onContextChange` method that receives the old and newer contexts.
 Given a context change, providers can use this method internally to detect if the flag values cached on the client are still valid.
 If needed, a request will be made to the provider with the new context in order to get the correct flag values.
 
