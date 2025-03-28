@@ -1,6 +1,6 @@
 import { createParamDecorator, Inject } from '@nestjs/common';
 import type { EvaluationContext, EvaluationDetails, FlagValue, JsonValue } from '@openfeature/server-sdk';
-import { OpenFeature, Client } from '@openfeature/server-sdk';
+import { Client } from '@openfeature/server-sdk';
 import { getOpenFeatureClientToken } from './open-feature.module';
 import type { Observable } from 'rxjs';
 import { from } from 'rxjs';
