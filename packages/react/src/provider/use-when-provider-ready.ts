@@ -2,7 +2,8 @@ import { ProviderStatus } from '@openfeature/web-sdk';
 import { useOpenFeatureClient } from './use-open-feature-client';
 import { useOpenFeatureClientStatus } from './use-open-feature-client-status';
 import type { ReactFlagEvaluationOptions } from '../options';
-import { DEFAULT_OPTIONS, useProviderOptions, normalizeOptions, suspendUntilReady } from '../internal';
+import { DEFAULT_OPTIONS, useProviderOptions, normalizeOptions, suspendUntilInitialized } from '../internal';
+import { useOpenFeatureProvider } from './use-open-feature-provider';
 
 type Options = Pick<ReactFlagEvaluationOptions, 'suspendUntilReady'>;
 
@@ -14,14 +15,14 @@ type Options = Pick<ReactFlagEvaluationOptions, 'suspendUntilReady'>;
  * @returns {boolean} boolean indicating if provider is {@link ProviderStatus.READY}, useful if suspense is disabled and you want to handle loaders on your own
  */
 export function useWhenProviderReady(options?: Options): boolean {
-  const client = useOpenFeatureClient();
-  const status = useOpenFeatureClientStatus();
   // highest priority > evaluation hook options > provider options > default options > lowest priority
   const defaultedOptions = { ...DEFAULT_OPTIONS, ...useProviderOptions(), ...normalizeOptions(options) };
+  const client = useOpenFeatureClient();
+  const status = useOpenFeatureClientStatus();
+  const provider = useOpenFeatureProvider();
 
-  // suspense
   if (defaultedOptions.suspendUntilReady && status === ProviderStatus.NOT_READY) {
-    suspendUntilReady(client);
+    suspendUntilInitialized(provider, client);
   }
 
   return status === ProviderStatus.READY;
