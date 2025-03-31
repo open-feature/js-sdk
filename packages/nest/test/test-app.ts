@@ -110,7 +110,7 @@ export class OpenFeatureController {
   }
 
   @RequireFlagsEnabled({
-    flags: [{ flagKey: 'testBooleanFlag' }],
+    flags: [{ flagKey: 'testBooleanFlag2' }],
     exception: new ForbiddenException(),
     context: {
       targetingKey: 'user-id',
@@ -150,7 +150,7 @@ export class OpenFeatureContextScopedController {
 
 @Controller('require-flags-enabled')
 @RequireFlagsEnabled({
-  flags: [{ flagKey: 'testBooleanFlag2', defaultValue: true }, { flagKey: 'testBooleanFlag' }],
+  flags: [{ flagKey: 'testBooleanFlag', defaultValue: false }, { flagKey: 'testBooleanFlag2' }],
   exception: new ForbiddenException(),
 })
 export class OpenFeatureRequireFlagsEnabledController {

@@ -149,10 +149,6 @@ describe('OpenFeature SDK', () => {
         });
 
         it('should throw a custom exception if the flag is disabled with context', async () => {
-          jest.spyOn(defaultProvider, 'resolveBooleanEvaluation').mockResolvedValueOnce({
-            value: false,
-            reason: 'DISABLED',
-          });
           await supertest(app.getHttpServer())
             .get('/flags-enabled-custom-exception-with-context')
             .set('x-user-id', '123')
@@ -161,21 +157,24 @@ describe('OpenFeature SDK', () => {
       });
 
       describe('OpenFeatureControllerRequireFlagsEnabled', () => {
-        it('should allow access to the RequireFlagsEnabled controller', async () => {
-          // Only mock the first flag evaluation for Flag with key `testBooleanFlag2`, the second flag evaluation will use the default variation for flag with key `testBooleanFlag`
-          jest.spyOn(defaultProvider, 'resolveBooleanEvaluation').mockResolvedValueOnce({
-            value: true,
-            reason: 'TARGETING_MATCH',
-          });
-          await supertest(app.getHttpServer()).get('/require-flags-enabled').expect(200).expect('Hello, world!');
+        it('should allow access to the RequireFlagsEnabled controller with global context interceptor', async () => {
+          await supertest(app.getHttpServer())
+            .get('/require-flags-enabled')
+            .set('x-user-id', '123')
+            .expect(200)
+            .expect('Hello, world!');
         });
 
-        it('should throw a 403 - Forbidden exception if the flag is disabled', async () => {
+        it('should throw a 403 - Forbidden exception if user does not match targeting requirements', async () => {
+          await supertest(app.getHttpServer()).get('/require-flags-enabled').set('x-user-id', 'not-123').expect(403);
+        });
+
+        it('should throw a 403 - Forbidden exception if one of the flags is disabled', async () => {
           jest.spyOn(defaultProvider, 'resolveBooleanEvaluation').mockResolvedValueOnce({
             value: false,
             reason: 'DISABLED',
           });
-          await supertest(app.getHttpServer()).get('/require-flags-enabled').expect(403);
+          await supertest(app.getHttpServer()).get('/require-flags-enabled').set('x-user-id', '123').expect(403);
         });
       });
     });

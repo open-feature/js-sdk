@@ -33,7 +33,7 @@ interface RequireFlagsEnabledProps {
   domain?: string;
 
   /**
-   * Global {@link EvaluationContext} for OpenFeature.
+   * The {@link EvaluationContext} for evaluating the feature flag.
    * @see {@link OpenFeature#setContext}
    */
   context?: EvaluationContext;
