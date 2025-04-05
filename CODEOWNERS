@@ -3,4 +3,4 @@
 #
 # Managed by Peribolos: https://github.com/open-feature/community/blob/main/config/open-feature/sdk-javascript/workgroup.yaml
 #
-* @open-feature/sdk-javascript-maintainers
+* @open-feature/sdk-javascript-maintainers @open-feature/maintainers
