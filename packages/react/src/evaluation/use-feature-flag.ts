@@ -5,18 +5,24 @@ import type {
   EventHandler,
   FlagEvaluationOptions,
   FlagValue,
-  JsonValue} from '@openfeature/web-sdk';
-import {
-  ProviderEvents,
-  ProviderStatus,
+  JsonValue,
 } from '@openfeature/web-sdk';
+import { ProviderEvents, ProviderStatus } from '@openfeature/web-sdk';
 import { useEffect, useRef, useState } from 'react';
+import {
+  DEFAULT_OPTIONS,
+  isEqual,
+  normalizeOptions,
+  suspendUntilInitialized,
+  suspendUntilReconciled,
+  useProviderOptions,
+} from '../internal';
 import type { ReactFlagEvaluationNoSuspenseOptions, ReactFlagEvaluationOptions } from '../options';
-import { DEFAULT_OPTIONS, isEqual, normalizeOptions, suspendUntilReady, useProviderOptions } from '../internal';
 import { useOpenFeatureClient } from '../provider/use-open-feature-client';
 import { useOpenFeatureClientStatus } from '../provider/use-open-feature-client-status';
+import { useOpenFeatureProvider } from '../provider/use-open-feature-provider';
 import type { FlagQuery } from '../query';
-import { HookFlagQuery } from './hook-flag-query';
+import { HookFlagQuery } from '../internal/hook-flag-query';
 
 // This type is a bit wild-looking, but I think we need it.
 // We have to use the conditional, because otherwise useFlag('key', false) would return false, not boolean (too constrained).
@@ -280,15 +286,16 @@ function attachHandlersAndResolve<T extends FlagValue>(
   const defaultedOptions = { ...DEFAULT_OPTIONS, ...useProviderOptions(), ...normalizeOptions(options) };
   const client = useOpenFeatureClient();
   const status = useOpenFeatureClientStatus();
+  const provider = useOpenFeatureProvider();
+
   const controller = new AbortController();
 
-  // suspense
   if (defaultedOptions.suspendUntilReady && status === ProviderStatus.NOT_READY) {
-    suspendUntilReady(client);
+    suspendUntilInitialized(provider, client);
   }
 
   if (defaultedOptions.suspendWhileReconciling && status === ProviderStatus.RECONCILING) {
-    suspendUntilReady(client);
+    suspendUntilReconciled(client);
   }
 
   const [evaluationDetails, setEvaluationDetails] = useState<EvaluationDetails<T>>(

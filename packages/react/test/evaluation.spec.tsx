@@ -6,12 +6,7 @@ import '@testing-library/jest-dom'; // see: https://testing-library.com/docs/rea
 import { act, render, renderHook, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import { startTransition, useState } from 'react';
-import type {
-  EvaluationContext,
-  EvaluationDetails,
-  EventContext,
-  Hook
-} from '../src/';
+import type { EvaluationContext, EvaluationDetails, EventContext, Hook } from '../src/';
 import {
   ErrorCode,
   InMemoryProvider,
@@ -27,15 +22,18 @@ import {
   useObjectFlagValue,
   useStringFlagDetails,
   useStringFlagValue,
-  useSuspenseFlag
+  useSuspenseFlag,
 } from '../src/';
-import { HookFlagQuery } from '../src/evaluation/hook-flag-query';
+import { HookFlagQuery } from '../src/internal/hook-flag-query';
 import { TestingProvider } from './test.utils';
 
 // custom provider to have better control over the emitted events
 class CustomEventInMemoryProvider extends InMemoryProvider {
-
-  putConfigurationWithCustomEvent(flagConfiguration: FlagConfiguration, event: ProviderEmittableEvents, eventContext: EventContext) {
+  putConfigurationWithCustomEvent(
+    flagConfiguration: FlagConfiguration,
+    event: ProviderEmittableEvents,
+    eventContext: EventContext,
+  ) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     this['_flagConfiguration'] = { ...flagConfiguration }; // private access hack
     this.events.emit(event, eventContext);
@@ -395,16 +393,19 @@ describe('evaluation', () => {
 
         expect(screen.queryByTestId('render-count')).toHaveTextContent('1');
         await act(async () => {
-          await rerenderProvider.putConfigurationWithCustomEvent({
-            ...FLAG_CONFIG,
-            [BOOL_FLAG_KEY]: {
-              ...FLAG_CONFIG[BOOL_FLAG_KEY],
-              // Change the default; this should be ignored and not cause a re-render because flagsChanged is empty
-              defaultVariant: 'off',
+          await rerenderProvider.putConfigurationWithCustomEvent(
+            {
+              ...FLAG_CONFIG,
+              [BOOL_FLAG_KEY]: {
+                ...FLAG_CONFIG[BOOL_FLAG_KEY],
+                // Change the default; this should be ignored and not cause a re-render because flagsChanged is empty
+                defaultVariant: 'off',
+              },
+              // if the flagsChanged is empty, we know nothing has changed, so we don't bother diffing
             },
-             // if the flagsChanged is empty, we know nothing has changed, so we don't bother diffing
-          }, ClientProviderEvents.ConfigurationChanged, { flagsChanged: [] });
-
+            ClientProviderEvents.ConfigurationChanged,
+            { flagsChanged: [] },
+          );
         });
 
         expect(screen.queryByTestId('render-count')).toHaveTextContent('1');
@@ -420,16 +421,19 @@ describe('evaluation', () => {
 
         expect(screen.queryByTestId('render-count')).toHaveTextContent('1');
         await act(async () => {
-          await rerenderProvider.putConfigurationWithCustomEvent({
-            ...FLAG_CONFIG,
-            [BOOL_FLAG_KEY]: {
-              ...FLAG_CONFIG[BOOL_FLAG_KEY],
-              // Change the default variant to trigger a rerender since not only do we check flagsChanged, but we also diff the value
-              defaultVariant: 'off',
+          await rerenderProvider.putConfigurationWithCustomEvent(
+            {
+              ...FLAG_CONFIG,
+              [BOOL_FLAG_KEY]: {
+                ...FLAG_CONFIG[BOOL_FLAG_KEY],
+                // Change the default variant to trigger a rerender since not only do we check flagsChanged, but we also diff the value
+                defaultVariant: 'off',
+              },
+              // if the flagsChanged is falsy, we don't know what flags changed - so we attempt to diff everything
             },
-             // if the flagsChanged is falsy, we don't know what flags changed - so we attempt to diff everything
-          }, ClientProviderEvents.ConfigurationChanged, { flagsChanged: undefined });
-
+            ClientProviderEvents.ConfigurationChanged,
+            { flagsChanged: undefined },
+          );
         });
 
         expect(screen.queryByTestId('render-count')).toHaveTextContent('2');
@@ -573,9 +577,40 @@ describe('evaluation', () => {
       },
     };
 
+    afterEach(() => {
+      OpenFeature.clearProviders();
+    });
+
     const suspendingProvider = () => {
       return new TestingProvider(CONFIG, DELAY); // delay init by 100ms
     };
+
+    describe('when using the noop provider', () => {
+      function TestComponent() {
+        const { value } = useSuspenseFlag(SUSPENSE_FLAG_KEY, DEFAULT);
+        return (
+          <>
+            <div>{value}</div>
+          </>
+        );
+      }
+      it('should fallback to the default value on the next rerender', async () => {
+        render(
+          <OpenFeatureProvider>
+            <React.Suspense fallback={<div>{FALLBACK}</div>}>
+              <TestComponent></TestComponent>
+            </React.Suspense>
+          </OpenFeatureProvider>,
+        );
+        // The loading indicator should be shown on the first render
+        expect(screen.queryByText(FALLBACK)).toBeInTheDocument();
+
+        // The default value should be shown on the next render
+        await waitFor(() => expect(screen.queryByText(DEFAULT)).toBeInTheDocument(), {
+          timeout: DELAY,
+        });
+      });
+    });
 
     describe('updateOnConfigurationChanged=true (default)', () => {
       function TestComponent() {
