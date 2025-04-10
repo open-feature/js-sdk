@@ -151,7 +151,7 @@ If the flag management system you're using supports targeting, you can provide t
 </code><button type="button">Copy</button></pre>
 
 <p>Context is global and setting it is <code>async</code>.
-Providers may implement an <code>onContextChanged</code> method that receives the old and newer contexts.
+Providers may implement an <code>onContextChange</code> method that receives the old and newer contexts.
 Given a context change, providers can use this method internally to detect if the flag values cached on the client are still valid.
 If needed, a request will be made to the provider with the new context in order to get the correct flag values.</p>
 <a id="md:hooks" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Hooks<a href="#md:hooks" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3><p><a href="https://openfeature.dev/docs/reference/concepts/hooks" target="_blank" class="external">Hooks</a> allow for custom logic to be added at well-defined points of the flag evaluation life-cycle.
@@ -281,6 +281,7 @@ When developing such libraries, it's NOT necessary to add a <code>peerDependency
 <a href="../types/_openfeature_web_sdk.EventDetails.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-2097152"></use></svg><span>Event<wbr/>Details</span></a>
 <a href="../types/_openfeature_web_sdk.EventHandler.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-2097152"></use></svg><span>Event<wbr/>Handler</span></a>
 <a href="../types/_openfeature_web_sdk.EventMetadata.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-2097152"></use></svg><span>Event<wbr/>Metadata</span></a>
+<a href="../types/_openfeature_web_sdk.EventOptions.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-2097152"></use></svg><span>Event<wbr/>Options</span></a>
 <a href="../types/_openfeature_web_sdk.FlagMetadata.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-2097152"></use></svg><span>Flag<wbr/>Metadata</span></a>
 <a href="../types/_openfeature_web_sdk.FlagValue.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-2097152"></use></svg><span>Flag<wbr/>Value</span></a>
 <a href="../types/_openfeature_web_sdk.FlagValueType.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-2097152"></use></svg><span>Flag<wbr/>Value<wbr/>Type</span></a>
