@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [0.0.11](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.10...angular-sdk-v0.0.11) (2025-04-11)
+
+
+### ✨ New Features
+
+* **angular:** add option for initial context injection ([aafdb43](https://github.com/open-feature/js-sdk/commit/aafdb4382f113f96a649f5fc0cecadb4178ada67))
+  
+
 ## [0.0.10](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.9-experimental...angular-sdk-v0.0.10) (2025-02-13)
 
 
