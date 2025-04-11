@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.3](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.2.2...nestjs-sdk-v0.2.3) (2025-04-11)
+
+
+### 🧹 Chore
+
+* update sdk peer ([#1142](https://github.com/open-feature/js-sdk/issues/1142)) ([8bb6206](https://github.com/open-feature/js-sdk/commit/8bb620601e2b8dc7b62d717169b585bd1c886996))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/server-sdk bumped from * to 1.18.0
+
 ## [0.2.2](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.2.1-experimental...nestjs-sdk-v0.2.2) (2024-10-29)
 
 
