@@ -9,12 +9,6 @@
 * **angular:** add docs for setting evaluation context in angular ([#1170](https://github.com/open-feature/js-sdk/issues/1170)) ([24f1b23](https://github.com/open-feature/js-sdk/commit/24f1b230bf1d57971a336ac21b9ee46e8baf0cab))
 
 
-### Dependencies
-
-* The following workspace dependencies were updated
-  * devDependencies
-    * @openfeature/web-sdk bumped from * to 1.5.0
-
 ## [0.0.11](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.10...angular-sdk-v0.0.11) (2025-04-11)
 
 
