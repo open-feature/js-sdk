@@ -7,13 +7,7 @@
 ### ✨ New Features
 
 * **angular:** add option for initial context injection ([aafdb43](https://github.com/open-feature/js-sdk/commit/aafdb4382f113f96a649f5fc0cecadb4178ada67))
-
-
-### Dependencies
-
-* The following workspace dependencies were updated
-  * devDependencies
-    * @openfeature/web-sdk bumped from * to 1.5.0
+  
 
 ## [0.0.10](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.9-experimental...angular-sdk-v0.0.10) (2025-02-13)
 
