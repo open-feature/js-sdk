@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.18.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.17.1...server-sdk-v1.18.0) (2025-04-11)
+
+
+### ✨ New Features
+
+* add a top-level method for accessing providers ([#1152](https://github.com/open-feature/js-sdk/issues/1152)) ([ae8fce8](https://github.com/open-feature/js-sdk/commit/ae8fce87530005ed20f7e68dc696ce67053fca31))
+* add support for abort controllers to event handlers ([#1151](https://github.com/open-feature/js-sdk/issues/1151)) ([6a22483](https://github.com/open-feature/js-sdk/commit/6a224830fa4e62fc30a7802536f6f6fc3f772038))
+
 ## [1.17.1](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.17.0...server-sdk-v1.17.1) (2025-02-07)
 
 
