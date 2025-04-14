@@ -157,7 +157,7 @@ This parameter is optional, if omitted, the `thenTemplate` will always be render
 The `domain` parameter is _optional_ and will be used as domain when getting the OpenFeature provider.
 
 The `updateOnConfigurationChanged` and `updateOnContextChanged` parameter are _optional_ and used to disable the
-automatic re-rendering on flag value or contex change. They are set to `true` by default.
+automatic re-rendering on flag value or context change. They are set to `true` by default.
 
 The template referenced in `else` will be rendered if the evaluated feature flag is `false` for the `booleanFeatureFlag`
 directive and if the `value` does not match evaluated flag value for all other directives.
