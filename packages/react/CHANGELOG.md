@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.0](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.11...react-sdk-v1.0.0) (2025-04-14)
+
+
+### ✨ New Features
+
+* add polyfill for react use hook ([#1157](https://github.com/open-feature/js-sdk/issues/1157)) ([5afe61f](https://github.com/open-feature/js-sdk/commit/5afe61f9e351b037b04c93a1d81aee8016756748))
+* add support for abort controllers to event handlers ([#1151](https://github.com/open-feature/js-sdk/issues/1151)) ([6a22483](https://github.com/open-feature/js-sdk/commit/6a224830fa4e62fc30a7802536f6f6fc3f772038))
+
 ## [0.4.11](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.10...react-sdk-v0.4.11) (2025-02-07)
 
 
