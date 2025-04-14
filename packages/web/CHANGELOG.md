@@ -1,6 +1,19 @@
 # Changelog
 
 
+## [1.5.0](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.4.1...web-sdk-v1.5.0) (2025-04-11)
+
+
+### ✨ New Features
+
+* add a top-level method for accessing providers ([#1152](https://github.com/open-feature/js-sdk/issues/1152)) ([ae8fce8](https://github.com/open-feature/js-sdk/commit/ae8fce87530005ed20f7e68dc696ce67053fca31))
+* add support for abort controllers to event handlers ([#1151](https://github.com/open-feature/js-sdk/issues/1151)) ([6a22483](https://github.com/open-feature/js-sdk/commit/6a224830fa4e62fc30a7802536f6f6fc3f772038))
+
+
+### 🐛 Bug Fixes
+
+* Typo in name of the function ([2c5b37c](https://github.com/open-feature/js-sdk/commit/2c5b37c79d72d60864c27b9e67d96e99ef4ae241))
+
 ## [1.4.1](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.4.0...web-sdk-v1.4.1) (2025-02-07)
 
 
