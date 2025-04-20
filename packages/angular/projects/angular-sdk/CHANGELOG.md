@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.0.13](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.12...angular-sdk-v0.0.13) (2025-04-20)
+
+
+### 📚 Documentation
+
+* fix readme typo ([#1174](https://github.com/open-feature/js-sdk/issues/1174)) ([21a32ec](https://github.com/open-feature/js-sdk/commit/21a32ec92ecde9ec43c9d72b5921035af13448d1))
+
 ## [0.0.12](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.11...angular-sdk-v0.0.12) (2025-04-11)
 
 
