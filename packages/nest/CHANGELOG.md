@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.4](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.2.3...nestjs-sdk-v0.2.4) (2025-04-20)
+
+
+### 🧹 Chore
+
+* **nest:** allow nestjs version 11 ([#1176](https://github.com/open-feature/js-sdk/issues/1176)) ([42a3b39](https://github.com/open-feature/js-sdk/commit/42a3b39c2488002f249b37ce86794ef2f77eb31c))
+
 ## [0.2.3](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.2.2...nestjs-sdk-v0.2.3) (2025-04-11)
 
 
