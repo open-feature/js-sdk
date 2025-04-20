@@ -46,16 +46,16 @@
   },
   "homepage": "https://github.com/open-feature/js-sdk#readme",
   "peerDependencies": {
-    "@nestjs/common": "^8.0.0 || ^9.0.0 || ^10.0.0",
-    "@nestjs/core": "^8.0.0 || ^9.0.0 || ^10.0.0",
+    "@nestjs/common": "^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0",
+    "@nestjs/core": "^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0",
     "rxjs": "^6.0.0 || ^7.0.0 || 8.0.0",
     "@openfeature/server-sdk": "^1.17.1"
   },
   "devDependencies": {
-    "@nestjs/common": "^10.3.6",
-    "@nestjs/core": "^10.3.6",
-    "@nestjs/platform-express": "^10.3.6",
-    "@nestjs/testing": "^10.3.6",
+    "@nestjs/common": "^11.0.20",
+    "@nestjs/core": "^11.0.20",
+    "@nestjs/platform-express": "^11.0.20",
+    "@nestjs/testing": "^11.0.20",
     "@openfeature/core": "*",
     "@openfeature/server-sdk": "1.18.0",
     "@types/supertest": "^6.0.0",
