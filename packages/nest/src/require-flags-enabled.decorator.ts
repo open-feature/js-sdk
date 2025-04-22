@@ -2,6 +2,7 @@ import type { CallHandler, ExecutionContext, HttpException, NestInterceptor } fr
 import { applyDecorators, mixin, NotFoundException, UseInterceptors } from '@nestjs/common';
 import { getClientForEvaluation } from './utils';
 import type { EvaluationContext } from '@openfeature/server-sdk';
+import type { ContextFactory } from './context-factory';
 
 type RequiredFlag = {
   flagKey: string;
@@ -37,6 +38,13 @@ interface RequireFlagsEnabledProps {
    * @see {@link OpenFeature#setContext}
    */
   context?: EvaluationContext;
+
+  /**
+   * A factory function for creating an OpenFeature {@link EvaluationContext} from Nest {@link ExecutionContext}.
+   * For example, this can be used to get header info from an HTTP request or information from a gRPC call to be used in the {@link EvaluationContext}.
+   * @see {@link ContextFactory}
+   */
+  contextFactory?: ContextFactory;
 }
 
 /**
@@ -56,6 +64,11 @@ interface RequireFlagsEnabledProps {
  *   context: {                             // Optional, defaults to the global OpenFeature Context
  *     targetingKey: 'user-id',
  *   },
+ *   contextFactory: (context: ExecutionContext) => {  // Optional, defaults to the global OpenFeature Context. Takes precedence over the context option.
+ *     return {
+ *       targetingKey: context.switchToHttp().getRequest().headers['x-user-id'],
+ *     };
+ *   },
  * })
  * @Get('/')
  * public async handleGetRequest()
@@ -72,7 +85,8 @@ const FlagsEnabledInterceptor = (props: RequireFlagsEnabledProps) => {
 
     async intercept(context: ExecutionContext, next: CallHandler) {
       const req = context.switchToHttp().getRequest();
-      const client = getClientForEvaluation(props.domain, props.context);
+      const evaluationContext = props.contextFactory ? await props.contextFactory(context) : props.context;
+      const client = getClientForEvaluation(props.domain, evaluationContext);
 
       for (const flag of props.flags) {
         const endpointAccessible = await client.getBooleanValue(flag.flagKey, flag.defaultValue ?? false);
