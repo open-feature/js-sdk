@@ -75,7 +75,11 @@ yarn add @openfeature/web-sdk @openfeature/core
 import { OpenFeature } from '@openfeature/web-sdk';
 
 // Register your feature flag provider
-await OpenFeature.setProviderAndWait(new YourProviderOfChoice());
+try {
+  await OpenFeature.setProviderAndWait(new YourProviderOfChoice());
+} catch (error) {
+  console.error('Failed to initialize provider:', error);
+}
 
 // create a new client
 const client = OpenFeature.getClient();
@@ -121,7 +125,11 @@ Once you've added a provider as a dependency, it can be registered with OpenFeat
 To register a provider and ensure it is ready before further actions are taken, you can use the `setProviderAndWait` method as shown below:
 
 ```ts
-await OpenFeature.setProviderAndWait(new MyProvider());
+try {
+  await OpenFeature.setProviderAndWait(new MyProvider());
+} catch (error) {
+  console.error('Failed to initialize provider:', error);
+}
 ```
 
 #### Synchronous
