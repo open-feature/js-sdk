@@ -72,10 +72,10 @@ yarn add @openfeature/nestjs-sdk @openfeature/server-sdk @openfeature/core
 
 The following list contains the peer dependencies of `@openfeature/nestjs-sdk` with its expected and compatible versions:
 
-* `@openfeature/server-sdk`: >=1.7.5
-* `@nestjs/common`: ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0
-* `@nestjs/core`: ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0
-* `rxjs`: ^6.0.0 || ^7.0.0 || ^8.0.0
+- `@openfeature/server-sdk`: >=1.7.5
+- `@nestjs/common`: ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0
+- `@nestjs/core`: ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0
+- `rxjs`: ^6.0.0 || ^7.0.0 || ^8.0.0
 
 The minimum required version of `@openfeature/server-sdk` currently is `1.7.5`.
 
@@ -148,6 +148,24 @@ export class OpenFeatureTestService {
 
   public async getBoolean() {
     return await this.defaultClient.getBooleanValue('testBooleanFlag', false);
+  }
+}
+```
+
+#### Managing Controller or Route Access via Feature Flags
+
+The `RequireFlagsEnabled` decorator can be used to manage access to a controller or route based on the enabled state of a feature flag. The decorator will throw an exception if the required feature flag(s) are not enabled.
+
+```ts
+import { Controller, Get } from '@nestjs/common';
+import { RequireFlagsEnabled } from '@openfeature/nestjs-sdk';
+
+@Controller()
+export class OpenFeatureController {
+  @RequireFlagsEnabled({ flags: [{ flagKey: 'testBooleanFlag' }] })
+  @Get('/welcome')
+  public async welcome() {
+    return 'Welcome to this OpenFeature-enabled NestJS app!';
   }
 }
 ```

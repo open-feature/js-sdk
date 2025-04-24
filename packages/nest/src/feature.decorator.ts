@@ -1,16 +1,10 @@
 import { createParamDecorator, Inject } from '@nestjs/common';
-import type {
-  EvaluationContext,
-  EvaluationDetails,
-  FlagValue,
-  JsonValue} from '@openfeature/server-sdk';
-import {
-  OpenFeature,
-  Client,
-} from '@openfeature/server-sdk';
+import type { EvaluationContext, EvaluationDetails, FlagValue, JsonValue } from '@openfeature/server-sdk';
+import { Client } from '@openfeature/server-sdk';
 import { getOpenFeatureClientToken } from './open-feature.module';
 import type { Observable } from 'rxjs';
 import { from } from 'rxjs';
+import { getClientForEvaluation } from './utils';
 
 /**
  * Options for injecting an OpenFeature client into a constructor.
@@ -54,16 +48,6 @@ interface FeatureProps<T extends FlagValue> {
    * @see {@link OpenFeature#getClient}
    */
   context?: EvaluationContext;
-}
-
-/**
- * Returns a domain scoped or the default OpenFeature client with the given context.
- * @param {string} domain The domain of the OpenFeature client.
- * @param {EvaluationContext} context The evaluation context of the client.
- * @returns {Client} The OpenFeature client.
- */
-function getClientForEvaluation(domain?: string, context?: EvaluationContext) {
-  return domain ? OpenFeature.getClient(domain, context) : OpenFeature.getClient(context);
 }
 
 /**
