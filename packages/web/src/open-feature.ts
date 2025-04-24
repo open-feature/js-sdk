@@ -77,7 +77,7 @@ export class OpenFeatureAPI
    * Setting a provider supersedes the current provider used in new and existing unbound clients.
    * @param {Provider} provider The provider responsible for flag evaluations.
    * @returns {Promise<void>}
-   * @throws Uncaught exceptions thrown by the provider during initialization.
+   * @throws {Error} If the provider throws an exception during initialization.
    */
   setProviderAndWait(provider: Provider): Promise<void>;
   /**
@@ -87,7 +87,7 @@ export class OpenFeatureAPI
    * @param {Provider} provider The provider responsible for flag evaluations.
    * @param {EvaluationContext} context The evaluation context to use for flag evaluations.
    * @returns {Promise<void>}
-   * @throws Uncaught exceptions thrown by the provider during initialization.
+   * @throws {Error} If the provider throws an exception during initialization.
    */
   setProviderAndWait(provider: Provider, context: EvaluationContext): Promise<void>;
   /**
@@ -97,7 +97,7 @@ export class OpenFeatureAPI
    * @param {string} domain The name to identify the client
    * @param {Provider} provider The provider responsible for flag evaluations.
    * @returns {Promise<void>}
-   * @throws Uncaught exceptions thrown by the provider during initialization.
+   * @throws {Error} If the provider throws an exception during initialization.
    */
   setProviderAndWait(domain: string, provider: Provider): Promise<void>;
   /**
@@ -108,7 +108,7 @@ export class OpenFeatureAPI
    * @param {Provider} provider The provider responsible for flag evaluations.
    * @param {EvaluationContext} context The evaluation context to use for flag evaluations.
    * @returns {Promise<void>}
-   * @throws Uncaught exceptions thrown by the provider during initialization.
+   * @throws {Error} If the provider throws an exception during initialization.
    */
   setProviderAndWait(domain: string, provider: Provider, context: EvaluationContext): Promise<void>;
   async setProviderAndWait(

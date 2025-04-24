@@ -75,7 +75,11 @@ yarn add @openfeature/server-sdk @openfeature/core
 import { OpenFeature } from '@openfeature/server-sdk';
 
 // Register your feature flag provider
-await OpenFeature.setProviderAndWait(new YourProviderOfChoice());
+try {
+  await OpenFeature.setProviderAndWait(new YourProviderOfChoice());
+} catch (error) {
+  console.error('Failed to initialize provider:', error);
+}
 
 // create a new client
 const client = OpenFeature.getClient();
