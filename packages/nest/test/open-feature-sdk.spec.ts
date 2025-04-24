@@ -2,7 +2,12 @@ import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
 import type { INestApplication } from '@nestjs/common';
 import supertest from 'supertest';
-import { OpenFeatureController, OpenFeatureControllerContextScopedController, OpenFeatureTestService } from './test-app';
+import {
+  OpenFeatureController,
+  OpenFeatureContextScopedController,
+  OpenFeatureRequireFlagsEnabledController,
+  OpenFeatureTestService,
+} from './test-app';
 import { exampleContextFactory, getOpenFeatureDefaultTestModule } from './fixtures';
 import { OpenFeatureModule } from '../src';
 import { defaultProvider, providers } from './fixtures';
@@ -14,11 +19,9 @@ describe('OpenFeature SDK', () => {
 
     beforeAll(async () => {
       moduleRef = await Test.createTestingModule({
-        imports: [
-          getOpenFeatureDefaultTestModule()
-        ],
+        imports: [getOpenFeatureDefaultTestModule()],
         providers: [OpenFeatureTestService],
-        controllers: [OpenFeatureController],
+        controllers: [OpenFeatureController, OpenFeatureRequireFlagsEnabledController],
       }).compile();
       app = moduleRef.createNestApplication();
       app = await app.init();
@@ -112,7 +115,7 @@ describe('OpenFeature SDK', () => {
     });
 
     describe('evaluation context service should', () => {
-      it('inject the evaluation context from contex factory', async function() {
+      it('inject the evaluation context from contex factory', async function () {
         const evaluationSpy = jest.spyOn(defaultProvider, 'resolveBooleanEvaluation');
         await supertest(app.getHttpServer())
           .get('/dynamic-context-in-service')
@@ -122,26 +125,77 @@ describe('OpenFeature SDK', () => {
         expect(evaluationSpy).toHaveBeenCalledWith('testBooleanFlag', false, { targetingKey: 'dynamic-user' }, {});
       });
     });
+
+    describe('require flags enabled decorator', () => {
+      describe('OpenFeatureController', () => {
+        it('should sucessfully return the response if the flag is enabled', async () => {
+          await supertest(app.getHttpServer()).get('/flags-enabled').expect(200).expect('Get Boolean Flag Success!');
+        });
+
+        it('should throw an exception if the flag is disabled', async () => {
+          jest.spyOn(defaultProvider, 'resolveBooleanEvaluation').mockResolvedValueOnce({
+            value: false,
+            reason: 'DISABLED',
+          });
+          await supertest(app.getHttpServer()).get('/flags-enabled').expect(404);
+        });
+
+        it('should throw a custom exception if the flag is disabled', async () => {
+          jest.spyOn(defaultProvider, 'resolveBooleanEvaluation').mockResolvedValueOnce({
+            value: false,
+            reason: 'DISABLED',
+          });
+          await supertest(app.getHttpServer()).get('/flags-enabled-custom-exception').expect(403);
+        });
+
+        it('should throw a custom exception if the flag is disabled with context', async () => {
+          await supertest(app.getHttpServer())
+            .get('/flags-enabled-custom-exception-with-context')
+            .set('x-user-id', '123')
+            .expect(403);
+        });
+      });
+
+      describe('OpenFeatureControllerRequireFlagsEnabled', () => {
+        it('should allow access to the RequireFlagsEnabled controller with global context interceptor', async () => {
+          await supertest(app.getHttpServer())
+            .get('/require-flags-enabled')
+            .set('x-user-id', '123')
+            .expect(200)
+            .expect('Hello, world!');
+        });
+
+        it('should throw a 403 - Forbidden exception if user does not match targeting requirements', async () => {
+          await supertest(app.getHttpServer()).get('/require-flags-enabled').set('x-user-id', 'not-123').expect(403);
+        });
+
+        it('should throw a 403 - Forbidden exception if one of the flags is disabled', async () => {
+          jest.spyOn(defaultProvider, 'resolveBooleanEvaluation').mockResolvedValueOnce({
+            value: false,
+            reason: 'DISABLED',
+          });
+          await supertest(app.getHttpServer()).get('/require-flags-enabled').set('x-user-id', '123').expect(403);
+        });
+      });
+    });
   });
 
   describe('Without global context interceptor', () => {
-
     let moduleRef: TestingModule;
     let app: INestApplication;
 
     beforeAll(async () => {
-
       moduleRef = await Test.createTestingModule({
         imports: [
           OpenFeatureModule.forRoot({
             contextFactory: exampleContextFactory,
             defaultProvider,
             providers,
-            useGlobalInterceptor: false
+            useGlobalInterceptor: false,
           }),
         ],
         providers: [OpenFeatureTestService],
-        controllers: [OpenFeatureController, OpenFeatureControllerContextScopedController],
+        controllers: [OpenFeatureController, OpenFeatureContextScopedController],
       }).compile();
       app = moduleRef.createNestApplication();
       app = await app.init();
@@ -158,7 +212,7 @@ describe('OpenFeature SDK', () => {
     });
 
     describe('evaluation context service should', () => {
-      it('inject empty context if no context interceptor is configured', async function() {
+      it('inject empty context if no context interceptor is configured', async function () {
         const evaluationSpy = jest.spyOn(defaultProvider, 'resolveBooleanEvaluation');
         await supertest(app.getHttpServer())
           .get('/dynamic-context-in-service')
@@ -172,8 +226,25 @@ describe('OpenFeature SDK', () => {
     describe('With Controller bound Context interceptor', () => {
       it('should not use context if global context interceptor is not configured', async () => {
         const evaluationSpy = jest.spyOn(defaultProvider, 'resolveBooleanEvaluation');
-        await supertest(app.getHttpServer()).get('/controller-context').set('x-user-id', '123').expect(200).expect('true');
+        await supertest(app.getHttpServer())
+          .get('/controller-context')
+          .set('x-user-id', '123')
+          .expect(200)
+          .expect('true');
         expect(evaluationSpy).toHaveBeenCalledWith('testBooleanFlag', false, { targetingKey: '123' }, {});
+      });
+    });
+
+    describe('require flags enabled decorator', () => {
+      it('should return a 404 - Not Found exception if the flag is disabled', async () => {
+        jest.spyOn(providers.domainScopedClient, 'resolveBooleanEvaluation').mockResolvedValueOnce({
+          value: false,
+          reason: 'DISABLED',
+        });
+        await supertest(app.getHttpServer())
+          .get('/controller-context/flags-enabled')
+          .set('x-user-id', '123')
+          .expect(404);
       });
     });
   });
