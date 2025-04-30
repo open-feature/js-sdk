@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.1](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.18.0...server-sdk-v1.18.1) (2025-04-30)
+
+
+### 📚 Documentation
+
+* Clarify the behavior of setProviderAndWait ([#1180](https://github.com/open-feature/js-sdk/issues/1180)) ([4fe8d87](https://github.com/open-feature/js-sdk/commit/4fe8d87a2e5df2cbd4086cc4f4a380e8857ed8ba))
+
 ## [1.18.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.17.1...server-sdk-v1.18.0) (2025-04-11)
 
 
