@@ -1,7 +1,7 @@
 import { createEvaluationEvent } from '../src/telemetry/evaluation-event';
 import { ErrorCode, StandardResolutionReasons, type EvaluationDetails } from '../src/evaluation/evaluation';
 import type { HookContext } from '../src/hooks/hooks';
-import { TelemetryAttribute, TelemetryFlagMetadata, TelemetryEvaluationData } from '../src/telemetry';
+import { TelemetryAttribute, TelemetryFlagMetadata } from '../src/telemetry';
 
 describe('evaluationEvent', () => {
   const flagKey = 'test-flag';
@@ -43,9 +43,7 @@ describe('evaluationEvent', () => {
       [TelemetryAttribute.PROVIDER]: 'test-provider',
       [TelemetryAttribute.REASON]: StandardResolutionReasons.STATIC.toLowerCase(),
       [TelemetryAttribute.CONTEXT_ID]: 'test-target',
-    });
-    expect(result.body).toEqual({
-      [TelemetryEvaluationData.VALUE]: true,
+      [TelemetryAttribute.VALUE]: true,
     });
   });
 
@@ -61,7 +59,7 @@ describe('evaluationEvent', () => {
     const result = createEvaluationEvent(mockHookContext, details);
 
     expect(result.attributes[TelemetryAttribute.VARIANT]).toBe('test-variant');
-    expect(result.attributes[TelemetryEvaluationData.VALUE]).toBeUndefined();
+    expect(result.attributes[TelemetryAttribute.VALUE]).toBeUndefined();
   });
 
   it('should include flag metadata when provided', () => {
