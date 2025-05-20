@@ -21,6 +21,14 @@ export const TelemetryAttribute = {
    */
   ERROR_CODE: 'error.type',
   /**
+   * A message explaining the nature of an error occurring during flag evaluation.
+   *
+   * - type: `string`
+   * - requirement level: `recommended`
+   * - example: `Flag not found`
+   */
+  ERROR_MESSAGE: 'error.message',
+  /**
    * A semantic identifier for an evaluated flag value.
    *
    * - type: `string`
@@ -28,7 +36,16 @@ export const TelemetryAttribute = {
    * - condition: variant is defined on the evaluation details
    * - example: `blue`; `on`; `true`
    */
-  VARIANT: 'feature_flag.variant',
+  VARIANT: 'feature_flag.result.variant',
+  /**
+   * The evaluated value of the feature flag.
+   *
+   * - type: `undefined`
+   * - requirement level: `conditionally required`
+   * - condition: variant is not defined on the evaluation details
+   * - example: `#ff0000`; `1`; `true`
+   */
+  VALUE: 'feature_flag.result.value',
   /**
    * The unique identifier for the flag evaluation context. For example, the targeting key.
    *
@@ -38,21 +55,13 @@ export const TelemetryAttribute = {
    */
   CONTEXT_ID: 'feature_flag.context.id',
   /**
-   * A message explaining the nature of an error occurring during flag evaluation.
-   *
-   * - type: `string`
-   * - requirement level: `recommended`
-   * - example: `Flag not found`
-   */
-  ERROR_MESSAGE: 'feature_flag.evaluation.error.message',
-  /**
    * The reason code which shows how a feature flag value was determined.
    *
    * - type: `string`
    * - requirement level: `recommended`
    * - example: `targeting_match`
    */
-  REASON: 'feature_flag.evaluation.reason',
+  REASON: 'feature_flag.result.reason',
   /**
    * Describes a class of error the operation ended with.
    *
@@ -60,7 +69,7 @@ export const TelemetryAttribute = {
    * - requirement level: `recommended`
    * - example: `flag_not_found`
    */
-  PROVIDER: 'feature_flag.provider_name',
+  PROVIDER: 'feature_flag.provider.name',
   /**
    * The identifier of the flag set to which the feature flag belongs.
    *
