@@ -9,12 +9,6 @@
 * **angular:** add license and url field to package.json ([b2784f5](https://github.com/open-feature/js-sdk/commit/b2784f53b85a11c58abb8e2a0f87a31890885c54))
 
 
-### Dependencies
-
-* The following workspace dependencies were updated
-  * devDependencies
-    * @openfeature/web-sdk bumped from * to 1.5.1
-
 ## [0.0.13](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.12...angular-sdk-v0.0.13) (2025-04-20)
 
 
