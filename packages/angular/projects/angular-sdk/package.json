@@ -6,6 +6,11 @@
     "type": "git",
     "url": "git+https://github.com/open-feature/js-sdk.git"
   },
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/open-feature/js-sdk/issues"
+  },
+  "homepage": "https://github.com/open-feature/js-sdk#readme",
   "scripts": {
     "current-published-version": "npm show $npm_package_name@$npm_package_version version",
     "current-version": "echo $npm_package_version",
