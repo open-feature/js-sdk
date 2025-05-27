@@ -9,12 +9,6 @@
 * **angular:** update docs ([#1200](https://github.com/open-feature/js-sdk/issues/1200)) ([b6ea588](https://github.com/open-feature/js-sdk/commit/b6ea5884f2ab9f4f94c8b258c4cf7268ea6dbeb8))
 
 
-### Dependencies
-
-* The following workspace dependencies were updated
-  * devDependencies
-    * @openfeature/web-sdk bumped from * to 1.5.1
-
 ## [0.0.14](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.13...angular-sdk-v0.0.14) (2025-05-25)
 
 
