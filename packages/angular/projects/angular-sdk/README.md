@@ -114,7 +114,7 @@ import { OpenFeatureModule } from '@openfeature/angular-sdk';
     CommonModule,
     OpenFeatureModule.forRoot({
       provider: yourFeatureProvider,
-      // domainBoundProviders are optional, mostly needed if more than one provider is needed
+      // domainBoundProviders are optional, mostly needed if more than one provider is used in the application.
       domainBoundProviders: {
         domain1: new YourOpenFeatureProvider(),
         domain2: new YourOtherOpenFeatureProvider(),
