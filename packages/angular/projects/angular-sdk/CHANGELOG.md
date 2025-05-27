@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [0.0.15](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.14...angular-sdk-v0.0.15) (2025-05-27)
+
+
+### 🐛 Bug Fixes
+
+* **angular:** update docs ([#1200](https://github.com/open-feature/js-sdk/issues/1200)) ([b6ea588](https://github.com/open-feature/js-sdk/commit/b6ea5884f2ab9f4f94c8b258c4cf7268ea6dbeb8))
+
+
 ## [0.0.14](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.13...angular-sdk-v0.0.14) (2025-05-25)
 
 
