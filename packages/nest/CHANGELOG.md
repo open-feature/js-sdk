@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.5](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.2.4...nestjs-sdk-v0.2.5) (2025-05-27)
+
+
+### ✨ New Features
+
+* adds RequireFlagsEnabled decorator ([#1159](https://github.com/open-feature/js-sdk/issues/1159)) ([59b8fe9](https://github.com/open-feature/js-sdk/commit/59b8fe904f053e4aa3d0c72631af34183ff54dc7))
+
+
 ## [0.2.4](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.2.3...nestjs-sdk-v0.2.4) (2025-04-20)
 
 
