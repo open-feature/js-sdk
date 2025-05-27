@@ -8,12 +8,6 @@
 * adds RequireFlagsEnabled decorator ([#1159](https://github.com/open-feature/js-sdk/issues/1159)) ([59b8fe9](https://github.com/open-feature/js-sdk/commit/59b8fe904f053e4aa3d0c72631af34183ff54dc7))
 
 
-### Dependencies
-
-* The following workspace dependencies were updated
-  * devDependencies
-    * @openfeature/server-sdk bumped from 1.18.0 to 1.18.1
-
 ## [0.2.4](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.2.3...nestjs-sdk-v0.2.4) (2025-04-20)
 
 
