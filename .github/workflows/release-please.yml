@@ -5,7 +5,6 @@ on:
 name: Run Release Please
 jobs:
   release-please:
-    environment: publish
     runs-on: ubuntu-latest
 
     # Release-please creates a PR that tracks all changes
@@ -55,6 +54,7 @@ jobs:
     needs: release-please
     runs-on: ubuntu-latest
     if: ${{ needs.release-please.outputs.release_created }}
+    environment: publish
     permissions:
       id-token: write
       contents: write
