@@ -2,6 +2,7 @@ import {
   ChangeDetectorRef,
   Directive,
   EmbeddedViewRef,
+  inject,
   Input,
   OnChanges,
   OnDestroy,
@@ -35,6 +36,13 @@ class FeatureFlagDirectiveContext<T extends FlagValue> {
   selector: '[featureFlag]',
 })
 export abstract class FeatureFlagDirective<T extends FlagValue> implements OnInit, OnDestroy, OnChanges {
+  protected _changeDetectorRef = inject(ChangeDetectorRef);
+  protected _viewContainerRef = inject(ViewContainerRef);
+
+  protected _thenTemplateRef: TemplateRef<FeatureFlagDirectiveContext<T>> | null =
+    inject<TemplateRef<FeatureFlagDirectiveContext<T>>>(TemplateRef);
+  protected _thenViewRef: EmbeddedViewRef<unknown> | null;
+
   protected _featureFlagDefault: T;
   protected _featureFlagDomain: string | undefined;
 
@@ -52,9 +60,6 @@ export abstract class FeatureFlagDirective<T extends FlagValue> implements OnIni
   protected _updateOnContextChanged: boolean = true;
   protected _updateOnConfigurationChanged: boolean = true;
 
-  protected _thenTemplateRef: TemplateRef<FeatureFlagDirectiveContext<T>> | null;
-  protected _thenViewRef: EmbeddedViewRef<unknown> | null;
-
   protected _elseTemplateRef: TemplateRef<FeatureFlagDirectiveContext<T>> | null;
   protected _elseViewRef: EmbeddedViewRef<unknown> | null;
 
@@ -64,13 +69,7 @@ export abstract class FeatureFlagDirective<T extends FlagValue> implements OnIni
   protected _reconcilingTemplateRef: TemplateRef<FeatureFlagDirectiveContext<T>> | null;
   protected _reconcilingViewRef: EmbeddedViewRef<unknown> | null;
 
-  protected constructor(
-    protected _changeDetectorRef: ChangeDetectorRef,
-    protected _viewContainerRef: ViewContainerRef,
-    templateRef: TemplateRef<FeatureFlagDirectiveContext<T>>,
-  ) {
-    this._thenTemplateRef = templateRef;
-  }
+  protected constructor() {}
 
   set featureFlagDomain(domain: string | undefined) {
     /**
@@ -242,14 +241,6 @@ export class BooleanFeatureFlagDirective extends FeatureFlagDirective<boolean> i
    */
   @Input({ required: true }) booleanFeatureFlagDefault: boolean;
 
-  constructor(
-    _changeDetectorRef: ChangeDetectorRef,
-    _viewContainerRef: ViewContainerRef,
-    templateRef: TemplateRef<FeatureFlagDirectiveContext<boolean>>,
-  ) {
-    super(_changeDetectorRef, _viewContainerRef, templateRef);
-  }
-
   override ngOnChanges() {
     this._featureFlagKey = this.booleanFeatureFlag;
     this._featureFlagDefault = this.booleanFeatureFlagDefault;
@@ -361,14 +352,6 @@ export class NumberFeatureFlagDirective extends FeatureFlagDirective<number> imp
    * The expected value of this number feature flag, for which the `then` template should be rendered.
    */
   @Input({ required: false }) numberFeatureFlagValue?: number;
-
-  constructor(
-    _changeDetectorRef: ChangeDetectorRef,
-    _viewContainerRef: ViewContainerRef,
-    templateRef: TemplateRef<FeatureFlagDirectiveContext<number>>,
-  ) {
-    super(_changeDetectorRef, _viewContainerRef, templateRef);
-  }
 
   override ngOnChanges() {
     this._featureFlagKey = this.numberFeatureFlag;
@@ -482,14 +465,6 @@ export class StringFeatureFlagDirective extends FeatureFlagDirective<string> imp
    */
   @Input({ required: false }) stringFeatureFlagValue?: string;
 
-  constructor(
-    _changeDetectorRef: ChangeDetectorRef,
-    _viewContainerRef: ViewContainerRef,
-    templateRef: TemplateRef<FeatureFlagDirectiveContext<string>>,
-  ) {
-    super(_changeDetectorRef, _viewContainerRef, templateRef);
-  }
-
   override ngOnChanges() {
     this._featureFlagKey = this.stringFeatureFlag;
     this._featureFlagDefault = this.stringFeatureFlagDefault;
@@ -601,14 +576,6 @@ export class ObjectFeatureFlagDirective<T extends JsonValue> extends FeatureFlag
    * The expected value of this object feature flag, for which the `then` template should be rendered.
    */
   @Input({ required: false }) objectFeatureFlagValue?: T;
-
-  constructor(
-    _changeDetectorRef: ChangeDetectorRef,
-    _viewContainerRef: ViewContainerRef,
-    templateRef: TemplateRef<FeatureFlagDirectiveContext<T>>,
-  ) {
-    super(_changeDetectorRef, _viewContainerRef, templateRef);
-  }
 
   override ngOnChanges() {
     this._featureFlagKey = this.objectFeatureFlag;
