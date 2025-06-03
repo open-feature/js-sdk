@@ -3,7 +3,7 @@ import type { JsonValue } from '../types/structure';
 export type FlagValueType = 'boolean' | 'string' | 'number' | 'object';
 
 /**
- * Represents a JSON node value, or Date.
+ * Represents a JSON node value.
  */
 export type FlagValue = boolean | string | number | JsonValue;
 

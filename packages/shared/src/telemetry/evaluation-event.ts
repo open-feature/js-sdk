@@ -1,14 +1,19 @@
 import { ErrorCode, StandardResolutionReasons, type EvaluationDetails, type FlagValue } from '../evaluation/evaluation';
 import type { HookContext } from '../hooks/hooks';
-import type { JsonValue } from '../types';
 import { TelemetryAttribute } from './attributes';
-import { TelemetryEvaluationData } from './evaluation-data';
 import { TelemetryFlagMetadata } from './flag-metadata';
 
 type EvaluationEvent = {
+  /**
+   * The name of the feature flag evaluation event.
+   */
   name: string;
-  attributes: Record<string, string | number | boolean>;
-  body: Record<string, JsonValue>;
+  /**
+   * The attributes of an OpenTelemetry compliant event for flag evaluation.
+   * @experimental The attributes are subject to change.
+   * @see https://opentelemetry.io/docs/specs/semconv/feature-flags/feature-flags-logs/
+   */
+  attributes: Record<string, string | number | boolean | FlagValue>;
 };
 
 const FLAG_EVALUATION_EVENT_NAME = 'feature_flag.evaluation';
@@ -28,12 +33,11 @@ export function createEvaluationEvent(
     [TelemetryAttribute.PROVIDER]: hookContext.providerMetadata.name,
     [TelemetryAttribute.REASON]: (evaluationDetails.reason ?? StandardResolutionReasons.UNKNOWN).toLowerCase(),
   };
-  const body: EvaluationEvent['body'] = {};
 
   if (evaluationDetails.variant) {
     attributes[TelemetryAttribute.VARIANT] = evaluationDetails.variant;
   } else {
-    body[TelemetryEvaluationData.VALUE] = evaluationDetails.value;
+    attributes[TelemetryAttribute.VALUE] = evaluationDetails.value;
   }
 
   const contextId =
@@ -62,6 +66,5 @@ export function createEvaluationEvent(
   return {
     name: FLAG_EVALUATION_EVENT_NAME,
     attributes,
-    body,
   };
 }
