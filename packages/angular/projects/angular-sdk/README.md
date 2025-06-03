@@ -16,8 +16,8 @@
     <img alt="Specification" src="https://img.shields.io/static/v1?label=specification&message=v0.8.0&color=yellow&style=for-the-badge" />
   </a>
   <!-- x-release-please-start-version -->
-  <a href="https://github.com/open-feature/js-sdk/releases/tag/angular-sdk-v0.0.13">
-    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v0.0.13&color=blue&style=for-the-badge" />
+  <a href="https://github.com/open-feature/js-sdk/releases/tag/angular-sdk-v0.0.15">
+    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v0.0.15&color=blue&style=for-the-badge" />
   </a>
   <!-- x-release-please-end -->
   <br/>
@@ -114,7 +114,7 @@ import { OpenFeatureModule } from '@openfeature/angular-sdk';
     CommonModule,
     OpenFeatureModule.forRoot({
       provider: yourFeatureProvider,
-      // domainBoundProviders are optional, mostly needed if more than one provider is needed
+      // domainBoundProviders are optional, mostly needed if more than one provider is used in the application.
       domainBoundProviders: {
         domain1: new YourOpenFeatureProvider(),
         domain2: new YourOtherOpenFeatureProvider(),
