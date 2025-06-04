@@ -194,12 +194,14 @@ export default {
       displayName: 'angular',
       testEnvironment: 'jsdom',
       preset: 'jest-preset-angular',
-      testMatch: ['<rootDir>/packages/angular/projects/angular-sdk/src/**/*.spec.{ts,tsx}'],
-      setupFilesAfterEnv: ['<rootDir>/packages/angular/setup-jest.ts'],
+      rootDir: '<rootDir>/packages/angular',
+      testMatch: ['<rootDir>/src/**/*.spec.{ts,tsx}'],
+      setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
       moduleNameMapper: {
         '@openfeature/core': '<rootDir>/packages/shared/src',
         '@openfeature/web-sdk': '<rootDir>/packages/web/src',
       },
+      moduleDirectories: ['<rootDir>/node_modules', '<rootDir>/../../node_modules'],
       transform: {
         '^.+\\.(ts|js|html|svg)$': [
           'jest-preset-angular',
@@ -209,7 +211,7 @@ export default {
           },
         ],
       },
-    }
+    },
   ],
 
   // Use this configuration option to add custom reporters to Jest
