@@ -1,16 +1,13 @@
 import { OpenFeatureAPI } from '../src/open-feature';
-import { Client } from '../src/client';
-import {
+import type { Client } from '../src/client';
+import type {
   JsonValue,
   ResolutionDetails,
-  StandardResolutionReasons,
   HookContext,
-  EvaluationDetails,
-  BeforeHookContext,
-  FlagValue,
-} from '@openfeature/core';
-import { Provider } from '../src/provider';
-import { Hook } from '../src/hooks';
+  BeforeHookContext} from '@openfeature/core';
+import { StandardResolutionReasons } from '@openfeature/core';
+import type { Provider } from '../src/provider';
+import type { Hook } from '../src/hooks';
 
 const BOOLEAN_VALUE = true;
 const STRING_VALUE = 'val';
@@ -173,7 +170,8 @@ describe('Hook Data (Web SDK)', () => {
     });
 
     it('should support storing different data types', () => {
-      let storedValues: any = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const storedValues: any = {};
 
       const hook: Hook = {
         before(hookContext: BeforeHookContext) {
@@ -227,7 +225,8 @@ describe('Hook Data (Web SDK)', () => {
 
   describe('Hook Data API', () => {
     it('should support has() method', () => {
-      let hasResults: any = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const hasResults: any = {};
 
       const hook: Hook = {
         before(hookContext: BeforeHookContext) {
@@ -252,7 +251,8 @@ describe('Hook Data (Web SDK)', () => {
     });
 
     it('should support delete() method', () => {
-      let deleteResults: any = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const deleteResults: any = {};
 
       const hook: Hook = {
         before(hookContext: BeforeHookContext) {
@@ -274,7 +274,8 @@ describe('Hook Data (Web SDK)', () => {
     });
 
     it('should support clear() method', () => {
-      let clearResults: any = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const clearResults: any = {};
 
       const hook: Hook = {
         before(hookContext: BeforeHookContext) {

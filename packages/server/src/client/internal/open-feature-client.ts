@@ -359,7 +359,7 @@ export class OpenFeatureClient implements Client {
       const hookContext = getHookContext(hook);
       
       // Update the context on the stable hook context object
-      (hookContext as any).context = accumulatedContext;
+      (hookContext as { context: EvaluationContext }).context = accumulatedContext;
 
       const hookResult = await hook?.before?.(hookContext, Object.freeze(options.hookHints));
       if (hookResult) {
@@ -373,7 +373,7 @@ export class OpenFeatureClient implements Client {
     // Update all hook contexts with the final accumulated context and freeze it
     for (const hook of hooks) {
       const hookContext = getHookContext(hook);
-      (hookContext as any).context = Object.freeze(accumulatedContext);
+      (hookContext as { context: EvaluationContext }).context = Object.freeze(accumulatedContext);
     }
 
     // after before hooks, freeze the EvaluationContext.

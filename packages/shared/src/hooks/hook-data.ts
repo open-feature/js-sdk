@@ -2,7 +2,6 @@
  * A mutable data structure for hooks to maintain state across their lifecycle.
  * Each hook instance gets its own isolated data store that persists for the 
  * duration of a single flag evaluation.
- * 
  * @template TData - A record type that defines the shape of the stored data
  */
 export interface HookData<TData = Record<string, unknown>> {

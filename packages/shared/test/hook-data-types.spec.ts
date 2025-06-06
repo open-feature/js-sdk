@@ -1,5 +1,6 @@
-import { DefaultHookData, HookData, BaseHook, BeforeHookContext, HookContext } from '../src/hooks';
-import { FlagValue } from '../src/evaluation';
+import type { HookData, BaseHook, BeforeHookContext, HookContext } from '../src/hooks';
+import { DefaultHookData } from '../src/hooks';
+import type { FlagValue } from '../src/evaluation';
 
 describe('Hook Data Type Safety', () => {
   it('should provide type safety with typed hook data', () => {
@@ -164,7 +165,7 @@ describe('Hook Data Type Safety', () => {
         hookContext.hookData.set('metadata', { version: '1.0.0' });
       }
 
-      after(hookContext: HookContext<FlagValue, TestHookData>, _evaluationDetails: any) {
+      after(hookContext: HookContext<FlagValue, TestHookData>) {
         // Type-safe getting with proper return types
         const testId: string | undefined = hookContext.hookData.get('testId');
         const startTime: number | undefined = hookContext.hookData.get('startTime');
@@ -203,7 +204,7 @@ describe('Hook Data Type Safety', () => {
 
     // Execute the hook methods
     hook.before!(mockBeforeContext);
-    hook.after!(mockAfterContext, { value: true, flagKey: 'test-flag' });
+    hook.after!(mockAfterContext);
 
     // Verify the typed hook worked correctly
     expect(hook.capturedData.testId).toBe('test-123');

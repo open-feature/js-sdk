@@ -1,17 +1,16 @@
 import { OpenFeature } from '../src';
-import { Client } from '../src/client';
-import {
+import type { Client } from '../src/client';
+import type {
   JsonValue,
   ResolutionDetails,
-  StandardResolutionReasons,
   HookContext,
-  EvaluationDetails,
   BeforeHookContext,
-  FlagValue,
-  HookData,
+  HookData} from '@openfeature/core';
+import {
+  StandardResolutionReasons
 } from '@openfeature/core';
-import { Provider } from '../src/provider';
-import { Hook } from '../src/hooks';
+import type { Provider } from '../src/provider';
+import type { Hook } from '../src/hooks';
 
 const BOOLEAN_VALUE = true;
 const STRING_VALUE = 'val';
@@ -33,17 +32,17 @@ class TestHookWithData implements Hook {
     this.beforeData = hookContext.hookData.get('testKey');
   }
 
-  async after(hookContext: HookContext, _evaluationDetails: EvaluationDetails<FlagValue>) {
+  async after(hookContext: HookContext) {
     // Retrieve data stored in before
     this.afterData = hookContext.hookData.get('testKey');
   }
 
-  async error(hookContext: HookContext, _error: unknown) {
+  async error(hookContext: HookContext) {
     // Retrieve data stored in before
     this.errorData = hookContext.hookData.get('testKey');
   }
 
-  async finally(hookContext: HookContext, _evaluationDetails: EvaluationDetails<FlagValue>) {
+  async finally(hookContext: HookContext) {
     // Retrieve data stored in before
     this.finallyData = hookContext.hookData.get('testKey');
   }
@@ -225,7 +224,8 @@ describe('Hook Data', () => {
     });
 
     it('should support storing different data types', async () => {
-      let storedValues: any = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const storedValues: any = {};
 
       const hook: Hook = {
         async before(hookContext: BeforeHookContext) {
@@ -279,7 +279,8 @@ describe('Hook Data', () => {
 
   describe('Hook Data API', () => {
     it('should support has() method', async () => {
-      let hasResults: any = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const hasResults: any = {};
 
       const hook: Hook = {
         async before(hookContext: BeforeHookContext) {
@@ -304,7 +305,8 @@ describe('Hook Data', () => {
     });
 
     it('should support delete() method', async () => {
-      let deleteResults: any = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const deleteResults: any = {};
 
       const hook: Hook = {
         async before(hookContext: BeforeHookContext) {
@@ -326,7 +328,8 @@ describe('Hook Data', () => {
     });
 
     it('should support clear() method', async () => {
-      let clearResults: any = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const clearResults: any = {};
 
       const hook: Hook = {
         async before(hookContext: BeforeHookContext) {
