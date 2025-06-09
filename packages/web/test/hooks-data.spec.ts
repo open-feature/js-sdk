@@ -1,10 +1,6 @@
 import { OpenFeatureAPI } from '../src/open-feature';
 import type { Client } from '../src/client';
-import type {
-  JsonValue,
-  ResolutionDetails,
-  HookContext,
-  BeforeHookContext} from '@openfeature/core';
+import type { JsonValue, ResolutionDetails, HookContext, BeforeHookContext } from '@openfeature/core';
 import { StandardResolutionReasons } from '@openfeature/core';
 import type { Provider } from '../src/provider';
 import type { Hook } from '../src/hooks';
@@ -71,12 +67,17 @@ class TimingHook implements Hook {
 // Hook that tests hook data isolation
 class IsolationTestHook implements Hook {
   hookId: string;
-  
+
   constructor(id: string) {
     this.hookId = id;
   }
 
   before(hookContext: BeforeHookContext) {
+    const storedId = hookContext.hookData.get('hookId');
+    if (storedId) {
+      throw new Error('Hook data isolation violated! Data is set in before hook.');
+    }
+
     // Each hook instance should have its own data
     hookContext.hookData.set('hookId', this.hookId);
     hookContext.hookData.set(`data_${this.hookId}`, `value_${this.hookId}`);
@@ -104,7 +105,7 @@ const MOCK_PROVIDER: Provider = {
   resolveStringEvaluation(): ResolutionDetails<string> {
     return {
       value: STRING_VALUE,
-      variant: 'default', 
+      variant: 'default',
       reason: StandardResolutionReasons.DEFAULT,
     };
   },
@@ -314,8 +315,15 @@ describe('Hook Data (Web SDK)', () => {
 
       client.addHooks(hook1, hook2, hook3);
 
-      // This should not throw if isolation is working correctly
-      client.getBooleanValue('test-flag', false);
+      expect(client.getBooleanValue('test-flag', false)).toBe(true);
+    });
+
+    it('should isolate data between the same hook instance', () => {
+      const hook = new IsolationTestHook('hook');
+
+      client.addHooks(hook, hook);
+
+      expect(client.getBooleanValue('test-flag', false)).toBe(true);
     });
 
     it('should not share data between different evaluations', () => {
@@ -360,8 +368,7 @@ describe('Hook Data (Web SDK)', () => {
       api.addHooks(globalHook);
       client.addHooks(clientHook);
 
-      // This should not throw if isolation is working correctly
-      client.getBooleanValue('test-flag', false, { hooks: [invocationHook] });
+      expect(client.getBooleanValue('test-flag', false, { hooks: [invocationHook] })).toBe(true);
     });
   });
 
@@ -382,7 +389,7 @@ describe('Hook Data (Web SDK)', () => {
       const validationHook: Hook = {
         before(hookContext: BeforeHookContext) {
           hookContext.hookData.set('errors', []);
-          
+
           // Simulate validation
           const errors = hookContext.hookData.get('errors') as string[];
           if (!hookContext.context.userId) {
@@ -394,7 +401,7 @@ describe('Hook Data (Web SDK)', () => {
         },
 
         finally(hookContext: HookContext) {
-          finalErrors = hookContext.hookData.get('errors') as string[] || [];
+          finalErrors = (hookContext.hookData.get('errors') as string[]) || [];
         },
       };
 
