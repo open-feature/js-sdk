@@ -1,14 +1,19 @@
 import type { BeforeHookContext, HookContext, HookHints } from './hooks';
 import type { EvaluationDetails, FlagValue } from '../evaluation';
 
-export interface BaseHook<T extends FlagValue = FlagValue, BeforeHookReturn = unknown, HooksReturn = unknown> {
+export interface BaseHook<
+  T extends FlagValue = FlagValue, 
+  TData = Record<string, unknown>,
+  BeforeHookReturn = unknown, 
+  HooksReturn = unknown
+> {
   /**
    * Runs before flag values are resolved from the provider.
    * If an EvaluationContext is returned, it will be merged with the pre-existing EvaluationContext.
    * @param hookContext
    * @param hookHints
    */
-  before?(hookContext: BeforeHookContext, hookHints?: HookHints): BeforeHookReturn;
+  before?(hookContext: BeforeHookContext<T, TData>, hookHints?: HookHints): BeforeHookReturn;
 
   /**
    * Runs after flag values are successfully resolved from the provider.
@@ -17,7 +22,7 @@ export interface BaseHook<T extends FlagValue = FlagValue, BeforeHookReturn = un
    * @param hookHints
    */
   after?(
-    hookContext: Readonly<HookContext<T>>,
+    hookContext: Readonly<HookContext<T, TData>>,
     evaluationDetails: EvaluationDetails<T>,
     hookHints?: HookHints,
   ): HooksReturn;
@@ -28,7 +33,7 @@ export interface BaseHook<T extends FlagValue = FlagValue, BeforeHookReturn = un
    * @param error
    * @param hookHints
    */
-  error?(hookContext: Readonly<HookContext<T>>, error: unknown, hookHints?: HookHints): HooksReturn;
+  error?(hookContext: Readonly<HookContext<T, TData>>, error: unknown, hookHints?: HookHints): HooksReturn;
 
   /**
    * Runs after all other hook stages, regardless of success or error.
@@ -37,8 +42,9 @@ export interface BaseHook<T extends FlagValue = FlagValue, BeforeHookReturn = un
    * @param hookHints
    */
   finally?(
-    hookContext: Readonly<HookContext<T>>,
+    hookContext: Readonly<HookContext<T, TData>>,
     evaluationDetails: EvaluationDetails<T>,
     hookHints?: HookHints,
   ): HooksReturn;
 }
+
