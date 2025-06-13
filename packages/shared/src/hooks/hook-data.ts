@@ -48,29 +48,21 @@ export interface HookData<TData = Record<string, unknown>> {
  * @template TData - A record type that defines the shape of the stored data
  */
 export class DefaultHookData<TData = Record<string, unknown>> implements HookData<TData> {
-  private readonly data = new Map<string, unknown>();
+  private readonly data = new Map<keyof TData, TData[keyof TData]>();
 
-  set<K extends keyof TData>(key: K, value: TData[K]): void;
-  set(key: string, value: unknown): void;
-  set(key: string, value: unknown): void {
+  set<K extends keyof TData>(key: K, value: TData[K]): void {
     this.data.set(key, value);
   }
 
-  get<K extends keyof TData>(key: K): TData[K] | undefined;
-  get(key: string): unknown;
-  get(key: string): unknown {
-    return this.data.get(key);
+  get<K extends keyof TData>(key: K): TData[K] | undefined {
+    return this.data.get(key) as TData[K] | undefined;
   }
 
-  has<K extends keyof TData>(key: K): boolean;
-  has(key: string): boolean;
-  has(key: string): boolean {
+  has<K extends keyof TData>(key: K): boolean {
     return this.data.has(key);
   }
 
-  delete<K extends keyof TData>(key: K): boolean;
-  delete(key: string): boolean;
-  delete(key: string): boolean {
+  delete<K extends keyof TData>(key: K): boolean {
     return this.data.delete(key);
   }
 

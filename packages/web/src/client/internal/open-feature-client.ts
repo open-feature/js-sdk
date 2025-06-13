@@ -234,7 +234,8 @@ export class OpenFeatureClient implements Client {
 
     // Create hook context instances for each hook (stable object references for the entire evaluation)
     // This ensures hooks can use WeakMaps with hookContext as keys across lifecycle methods
-    const hookContexts = allHooks.map<HookContext>(() =>
+    // NOTE: Uses the reversed order to reduce the number of times we have to calculate the index.
+    const hookContexts = allHooksReversed.map<HookContext>(() =>
       Object.freeze({
         flagKey,
         defaultValue,
@@ -281,7 +282,8 @@ export class OpenFeatureClient implements Client {
 
   private beforeHooks(hooks: Hook[], hookContexts: HookContext[], options: FlagEvaluationOptions) {
     for (const [index, hook] of hooks.entries()) {
-      const hookContext = hookContexts[index];
+      const hookContextIndex = hooks.length - 1 - index; // reverse index for before hooks
+      const hookContext = hookContexts[hookContextIndex];
       Object.freeze(hookContext);
       Object.freeze(hookContext.context);
       hook?.before?.(hookContext, Object.freeze(options.hookHints));
@@ -296,8 +298,7 @@ export class OpenFeatureClient implements Client {
   ) {
     // run "after" hooks sequentially
     for (const [index, hook] of hooks.entries()) {
-      // Calculating index because after hooks run in reverse order
-      const hookContext = hookContexts[hooks.length - 1 - index];
+      const hookContext = hookContexts[index];
       hook?.after?.(hookContext, evaluationDetails, options.hookHints);
     }
   }
@@ -306,8 +307,7 @@ export class OpenFeatureClient implements Client {
     // run "error" hooks sequentially
     for (const [index, hook] of hooks.entries()) {
       try {
-        // Calculating index because error hooks run in reverse order
-        const hookContext = hookContexts[hooks.length - 1 - index];
+        const hookContext = hookContexts[index];
         hook?.error?.(hookContext, err, options.hookHints);
       } catch (err) {
         this._logger.error(`Unhandled error during 'error' hook: ${err}`);
@@ -328,8 +328,7 @@ export class OpenFeatureClient implements Client {
     // run "finally" hooks sequentially
     for (const [index, hook] of hooks.entries()) {
       try {
-        // Calculating index because finally hooks run in reverse order
-        const hookContext = hookContexts[hooks.length - 1 - index];
+        const hookContext = hookContexts[index];
         hook?.finally?.(hookContext, evaluationDetails, options.hookHints);
       } catch (err) {
         this._logger.error(`Unhandled error during 'finally' hook: ${err}`);
