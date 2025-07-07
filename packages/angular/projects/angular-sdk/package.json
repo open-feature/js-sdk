@@ -25,10 +25,10 @@
     "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "@openfeature/core": "*",
-    "@openfeature/web-sdk": "*",
-    "@angular/common": "^20.0.0",
-    "@angular/core": "^20.0.0"
+    "@openfeature/core": "^1.8.1",
+    "@openfeature/web-sdk": "^1.5.0",
+    "@angular/common": "^20.1.2",
+    "@angular/core": "^20.1.2"
   },
   "sideEffects": false,
   "keywords": [
