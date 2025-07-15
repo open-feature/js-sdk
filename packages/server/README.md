@@ -140,7 +140,85 @@ OpenFeature.setProvider(new MyProvider());
 Once the provider has been registered, the status can be tracked using [events](#eventing).
 
 In some situations, it may be beneficial to register multiple providers in the same application.
-This is possible using [domains](#domains), which is covered in more details below.
+This is possible using [domains](#domains), which is covered in more detail below.
+
+#### Multi-Provider
+
+The Multi-Provider allows you to use multiple underlying providers as sources of flag data for the OpenFeature server SDK. When a flag is being evaluated, the Multi-Provider will consult each underlying provider it is managing in order to determine the final result. Different evaluation strategies can be defined to control which providers get evaluated and which result is used.
+
+The Multi-Provider is a powerful tool for performing migrations between flag providers, or combining multiple providers into a single feature flagging interface. For example:
+
+- **Migration**: Gradually migrate from one provider to another by serving some flags from your old provider and some from your new provider
+- **Backup**: Use one provider as a backup for another in case of failures
+- **Comparison**: Compare results from multiple providers to validate consistency
+- **Hybrid**: Combine multiple providers to leverage different strengths (e.g., one for simple flags, another for complex targeting)
+
+```ts
+import { OpenFeature, MultiProvider, FirstMatchStrategy } from '@openfeature/server-sdk';
+
+// Create providers
+const primaryProvider = new YourPrimaryProvider();
+const backupProvider = new YourBackupProvider();
+
+// Create multi-provider with a strategy
+const multiProvider = new MultiProvider(
+  [primaryProvider, backupProvider],
+  new FirstMatchStrategy()
+);
+
+// Register the multi-provider
+await OpenFeature.setProviderAndWait(multiProvider);
+
+// Use as normal
+const client = OpenFeature.getClient();
+const value = await client.getBooleanValue('my-flag', false);
+```
+
+**Available Strategies:**
+
+- `FirstMatchStrategy`: Returns the first successful result from the list of providers
+- `ComparisonStrategy`: Compares results from multiple providers and can handle discrepancies
+
+**Migration Example:**
+
+```ts
+import { OpenFeature, MultiProvider, FirstMatchStrategy } from '@openfeature/server-sdk';
+
+// During migration, serve some flags from the new provider and fallback to the old one
+const newProvider = new NewFlagProvider();
+const oldProvider = new OldFlagProvider();
+
+const multiProvider = new MultiProvider(
+  [newProvider, oldProvider], // New provider is consulted first
+  new FirstMatchStrategy()
+);
+
+await OpenFeature.setProviderAndWait(multiProvider);
+```
+
+**Comparison Example:**
+
+```ts
+import { OpenFeature, MultiProvider, ComparisonStrategy } from '@openfeature/server-sdk';
+
+// Compare results from two providers for validation
+const providerA = new ProviderA();
+const providerB = new ProviderB();
+
+const comparisonStrategy = new ComparisonStrategy({
+  primary: 0, // Use first provider as primary
+  onMismatch: (flagKey, primaryResult, results) => {
+    console.warn(`Mismatch for ${flagKey}:`, primaryResult, results);
+  }
+});
+
+const multiProvider = new MultiProvider(
+  [providerA, providerB],
+  comparisonStrategy
+);
+
+await OpenFeature.setProviderAndWait(multiProvider);
+```
 
 ### Targeting
 
