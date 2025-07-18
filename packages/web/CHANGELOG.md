@@ -1,6 +1,25 @@
 # Changelog
 
 
+## [1.6.0](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.5.0...web-sdk-v1.6.0) (2025-07-18)
+
+
+### ✨ New Features
+
+* add evaluation-scoped hook data ([#1216](https://github.com/open-feature/js-sdk/issues/1216)) ([07af3a9](https://github.com/open-feature/js-sdk/commit/07af3a9eda895e9edb24c7ee1e3c1c4f16e17431))
+
+
+### 📚 Documentation
+
+* Clarify the behavior of setProviderAndWait ([#1180](https://github.com/open-feature/js-sdk/issues/1180)) ([4fe8d87](https://github.com/open-feature/js-sdk/commit/4fe8d87a2e5df2cbd4086cc4f4a380e8857ed8ba))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/core bumped from ^1.8.0 to ^1.9.0
+
 ## [1.5.0](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.4.1...web-sdk-v1.5.0) (2025-04-11)
 
 
