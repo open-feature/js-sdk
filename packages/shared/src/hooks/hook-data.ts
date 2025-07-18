@@ -1,6 +1,6 @@
 /**
  * A mutable data structure for hooks to maintain state across their lifecycle.
- * Each hook instance gets its own isolated data store that persists for the 
+ * Each hook instance gets its own isolated data store that persists for the
  * duration of a single flag evaluation.
  * @template TData - A record type that defines the shape of the stored data
  */
@@ -47,7 +47,7 @@ export interface HookData<TData = Record<string, unknown>> {
  * Default implementation of HookData using a Map.
  * @template TData - A record type that defines the shape of the stored data
  */
-export class DefaultHookData<TData = Record<string, unknown>> implements HookData<TData> {
+export class MapHookData<TData = Record<string, unknown>> implements HookData<TData> {
   private readonly data = new Map<keyof TData, TData[keyof TData]>();
 
   set<K extends keyof TData>(key: K, value: TData[K]): void {

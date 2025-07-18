@@ -22,7 +22,7 @@ import {
   StandardResolutionReasons,
   instantiateErrorByErrorCode,
   statusMatchesEvent,
-  DefaultHookData,
+  MapHookData,
 } from '@openfeature/core';
 import type { FlagEvaluationOptions } from '../../evaluation';
 import type { ProviderEvents } from '../../events';
@@ -244,7 +244,7 @@ export class OpenFeatureClient implements Client {
         providerMetadata: this._provider.metadata,
         context,
         logger: this._logger,
-        hookData: new DefaultHookData(),
+        hookData: new MapHookData(),
       }),
     );
 

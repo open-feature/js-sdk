@@ -1,5 +1,5 @@
 import type { HookData, BaseHook, BeforeHookContext, HookContext } from '../src/hooks';
-import { DefaultHookData } from '../src/hooks';
+import { MapHookData } from '../src/hooks';
 import type { FlagValue } from '../src/evaluation';
 
 describe('Hook Data Type Safety', () => {
@@ -12,7 +12,7 @@ describe('Hook Data Type Safety', () => {
       tags: string[];
     }
 
-    const hookData = new DefaultHookData<MyHookData>();
+    const hookData = new MapHookData<MyHookData>();
 
     // Type-safe setting and getting
     hookData.set('startTime', 123456);
@@ -44,7 +44,7 @@ describe('Hook Data Type Safety', () => {
   });
 
   it('should support untyped usage for backward compatibility', () => {
-    const hookData: HookData = new DefaultHookData();
+    const hookData: HookData = new MapHookData();
 
     // Untyped usage still works
     hookData.set('anyKey', 'anyValue');
@@ -66,7 +66,7 @@ describe('Hook Data Type Safety', () => {
       timestamp: number;
     }
 
-    const hookData: HookData<PartiallyTypedData> = new DefaultHookData<PartiallyTypedData>();
+    const hookData: HookData<PartiallyTypedData> = new MapHookData<PartiallyTypedData>();
 
     // Typed usage
     hookData.set('correlationId', 'abc-123');
@@ -106,12 +106,12 @@ describe('Hook Data Type Safety', () => {
       };
     }
 
-    const hookData: HookData<ComplexHookData> = new DefaultHookData<ComplexHookData>();
+    const hookData: HookData<ComplexHookData> = new MapHookData<ComplexHookData>();
 
     const requestData = {
       id: 'req-123',
       headers: { 'Content-Type': 'application/json' },
-      body: { flag: 'test-flag' }
+      body: { flag: 'test-flag' },
     };
 
     hookData.set('request', requestData);
@@ -128,7 +128,7 @@ describe('Hook Data Type Safety', () => {
   it('should support generic type inference', () => {
     // This function demonstrates how the generic types work in practice
     function createTypedHookData<T>(): HookData<T> {
-      return new DefaultHookData<T>();
+      return new MapHookData<T>();
     }
 
     interface TimingData {
@@ -137,7 +137,7 @@ describe('Hook Data Type Safety', () => {
     }
 
     const timingHookData = createTypedHookData<TimingData>();
-    
+
     timingHookData.set('start', performance.now());
     timingHookData.set('checkpoint', performance.now());
 
@@ -169,37 +169,37 @@ describe('Hook Data Type Safety', () => {
         // Type-safe getting with proper return types
         const testId: string | undefined = hookContext.hookData.get('testId');
         const startTime: number | undefined = hookContext.hookData.get('startTime');
-        
+
         if (testId && startTime) {
           this.capturedData = {
             testId,
-            duration: Date.now() - startTime
+            duration: Date.now() - startTime,
           };
         }
       }
     }
 
     const hook = new TestTypedHook();
-    
+
     // Create mock contexts that satisfy the BaseHook interface
     const mockBeforeContext: BeforeHookContext<FlagValue, TestHookData> = {
       flagKey: 'test-flag',
       defaultValue: true,
       flagValueType: 'boolean',
       context: {},
-      clientMetadata: { 
+      clientMetadata: {
         name: 'test-client',
         domain: 'test-domain',
-        providerMetadata: { name: 'test-provider' }
+        providerMetadata: { name: 'test-provider' },
       },
       providerMetadata: { name: 'test-provider' },
       logger: { debug: jest.fn(), info: jest.fn(), warn: jest.fn(), error: jest.fn() },
-      hookData: new DefaultHookData<TestHookData>()
+      hookData: new MapHookData<TestHookData>(),
     };
 
     const mockAfterContext: HookContext<FlagValue, TestHookData> = {
       ...mockBeforeContext,
-      context: Object.freeze({})
+      context: Object.freeze({}),
     };
 
     // Execute the hook methods

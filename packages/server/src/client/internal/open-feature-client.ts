@@ -22,7 +22,7 @@ import {
   StandardResolutionReasons,
   instantiateErrorByErrorCode,
   statusMatchesEvent,
-  DefaultHookData,
+  MapHookData,
 } from '@openfeature/core';
 import type { FlagEvaluationOptions } from '../../evaluation';
 import type { ProviderEvents } from '../../events';
@@ -289,15 +289,14 @@ export class OpenFeatureClient implements Client {
         providerMetadata: this._provider.metadata,
         context: mergedContext,
         logger: this._logger,
-        hookData: new DefaultHookData(),
+        hookData: new MapHookData(),
       }),
     );
 
     let evaluationDetails: EvaluationDetails<T>;
-    let frozenContext = mergedContext;
 
     try {
-      frozenContext = await this.beforeHooks(allHooks, hookContexts, mergedContext, options);
+      const frozenContext = await this.beforeHooks(allHooks, hookContexts, mergedContext, options);
 
       this.shortCircuitIfNotReady();
 
