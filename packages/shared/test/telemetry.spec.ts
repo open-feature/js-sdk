@@ -2,6 +2,7 @@ import { createEvaluationEvent } from '../src/telemetry/evaluation-event';
 import { ErrorCode, StandardResolutionReasons, type EvaluationDetails } from '../src/evaluation/evaluation';
 import type { HookContext } from '../src/hooks/hooks';
 import { TelemetryAttribute, TelemetryFlagMetadata } from '../src/telemetry';
+import { MapHookData } from '../src/hooks/hook-data';
 
 describe('evaluationEvent', () => {
   const flagKey = 'test-flag';
@@ -25,6 +26,7 @@ describe('evaluationEvent', () => {
       error: jest.fn(),
       warn: jest.fn(),
     },
+    hookData: new MapHookData(),
   };
 
   it('should return basic event body with mandatory fields', () => {
