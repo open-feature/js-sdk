@@ -22,6 +22,7 @@ import {
   StandardResolutionReasons,
   instantiateErrorByErrorCode,
   statusMatchesEvent,
+  MapHookData,
 } from '@openfeature/core';
 import type { FlagEvaluationOptions } from '../../evaluation';
 import type { ProviderEvents } from '../../events';
@@ -231,22 +232,26 @@ export class OpenFeatureClient implements Client {
       ...this.apiContextAccessor(this?.options?.domain),
     };
 
-    // this reference cannot change during the course of evaluation
-    // it may be used as a key in WeakMaps
-    const hookContext: Readonly<HookContext> = {
-      flagKey,
-      defaultValue,
-      flagValueType: flagType,
-      clientMetadata: this.metadata,
-      providerMetadata: this._provider.metadata,
-      context,
-      logger: this._logger,
-    };
+    // Create hook context instances for each hook (stable object references for the entire evaluation)
+    // This ensures hooks can use WeakMaps with hookContext as keys across lifecycle methods
+    // NOTE: Uses the reversed order to reduce the number of times we have to calculate the index.
+    const hookContexts = allHooksReversed.map<HookContext>(() =>
+      Object.freeze({
+        flagKey,
+        defaultValue,
+        flagValueType: flagType,
+        clientMetadata: this.metadata,
+        providerMetadata: this._provider.metadata,
+        context,
+        logger: this._logger,
+        hookData: new MapHookData(),
+      }),
+    );
 
     let evaluationDetails: EvaluationDetails<T>;
 
     try {
-      this.beforeHooks(allHooks, hookContext, options);
+      this.beforeHooks(allHooks, hookContexts, options);
 
       this.shortCircuitIfNotReady();
 
@@ -261,45 +266,48 @@ export class OpenFeatureClient implements Client {
 
       if (resolutionDetails.errorCode) {
         const err = instantiateErrorByErrorCode(resolutionDetails.errorCode, resolutionDetails.errorMessage);
-        this.errorHooks(allHooksReversed, hookContext, err, options);
+        this.errorHooks(allHooksReversed, hookContexts, err, options);
         evaluationDetails = this.getErrorEvaluationDetails(flagKey, defaultValue, err, resolutionDetails.flagMetadata);
       } else {
-        this.afterHooks(allHooksReversed, hookContext, resolutionDetails, options);
+        this.afterHooks(allHooksReversed, hookContexts, resolutionDetails, options);
         evaluationDetails = resolutionDetails;
       }
     } catch (err: unknown) {
-      this.errorHooks(allHooksReversed, hookContext, err, options);
+      this.errorHooks(allHooksReversed, hookContexts, err, options);
       evaluationDetails = this.getErrorEvaluationDetails(flagKey, defaultValue, err);
     }
-    this.finallyHooks(allHooksReversed, hookContext, evaluationDetails, options);
+    this.finallyHooks(allHooksReversed, hookContexts, evaluationDetails, options);
     return evaluationDetails;
   }
 
-  private beforeHooks(hooks: Hook[], hookContext: HookContext, options: FlagEvaluationOptions) {
-    Object.freeze(hookContext);
-    Object.freeze(hookContext.context);
-
-    for (const hook of hooks) {
+  private beforeHooks(hooks: Hook[], hookContexts: HookContext[], options: FlagEvaluationOptions) {
+    for (const [index, hook] of hooks.entries()) {
+      const hookContextIndex = hooks.length - 1 - index; // reverse index for before hooks
+      const hookContext = hookContexts[hookContextIndex];
+      Object.freeze(hookContext);
+      Object.freeze(hookContext.context);
       hook?.before?.(hookContext, Object.freeze(options.hookHints));
     }
   }
 
   private afterHooks(
     hooks: Hook[],
-    hookContext: HookContext,
+    hookContexts: HookContext[],
     evaluationDetails: EvaluationDetails<FlagValue>,
     options: FlagEvaluationOptions,
   ) {
     // run "after" hooks sequentially
-    for (const hook of hooks) {
+    for (const [index, hook] of hooks.entries()) {
+      const hookContext = hookContexts[index];
       hook?.after?.(hookContext, evaluationDetails, options.hookHints);
     }
   }
 
-  private errorHooks(hooks: Hook[], hookContext: HookContext, err: unknown, options: FlagEvaluationOptions) {
+  private errorHooks(hooks: Hook[], hookContexts: HookContext[], err: unknown, options: FlagEvaluationOptions) {
     // run "error" hooks sequentially
-    for (const hook of hooks) {
+    for (const [index, hook] of hooks.entries()) {
       try {
+        const hookContext = hookContexts[index];
         hook?.error?.(hookContext, err, options.hookHints);
       } catch (err) {
         this._logger.error(`Unhandled error during 'error' hook: ${err}`);
@@ -313,13 +321,14 @@ export class OpenFeatureClient implements Client {
 
   private finallyHooks(
     hooks: Hook[],
-    hookContext: HookContext,
+    hookContexts: HookContext[],
     evaluationDetails: EvaluationDetails<FlagValue>,
     options: FlagEvaluationOptions,
   ) {
     // run "finally" hooks sequentially
-    for (const hook of hooks) {
+    for (const [index, hook] of hooks.entries()) {
       try {
+        const hookContext = hookContexts[index];
         hook?.finally?.(hookContext, evaluationDetails, options.hookHints);
       } catch (err) {
         this._logger.error(`Unhandled error during 'finally' hook: ${err}`);

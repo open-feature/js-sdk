@@ -16,8 +16,8 @@
     <img alt="Specification" src="https://img.shields.io/static/v1?label=specification&message=v0.8.0&color=yellow&style=for-the-badge" />
   </a>
   <!-- x-release-please-start-version -->
-  <a href="https://github.com/open-feature/js-sdk/releases/tag/web-sdk-v1.4.1">
-    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v1.4.1&color=blue&style=for-the-badge" />
+  <a href="https://github.com/open-feature/js-sdk/releases/tag/web-sdk-v1.5.0">
+    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v1.5.0&color=blue&style=for-the-badge" />
   </a>
   <!-- x-release-please-end -->
   <br/>
@@ -75,7 +75,11 @@ yarn add @openfeature/web-sdk @openfeature/core
 import { OpenFeature } from '@openfeature/web-sdk';
 
 // Register your feature flag provider
-await OpenFeature.setProviderAndWait(new YourProviderOfChoice());
+try {
+  await OpenFeature.setProviderAndWait(new YourProviderOfChoice());
+} catch (error) {
+  console.error('Failed to initialize provider:', error);
+}
 
 // create a new client
 const client = OpenFeature.getClient();
@@ -121,7 +125,11 @@ Once you've added a provider as a dependency, it can be registered with OpenFeat
 To register a provider and ensure it is ready before further actions are taken, you can use the `setProviderAndWait` method as shown below:
 
 ```ts
-await OpenFeature.setProviderAndWait(new MyProvider());
+try {
+  await OpenFeature.setProviderAndWait(new MyProvider());
+} catch (error) {
+  console.error('Failed to initialize provider:', error);
+}
 ```
 
 #### Synchronous

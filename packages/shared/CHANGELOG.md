@@ -1,5 +1,19 @@
 # Changelog 
 
+## [1.8.1](https://github.com/open-feature/js-sdk/compare/core-v1.8.0...core-v1.8.1) (2025-06-04)
+
+
+### 🔄 Refactoring
+
+* **telemetry:** update telemetry attributes and remove unused evaluation data ([#1189](https://github.com/open-feature/js-sdk/issues/1189)) ([3e6bcae](https://github.com/open-feature/js-sdk/commit/3e6bcaef0bb5c05e914a0078f0cb884b7f74f068))
+
+## [1.8.0](https://github.com/open-feature/js-sdk/compare/core-v1.7.2...core-v1.8.0) (2025-04-10)
+
+
+### ✨ New Features
+
+* add support for abort controllers to event handlers ([#1151](https://github.com/open-feature/js-sdk/issues/1151)) ([6a22483](https://github.com/open-feature/js-sdk/commit/6a224830fa4e62fc30a7802536f6f6fc3f772038))
+
 ## [1.7.2](https://github.com/open-feature/js-sdk/compare/core-v1.7.1...core-v1.7.2) (2025-02-18)
 
 

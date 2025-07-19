@@ -22,6 +22,7 @@ import {
   StandardResolutionReasons,
   instantiateErrorByErrorCode,
   statusMatchesEvent,
+  MapHookData,
 } from '@openfeature/core';
 import type { FlagEvaluationOptions } from '../../evaluation';
 import type { ProviderEvents } from '../../events';
@@ -276,22 +277,26 @@ export class OpenFeatureClient implements Client {
 
     const mergedContext = this.mergeContexts(invocationContext);
 
-    // this reference cannot change during the course of evaluation
-    // it may be used as a key in WeakMaps
-    const hookContext: Readonly<HookContext> = {
-      flagKey,
-      defaultValue,
-      flagValueType: flagType,
-      clientMetadata: this.metadata,
-      providerMetadata: this._provider.metadata,
-      context: mergedContext,
-      logger: this._logger,
-    };
+    // Create hook context instances for each hook (stable object references for the entire evaluation)
+    // This ensures hooks can use WeakMaps with hookContext as keys across lifecycle methods
+    // NOTE: Uses the reversed order to reduce the number of times we have to calculate the index.
+    const hookContexts = allHooksReversed.map<HookContext>(() =>
+      Object.freeze({
+        flagKey,
+        defaultValue,
+        flagValueType: flagType,
+        clientMetadata: this.metadata,
+        providerMetadata: this._provider.metadata,
+        context: mergedContext,
+        logger: this._logger,
+        hookData: new MapHookData(),
+      }),
+    );
 
     let evaluationDetails: EvaluationDetails<T>;
 
     try {
-      const frozenContext = await this.beforeHooks(allHooks, hookContext, options);
+      const frozenContext = await this.beforeHooks(allHooks, hookContexts, mergedContext, options);
 
       this.shortCircuitIfNotReady();
 
@@ -306,53 +311,71 @@ export class OpenFeatureClient implements Client {
 
       if (resolutionDetails.errorCode) {
         const err = instantiateErrorByErrorCode(resolutionDetails.errorCode, resolutionDetails.errorMessage);
-        await this.errorHooks(allHooksReversed, hookContext, err, options);
+        await this.errorHooks(allHooksReversed, hookContexts, err, options);
         evaluationDetails = this.getErrorEvaluationDetails(flagKey, defaultValue, err, resolutionDetails.flagMetadata);
       } else {
-        await this.afterHooks(allHooksReversed, hookContext, resolutionDetails, options);
+        await this.afterHooks(allHooksReversed, hookContexts, resolutionDetails, options);
         evaluationDetails = resolutionDetails;
       }
     } catch (err: unknown) {
-      await this.errorHooks(allHooksReversed, hookContext, err, options);
+      await this.errorHooks(allHooksReversed, hookContexts, err, options);
       evaluationDetails = this.getErrorEvaluationDetails(flagKey, defaultValue, err);
     }
 
-    await this.finallyHooks(allHooksReversed, hookContext, evaluationDetails, options);
+    await this.finallyHooks(allHooksReversed, hookContexts, evaluationDetails, options);
     return evaluationDetails;
   }
 
-  private async beforeHooks(hooks: Hook[], hookContext: HookContext, options: FlagEvaluationOptions) {
-    for (const hook of hooks) {
-      // freeze the hookContext
-      Object.freeze(hookContext);
+  private async beforeHooks(
+    hooks: Hook[],
+    hookContexts: HookContext[],
+    mergedContext: EvaluationContext,
+    options: FlagEvaluationOptions,
+  ) {
+    let accumulatedContext = mergedContext;
 
-      // use Object.assign to avoid modification of frozen hookContext
-      Object.assign(hookContext.context, {
-        ...hookContext.context,
-        ...(await hook?.before?.(hookContext, Object.freeze(options.hookHints))),
-      });
+    for (const [index, hook] of hooks.entries()) {
+      const hookContextIndex = hooks.length - 1 - index; // reverse index for before hooks
+      const hookContext = hookContexts[hookContextIndex];
+
+      // Update the context on the stable hook context object
+      Object.assign(hookContext.context, accumulatedContext);
+
+      const hookResult = await hook?.before?.(hookContext, Object.freeze(options.hookHints));
+      if (hookResult) {
+        accumulatedContext = {
+          ...accumulatedContext,
+          ...hookResult,
+        };
+
+        for (let i = 0; i < hooks.length; i++) {
+          Object.assign(hookContexts[hookContextIndex].context, accumulatedContext);
+        }
+      }
     }
 
     // after before hooks, freeze the EvaluationContext.
-    return Object.freeze(hookContext.context);
+    return Object.freeze(accumulatedContext);
   }
 
   private async afterHooks(
     hooks: Hook[],
-    hookContext: HookContext,
+    hookContexts: HookContext[],
     evaluationDetails: EvaluationDetails<FlagValue>,
     options: FlagEvaluationOptions,
   ) {
     // run "after" hooks sequentially
-    for (const hook of hooks) {
+    for (const [index, hook] of hooks.entries()) {
+      const hookContext = hookContexts[index];
       await hook?.after?.(hookContext, evaluationDetails, options.hookHints);
     }
   }
 
-  private async errorHooks(hooks: Hook[], hookContext: HookContext, err: unknown, options: FlagEvaluationOptions) {
+  private async errorHooks(hooks: Hook[], hookContexts: HookContext[], err: unknown, options: FlagEvaluationOptions) {
     // run "error" hooks sequentially
-    for (const hook of hooks) {
+    for (const [index, hook] of hooks.entries()) {
       try {
+        const hookContext = hookContexts[index];
         await hook?.error?.(hookContext, err, options.hookHints);
       } catch (err) {
         this._logger.error(`Unhandled error during 'error' hook: ${err}`);
@@ -366,13 +389,14 @@ export class OpenFeatureClient implements Client {
 
   private async finallyHooks(
     hooks: Hook[],
-    hookContext: HookContext,
+    hookContexts: HookContext[],
     evaluationDetails: EvaluationDetails<FlagValue>,
     options: FlagEvaluationOptions,
   ) {
     // run "finally" hooks sequentially
-    for (const hook of hooks) {
+    for (const [index, hook] of hooks.entries()) {
       try {
+        const hookContext = hookContexts[index];
         await hook?.finally?.(hookContext, evaluationDetails, options.hookHints);
       } catch (err) {
         this._logger.error(`Unhandled error during 'finally' hook: ${err}`);

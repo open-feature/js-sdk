@@ -1,4 +1,5 @@
 import { InMemoryProvider } from '@openfeature/server-sdk';
+import type { EvaluationContext } from '@openfeature/server-sdk';
 import type { ExecutionContext } from '@nestjs/common';
 import { OpenFeatureModule } from '../src';
 
@@ -22,6 +23,17 @@ export const defaultProvider = new InMemoryProvider({
     defaultVariant: 'default',
     variants: { default: { client: 'default' } },
     disabled: false,
+  },
+  testBooleanFlag2: {
+    defaultVariant: 'default',
+    variants: { default: false, enabled: true },
+    disabled: false,
+    contextEvaluator: (ctx: EvaluationContext) => {
+      if (ctx.targetingKey === '123') {
+        return 'enabled';
+      }
+      return 'default';
+    },
   },
 });
 

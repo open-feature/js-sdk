@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.2.5](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.2.4...nestjs-sdk-v0.2.5) (2025-05-27)
+
+
+### ✨ New Features
+
+* adds RequireFlagsEnabled decorator ([#1159](https://github.com/open-feature/js-sdk/issues/1159)) ([59b8fe9](https://github.com/open-feature/js-sdk/commit/59b8fe904f053e4aa3d0c72631af34183ff54dc7))
+
+
+## [0.2.4](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.2.3...nestjs-sdk-v0.2.4) (2025-04-20)
+
+
+### 🧹 Chore
+
+* **nest:** allow nestjs version 11 ([#1176](https://github.com/open-feature/js-sdk/issues/1176)) ([42a3b39](https://github.com/open-feature/js-sdk/commit/42a3b39c2488002f249b37ce86794ef2f77eb31c))
+
+## [0.2.3](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.2.2...nestjs-sdk-v0.2.3) (2025-04-11)
+
+
+### 🧹 Chore
+
+* update sdk peer ([#1142](https://github.com/open-feature/js-sdk/issues/1142)) ([8bb6206](https://github.com/open-feature/js-sdk/commit/8bb620601e2b8dc7b62d717169b585bd1c886996))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/server-sdk bumped from * to 1.18.0
+
 ## [0.2.2](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.2.1-experimental...nestjs-sdk-v0.2.2) (2024-10-29)
 
 

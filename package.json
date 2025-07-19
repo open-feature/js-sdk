@@ -31,18 +31,15 @@
     "url": "https://github.com/open-feature/js-sdk/issues"
   },
   "homepage": "https://github.com/open-feature/js-sdk#readme",
-  "engines": {
-    "node": ">=18"
-  },
   "devDependencies": {
-    "@rollup/plugin-typescript": "^11.1.6",
+    "@rollup/plugin-typescript": "^12.0.0",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^16.0.0",
     "@types/jest": "^29.5.12",
-    "@types/node": "^20.11.16",
+    "@types/node": "^22.0.0",
     "@types/react": "^18.2.55",
     "@types/uuid": "^10.0.0",
-    "esbuild": "^0.24.0",
+    "esbuild": "^0.25.0",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-alias": "^1.1.2",

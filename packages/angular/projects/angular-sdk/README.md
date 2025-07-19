@@ -16,8 +16,8 @@
     <img alt="Specification" src="https://img.shields.io/static/v1?label=specification&message=v0.8.0&color=yellow&style=for-the-badge" />
   </a>
   <!-- x-release-please-start-version -->
-  <a href="https://github.com/open-feature/js-sdk/releases/tag/angular-sdk-v0.0.10">
-    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v0.0.10&color=blue&style=for-the-badge" />
+  <a href="https://github.com/open-feature/js-sdk/releases/tag/angular-sdk-v0.0.15">
+    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v0.0.15&color=blue&style=for-the-badge" />
   </a>
   <!-- x-release-please-end -->
   <br/>
@@ -44,21 +44,22 @@ In addition to the features provided by the [web sdk](https://openfeature.dev/do
 
 - [Overview](#overview)
 - [Quick start](#quick-start)
-  - [Requirements](#requirements)
-  - [Install](#install)
-    - [npm](#npm)
-    - [yarn](#yarn)
-    - [Required peer dependencies](#required-peer-dependencies)
-  - [Usage](#usage)
-    - [Module](#module)
-      - [Minimal Example](#minimal-example)
-    - [How to use](#how-to-use)
-      - [Boolean Feature Flag](#boolean-feature-flag)
-      - [Number Feature Flag](#number-feature-flag)
-      - [String Feature Flag](#string-feature-flag)
-      - [Object Feature Flag](#object-feature-flag)
-      - [Opting-out of automatic re-rendering](#opting-out-of-automatic-re-rendering)
-      - [Consuming the evaluation details](#consuming-the-evaluation-details)
+    - [Requirements](#requirements)
+    - [Install](#install)
+        - [npm](#npm)
+        - [yarn](#yarn)
+        - [Required peer dependencies](#required-peer-dependencies)
+    - [Usage](#usage)
+        - [Module](#module)
+            - [Minimal Example](#minimal-example)
+        - [How to use](#how-to-use)
+            - [Boolean Feature Flag](#boolean-feature-flag)
+            - [Number Feature Flag](#number-feature-flag)
+            - [String Feature Flag](#string-feature-flag)
+            - [Object Feature Flag](#object-feature-flag)
+            - [Opting-out of automatic re-rendering](#opting-out-of-automatic-re-rendering)
+            - [Consuming the evaluation details](#consuming-the-evaluation-details)
+            - [Setting Evaluation Context](#setting-evaluation-context)
 - [FAQ and troubleshooting](#faq-and-troubleshooting)
 - [Resources](#resources)
 
@@ -113,7 +114,7 @@ import { OpenFeatureModule } from '@openfeature/angular-sdk';
     CommonModule,
     OpenFeatureModule.forRoot({
       provider: yourFeatureProvider,
-      // domainBoundProviders are optional, mostly needed if more than one provider is needed
+      // domainBoundProviders are optional, mostly needed if more than one provider is used in the application.
       domainBoundProviders: {
         domain1: new YourOpenFeatureProvider(),
         domain2: new YourOtherOpenFeatureProvider(),
@@ -281,6 +282,63 @@ This can be used to just render the flag value or details without conditional re
 </div>
 ```
 
+##### Setting evaluation context
+
+To set the initial evaluation context, you can add the `context` parameter to the `OpenFeatureModule` configuration.
+This context can be either an object or a factory function that returns an `EvaluationContext`.
+
+> [!TIP]
+> Updating the context can be done directly via the global OpenFeature API using `OpenFeature.setContext()`
+
+Here’s how you can define and use the initial client evaluation context:
+
+###### Using a static object
+
+```typescript
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { OpenFeatureModule } from '@openfeature/angular-sdk';
+
+const initialContext = {
+  user: {
+    id: 'user123',
+    role: 'admin',
+  }
+};
+
+@NgModule({
+  imports: [
+    CommonModule,
+    OpenFeatureModule.forRoot({
+      provider: yourFeatureProvider,
+      context: initialContext
+    })
+  ],
+})
+export class AppModule {}
+```
+
+###### Using a factory function
+
+```typescript
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { OpenFeatureModule, EvaluationContext } from '@openfeature/angular-sdk';
+
+const contextFactory = (): EvaluationContext => loadContextFromLocalStorage();
+
+@NgModule({
+  imports: [
+    CommonModule,
+    OpenFeatureModule.forRoot({
+      provider: yourFeatureProvider,
+      context: contextFactory
+    })
+  ],
+})
+export class AppModule {}
+```
+
 ## FAQ and troubleshooting
 
 > I can import things form the `@openfeature/angular-sdk`, `@openfeature/web-sdk`, and `@openfeature/core`; which should I use?
@@ -291,4 +349,4 @@ Avoid importing anything from `@openfeature/web-sdk` or `@openfeature/core`.
 
 ## Resources
 
- - [Example repo](https://github.com/open-feature/angular-test-app)
+- [Example repo](https://github.com/open-feature/angular-test-app)

@@ -1,6 +1,6 @@
 {
   "name": "@openfeature/react-sdk",
-  "version": "0.4.11",
+  "version": "1.0.0",
   "description": "OpenFeature React SDK",
   "main": "./dist/cjs/index.js",
   "files": [
@@ -47,7 +47,7 @@
   },
   "homepage": "https://github.com/open-feature/js-sdk#readme",
   "peerDependencies": {
-    "@openfeature/web-sdk": "^1.4.1",
+    "@openfeature/web-sdk": "^1.5.0",
     "react": ">=16.8.0"
   },
   "devDependencies": {
