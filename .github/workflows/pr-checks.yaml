@@ -37,8 +37,11 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Test
-        run: npm run test
+      - name: Test Jest Projects
+        run: npm run test:jest
+
+      - name: Test Angular SDK
+        run: npm run test:angular
 
   codecov-and-docs:
     runs-on: ubuntu-latest

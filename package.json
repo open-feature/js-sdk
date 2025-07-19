@@ -4,7 +4,9 @@
   "private": true,
   "description": "OpenFeature SDK for JavaScript",
   "scripts": {
-    "test": "jest --selectProjects=shared --selectProjects=server --selectProjects=web --selectProjects=react --selectProjects=angular --selectProjects=nest --silent",
+    "test": "npm run test:jest && npm run test:angular",
+    "test:jest": "jest --selectProjects=shared --selectProjects=server --selectProjects=web --selectProjects=react --selectProjects=nest --silent",
+    "test:angular": "npm run test:coverage --workspace=packages/angular",
     "e2e-server": "git submodule update --init --recursive && shx cp test-harness/features/evaluation.feature packages/server/e2e/features && jest --selectProjects=server-e2e --verbose",
     "e2e-web": "git submodule update --init --recursive && shx cp test-harness/features/evaluation.feature packages/web/e2e/features && jest --selectProjects=web-e2e --verbose",
     "e2e": "npm run e2e-server && npm run e2e-web",
@@ -54,8 +56,6 @@
     "jest-environment-jsdom": "^29.7.0",
     "jest-environment-node": "^29.7.0",
     "jest-junit": "^16.0.0",
-    "jest-preset-angular": "^14.2.4",
-    "ng-packagr": "^18.2.1",
     "prettier": "^3.2.5",
     "react": "^18.2.0",
     "rollup": "^4.0.0",
@@ -68,9 +68,6 @@
     "typedoc": "^0.26.0",
     "typescript": "^4.7.4",
     "uuid": "^11.0.0"
-  },
-  "overrides": {
-    "typescript": "^4.7.4"
   },
   "workspaces": [
     "packages/shared",

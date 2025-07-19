@@ -18,3 +18,4 @@ export abstract class OpenFeatureError extends Error {
     this.cause = options?.cause;
   }
 }
+

@@ -3,13 +3,14 @@
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
     "types": [
-      "jest"
+      "vitest/globals",
+      "node"
     ],
     "esModuleInterop": true,
     "emitDecoratorMetadata": true
   },
   "include": [
-    "src/**/*.spec.ts",
-    "src/**/*.d.ts"
+    "projects/angular-sdk/src/**/*.spec.ts",
+    "projects/angular-sdk/src/**/*.d.ts"
   ]
 }

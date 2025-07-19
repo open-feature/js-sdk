@@ -3,15 +3,20 @@
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
     "types": [
-      "jest",
+      "vitest/globals",
       "node"
     ],
+    "paths": {
+      "angular": [
+        "./dist/angular"
+      ]
+    },
     "esModuleInterop": true,
     "emitDecoratorMetadata": true
   },
   "include": [
     "src/**/*.spec.ts",
     "src/**/*.d.ts",
-    "setup-jest.ts"
+    "src/test-provider.ts"
   ]
 }

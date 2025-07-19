@@ -8,6 +8,7 @@ import {
   OnInit,
   TemplateRef,
   ViewContainerRef,
+  inject,
 } from '@angular/core';
 import {
   Client,
@@ -35,6 +36,9 @@ class FeatureFlagDirectiveContext<T extends FlagValue> {
   selector: '[featureFlag]',
 })
 export abstract class FeatureFlagDirective<T extends FlagValue> implements OnInit, OnDestroy, OnChanges {
+  protected _changeDetectorRef: ChangeDetectorRef;
+  protected _viewContainerRef: ViewContainerRef;
+
   protected _featureFlagDefault: T;
   protected _featureFlagDomain: string | undefined;
 
@@ -64,13 +68,7 @@ export abstract class FeatureFlagDirective<T extends FlagValue> implements OnIni
   protected _reconcilingTemplateRef: TemplateRef<FeatureFlagDirectiveContext<T>> | null;
   protected _reconcilingViewRef: EmbeddedViewRef<unknown> | null;
 
-  protected constructor(
-    protected _changeDetectorRef: ChangeDetectorRef,
-    protected _viewContainerRef: ViewContainerRef,
-    templateRef: TemplateRef<FeatureFlagDirectiveContext<T>>,
-  ) {
-    this._thenTemplateRef = templateRef;
-  }
+  protected constructor() {}
 
   set featureFlagDomain(domain: string | undefined) {
     /**
@@ -232,6 +230,10 @@ export abstract class FeatureFlagDirective<T extends FlagValue> implements OnIni
   selector: '[booleanFeatureFlag]',
 })
 export class BooleanFeatureFlagDirective extends FeatureFlagDirective<boolean> implements OnChanges {
+  override _changeDetectorRef = inject(ChangeDetectorRef);
+  override _viewContainerRef = inject(ViewContainerRef);
+  override _thenTemplateRef = inject<TemplateRef<FeatureFlagDirectiveContext<boolean>>>(TemplateRef);
+
   /**
    * The key of the boolean feature flag.
    */
@@ -242,12 +244,8 @@ export class BooleanFeatureFlagDirective extends FeatureFlagDirective<boolean> i
    */
   @Input({ required: true }) booleanFeatureFlagDefault: boolean;
 
-  constructor(
-    _changeDetectorRef: ChangeDetectorRef,
-    _viewContainerRef: ViewContainerRef,
-    templateRef: TemplateRef<FeatureFlagDirectiveContext<boolean>>,
-  ) {
-    super(_changeDetectorRef, _viewContainerRef, templateRef);
+  constructor() {
+    super();
   }
 
   override ngOnChanges() {
@@ -347,6 +345,10 @@ export class BooleanFeatureFlagDirective extends FeatureFlagDirective<boolean> i
   selector: '[numberFeatureFlag]',
 })
 export class NumberFeatureFlagDirective extends FeatureFlagDirective<number> implements OnChanges {
+  override _changeDetectorRef = inject(ChangeDetectorRef);
+  override _viewContainerRef = inject(ViewContainerRef);
+  override _thenTemplateRef = inject<TemplateRef<FeatureFlagDirectiveContext<number>>>(TemplateRef);
+
   /**
    * The key of the number feature flag.
    */
@@ -362,12 +364,8 @@ export class NumberFeatureFlagDirective extends FeatureFlagDirective<number> imp
    */
   @Input({ required: false }) numberFeatureFlagValue?: number;
 
-  constructor(
-    _changeDetectorRef: ChangeDetectorRef,
-    _viewContainerRef: ViewContainerRef,
-    templateRef: TemplateRef<FeatureFlagDirectiveContext<number>>,
-  ) {
-    super(_changeDetectorRef, _viewContainerRef, templateRef);
+  constructor() {
+    super();
   }
 
   override ngOnChanges() {
@@ -467,6 +465,10 @@ export class NumberFeatureFlagDirective extends FeatureFlagDirective<number> imp
   selector: '[stringFeatureFlag]',
 })
 export class StringFeatureFlagDirective extends FeatureFlagDirective<string> implements OnChanges {
+  override _changeDetectorRef = inject(ChangeDetectorRef);
+  override _viewContainerRef = inject(ViewContainerRef);
+  override _thenTemplateRef = inject<TemplateRef<FeatureFlagDirectiveContext<string>>>(TemplateRef);
+
   /**
    * The key of the string feature flag.
    */
@@ -482,12 +484,8 @@ export class StringFeatureFlagDirective extends FeatureFlagDirective<string> imp
    */
   @Input({ required: false }) stringFeatureFlagValue?: string;
 
-  constructor(
-    _changeDetectorRef: ChangeDetectorRef,
-    _viewContainerRef: ViewContainerRef,
-    templateRef: TemplateRef<FeatureFlagDirectiveContext<string>>,
-  ) {
-    super(_changeDetectorRef, _viewContainerRef, templateRef);
+  constructor() {
+    super();
   }
 
   override ngOnChanges() {
@@ -587,6 +585,10 @@ export class StringFeatureFlagDirective extends FeatureFlagDirective<string> imp
   selector: '[objectFeatureFlag]',
 })
 export class ObjectFeatureFlagDirective<T extends JsonValue> extends FeatureFlagDirective<T> implements OnChanges {
+  override _changeDetectorRef = inject(ChangeDetectorRef);
+  override _viewContainerRef = inject(ViewContainerRef);
+  override _thenTemplateRef = inject<TemplateRef<FeatureFlagDirectiveContext<T>>>(TemplateRef);
+
   /**
    * The key of the object feature flag.
    */
@@ -602,12 +604,8 @@ export class ObjectFeatureFlagDirective<T extends JsonValue> extends FeatureFlag
    */
   @Input({ required: false }) objectFeatureFlagValue?: T;
 
-  constructor(
-    _changeDetectorRef: ChangeDetectorRef,
-    _viewContainerRef: ViewContainerRef,
-    templateRef: TemplateRef<FeatureFlagDirectiveContext<T>>,
-  ) {
-    super(_changeDetectorRef, _viewContainerRef, templateRef);
+  constructor() {
+    super();
   }
 
   override ngOnChanges() {
