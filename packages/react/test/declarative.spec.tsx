@@ -59,7 +59,7 @@ describe('Feature Component', () => {
     it('should not show the feature component if the flag is not enabled', () => {
       render(
         <OpenFeatureProvider domain={EVALUATION}>
-          <FeatureFlag featureKey={BOOL_FLAG_KEY} defaultValue={false}>
+          <FeatureFlag flagKey={BOOL_FLAG_KEY} defaultValue={false}>
             <ChildComponent />
           </FeatureFlag>
         </OpenFeatureProvider>,
@@ -71,7 +71,7 @@ describe('Feature Component', () => {
     it('should fallback when provided', () => {
       render(
         <OpenFeatureProvider domain={EVALUATION}>
-          <FeatureFlag featureKey={MISSING_FLAG_KEY} defaultValue={false} fallback={<div>Fallback</div>}>
+          <FeatureFlag flagKey={MISSING_FLAG_KEY} defaultValue={false} fallback={<div>Fallback</div>}>
             <ChildComponent />
           </FeatureFlag>
         </OpenFeatureProvider>,
@@ -82,10 +82,10 @@ describe('Feature Component', () => {
       screen.debug();
     });
 
-    it('should handle showing multivariate flags with bool match', () => {
+    it('should handle showing multivariate flags with string match', () => {
       render(
         <OpenFeatureProvider domain={EVALUATION}>
-          <FeatureFlag featureKey={STRING_FLAG_KEY} match={'greeting'} defaultValue={'default'}>
+          <FeatureFlag flagKey={STRING_FLAG_KEY} match={'hi'} defaultValue={'default'}>
             <ChildComponent />
           </FeatureFlag>
         </OpenFeatureProvider>,
@@ -94,16 +94,45 @@ describe('Feature Component', () => {
       expect(screen.queryByText(childText)).toBeInTheDocument();
     });
 
-    it('should show the feature component if the flag is not enabled but negate is true', () => {
+    it('should support custom predicate function', () => {
+      const customPredicate = (expected: boolean | undefined, actual: { value: boolean }) => {
+        // Custom logic: render if flag is NOT the expected value (negation)
+        return expected !== undefined ? actual.value !== expected : !actual.value;
+      };
+
       render(
         <OpenFeatureProvider domain={EVALUATION}>
-          <FeatureFlag featureKey={BOOL_FLAG_KEY} defaultValue={false}>
+          <FeatureFlag flagKey={BOOL_FLAG_NEGATE_KEY} match={true} predicate={customPredicate} defaultValue={false}>
             <ChildComponent />
           </FeatureFlag>
         </OpenFeatureProvider>,
       );
 
       expect(screen.queryByText(childText)).toBeInTheDocument();
+    });
+
+    it('should render children when no match is provided and flag is truthy', () => {
+      render(
+        <OpenFeatureProvider domain={EVALUATION}>
+          <FeatureFlag flagKey={BOOL_FLAG_KEY} defaultValue={false}>
+            <ChildComponent />
+          </FeatureFlag>
+        </OpenFeatureProvider>,
+      );
+
+      expect(screen.queryByText(childText)).toBeInTheDocument();
+    });
+
+    it('should not render children when no match is provided and flag is falsy', () => {
+      render(
+        <OpenFeatureProvider domain={EVALUATION}>
+          <FeatureFlag flagKey={BOOL_FLAG_NEGATE_KEY} defaultValue={false}>
+            <ChildComponent />
+          </FeatureFlag>
+        </OpenFeatureProvider>,
+      );
+
+      expect(screen.queryByText(childText)).not.toBeInTheDocument();
     });
   });
 });
