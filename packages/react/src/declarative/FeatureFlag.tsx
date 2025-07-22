@@ -54,8 +54,9 @@ interface FeatureFlagProps<T extends FlagValue = FlagValue> {
 
   /**
    * Optional content to render when the feature flag condition is not met.
+   * Can be a React node or a function that receives evaluation details and returns a React node.
    */
-  fallback?: React.ReactNode;
+  fallback?: React.ReactNode | ((details: EvaluationDetails<T>) => React.ReactNode);
 }
 
 /**
@@ -77,7 +78,8 @@ export function FeatureFlag<T extends FlagValue = FlagValue>({
 
   // If the flag evaluation failed, we render the fallback
   if (details.reason === 'ERROR') {
-    return <>{fallback}</>;
+    const fallbackNode: React.ReactNode = typeof fallback === 'function' ? fallback(details.details as EvaluationDetails<T>) : fallback;
+    return <>{fallbackNode}</>;
   }
 
   // Use custom predicate if provided, otherwise use default matching logic
@@ -97,5 +99,6 @@ export function FeatureFlag<T extends FlagValue = FlagValue>({
     return <>{childNode}</>;
   }
 
-  return <>{fallback}</>;
+  const fallbackNode: React.ReactNode = typeof fallback === 'function' ? fallback(details.details as EvaluationDetails<T>) : fallback;
+  return <>{fallbackNode}</>;
 }

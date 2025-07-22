@@ -3,6 +3,7 @@ import '@testing-library/jest-dom'; // see: https://testing-library.com/docs/rea
 import { render, screen } from '@testing-library/react';
 import { FeatureFlag } from '../src/declarative/FeatureFlag'; // Assuming Feature.tsx is in the same directory or adjust path
 import { InMemoryProvider, OpenFeature, OpenFeatureProvider } from '../src';
+import type { EvaluationDetails } from '@openfeature/core';
 
 describe('Feature Component', () => {
   const EVALUATION = 'evaluation';
@@ -132,6 +133,76 @@ describe('Feature Component', () => {
         </OpenFeatureProvider>,
       );
 
+      expect(screen.queryByText(childText)).not.toBeInTheDocument();
+    });
+
+    it('should support function-based fallback with EvaluationDetails', () => {
+      const fallbackFunction = jest.fn((details: EvaluationDetails<boolean>) => <div>Fallback: {details.flagKey}</div>);
+      
+      render(
+        <OpenFeatureProvider domain={EVALUATION}>
+          <FeatureFlag flagKey={MISSING_FLAG_KEY} defaultValue={false} fallback={fallbackFunction}>
+            <ChildComponent />
+          </FeatureFlag>
+        </OpenFeatureProvider>,
+      );
+
+      expect(fallbackFunction).toHaveBeenCalled();
+      expect(fallbackFunction).toHaveBeenCalledWith(expect.objectContaining({
+        flagKey: MISSING_FLAG_KEY
+      }));
+      expect(screen.queryByText(`Fallback: ${MISSING_FLAG_KEY}`)).toBeInTheDocument();
+    });
+
+    it('should pass correct EvaluationDetails to function-based fallback', () => {
+      const fallbackFunction = jest.fn((details: EvaluationDetails<boolean>) => {
+        return <div>Flag: {details.flagKey}, Value: {String(details.value)}, Reason: {details.reason}</div>;
+      });
+      
+      render(
+        <OpenFeatureProvider domain={EVALUATION}>
+          <FeatureFlag flagKey={MISSING_FLAG_KEY} defaultValue={false} fallback={fallbackFunction}>
+            <ChildComponent />
+          </FeatureFlag>
+        </OpenFeatureProvider>,
+      );
+
+      expect(fallbackFunction).toHaveBeenCalledWith(expect.objectContaining({
+        flagKey: MISSING_FLAG_KEY,
+        value: false,
+        reason: expect.any(String)
+      }));
+    });
+
+    it('should support function-based fallback for error conditions', () => {
+      // Create a provider that will cause an error
+      const errorProvider = new InMemoryProvider({});
+      OpenFeature.setProvider('error-test', errorProvider);
+      
+      const fallbackFunction = jest.fn((details: EvaluationDetails<boolean>) => <div>Error fallback: {details.reason}</div>);
+      
+      render(
+        <OpenFeatureProvider domain="error-test">
+          <FeatureFlag flagKey={MISSING_FLAG_KEY} defaultValue={false} fallback={fallbackFunction}>
+            <ChildComponent />
+          </FeatureFlag>
+        </OpenFeatureProvider>,
+      );
+
+      expect(fallbackFunction).toHaveBeenCalled();
+      expect(screen.queryByText(childText)).not.toBeInTheDocument();
+    });
+
+    it('should render static fallback when fallback is not a function', () => {
+      render(
+        <OpenFeatureProvider domain={EVALUATION}>
+          <FeatureFlag flagKey={MISSING_FLAG_KEY} defaultValue={false} fallback={<div>Static fallback</div>}>
+            <ChildComponent />
+          </FeatureFlag>
+        </OpenFeatureProvider>,
+      );
+
+      expect(screen.queryByText('Static fallback')).toBeInTheDocument();
       expect(screen.queryByText(childText)).not.toBeInTheDocument();
     });
   });
