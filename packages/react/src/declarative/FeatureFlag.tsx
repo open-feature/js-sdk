@@ -26,6 +26,7 @@ interface FeatureFlagProps<T extends FlagValue = FlagValue> {
   /**
    * Optional value to match against the feature flag value.
    * If provided, the component will only render children when the flag value matches this value.
+   * By default, strict equality (===) is used for comparison.
    * If a boolean, it will check if the flag is enabled (true) or disabled (false).
    * If a string, it will check if the flag variant equals this string.
    */

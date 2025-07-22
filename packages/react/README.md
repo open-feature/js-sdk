@@ -50,6 +50,7 @@ In addition to the feature provided by the [web sdk](https://openfeature.dev/doc
   - [Usage](#usage)
     - [OpenFeatureProvider context provider](#openfeatureprovider-context-provider)
     - [Evaluation hooks](#evaluation-hooks)
+    - [Declarative components](#declarative-components)
     - [Multiple Providers and Domains](#multiple-providers-and-domains)
     - [Re-rendering with Context Changes](#re-rendering-with-context-changes)
     - [Re-rendering with Flag Configuration Changes](#re-rendering-with-flag-configuration-changes)
@@ -169,6 +170,72 @@ const {
   flagMetadata
 } = useBooleanFlagDetails('new-message', false);
 ```
+
+#### Declarative components
+
+The React SDK includes declarative components for feature flagging that provide a more JSX-native approach to conditional rendering.
+
+##### FeatureFlag Component
+
+The `FeatureFlag` component conditionally renders its children based on feature flag evaluation:
+
+```tsx
+import { FeatureFlag } from '@openfeature/react-sdk';
+
+function App() {
+  return (
+    <OpenFeatureProvider>
+      {/* Basic usage - renders children when flag is truthy */}
+      <FeatureFlag flagKey="new-feature" defaultValue={false}>
+        <NewFeatureComponent />
+      </FeatureFlag>
+
+      {/* Match specific values */}
+      <FeatureFlag flagKey="theme" match="dark" defaultValue="light">
+        <DarkThemeStyles />
+      </FeatureFlag>
+
+      {/* Boolean flag with fallback */}
+      <FeatureFlag 
+        flagKey="premium-feature" 
+        match={true} 
+        defaultValue={false}
+        fallback={<UpgradePrompt />}
+      >
+        <PremiumContent />
+      </FeatureFlag>
+
+      {/* Custom predicate function for complex matching */}
+      <FeatureFlag
+        flagKey="user-segment"
+        defaultValue=""
+        predicate={(expected, actual) => actual.value.includes('beta')}
+      >
+        <BetaFeatures />
+      </FeatureFlag>
+
+      {/* Function as children for accessing flag details */}
+      <FeatureFlag flagKey="experiment" defaultValue="control">
+        {(flagDetails) => (
+          <ExperimentComponent 
+            variant={flagDetails.value} 
+            reason={flagDetails.details.reason}
+          />
+        )}
+      </FeatureFlag>
+    </OpenFeatureProvider>
+  );
+}
+```
+
+The `FeatureFlag` component supports the following props:
+
+- **`flagKey`** (required): The feature flag key to evaluate
+- **`defaultValue`** (required): Default value when the flag is not available
+- **`match`** (optional): Value to match against the flag value. By default, strict equality (===) is used for comparison
+- **`predicate`** (optional): Custom function for matching logic that receives the expected value and evaluation details
+- **`children`**: Content to render when condition is met (can be JSX or a function receiving flag details)
+- **`fallback`** (optional): Content to render when condition is not met
 
 #### Multiple Providers and Domains
 
@@ -306,8 +373,8 @@ function MyComponent() {
 ### Testing
 
 The React SDK includes a built-in context provider for testing.
-This allows you to easily test components that use evaluation hooks, such as `useFlag`.
-If you try to test a component (in this case, `MyComponent`) which uses an evaluation hook, you might see an error message like:
+This allows you to easily test components that use evaluation hooks (such as `useFlag`) or declarative components (such as `FeatureFlag`).
+If you try to test a component (in this case, `MyComponent`) which uses feature flags, you might see an error message like:
 
 > No OpenFeature client available - components using OpenFeature must be wrapped with an `<OpenFeatureProvider>`.
 
@@ -327,6 +394,16 @@ If you'd like to control the values returned by the evaluation hooks, you can pa
 // return `true` for all evaluations of `'my-boolean-flag'`
 <OpenFeatureTestProvider flagValueMap={{ 'my-boolean-flag': true }}>
   <MyComponent />
+</OpenFeatureTestProvider>
+
+// testing declarative FeatureFlag components
+<OpenFeatureTestProvider flagValueMap={{ 'new-feature': true, 'theme': 'dark' }}>
+  <FeatureFlag flagKey="new-feature" defaultValue={false}>
+    <NewFeature />
+  </FeatureFlag>
+  <FeatureFlag flagKey="theme" match="dark" defaultValue="light">
+    <DarkMode />
+  </FeatureFlag>
 </OpenFeatureTestProvider>
 ```
 
