@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [0.0.16](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.15...angular-sdk-v0.0.16) (2025-07-25)
+
+
+### ✨ New Features
+
+* support Angular 20 ([#1220](https://github.com/open-feature/js-sdk/issues/1220)) ([aa232a9](https://github.com/open-feature/js-sdk/commit/aa232a9d6a8dfa416380ccdecd71843d3e361048))
+
+
 ## [0.0.15](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.14...angular-sdk-v0.0.15) (2025-05-27)
 
 
