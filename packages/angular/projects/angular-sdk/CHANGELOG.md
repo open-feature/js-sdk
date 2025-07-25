@@ -9,13 +9,6 @@
 * support Angular 20 ([#1220](https://github.com/open-feature/js-sdk/issues/1220)) ([aa232a9](https://github.com/open-feature/js-sdk/commit/aa232a9d6a8dfa416380ccdecd71843d3e361048))
 
 
-### Dependencies
-
-* The following workspace dependencies were updated
-  * devDependencies
-    * @openfeature/core bumped from ^1.8.1 to ^1.9.0
-    * @openfeature/web-sdk bumped from ^1.5.0 to ^1.6.0
-
 ## [0.0.15](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.14...angular-sdk-v0.0.15) (2025-05-27)
 
 
