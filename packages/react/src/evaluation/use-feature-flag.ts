@@ -312,7 +312,7 @@ function attachHandlersAndResolve<T extends FlagValue>(
     if (!isEqual(newDetails.value, evaluationDetails.value)) {
       setEvaluationDetails(newDetails);
     }
-  }, [client, flagKey, defaultValue, options, resolver]);
+  }, [client, flagKey, defaultValue, options, resolver, evaluationDetails]);
 
   // Maintain a mutable reference to the evaluation details to have a up-to-date reference in the handlers.
   const evaluationDetailsRef = useRef<EvaluationDetails<T>>(evaluationDetails);
