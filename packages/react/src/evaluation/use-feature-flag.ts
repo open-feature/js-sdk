@@ -8,7 +8,7 @@ import type {
   JsonValue,
 } from '@openfeature/web-sdk';
 import { ProviderEvents, ProviderStatus } from '@openfeature/web-sdk';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   DEFAULT_OPTIONS,
   isEqual,
@@ -287,8 +287,7 @@ function attachHandlersAndResolve<T extends FlagValue>(
   const client = useOpenFeatureClient();
   const status = useOpenFeatureClientStatus();
   const provider = useOpenFeatureProvider();
-
-  const controller = new AbortController();
+  const isFirstRender = useRef(true);
 
   if (defaultedOptions.suspendUntilReady && status === ProviderStatus.NOT_READY) {
     suspendUntilInitialized(provider, client);
@@ -298,9 +297,22 @@ function attachHandlersAndResolve<T extends FlagValue>(
     suspendUntilReconciled(client);
   }
 
-  const [evaluationDetails, setEvaluationDetails] = useState<EvaluationDetails<T>>(
+  const [evaluationDetails, setEvaluationDetails] = useState<EvaluationDetails<T>>(() =>
     resolver(client).call(client, flagKey, defaultValue, options),
   );
+  
+  // Re-evaluate when dependencies change (handles prop changes like flagKey)
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    
+    const newDetails = resolver(client).call(client, flagKey, defaultValue, options);
+    if (!isEqual(newDetails.value, evaluationDetails.value)) {
+      setEvaluationDetails(newDetails);
+    }
+  }, [client, flagKey, defaultValue, options, resolver]);
 
   // Maintain a mutable reference to the evaluation details to have a up-to-date reference in the handlers.
   const evaluationDetailsRef = useRef<EvaluationDetails<T>>(evaluationDetails);
@@ -308,7 +320,7 @@ function attachHandlersAndResolve<T extends FlagValue>(
     evaluationDetailsRef.current = evaluationDetails;
   }, [evaluationDetails]);
 
-  const updateEvaluationDetailsCallback = () => {
+  const updateEvaluationDetailsCallback = useCallback(() => {
     const updatedEvaluationDetails = resolver(client).call(client, flagKey, defaultValue, options);
 
     /**
@@ -319,15 +331,19 @@ function attachHandlersAndResolve<T extends FlagValue>(
     if (!isEqual(updatedEvaluationDetails.value, evaluationDetailsRef.current.value)) {
       setEvaluationDetails(updatedEvaluationDetails);
     }
-  };
+  }, [client, flagKey, defaultValue, options, resolver]);
 
-  const configurationChangeCallback: EventHandler<ClientProviderEvents.ConfigurationChanged> = (eventDetails) => {
-    if (shouldEvaluateFlag(flagKey, eventDetails?.flagsChanged)) {
-      updateEvaluationDetailsCallback();
-    }
-  };
+  const configurationChangeCallback = useCallback<EventHandler<ClientProviderEvents.ConfigurationChanged>>(
+    (eventDetails) => {
+      if (shouldEvaluateFlag(flagKey, eventDetails?.flagsChanged)) {
+        updateEvaluationDetailsCallback();
+      }
+    },
+    [flagKey, updateEvaluationDetailsCallback],
+  );
 
   useEffect(() => {
+    const controller = new AbortController();
     if (status === ProviderStatus.NOT_READY) {
       // update when the provider is ready
       client.addHandler(ProviderEvents.Ready, updateEvaluationDetailsCallback, { signal: controller.signal });
@@ -348,7 +364,14 @@ function attachHandlersAndResolve<T extends FlagValue>(
       // cleanup the handlers
       controller.abort();
     };
-  }, []);
+  }, [
+    client,
+    status,
+    defaultedOptions.updateOnContextChanged,
+    defaultedOptions.updateOnConfigurationChanged,
+    updateEvaluationDetailsCallback,
+    configurationChangeCallback,
+  ]);
 
   return evaluationDetails;
 }
