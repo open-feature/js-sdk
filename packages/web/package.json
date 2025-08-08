@@ -3,8 +3,8 @@
   "version": "1.5.0",
   "description": "OpenFeature SDK for Web",
   "main": "./dist/cjs/index.js",
-  "unpkg": "dist/global/index.js",
-  "jsdelivr": "dist/global/index.js",
+  "unpkg": "dist/global/index.min.js",
+  "jsdelivr": "dist/global/index.min.js",
   "files": [
     "dist/"
   ],
@@ -23,8 +23,9 @@
     "build:web-esm": "esbuild src/index.ts --bundle --external:@openfeature/core --sourcemap --target=es2015 --platform=browser --format=esm --outfile=./dist/esm/index.js --analyze",
     "build:web-cjs": "esbuild src/index.ts --bundle --external:@openfeature/core --sourcemap --target=es2015 --platform=browser --format=cjs --outfile=./dist/cjs/index.js --analyze",
     "build:web-global": "esbuild src/index.ts --bundle --sourcemap --target=es2015 --platform=browser --format=iife --outfile=./dist/global/index.js --global-name=OpenFeature --analyze",
+    "build:web-global:min": "esbuild src/index.ts --bundle --sourcemap --target=es2015 --platform=browser --format=iife --outfile=./dist/global/index.min.js --global-name=OpenFeature --minify --analyze",
     "build:rollup-types": "rollup -c ../../rollup.config.mjs",
-    "build": "npm run clean && npm run build:web-esm && npm run build:web-cjs && npm run build:web-global && npm run build:rollup-types",
+    "build": "npm run clean && npm run build:web-esm && npm run build:web-cjs && npm run build:web-global && npm run build:web-global:min && npm run build:rollup-types",
     "postbuild": "shx cp ./../../package.esm.json ./dist/esm/package.json",
     "current-version": "echo $npm_package_version",
     "prepack": "shx cp ./../../LICENSE ./LICENSE",
