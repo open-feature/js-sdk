@@ -1,5 +1,13 @@
 # Changelog 
 
+## [1.9.0](https://github.com/open-feature/js-sdk/compare/core-v1.8.1...core-v1.9.0) (2025-08-10)
+
+
+### ✨ New Features
+
+* add evaluation-scoped hook data ([#1216](https://github.com/open-feature/js-sdk/issues/1216)) ([07af3a9](https://github.com/open-feature/js-sdk/commit/07af3a9eda895e9edb24c7ee1e3c1c4f16e17431))
+* support Angular 20 ([#1220](https://github.com/open-feature/js-sdk/issues/1220)) ([aa232a9](https://github.com/open-feature/js-sdk/commit/aa232a9d6a8dfa416380ccdecd71843d3e361048))
+
 ## [1.8.1](https://github.com/open-feature/js-sdk/compare/core-v1.8.0...core-v1.8.1) (2025-06-04)
 
 
