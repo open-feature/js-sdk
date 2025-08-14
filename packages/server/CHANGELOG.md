@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.19.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.18.0...server-sdk-v1.19.0) (2025-08-14)
+
+
+### ✨ New Features
+
+* add evaluation-scoped hook data ([#1216](https://github.com/open-feature/js-sdk/issues/1216)) ([07af3a9](https://github.com/open-feature/js-sdk/commit/07af3a9eda895e9edb24c7ee1e3c1c4f16e17431))
+
+
+### 🐛 Bug Fixes
+
+* update core dep ([#1228](https://github.com/open-feature/js-sdk/issues/1228)) ([845d24c](https://github.com/open-feature/js-sdk/commit/845d24c5fecc80de3080e49fde839f08ecac6b33))
+
+
+### 🧹 Chore
+
+* update node to v20+ ([#1203](https://github.com/open-feature/js-sdk/issues/1203)) ([1f33453](https://github.com/open-feature/js-sdk/commit/1f33453c23df0763cbf0d0b44db8d91216377009))
+
+
+### 📚 Documentation
+
+* Clarify the behavior of setProviderAndWait ([#1180](https://github.com/open-feature/js-sdk/issues/1180)) ([4fe8d87](https://github.com/open-feature/js-sdk/commit/4fe8d87a2e5df2cbd4086cc4f4a380e8857ed8ba))
+
 ## [1.18.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.17.1...server-sdk-v1.18.0) (2025-04-11)
 
 

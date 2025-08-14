@@ -2,7 +2,7 @@
   "packages/nest": "0.2.5",
   "packages/react": "1.0.0",
   "packages/web": "1.6.0",
-  "packages/server": "1.18.0",
+  "packages/server": "1.19.0",
   "packages/shared": "1.9.0",
   "packages/angular/projects/angular-sdk": "0.0.16"
 }
