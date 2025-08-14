@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.6.1](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.6.0...web-sdk-v1.6.1) (2025-08-14)
+
+
+### 🐛 Bug Fixes
+
+* update core dep ([#1228](https://github.com/open-feature/js-sdk/issues/1228)) ([845d24c](https://github.com/open-feature/js-sdk/commit/845d24c5fecc80de3080e49fde839f08ecac6b33))
+
 ## [1.6.0](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.5.0...web-sdk-v1.6.0) (2025-08-12)
 
 
