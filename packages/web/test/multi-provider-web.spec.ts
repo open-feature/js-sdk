@@ -13,6 +13,7 @@ import type {
 } from '@openfeature/web-sdk';
 import {
   DefaultLogger,
+  MapHookData,
   ErrorCode,
   FlagNotFoundError,
   InMemoryProvider,
@@ -65,6 +66,7 @@ const callBeforeHook = (
     clientMetadata: {} as any,
     providerMetadata: {} as any,
     logger: logger,
+    hookData: new MapHookData(),
   };
   multi.hooks[0].before?.(hookContext);
 };
@@ -272,6 +274,7 @@ describe('MultiProvider', () => {
           clientMetadata: {} as any,
           providerMetadata: {} as any,
           logger: logger,
+          hookData: new MapHookData(),
         };
 
         provider1.hooks = [
@@ -351,6 +354,7 @@ describe('MultiProvider', () => {
           clientMetadata: {} as any,
           providerMetadata: {} as any,
           logger: logger,
+          hookData: new MapHookData(),
         };
 
         provider1.hooks = [
