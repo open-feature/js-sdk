@@ -12,6 +12,7 @@ import type {
 } from '@openfeature/server-sdk';
 import {
   DefaultLogger,
+  MapHookData,
   ErrorCode,
   FlagNotFoundError,
   InMemoryProvider,
@@ -64,6 +65,7 @@ const callBeforeHook = async (
     clientMetadata: {} as any,
     providerMetadata: {} as any,
     logger: logger,
+    hookData: new MapHookData(),
   };
   await multi.hooks[0].before?.(hookContext);
 };
@@ -271,6 +273,7 @@ describe('MultiProvider', () => {
           clientMetadata: {} as any,
           providerMetadata: {} as any,
           logger: logger,
+          hookData: new MapHookData(),
         };
 
         const weakMap = new WeakMap();
@@ -372,6 +375,7 @@ describe('MultiProvider', () => {
           clientMetadata: {} as any,
           providerMetadata: {} as any,
           logger: logger,
+          hookData: new MapHookData(),
         };
 
         const weakMap = new WeakMap();
