@@ -55,9 +55,7 @@ export class StatusTracker {
     this.providerStatuses[name] = status;
     const newStatus = this.getStatusFromProviderStatuses();
     if (currentStatus !== newStatus) {
-      if (newStatus === ProviderStatus.FATAL) {
-        this.events.emit(ProviderEvents.Error, details);
-      } else if (newStatus === ProviderStatus.ERROR) {
+      if (newStatus === ProviderStatus.FATAL || newStatus === ProviderStatus.ERROR) {
         this.events.emit(ProviderEvents.Error, details);
       } else if (newStatus === ProviderStatus.STALE) {
         this.events.emit(ProviderEvents.Stale, details);
