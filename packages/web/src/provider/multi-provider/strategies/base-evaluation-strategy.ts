@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type {
   ErrorCode,
   EvaluationContext,
@@ -65,7 +66,6 @@ export abstract class BaseEvaluationStrategy {
     return true;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   shouldEvaluateNextProvider<T extends FlagValue>(
     strategyContext: StrategyPerProviderContext,
     context: EvaluationContext,
@@ -74,7 +74,6 @@ export abstract class BaseEvaluationStrategy {
     return true;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   shouldTrackWithThisProvider(
     strategyContext: StrategyProviderContext,
     context: EvaluationContext,
