@@ -5,24 +5,19 @@ import type {
   FlagMetadata,
   FlagValue,
   FlagValueType,
-  Hook,
   HookContext,
   HookHints,
   JsonValue,
   Logger,
   OpenFeatureError,
-  Provider,
   ProviderMetadata,
   ResolutionDetails,
   TrackingEventDetails,
-} from '@openfeature/server-sdk';
-import {
-  DefaultLogger,
-  ErrorCode,
-  GeneralError,
-  OpenFeatureEventEmitter,
-  StandardResolutionReasons,
-} from '@openfeature/server-sdk';
+} from '@openfeature/core';
+import { DefaultLogger, ErrorCode, GeneralError, StandardResolutionReasons } from '@openfeature/core';
+import type { Provider } from '../provider';
+import type { Hook } from '../../hooks';
+import { OpenFeatureEventEmitter } from '../../events/open-feature-event-emitter';
 import { constructAggregateError, throwAggregateErrorFromPromiseResults } from './errors';
 import { HookExecutor } from './hook-executor';
 import { StatusTracker } from './status-tracker';
@@ -177,7 +172,7 @@ export class MultiProvider implements Provider {
 
     const results = await Promise.all(tasks);
     const resolutions = results
-      .map(([_, resolution]) => resolution)
+      .map(([, resolution]) => resolution)
       .filter((r): r is ProviderResolutionResult<T> => Boolean(r));
 
     const finalResult = this.evaluationStrategy.determineFinalResult({ flagKey, flagType }, context, resolutions);
@@ -201,7 +196,7 @@ export class MultiProvider implements Provider {
     hookContext: HookContext,
     hookHints: HookHints,
     context: EvaluationContext,
-  ): Promise<[shouldEvaluateNext: boolean, ProviderResolutionResult<T> | null]> {
+  ): Promise<[boolean, ProviderResolutionResult<T> | null]> {
     let evaluationResult: ResolutionDetails<T> | undefined = undefined;
     const provider = providerEntry.provider;
     const strategyContext = {
@@ -262,7 +257,7 @@ export class MultiProvider implements Provider {
         provider,
         flagKey,
         defaultValue,
-        providerContext,
+        providerContext || {},
       )) as ResolutionDetails<T>;
 
       evaluationDetails = {
