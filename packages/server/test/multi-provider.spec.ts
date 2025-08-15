@@ -1,4 +1,4 @@
-import { MultiProvider } from './multi-provider';
+import { MultiProvider } from '../src/provider/multi-provider/multi-provider';
 import type {
   EvaluationContext,
   FlagValue,
@@ -17,9 +17,9 @@ import {
   OpenFeatureEventEmitter,
   ServerProviderEvents,
 } from '@openfeature/server-sdk';
-import { FirstMatchStrategy } from './strategies/FirstMatchStrategy';
-import { FirstSuccessfulStrategy } from './strategies/FirstSuccessfulStrategy';
-import { ComparisonStrategy } from './strategies/ComparisonStrategy';
+import { FirstMatchStrategy } from '../src/provider/multi-provider/strategies';
+import { FirstSuccessfulStrategy } from '../src/provider/multi-provider/strategies';
+import { ComparisonStrategy } from '../src/provider/multi-provider/strategies';
 
 class TestProvider implements Provider {
   public metadata: ProviderMetadata = {

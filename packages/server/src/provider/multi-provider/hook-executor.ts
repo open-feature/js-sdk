@@ -1,4 +1,5 @@
-import type { EvaluationDetails, FlagValue, Hook, HookContext, HookHints, Logger } from '@openfeature/server-sdk';
+import type { EvaluationDetails, FlagValue, HookContext, HookHints, Logger } from '@openfeature/core';
+import type { Hook } from '../../hooks';
 
 /**
  * Utility for executing a set of hooks of each type. Implementation is largely copied from the main OpenFeature SDK.

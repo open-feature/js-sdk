@@ -4,11 +4,11 @@ import type {
   FlagValue,
   FlagValueType,
   OpenFeatureError,
-  Provider,
   ResolutionDetails,
   TrackingEventDetails,
-} from '@openfeature/server-sdk';
-import { ProviderStatus } from '@openfeature/server-sdk';
+} from '@openfeature/core';
+import type { Provider } from '../../provider';
+import { ProviderStatus } from '../../provider';
 import { ErrorWithCode } from '../errors';
 
 export type StrategyEvaluationContext = {
@@ -56,7 +56,8 @@ export type FinalResult<T extends FlagValue> = {
 export abstract class BaseEvaluationStrategy {
   public runMode: 'parallel' | 'sequential' = 'sequential';
 
-  shouldEvaluateThisProvider(strategyContext: StrategyPerProviderContext, evalContext: EvaluationContext): boolean {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  shouldEvaluateThisProvider(strategyContext: StrategyPerProviderContext, _evalContext?: EvaluationContext): boolean {
     if (
       strategyContext.providerStatus === ProviderStatus.NOT_READY ||
       strategyContext.providerStatus === ProviderStatus.FATAL
@@ -66,19 +67,21 @@ export abstract class BaseEvaluationStrategy {
     return true;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   shouldEvaluateNextProvider<T extends FlagValue>(
-    strategyContext: StrategyPerProviderContext,
-    context: EvaluationContext,
-    result: ProviderResolutionResult<T>,
+    _strategyContext?: StrategyPerProviderContext,
+    _context?: EvaluationContext,
+    _result?: ProviderResolutionResult<T>,
   ): boolean {
     return true;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   shouldTrackWithThisProvider(
     strategyContext: StrategyProviderContext,
-    context: EvaluationContext,
-    trackingEventName: string,
-    trackingEventDetails: TrackingEventDetails,
+    _context?: EvaluationContext,
+    _trackingEventName?: string,
+    _trackingEventDetails?: TrackingEventDetails,
   ): boolean {
     if (
       strategyContext.providerStatus === ProviderStatus.NOT_READY ||

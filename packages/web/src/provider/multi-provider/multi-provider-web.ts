@@ -1,12 +1,10 @@
 import type {
   EvaluationContext,
   FlagValueType,
-  Hook,
   HookContext,
   HookHints,
   JsonValue,
   Logger,
-  Provider,
   ProviderMetadata,
   BeforeHookContext,
   ResolutionDetails,
@@ -15,14 +13,11 @@ import type {
   FlagValue,
   OpenFeatureError,
   TrackingEventDetails,
-} from '@openfeature/web-sdk';
-import {
-  DefaultLogger,
-  GeneralError,
-  OpenFeatureEventEmitter,
-  ErrorCode,
-  StandardResolutionReasons,
-} from '@openfeature/web-sdk';
+} from '@openfeature/core';
+import type { Provider } from '../../provider';
+import type { Hook } from '../../hooks';
+import { OpenFeatureEventEmitter } from '../../events';
+import { DefaultLogger, GeneralError, ErrorCode, StandardResolutionReasons } from '@openfeature/core';
 import { HookExecutor } from './hook-executor';
 import { constructAggregateError, throwAggregateErrorFromPromiseResults } from './errors';
 import type { BaseEvaluationStrategy, ProviderResolutionResult } from './strategies';
@@ -232,7 +227,7 @@ export class WebMultiProvider implements Provider {
     hookContext: HookContext,
     hookHints: HookHints,
     context: EvaluationContext,
-  ): [shouldEvaluateNext: boolean, ProviderResolutionResult<T> | null] {
+  ): [boolean, ProviderResolutionResult<T> | null] {
     let evaluationResult: ResolutionDetails<T> | undefined = undefined;
     const provider = providerEntry.provider;
     const strategyContext = {

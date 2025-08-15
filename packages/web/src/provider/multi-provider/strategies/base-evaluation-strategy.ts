@@ -4,11 +4,11 @@ import type {
   FlagValue,
   FlagValueType,
   OpenFeatureError,
-  Provider,
   ResolutionDetails,
   TrackingEventDetails,
-} from '@openfeature/web-sdk';
-import { ProviderStatus } from '@openfeature/web-sdk';
+} from '@openfeature/core';
+import type { Provider } from '../../provider';
+import { ProviderStatus } from '../../provider';
 import { ErrorWithCode } from '../errors';
 
 export type StrategyEvaluationContext = {
@@ -54,6 +54,7 @@ export type FinalResult<T extends FlagValue> = {
  * Contains default implementations for `shouldEvaluateThisProvider` and `shouldEvaluateNextProvider`
  */
 export abstract class BaseEvaluationStrategy {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   shouldEvaluateThisProvider(strategyContext: StrategyPerProviderContext, evalContext: EvaluationContext): boolean {
     if (
       strategyContext.providerStatus === ProviderStatus.NOT_READY ||
@@ -64,6 +65,7 @@ export abstract class BaseEvaluationStrategy {
     return true;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   shouldEvaluateNextProvider<T extends FlagValue>(
     strategyContext: StrategyPerProviderContext,
     context: EvaluationContext,
@@ -72,6 +74,7 @@ export abstract class BaseEvaluationStrategy {
     return true;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   shouldTrackWithThisProvider(
     strategyContext: StrategyProviderContext,
     context: EvaluationContext,

@@ -1,5 +1,7 @@
-import type { EventDetails, OpenFeatureEventEmitter } from '@openfeature/web-sdk';
-import { ProviderEvents, ProviderStatus } from '@openfeature/web-sdk';
+import type { EventDetails } from '@openfeature/core';
+import type { OpenFeatureEventEmitter } from '../../events';
+import { ProviderEvents } from '../../events';
+import { ProviderStatus } from '../provider';
 import type { RegisteredProvider } from './types';
 
 /**
@@ -13,19 +15,19 @@ export class StatusTracker {
 
   wrapEventHandler(providerEntry: RegisteredProvider) {
     const provider = providerEntry.provider;
-    provider.events?.addHandler(ProviderEvents.Error, (details) => {
+    provider.events?.addHandler(ProviderEvents.Error, (details?: EventDetails) => {
       this.changeProviderStatus(providerEntry.name, ProviderStatus.ERROR, details);
     });
 
-    provider.events?.addHandler(ProviderEvents.Stale, (details) => {
+    provider.events?.addHandler(ProviderEvents.Stale, (details?: EventDetails) => {
       this.changeProviderStatus(providerEntry.name, ProviderStatus.STALE, details);
     });
 
-    provider.events?.addHandler(ProviderEvents.ConfigurationChanged, (details) => {
+    provider.events?.addHandler(ProviderEvents.ConfigurationChanged, (details?: EventDetails) => {
       this.events.emit(ProviderEvents.ConfigurationChanged, details);
     });
 
-    provider.events?.addHandler(ProviderEvents.Ready, (details) => {
+    provider.events?.addHandler(ProviderEvents.Ready, (details?: EventDetails) => {
       this.changeProviderStatus(providerEntry.name, ProviderStatus.READY, details);
     });
   }
