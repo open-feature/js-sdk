@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { MultiProvider } from '../src/provider/multi-provider/multi-provider';
 import type {
   EvaluationContext,
@@ -43,7 +44,7 @@ class TestProvider implements Provider {
 }
 
 const callEvaluation = async (multi: MultiProvider, context: EvaluationContext, logger: Logger) => {
-  await callBeforeHook(multi, context, 'flag', 'boolean', false);
+  await callBeforeHook(multi, context, 'flag', 'boolean', false, logger);
   return multi.resolveBooleanEvaluation('flag', false, context);
 };
 

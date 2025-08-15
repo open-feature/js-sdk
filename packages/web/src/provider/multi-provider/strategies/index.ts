@@ -1,4 +1,4 @@
 export * from './base-evaluation-strategy';
-export * from './FirstMatchStrategy';
-export * from './FirstSuccessfulStrategy';
-export * from './ComparisonStrategy';
+export * from './first-match-strategy';
+export * from './first-successful-strategy';
+export * from './comparison-strategy';
