@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { WebMultiProvider } from '../src/provider/multi-provider/multi-provider-web';
 import type {
   EvaluationContext,
