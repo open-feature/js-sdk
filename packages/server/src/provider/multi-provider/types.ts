@@ -1,5 +1,5 @@
 // Represents an entry in the constructor's provider array which may or may not have a name set
-import type { Provider } from '@openfeature/server-sdk';
+import type { Provider } from '../provider';
 
 export type ProviderEntryInput = {
   provider: Provider;
