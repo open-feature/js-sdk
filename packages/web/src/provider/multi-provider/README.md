@@ -56,10 +56,10 @@ const multiProvider = new WebMultiProvider(
 
 The Multi-Provider comes with three strategies out of the box:
 
-- `FirstMatchStrategy` (default): Evaluates all providers in order and returns the first successful result. Providers that indicate FLAG_NOT_FOUND error will be skipped and the next provider will be evaluated. Any other error will cause the operation to fail and the set of errors to be thrown. 
+- `FirstMatchStrategy` (default): Evaluates all providers in order and returns the first successful result. Providers that indicate FLAG_NOT_FOUND error will be skipped and the next provider will be evaluated. Any other error will cause the operation to fail and the set of errors to be thrown.
 - `FirstSuccessfulStrategy`: Evaluates all providers in order and returns the first successful result. Any error will cause that provider to be skipped.
 If no successful result is returned, the set of errors will be thrown.
-- `ComparisonStrategy`: Evaluates all providers in parallel. If every provider returns a successful result with the same value, then that result is returned.
+- `ComparisonStrategy`: Evaluates all providers sequentially. If every provider returns a successful result with the same value, then that result is returned.
 Otherwise, the result returned by the configured "fallback provider" will be used. When values do not agree, an optional callback will be executed to notify
 you of the mismatch. This can be useful when migrating between providers that are expected to contain identical configuration. You can easily spot mismatches
 in configuration without affecting flag behaviour.
