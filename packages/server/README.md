@@ -205,16 +205,14 @@ import { OpenFeature, MultiProvider, ComparisonStrategy } from '@openfeature/ser
 const providerA = new ProviderA();
 const providerB = new ProviderB();
 
-const comparisonStrategy = new ComparisonStrategy({
-  primary: 0, // Use first provider as primary
-  onMismatch: (flagKey, primaryResult, results) => {
-    console.warn(`Mismatch for ${flagKey}:`, primaryResult, results);
-  }
-});
-
 const multiProvider = new MultiProvider(
-  [providerA, providerB],
-  comparisonStrategy
+  [
+    { provider: providerA },
+    { provider: providerB }
+  ],
+  new ComparisonStrategy(providerA, (resolutions) => {
+    console.warn('Mismatch detected', resolutions);
+  })
 );
 
 await OpenFeature.setProviderAndWait(multiProvider);
