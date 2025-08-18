@@ -20,7 +20,6 @@
       "versioning": "default"
     },
     "packages/react": {
-      "release-as": "1.0.0",
       "release-type": "node",
       "prerelease": false,
       "bump-minor-pre-major": true,
