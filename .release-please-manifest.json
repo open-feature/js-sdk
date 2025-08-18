@@ -1,6 +1,6 @@
 {
   "packages/nest": "0.2.5",
-  "packages/react": "1.0.0",
+  "packages/react": "1.0.1",
   "packages/web": "1.6.1",
   "packages/server": "1.19.0",
   "packages/shared": "1.9.0",
