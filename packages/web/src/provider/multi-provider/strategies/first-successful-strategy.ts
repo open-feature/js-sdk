@@ -3,7 +3,7 @@ import { BaseEvaluationStrategy } from './base-evaluation-strategy';
 import type { EvaluationContext, FlagValue } from '@openfeature/core';
 
 /**
- * Return the first result that did result in an error
+ * Return the first result that did NOT result in an error
  * If any provider in the course of evaluation returns or throws an error, ignore it as long as there is a successful result
  * If there is no successful result, throw all errors
  */

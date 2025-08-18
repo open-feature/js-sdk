@@ -23,7 +23,6 @@ import {
 import { FirstMatchStrategy } from '../src/provider/multi-provider/strategies';
 import { FirstSuccessfulStrategy } from '../src/provider/multi-provider/strategies';
 import { ComparisonStrategy } from '../src/provider/multi-provider/strategies';
-// import type { BaseEvaluationStrategy } from '../src/provider/multi-provider/strategies/BaseEvaluationStrategy';
 
 class TestProvider implements Provider {
   public metadata: ProviderMetadata = {
