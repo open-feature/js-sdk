@@ -330,7 +330,6 @@ export class MultiProvider implements Provider {
         try {
           providerEntry.provider.track?.(trackingEventName, context, trackingEventDetails);
         } catch (error) {
-          // TODO: how should we handle errors?
           // Log error but don't throw - tracking shouldn't break application flow
           this.logger.error(
             `Error tracking event "${trackingEventName}" with provider "${providerEntry.name}":`,
