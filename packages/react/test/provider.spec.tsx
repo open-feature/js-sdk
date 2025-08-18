@@ -288,7 +288,7 @@ describe('OpenFeatureProvider', () => {
         { timeout: DELAY * 4 },
       );
 
-      expect(screen.getByText('Will says hi')).toBeInTheDocument();
+      expect(screen.getByText('Will says aloha')).toBeInTheDocument();
     });
   });
 });
