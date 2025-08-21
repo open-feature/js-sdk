@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/open-feature/js-sdk/compare/react-sdk-v1.0.0...react-sdk-v1.0.1) (2025-08-18)
+
+
+### 🐛 Bug Fixes
+
+* **react:** re-evaluate flags on re-render to detect silent provider … ([#1226](https://github.com/open-feature/js-sdk/issues/1226)) ([3105595](https://github.com/open-feature/js-sdk/commit/31055959265a53f52102590f54fa3168811ec678))
+
 ## [1.0.0](https://github.com/open-feature/js-sdk/compare/react-sdk-v0.4.11...react-sdk-v1.0.0) (2025-04-14)
 
 
