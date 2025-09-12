@@ -49,7 +49,7 @@ describe('evaluationEvent', () => {
     });
   });
 
-  it('should include variant when provided', () => {
+  it('should include variant and value when provided', () => {
     const details: EvaluationDetails<boolean> = {
       flagKey,
       value: true,
@@ -61,7 +61,7 @@ describe('evaluationEvent', () => {
     const result = createEvaluationEvent(mockHookContext, details);
 
     expect(result.attributes[TelemetryAttribute.VARIANT]).toBe('test-variant');
-    expect(result.attributes[TelemetryAttribute.VALUE]).toBeUndefined();
+    expect(result.attributes[TelemetryAttribute.VALUE]).toEqual(true);
   });
 
   it('should include flag metadata when provided', () => {
