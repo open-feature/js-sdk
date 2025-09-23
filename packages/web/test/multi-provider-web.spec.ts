@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { WebMultiProvider } from '../src/provider/multi-provider/multi-provider-web';
+import { MultiProvider } from '../src/provider/multi-provider/multi-provider-web';
 import type {
   EvaluationContext,
   FlagValue,
@@ -44,13 +44,13 @@ class TestProvider implements Provider {
   }
 }
 
-const callEvaluation = (multi: WebMultiProvider, context: EvaluationContext) => {
+const callEvaluation = (multi: MultiProvider, context: EvaluationContext) => {
   callBeforeHook(multi, context, 'flag', 'boolean', false);
   return multi.resolveBooleanEvaluation('flag', false, context);
 };
 
 const callBeforeHook = (
-  multi: WebMultiProvider,
+  multi: MultiProvider,
   context: EvaluationContext,
   flagKey: string,
   flagType: FlagValueType,
@@ -75,7 +75,7 @@ describe('MultiProvider', () => {
 
   describe('unique names', () => {
     it('uses provider names for unique types', () => {
-      const multiProvider = new WebMultiProvider([
+      const multiProvider = new MultiProvider([
         {
           provider: new InMemoryProvider(),
         },
@@ -88,7 +88,7 @@ describe('MultiProvider', () => {
       expect(multiProvider.providerEntries.length).toBe(2);
     });
     it('generates unique names for identical provider types', () => {
-      const multiProvider = new WebMultiProvider([
+      const multiProvider = new MultiProvider([
         {
           provider: new TestProvider(),
         },
@@ -109,7 +109,7 @@ describe('MultiProvider', () => {
       expect(multiProvider.providerEntries.length).toBe(4);
     });
     it('uses specified names for identical provider types', () => {
-      const multiProvider = new WebMultiProvider([
+      const multiProvider = new MultiProvider([
         {
           provider: new TestProvider(),
           name: 'provider1',
@@ -126,7 +126,7 @@ describe('MultiProvider', () => {
     it('throws an error if specified names are not unique', () => {
       expect(
         () =>
-          new WebMultiProvider([
+          new MultiProvider([
             {
               provider: new TestProvider(),
               name: 'provider',
@@ -145,7 +145,7 @@ describe('MultiProvider', () => {
       const provider1 = new TestProvider();
       const provider2 = new TestProvider();
       let initializations = 0;
-      const multiProvider = new WebMultiProvider([
+      const multiProvider = new MultiProvider([
         {
           provider: provider1,
         },
@@ -166,7 +166,7 @@ describe('MultiProvider', () => {
       const provider1 = new TestProvider();
       const provider2 = new TestProvider();
       let initializations = 0;
-      const multiProvider = new WebMultiProvider([
+      const multiProvider = new MultiProvider([
         {
           provider: provider1,
         },
@@ -185,7 +185,7 @@ describe('MultiProvider', () => {
     it('emits events when aggregate status changes', async () => {
       const provider1 = new TestProvider();
       const provider2 = new TestProvider();
-      const multiProvider = new WebMultiProvider([
+      const multiProvider = new MultiProvider([
         {
           provider: provider1,
         },
@@ -237,7 +237,7 @@ describe('MultiProvider', () => {
       const provider1 = new TestProvider();
       const provider2 = new TestProvider();
 
-      const multiProvider = new WebMultiProvider([
+      const multiProvider = new MultiProvider([
         {
           provider: provider1,
         },
@@ -304,7 +304,7 @@ describe('MultiProvider', () => {
           },
         ];
 
-        const multiProvider = new WebMultiProvider(
+        const multiProvider = new MultiProvider(
           [
             {
               provider: provider1,
@@ -369,7 +369,7 @@ describe('MultiProvider', () => {
           },
         ];
 
-        const multiProvider = new WebMultiProvider([
+        const multiProvider = new MultiProvider([
           {
             provider: provider1,
           },
@@ -392,7 +392,7 @@ describe('MultiProvider', () => {
           const provider1 = new TestProvider();
           provider1.resolveStringEvaluation.mockReturnValue({ value: 'value' });
 
-          const multiProvider = new WebMultiProvider([
+          const multiProvider = new MultiProvider([
             {
               provider: provider1,
             },
@@ -410,7 +410,7 @@ describe('MultiProvider', () => {
           const provider1 = new TestProvider();
           provider1.resolveNumberEvaluation.mockReturnValue({ value: 1 });
 
-          const multiProvider = new WebMultiProvider([
+          const multiProvider = new MultiProvider([
             {
               provider: provider1,
             },
@@ -430,7 +430,7 @@ describe('MultiProvider', () => {
           const provider1 = new TestProvider();
           provider1.resolveBooleanEvaluation.mockReturnValue({ value: true });
 
-          const multiProvider = new WebMultiProvider([
+          const multiProvider = new MultiProvider([
             {
               provider: provider1,
             },
@@ -448,7 +448,7 @@ describe('MultiProvider', () => {
           const provider1 = new TestProvider();
           provider1.resolveObjectEvaluation.mockReturnValue({ value: { test: true } });
 
-          const multiProvider = new WebMultiProvider([
+          const multiProvider = new MultiProvider([
             {
               provider: provider1,
             },
@@ -469,7 +469,7 @@ describe('MultiProvider', () => {
           provider1.resolveBooleanEvaluation.mockImplementation(() => {
             throw new Error('test error');
           });
-          const multiProvider = new WebMultiProvider(
+          const multiProvider = new MultiProvider(
             [
               {
                 provider: provider1,
@@ -492,7 +492,7 @@ describe('MultiProvider', () => {
             errorCode: 'test-error',
             errorMessage: 'test error',
           });
-          const multiProvider = new WebMultiProvider(
+          const multiProvider = new MultiProvider(
             [
               {
                 provider: provider1,
@@ -519,7 +519,7 @@ describe('MultiProvider', () => {
           provider2.resolveBooleanEvaluation.mockReturnValue({
             value: true,
           });
-          const multiProvider = new WebMultiProvider(
+          const multiProvider = new MultiProvider(
             [
               {
                 provider: provider1,
@@ -549,7 +549,7 @@ describe('MultiProvider', () => {
           provider2.resolveBooleanEvaluation.mockReturnValue({
             value: true,
           });
-          const multiProvider = new WebMultiProvider(
+          const multiProvider = new MultiProvider(
             [
               {
                 provider: provider1,
@@ -582,7 +582,7 @@ describe('MultiProvider', () => {
           provider2.resolveBooleanEvaluation.mockReturnValue({
             value: true,
           });
-          const multiProvider = new WebMultiProvider(
+          const multiProvider = new MultiProvider(
             [
               {
                 provider: provider1,
@@ -613,7 +613,7 @@ describe('MultiProvider', () => {
           provider2.resolveBooleanEvaluation.mockReturnValue({ value: true });
           provider3.resolveBooleanEvaluation.mockReturnValue({ value: true });
 
-          const multiProvider = new WebMultiProvider(
+          const multiProvider = new MultiProvider(
             [
               {
                 provider: provider1,
@@ -651,7 +651,7 @@ describe('MultiProvider', () => {
 
           const onMismatch = jest.fn();
 
-          const multiProvider = new WebMultiProvider(
+          const multiProvider = new MultiProvider(
             [
               {
                 provider: provider1,
@@ -704,7 +704,7 @@ describe('MultiProvider', () => {
             value: false,
           });
 
-          const multiProvider = new WebMultiProvider(
+          const multiProvider = new MultiProvider(
             [
               {
                 provider: provider1,
@@ -735,7 +735,7 @@ describe('MultiProvider', () => {
         const provider2 = new TestProvider();
         const provider3 = new TestProvider();
 
-        const multiProvider = new WebMultiProvider([
+        const multiProvider = new MultiProvider([
           { provider: provider1 },
           { provider: provider2 },
           { provider: provider3 },
@@ -753,7 +753,7 @@ describe('MultiProvider', () => {
         const provider2 = new InMemoryProvider(); // Doesn't have track method
         const provider3 = new TestProvider();
 
-        const multiProvider = new WebMultiProvider([
+        const multiProvider = new MultiProvider([
           { provider: provider1 },
           { provider: provider2 },
           { provider: provider3 },
@@ -774,7 +774,7 @@ describe('MultiProvider', () => {
         });
 
         const mockLogger = { error: jest.fn(), warn: jest.fn(), info: jest.fn(), debug: jest.fn() };
-        const multiProvider = new WebMultiProvider(
+        const multiProvider = new MultiProvider(
           [{ provider: provider1 }, { provider: provider2 }, { provider: provider3 }],
           undefined,
           mockLogger,
@@ -805,7 +805,7 @@ describe('MultiProvider', () => {
 
         const mockStrategy = new MockStrategy();
 
-        const multiProvider = new WebMultiProvider(
+        const multiProvider = new MultiProvider(
           [{ provider: provider1 }, { provider: provider2 }, { provider: provider3 }],
           mockStrategy,
         );
@@ -823,7 +823,7 @@ describe('MultiProvider', () => {
         const provider2 = new TestProvider();
         const provider3 = new TestProvider();
 
-        const multiProvider = new WebMultiProvider([
+        const multiProvider = new MultiProvider([
           { provider: provider1 },
           { provider: provider2 },
           { provider: provider3 },
@@ -857,7 +857,7 @@ describe('MultiProvider', () => {
 
         const mockStrategy = new MockStrategy();
 
-        const multiProvider = new WebMultiProvider([{ provider: provider1 }, { provider: provider2 }], mockStrategy);
+        const multiProvider = new MultiProvider([{ provider: provider1 }, { provider: provider2 }], mockStrategy);
 
         // Mock the status tracker to return READY status
         const mockStatusTracker = {
