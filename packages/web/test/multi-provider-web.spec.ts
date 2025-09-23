@@ -246,7 +246,7 @@ describe('MultiProvider', () => {
         },
       ]);
       expect(multiProvider.metadata).toEqual({
-        name: 'WebMultiProvider',
+        name: 'MultiProvider',
         'TestProvider-1': provider1.metadata,
         'TestProvider-2': provider2.metadata,
       });
