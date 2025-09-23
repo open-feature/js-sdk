@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import type {
   ErrorCode,
   EvaluationContext,
@@ -57,7 +56,6 @@ export type FinalResult<T extends FlagValue> = {
 export abstract class BaseEvaluationStrategy {
   public runMode: 'parallel' | 'sequential' = 'sequential';
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   shouldEvaluateThisProvider(strategyContext: StrategyPerProviderContext, _evalContext?: EvaluationContext): boolean {
     if (
       strategyContext.providerStatus === ProviderStatus.NOT_READY ||

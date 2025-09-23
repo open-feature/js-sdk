@@ -25,7 +25,7 @@ import { FirstMatchStrategy } from './strategies';
 import { StatusTracker } from './status-tracker';
 import type { ProviderEntryInput, RegisteredProvider } from './types';
 
-export class WebMultiProvider implements Provider {
+export class MultiProvider implements Provider {
   readonly runsOn = 'client';
 
   public readonly events = new OpenFeatureEventEmitter();
@@ -56,7 +56,7 @@ export class WebMultiProvider implements Provider {
 
     this.metadata = {
       ...aggregateMetadata,
-      name: WebMultiProvider.name,
+      name: MultiProvider.name,
     };
   }
 
