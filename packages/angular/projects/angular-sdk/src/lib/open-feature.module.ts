@@ -5,7 +5,7 @@ import { EvaluationContext, OpenFeature, Provider } from '@openfeature/web-sdk';
 export type EvaluationContextFactory = () => EvaluationContext;
 
 export interface OpenFeatureConfig {
-  provider: Provider;
+  provider?: Provider;
   domainBoundProviders?: Record<string, Provider>;
   context?: EvaluationContext | EvaluationContextFactory;
 }
