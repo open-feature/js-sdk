@@ -30,6 +30,10 @@ export class StatusTracker {
     provider.events?.addHandler(ProviderEvents.Ready, (details?: EventDetails) => {
       this.changeProviderStatus(providerEntry.name, ProviderStatus.READY, details);
     });
+
+    provider.events?.addHandler(ProviderEvents.Reconciling, (details?: EventDetails) => {
+      this.changeProviderStatus(providerEntry.name, ProviderStatus.RECONCILING, details);
+    });
   }
 
   providerStatus(name: string) {
@@ -46,6 +50,8 @@ export class StatusTracker {
       return ProviderStatus.ERROR;
     } else if (statuses.includes(ProviderStatus.STALE)) {
       return ProviderStatus.STALE;
+    } else if (statuses.includes(ProviderStatus.RECONCILING)) {
+      return ProviderStatus.RECONCILING;
     }
     return ProviderStatus.READY;
   }
@@ -61,6 +67,8 @@ export class StatusTracker {
         this.events.emit(ProviderEvents.Stale, details);
       } else if (newStatus === ProviderStatus.READY) {
         this.events.emit(ProviderEvents.Ready, details);
+      } else if (newStatus === ProviderStatus.RECONCILING) {
+        this.events.emit(ProviderEvents.Reconciling, details);
       }
     }
   }
