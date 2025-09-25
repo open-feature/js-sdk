@@ -200,7 +200,7 @@ export class FeatureFlagService {
   }
 
   private shouldEvaluateFlag(flagKey: string, flagsChanged?: string[]): boolean {
-    // if flagsChange is missing entirely, we don't know what to re-render
+    // if flagsChanged is missing entirely, we don't know what to re-render
     return !flagsChanged || flagsChanged.includes(flagKey);
   }
 

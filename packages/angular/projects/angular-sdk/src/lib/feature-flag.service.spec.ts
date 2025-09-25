@@ -14,8 +14,8 @@ const FLAG_KEY = 'thumbs';
 @Component({
   selector: 'test',
   template: `
-    <div data-testid="value">{{ (thumbs$ | async)?.value ? '👍' : '👎' }}</div>
-    <div data-testid="reason">reason: {{ (thumbs$ | async)?.reason }}</div>
+    <div data-testid="value">{{ (thumbs$ | async).value ? '👍' : '👎' }}</div>
+    <div data-testid="reason">reason: {{ (thumbs$ | async).reason }}</div>
   `,
   standalone: true,
   imports: [AsyncPipe],
@@ -41,8 +41,8 @@ class TestComponentWithSignal {
 @Component({
   selector: 'config-change-disabled',
   template: `
-    <div data-testid="value">{{ (thumbs$ | async)?.value ? '👍' : '👎' }}</div>
-    <div data-testid="reason">reason: {{ (thumbs$ | async)?.reason }}</div>
+    <div data-testid="value">{{ (thumbs$ | async).value ? '👍' : '👎' }}</div>
+    <div data-testid="reason">reason: {{ (thumbs$ | async).reason }}</div>
   `,
   standalone: true,
   imports: [AsyncPipe],
@@ -55,8 +55,8 @@ class ConfigChangeDisabledComponent {
 @Component({
   selector: 'context-change-disabled',
   template: `
-    <div data-testid="value">{{ (thumbs$ | async)?.value ? '👍' : '👎' }}</div>
-    <div data-testid="reason">reason: {{ (thumbs$ | async)?.reason }}</div>
+    <div data-testid="value">{{ (thumbs$ | async).value ? '👍' : '👎' }}</div>
+    <div data-testid="reason">reason: {{ (thumbs$ | async).reason }}</div>
   `,
   standalone: true,
   imports: [AsyncPipe],

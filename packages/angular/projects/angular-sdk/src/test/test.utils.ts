@@ -7,6 +7,7 @@ export class TestingProvider extends InMemoryProvider {
   ) {
     super(flagConfiguration);
     if (!delay) {
+      // If no delay, we remove the optional initialize method to avoid the provider not being ready immediately
       Object.assign(this, { initialize: undefined });
     }
   }
@@ -14,7 +15,6 @@ export class TestingProvider extends InMemoryProvider {
   // artificially delay our init (delaying PROVIDER_READY event)
   async initialize(): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, this.delay));
-    console.log('TestingProvider initialized');
   }
 
   // artificially delay context changes
