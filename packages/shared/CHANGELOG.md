@@ -1,5 +1,12 @@
 # Changelog 
 
+## [1.9.1](https://github.com/open-feature/js-sdk/compare/core-v1.9.0...core-v1.9.1) (2025-09-26)
+
+
+### 🐛 Bug Fixes
+
+* make OTEL evaluation event attribute types compliant to OTEL types ([#1237](https://github.com/open-feature/js-sdk/issues/1237)) ([4f71dd4](https://github.com/open-feature/js-sdk/commit/4f71dd4d626e3d4ab4ea217bedb73e6068355e37))
+
 ## [1.9.0](https://github.com/open-feature/js-sdk/compare/core-v1.8.1...core-v1.9.0) (2025-08-10)
 
 
