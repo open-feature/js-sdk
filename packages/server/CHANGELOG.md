@@ -1,5 +1,11 @@
 # Changelog
 
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/core bumped from ^1.9.0 to ^1.9.1
+
 ## [1.19.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.18.0...server-sdk-v1.19.0) (2025-08-14)
 
 
