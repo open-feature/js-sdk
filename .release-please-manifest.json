@@ -3,6 +3,6 @@
   "packages/react": "1.0.1",
   "packages/web": "1.6.1",
   "packages/server": "1.19.0",
-  "packages/shared": "1.9.0",
+  "packages/shared": "1.9.1",
   "packages/angular/projects/angular-sdk": "0.0.16"
 }
