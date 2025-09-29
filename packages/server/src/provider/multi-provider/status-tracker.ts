@@ -1,6 +1,6 @@
 import type { EventDetails } from '@openfeature/core';
-import type { OpenFeatureEventEmitter } from '../../events';
 import { ProviderEvents } from '../../events';
+import type { OpenFeatureEventEmitter } from '../../events/open-feature-event-emitter';
 import { ProviderStatus } from '../provider';
 import type { RegisteredProvider } from './types';
 
