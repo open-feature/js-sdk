@@ -1,29 +1,25 @@
-import type {
-  ErrorCode,
-  EvaluationContext,
-  FlagValue,
-  FlagValueType,
-  OpenFeatureError,
-  ResolutionDetails,
-  TrackingEventDetails,
-} from '@openfeature/core';
-import type { Provider } from '../../provider';
-import { ProviderStatus } from '../../provider';
+import type { ErrorCode, EvaluationContext, FlagValue, FlagValueType, ResolutionDetails } from '../../../evaluation';
+import type { OpenFeatureError } from '../../../errors';
+import type { CommonProvider } from '../../../provider';
+import { AllProviderStatus } from '../../../provider';
 import { ErrorWithCode } from '../errors';
+import type { TrackingEventDetails } from '../../../tracking';
 
 export type StrategyEvaluationContext = {
   flagKey: string;
   flagType: FlagValueType;
 };
+
 export type StrategyProviderContext = {
-  provider: Provider;
+  provider: CommonProvider<AllProviderStatus>;
   providerName: string;
-  providerStatus: ProviderStatus;
+  providerStatus: AllProviderStatus;
 };
+
 export type StrategyPerProviderContext = StrategyEvaluationContext & StrategyProviderContext;
 
 type ProviderResolutionResultBase = {
-  provider: Provider;
+  provider: CommonProvider<AllProviderStatus>;
   providerName: string;
 };
 
@@ -41,7 +37,7 @@ export type ProviderResolutionResult<T extends FlagValue> =
 
 export type FinalResult<T extends FlagValue> = {
   details?: ResolutionDetails<T>;
-  provider?: Provider;
+  provider?: CommonProvider<AllProviderStatus>;
   providerName?: string;
   errors?: {
     providerName: string;
@@ -49,15 +45,13 @@ export type FinalResult<T extends FlagValue> = {
   }[];
 };
 
-/**
- * Base strategy to inherit from. Not directly usable, as strategies must implement the "determineResult" method
- * Contains default implementations for `shouldEvaluateThisProvider` and `shouldEvaluateNextProvider`
- */
 export abstract class BaseEvaluationStrategy {
-  shouldEvaluateThisProvider(strategyContext: StrategyPerProviderContext, _evalContext: EvaluationContext): boolean {
+  public runMode: 'parallel' | 'sequential' = 'sequential';
+
+  shouldEvaluateThisProvider(strategyContext: StrategyPerProviderContext, _evalContext?: EvaluationContext): boolean {
     if (
-      strategyContext.providerStatus === ProviderStatus.NOT_READY ||
-      strategyContext.providerStatus === ProviderStatus.FATAL
+      strategyContext.providerStatus === AllProviderStatus.NOT_READY ||
+      strategyContext.providerStatus === AllProviderStatus.FATAL
     ) {
       return false;
     }
@@ -65,22 +59,22 @@ export abstract class BaseEvaluationStrategy {
   }
 
   shouldEvaluateNextProvider<T extends FlagValue>(
-    _strategyContext: StrategyPerProviderContext,
-    _context: EvaluationContext,
-    _result: ProviderResolutionResult<T>,
+    _strategyContext?: StrategyPerProviderContext,
+    _context?: EvaluationContext,
+    _result?: ProviderResolutionResult<T>,
   ): boolean {
     return true;
   }
 
   shouldTrackWithThisProvider(
     strategyContext: StrategyProviderContext,
-    _context: EvaluationContext,
-    _trackingEventName: string,
-    _trackingEventDetails: TrackingEventDetails,
+    _context?: EvaluationContext,
+    _trackingEventName?: string,
+    _trackingEventDetails?: TrackingEventDetails,
   ): boolean {
     if (
-      strategyContext.providerStatus === ProviderStatus.NOT_READY ||
-      strategyContext.providerStatus === ProviderStatus.FATAL
+      strategyContext.providerStatus === AllProviderStatus.NOT_READY ||
+      strategyContext.providerStatus === AllProviderStatus.FATAL
     ) {
       return false;
     }

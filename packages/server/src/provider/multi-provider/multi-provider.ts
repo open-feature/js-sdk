@@ -13,17 +13,25 @@ import type {
   ProviderMetadata,
   ResolutionDetails,
   TrackingEventDetails,
+  BaseEvaluationStrategy,
+  ProviderResolutionResult,
+  ProviderEntryInput,
+  RegisteredProvider,
 } from '@openfeature/core';
-import { DefaultLogger, ErrorCode, GeneralError, StandardResolutionReasons } from '@openfeature/core';
+import {
+  DefaultLogger,
+  ErrorCode,
+  GeneralError,
+  StandardResolutionReasons,
+  constructAggregateError,
+  FirstMatchStrategy,
+  throwAggregateErrorFromPromiseResults,
+  StatusTracker,
+} from '@openfeature/core';
 import type { Provider } from '../provider';
 import type { Hook } from '../../hooks';
 import { OpenFeatureEventEmitter } from '../../events/open-feature-event-emitter';
-import { constructAggregateError, throwAggregateErrorFromPromiseResults } from './errors';
 import { HookExecutor } from './hook-executor';
-import { StatusTracker } from './status-tracker';
-import type { BaseEvaluationStrategy, ProviderResolutionResult } from './strategies';
-import { FirstMatchStrategy } from './strategies';
-import type { ProviderEntryInput, RegisteredProvider } from './types';
 
 export class MultiProvider implements Provider {
   readonly runsOn = 'server';
