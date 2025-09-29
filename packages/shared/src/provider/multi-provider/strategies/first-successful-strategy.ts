@@ -1,25 +1,14 @@
 import type { FinalResult, ProviderResolutionResult, StrategyPerProviderContext } from './base-evaluation-strategy';
 import { BaseEvaluationStrategy } from './base-evaluation-strategy';
-import type { EvaluationContext, FlagValue } from '@openfeature/core';
-import { ErrorCode } from '@openfeature/core';
+import type { EvaluationContext, FlagValue } from '../../../evaluation';
 
-/**
- * Return the first result that did not indicate "flag not found".
- * If any provider in the course of evaluation returns or throws an error, throw that error
- */
-export class FirstMatchStrategy extends BaseEvaluationStrategy {
+export class FirstSuccessfulStrategy extends BaseEvaluationStrategy {
   override shouldEvaluateNextProvider<T extends FlagValue>(
     strategyContext: StrategyPerProviderContext,
     context: EvaluationContext,
     result: ProviderResolutionResult<T>,
   ): boolean {
-    if (this.hasErrorWithCode(result, ErrorCode.FLAG_NOT_FOUND)) {
-      return true;
-    }
-    if (this.hasError(result)) {
-      return false;
-    }
-    return false;
+    return this.hasError(result);
   }
 
   override determineFinalResult<T extends FlagValue>(

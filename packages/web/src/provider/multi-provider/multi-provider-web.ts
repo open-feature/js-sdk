@@ -18,12 +18,22 @@ import type { Provider } from '../../provider';
 import type { Hook } from '../../hooks';
 import { OpenFeatureEventEmitter } from '../../events';
 import { DefaultLogger, GeneralError, ErrorCode, StandardResolutionReasons } from '@openfeature/core';
+import type {
+  BaseEvaluationStrategy,
+  ProviderEntryInput as CoreProviderEntryInput,
+  ProviderResolutionResult,
+  RegisteredProvider as CoreRegisteredProvider,
+} from '@openfeature/core';
+import {
+  constructAggregateError,
+  FirstMatchStrategy,
+  StatusTracker,
+  throwAggregateErrorFromPromiseResults,
+} from '@openfeature/core';
 import { HookExecutor } from './hook-executor';
-import { constructAggregateError, throwAggregateErrorFromPromiseResults } from './errors';
-import type { BaseEvaluationStrategy, ProviderResolutionResult } from './strategies';
-import { FirstMatchStrategy } from './strategies';
-import { StatusTracker } from './status-tracker';
-import type { ProviderEntryInput, RegisteredProvider } from './types';
+
+type ProviderEntry = CoreProviderEntryInput<Provider>;
+type RegisteredProvider = CoreRegisteredProvider<Provider>;
 
 export class MultiProvider implements Provider {
   readonly runsOn = 'client';
@@ -42,7 +52,7 @@ export class MultiProvider implements Provider {
   private statusTracker = new StatusTracker(this.events);
 
   constructor(
-    readonly constructorProviders: ProviderEntryInput[],
+    readonly constructorProviders: ProviderEntry[],
     private readonly evaluationStrategy: BaseEvaluationStrategy = new FirstMatchStrategy(),
     private readonly logger: Logger = new DefaultLogger(),
   ) {
@@ -60,7 +70,7 @@ export class MultiProvider implements Provider {
     };
   }
 
-  private registerProviders(constructorProviders: ProviderEntryInput[]) {
+  private registerProviders(constructorProviders: ProviderEntry[]) {
     const providersByName: Record<string, Provider[]> = {};
 
     for (const constructorProvider of constructorProviders) {

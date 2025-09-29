@@ -5,21 +5,15 @@ import type {
   StrategyPerProviderContext,
 } from './base-evaluation-strategy';
 import { BaseEvaluationStrategy } from './base-evaluation-strategy';
-import type { EvaluationContext, FlagValue } from '@openfeature/core';
-import type { Provider } from '../../provider';
-import { GeneralError } from '@openfeature/core';
+import type { EvaluationContext, FlagValue } from '../../../evaluation';
+import type { CommonProvider, AllProviderStatus } from '../../../provider';
+import { GeneralError } from '../../../errors';
 
-/**
- * Evaluate all providers in parallel and compare the results.
- * If the values agree, return the value
- * If the values disagree, return the value from the configured "fallback provider" and execute the "onMismatch"
- * callback if defined
- */
 export class ComparisonStrategy extends BaseEvaluationStrategy {
   override runMode = 'parallel' as const;
 
   constructor(
-    private fallbackProvider: Provider,
+    private fallbackProvider: CommonProvider<AllProviderStatus>,
     private onMismatch?: (resolutions: ProviderResolutionResult<FlagValue>[]) => void,
   ) {
     super();
