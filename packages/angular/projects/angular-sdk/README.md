@@ -144,6 +144,13 @@ No `else`, `initializing`, or `reconciling` templates are required in this case.
 
 #### How to use
 
+The library provides two main ways to work with feature flags:
+
+1. **Structural Directives** - For template-based conditional rendering
+2. **FeatureFlagService** - For programmatic access with Observables
+
+##### Structural Directives
+
 The library provides four primary directives for feature flags, `booleanFeatureFlag`,
 `numberFeatureFlag`, `stringFeatureFlag` and `objectFeatureFlag`.
 
@@ -167,7 +174,7 @@ The template referenced in `initializing` and `reconciling` will be rendered if 
 corresponding states.
 This parameter is _optional_, if omitted, the `then` and `else` templates will be rendered according to the flag value.
 
-##### Boolean Feature Flag
+###### Boolean Feature Flag
 
 ```html
 <div
@@ -185,7 +192,7 @@ This parameter is _optional_, if omitted, the `then` and `else` templates will b
 </ng-template>
 ```
 
-##### Number Feature Flag
+###### Number Feature Flag
 
 ```html
 <div
@@ -203,7 +210,7 @@ This parameter is _optional_, if omitted, the `then` and `else` templates will b
 </ng-template>
 ```
 
-##### String Feature Flag
+###### String Feature Flag
 
 ```html
 <div
@@ -221,7 +228,7 @@ This parameter is _optional_, if omitted, the `then` and `else` templates will b
 </ng-template>
 ```
 
-##### Object Feature Flag
+###### Object Feature Flag
 
 ```html
 <div
@@ -239,7 +246,7 @@ This parameter is _optional_, if omitted, the `then` and `else` templates will b
 </ng-template>
 ```
 
-##### Opting-out of automatic re-rendering
+###### Opting-out of automatic re-rendering
 
 By default, the directive re-renders when the flag value changes or the context changes.
 
@@ -251,7 +258,7 @@ In cases, this is not desired, re-rendering can be disabled for both events:
 </div>
 ```
 
-##### Consuming the evaluation details
+###### Consuming the evaluation details
 
 The `evaluation details` can be used when rendering the templates.
 The directives [`$implicit`](https://angular.dev/guide/directives/structural-directives#structural-directive-shorthand)
@@ -280,6 +287,86 @@ This can be used to just render the flag value or details without conditional re
 <div *stringFeatureFlag="'themeColor'; default: 'light'; let value;">
   The theme color is {{ value }}.
 </div>
+```
+
+##### FeatureFlagService
+
+The `FeatureFlagService` provides programmatic access to feature flags through reactive patterns. All methods return
+Observables that automatically emit new values when flag configurations or evaluation context changes.
+
+###### Using with Observables
+
+```typescript
+import { Component, inject } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
+import { FeatureFlagService } from '@openfeature/angular-sdk';
+
+@Component({
+  selector: 'my-component',
+  standalone: true,
+  imports: [AsyncPipe],
+  template: `
+    <div *ngIf="(isFeatureEnabled$ | async)?.value">
+      Feature is enabled! Reason: {{ (isFeatureEnabled$ | async)?.reason }}
+    </div>
+    <div>Theme: {{ (currentTheme$ | async)?.value }}</div>
+    <div>Max items: {{ (maxItems$ | async)?.value }}</div>
+  `
+})
+export class MyComponent {
+  private flagService = inject(FeatureFlagService);
+
+  // Boolean flag
+  isFeatureEnabled$ = this.flagService.getBooleanDetails('my-feature', false);
+
+  // String flag
+  currentTheme$ = this.flagService.getStringDetails('theme', 'light');
+
+  // Number flag
+  maxItems$ = this.flagService.getNumberDetails('max-items', 10);
+
+  // Object flag with type safety
+  config$ = this.flagService.getObjectDetails<{ timeout: number }>('api-config', { timeout: 5000 });
+}
+```
+
+###### Using with Angular Signals
+
+You can convert any Observable from the service to an Angular Signal using `toSignal()`:
+
+```typescript
+import { Component, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { FeatureFlagService } from '@openfeature/angular-sdk';
+
+@Component({
+  selector: 'my-component',
+  standalone: true,
+  template: `
+    <div *ngIf="isFeatureEnabled()?.value">
+      Feature is enabled! Reason: {{ isFeatureEnabled()?.reason }}
+    </div>
+    <div>Theme: {{ currentTheme()?.value }}</div>
+  `
+})
+export class MyComponent {
+  private flagService = inject(FeatureFlagService);
+
+  // Convert Observables to Signals
+  isFeatureEnabled = toSignal(this.flagService.getBooleanDetails('my-feature', false));
+  currentTheme = toSignal(this.flagService.getStringDetails('theme', 'light'));
+}
+```
+
+###### Service Options
+
+The service methods accept the [same options as the directives](#opting-out-of-automatic-re-rendering):
+
+```typescript
+const flag$ = this.flagService.getBooleanDetails('my-flag', false, 'my-domain', {
+  updateOnConfigurationChanged: false,  // default: true
+  updateOnContextChanged: false,        // default: true
+});
 ```
 
 ##### Setting evaluation context
