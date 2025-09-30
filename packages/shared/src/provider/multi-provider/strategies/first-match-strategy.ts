@@ -3,11 +3,11 @@ import { BaseEvaluationStrategy } from './base-evaluation-strategy';
 import type { EvaluationContext, FlagValue } from '../../../evaluation';
 import { ErrorCode } from '../../../evaluation';
 
-export class FirstMatchStrategy extends BaseEvaluationStrategy {
+export class FirstMatchStrategy<TProviderStatus, TProvider> extends BaseEvaluationStrategy<TProviderStatus, TProvider> {
   override shouldEvaluateNextProvider<T extends FlagValue>(
-    strategyContext: StrategyPerProviderContext,
+    strategyContext: StrategyPerProviderContext<TProviderStatus, TProvider>,
     context: EvaluationContext,
-    result: ProviderResolutionResult<T>,
+    result: ProviderResolutionResult<T, TProviderStatus, TProvider>,
   ): boolean {
     if (this.hasErrorWithCode(result, ErrorCode.FLAG_NOT_FOUND)) {
       return true;
@@ -19,10 +19,10 @@ export class FirstMatchStrategy extends BaseEvaluationStrategy {
   }
 
   override determineFinalResult<T extends FlagValue>(
-    strategyContext: StrategyPerProviderContext,
+    strategyContext: StrategyPerProviderContext<TProviderStatus, TProvider>,
     context: EvaluationContext,
-    resolutions: ProviderResolutionResult<T>[],
-  ): FinalResult<T> {
+    resolutions: ProviderResolutionResult<T, TProviderStatus, TProvider>[],
+  ): FinalResult<T, TProviderStatus, TProvider> {
     const finalResolution = resolutions[resolutions.length - 1];
     if (this.hasError(finalResolution)) {
       return this.collectProviderErrors(resolutions);

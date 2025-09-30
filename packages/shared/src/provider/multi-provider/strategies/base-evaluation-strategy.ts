@@ -1,7 +1,5 @@
 import type { ErrorCode, EvaluationContext, FlagValue, FlagValueType, ResolutionDetails } from '../../../evaluation';
 import type { OpenFeatureError } from '../../../errors';
-import type { CommonProvider } from '../../../provider';
-import { AllProviderStatus } from '../../../provider';
 import { ErrorWithCode } from '../errors';
 import type { TrackingEventDetails } from '../../../tracking';
 
@@ -10,34 +8,42 @@ export type StrategyEvaluationContext = {
   flagType: FlagValueType;
 };
 
-export type StrategyProviderContext = {
-  provider: CommonProvider<AllProviderStatus>;
+export type StrategyProviderContext<TProviderStatus, TProvider> = {
+  provider: TProvider;
   providerName: string;
-  providerStatus: AllProviderStatus;
+  providerStatus: TProviderStatus;
 };
 
-export type StrategyPerProviderContext = StrategyEvaluationContext & StrategyProviderContext;
+export type StrategyPerProviderContext<TProviderStatus, TProvider> = StrategyEvaluationContext &
+  StrategyProviderContext<TProviderStatus, TProvider>;
 
-type ProviderResolutionResultBase = {
-  provider: CommonProvider<AllProviderStatus>;
+type ProviderResolutionResultBase<TProviderStatus, TProvider> = {
+  provider: TProvider;
   providerName: string;
 };
 
-export type ProviderResolutionSuccessResult<T extends FlagValue> = ProviderResolutionResultBase & {
+export type ProviderResolutionSuccessResult<
+  T extends FlagValue,
+  TProviderStatus,
+  TProvider,
+> = ProviderResolutionResultBase<TProviderStatus, TProvider> & {
   details: ResolutionDetails<T>;
 };
 
-export type ProviderResolutionErrorResult = ProviderResolutionResultBase & {
+export type ProviderResolutionErrorResult<TProviderStatus, TProvider> = ProviderResolutionResultBase<
+  TProviderStatus,
+  TProvider
+> & {
   thrownError: unknown;
 };
 
-export type ProviderResolutionResult<T extends FlagValue> =
-  | ProviderResolutionSuccessResult<T>
-  | ProviderResolutionErrorResult;
+export type ProviderResolutionResult<T extends FlagValue, TProviderStatus, TProvider> =
+  | ProviderResolutionSuccessResult<T, TProviderStatus, TProvider>
+  | ProviderResolutionErrorResult<TProviderStatus, TProvider>;
 
-export type FinalResult<T extends FlagValue> = {
+export type FinalResult<T extends FlagValue, TProviderStatus, TProvider> = {
   details?: ResolutionDetails<T>;
-  provider?: CommonProvider<AllProviderStatus>;
+  provider?: TProvider;
   providerName?: string;
   errors?: {
     providerName: string;
@@ -45,13 +51,18 @@ export type FinalResult<T extends FlagValue> = {
   }[];
 };
 
-export abstract class BaseEvaluationStrategy {
+export abstract class BaseEvaluationStrategy<TProviderStatus, TProvider> {
   public runMode: 'parallel' | 'sequential' = 'sequential';
 
-  shouldEvaluateThisProvider(strategyContext: StrategyPerProviderContext, _evalContext?: EvaluationContext): boolean {
+  constructor(protected statusEnum: Record<string, TProviderStatus>) {}
+
+  shouldEvaluateThisProvider(
+    strategyContext: StrategyPerProviderContext<TProviderStatus, TProvider>,
+    _evalContext?: EvaluationContext,
+  ): boolean {
     if (
-      strategyContext.providerStatus === AllProviderStatus.NOT_READY ||
-      strategyContext.providerStatus === AllProviderStatus.FATAL
+      strategyContext.providerStatus === this.statusEnum.NOT_READY ||
+      strategyContext.providerStatus === this.statusEnum.FATAL
     ) {
       return false;
     }
@@ -59,22 +70,22 @@ export abstract class BaseEvaluationStrategy {
   }
 
   shouldEvaluateNextProvider<T extends FlagValue>(
-    _strategyContext?: StrategyPerProviderContext,
+    _strategyContext?: StrategyPerProviderContext<TProviderStatus, TProvider>,
     _context?: EvaluationContext,
-    _result?: ProviderResolutionResult<T>,
+    _result?: ProviderResolutionResult<T, TProviderStatus, TProvider>,
   ): boolean {
     return true;
   }
 
   shouldTrackWithThisProvider(
-    strategyContext: StrategyProviderContext,
+    strategyContext: StrategyProviderContext<TProviderStatus, TProvider>,
     _context?: EvaluationContext,
     _trackingEventName?: string,
     _trackingEventDetails?: TrackingEventDetails,
   ): boolean {
     if (
-      strategyContext.providerStatus === AllProviderStatus.NOT_READY ||
-      strategyContext.providerStatus === AllProviderStatus.FATAL
+      strategyContext.providerStatus === this.statusEnum.NOT_READY ||
+      strategyContext.providerStatus === this.statusEnum.FATAL
     ) {
       return false;
     }
@@ -84,25 +95,32 @@ export abstract class BaseEvaluationStrategy {
   abstract determineFinalResult<T extends FlagValue>(
     strategyContext: StrategyEvaluationContext,
     context: EvaluationContext,
-    resolutions: ProviderResolutionResult<T>[],
-  ): FinalResult<T>;
+    resolutions: ProviderResolutionResult<T, TProviderStatus, TProvider>[],
+  ): FinalResult<T, TProviderStatus, TProvider>;
 
-  protected hasError(resolution: ProviderResolutionResult<FlagValue>): resolution is
-    | ProviderResolutionErrorResult
-    | (ProviderResolutionSuccessResult<FlagValue> & {
-        details: ResolutionDetails<FlagValue> & { errorCode: ErrorCode };
+  protected hasError<T extends FlagValue>(
+    resolution: ProviderResolutionResult<T, TProviderStatus, TProvider>,
+  ): resolution is
+    | ProviderResolutionErrorResult<TProviderStatus, TProvider>
+    | (ProviderResolutionSuccessResult<T, TProviderStatus, TProvider> & {
+        details: ResolutionDetails<T> & { errorCode: ErrorCode };
       }) {
     return 'thrownError' in resolution || !!resolution.details.errorCode;
   }
 
-  protected hasErrorWithCode(resolution: ProviderResolutionResult<FlagValue>, code: ErrorCode): boolean {
+  protected hasErrorWithCode<T extends FlagValue>(
+    resolution: ProviderResolutionResult<T, TProviderStatus, TProvider>,
+    code: ErrorCode,
+  ): boolean {
     return 'thrownError' in resolution
       ? (resolution.thrownError as OpenFeatureError)?.code === code
       : resolution.details.errorCode === code;
   }
 
-  protected collectProviderErrors<T extends FlagValue>(resolutions: ProviderResolutionResult<T>[]): FinalResult<T> {
-    const errors: FinalResult<FlagValue>['errors'] = [];
+  protected collectProviderErrors<T extends FlagValue>(
+    resolutions: ProviderResolutionResult<T, TProviderStatus, TProvider>[],
+  ): FinalResult<T, TProviderStatus, TProvider> {
+    const errors: FinalResult<FlagValue, TProviderStatus, TProvider>['errors'] = [];
     for (const resolution of resolutions) {
       if ('thrownError' in resolution) {
         errors.push({ providerName: resolution.providerName, error: resolution.thrownError });
@@ -116,7 +134,9 @@ export abstract class BaseEvaluationStrategy {
     return { errors };
   }
 
-  protected resolutionToFinalResult<T extends FlagValue>(resolution: ProviderResolutionSuccessResult<T>) {
+  protected resolutionToFinalResult<T extends FlagValue>(
+    resolution: ProviderResolutionSuccessResult<T, TProviderStatus, TProvider>,
+  ) {
     return { details: resolution.details, provider: resolution.provider, providerName: resolution.providerName };
   }
 }

@@ -1,12 +1,6 @@
-import type { AllProviderStatus, CommonProvider } from '../../provider';
-
-export type ProviderEntryInput<
-  TProvider extends CommonProvider<AllProviderStatus> = CommonProvider<AllProviderStatus>,
-> = {
+export type ProviderEntryInput<TProvider> = {
   provider: TProvider;
   name?: string;
 };
 
-export type RegisteredProvider<
-  TProvider extends CommonProvider<AllProviderStatus> = CommonProvider<AllProviderStatus>,
-> = Required<ProviderEntryInput<TProvider>>;
+export type RegisteredProvider<TProvider> = Required<ProviderEntryInput<TProvider>>;
