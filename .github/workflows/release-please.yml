@@ -2,7 +2,9 @@ on:
   push:
     branches:
       - main
+
 name: Run Release Please
+
 jobs:
   release-please:
     runs-on: ubuntu-latest
@@ -38,17 +40,16 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
       - name: Generate SBOM
         run: |
-          npm install -g npm@^10.2.0
+          npm install -g npm@^11.5.1
           npm ci
           npm sbom --sbom-format=cyclonedx --omit=dev --omit=peer --workspace=${{matrix.release}} > bom.json
       - name: Attach SBOM to artifact
         env:
           GITHUB_TOKEN: ${{secrets.RELEASE_PLEASE_ACTION_TOKEN}}
-        run:
-          gh release upload $TAG bom.json
+        run: gh release upload $TAG bom.json
 
   npm-release:
     needs: release-please
@@ -65,9 +66,11 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           registry-url: "https://registry.npmjs.org"
-          cache: 'npm'
+          cache: "npm"
+      - name: Update npm (for OIDC auth)
+        run: npm install -g npm@^11.5.1
       - name: Build Packages
         run: |
           npm ci
@@ -77,7 +80,6 @@ jobs:
       # Our scripts only publish versions that do not already exist.
       - name: Publish to NPM
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
           # https://docs.npmjs.com/generating-provenance-statements
           NPM_CONFIG_PROVENANCE: true
         run: npm run publish-all
