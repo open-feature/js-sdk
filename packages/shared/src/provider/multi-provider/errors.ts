@@ -34,9 +34,9 @@ export const constructAggregateError = (providerErrors: { error: unknown; provid
   );
 };
 
-export const throwAggregateErrorFromPromiseResults = (
+export const throwAggregateErrorFromPromiseResults = <TProvider>(
   result: PromiseSettledResult<unknown>[],
-  providerEntries: RegisteredProvider[],
+  providerEntries: RegisteredProvider<TProvider>[],
 ) => {
   const errors = result
     .map((r, i) => {
