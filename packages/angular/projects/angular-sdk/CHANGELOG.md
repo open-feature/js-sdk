@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [0.0.17](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.16...angular-sdk-v0.0.17) (2025-09-30)
+
+
+### 🐛 Bug Fixes
+
+* angular tests in main ([#1251](https://github.com/open-feature/js-sdk/issues/1251)) ([f42011d](https://github.com/open-feature/js-sdk/commit/f42011d1f8f6949022ceefbd6491fca2baa65dce))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/web-sdk bumped from ^1.5.0 to ^1.6.2
+
 ## [0.0.16](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.15...angular-sdk-v0.0.16) (2025-07-25)
 
 
