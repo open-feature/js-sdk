@@ -1,6 +1,6 @@
 {
   "name": "@openfeature/angular-sdk",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "OpenFeature Angular SDK",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "@openfeature/core": "^1.8.1",
-    "@openfeature/web-sdk": "^1.5.0",
+    "@openfeature/web-sdk": "^1.6.2",
     "@angular/common": "^20.1.2",
     "@angular/core": "^20.1.2"
   },
