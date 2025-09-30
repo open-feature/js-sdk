@@ -4,5 +4,5 @@
   "packages/web": "1.6.2",
   "packages/server": "1.19.0",
   "packages/shared": "1.9.1",
-  "packages/angular/projects/angular-sdk": "0.0.17"
+  "packages/angular/projects/angular-sdk": "0.0.10"
 }
