@@ -9,7 +9,7 @@ feature flagging interface. For example:
 
 - *Migration*: When migrating between two providers, you can run both in parallel under a unified flagging interface. As flags are added to the
 new provider, the Multi-Provider will automatically find and return them, falling back to the old provider if the new provider does not have
-- *Multiple Data Sources*: The Multi-Provider allows you to seamlessly combine many sources of flagging data, such as environment variables, 
+- *Multiple Data Sources*: The Multi-Provider allows you to seamlessly combine many sources of flagging data, such as environment variables,
 local files, database values and SaaS hosted feature management systems.
 
 ## Usage
