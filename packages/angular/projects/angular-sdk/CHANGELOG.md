@@ -3,6 +3,10 @@
 
 ## [0.0.17](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.16...angular-sdk-v0.0.17) (2025-09-30)
 
+### ✨ New Features
+
+* add feature flag service for angular #1247
+
 
 ### 🐛 Bug Fixes
 
