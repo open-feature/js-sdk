@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.6.2](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.6.1...web-sdk-v1.6.2) (2025-09-30)
+
+
+### 🐛 Bug Fixes
+
+* angular tests in main ([#1251](https://github.com/open-feature/js-sdk/issues/1251)) ([f42011d](https://github.com/open-feature/js-sdk/commit/f42011d1f8f6949022ceefbd6491fca2baa65dce))
+
 ## [1.6.1](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.6.0...web-sdk-v1.6.1) (2025-08-14)
 
 
