@@ -6,13 +6,19 @@
       "vitest/globals",
       "node"
     ],
+    "baseUrl": "../",
     "paths": {
       "angular": [
         "./dist/angular"
-      ]
+      ],
+      "@openfeature/core": [ "../../shared/src" ],
+      "@openfeature/web-sdk": [ "../../web/src" ]
     },
     "esModuleInterop": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "noImplicitOverride": false,
+    "noPropertyAccessFromIndexSignature": false,
+    "strict": false
   },
   "include": [
     "src/**/*.spec.ts",

@@ -393,7 +393,7 @@ export class OpenFeatureAPI
         const maybePromise = wrapper.provider.onContextChange(oldContext, newContext);
 
         // only reconcile if the onContextChange method returns a promise
-        if (typeof maybePromise?.then === 'function') {
+        if (maybePromise && typeof maybePromise?.then === 'function') {
           wrapper.incrementPendingContextChanges();
           wrapper.status = this._statusEnumType.RECONCILING;
           this.getAssociatedEventEmitters(domain).forEach((emitter) => {
