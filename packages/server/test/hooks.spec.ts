@@ -311,6 +311,45 @@ describe('Hooks', () => {
         expect.anything(),
       );
     });
+    it('Should share the same context object reference across all hooks', (done) => {
+      let hook1Context: EvaluationContext;
+      let hook2Context: EvaluationContext;
+      let hook3Context: EvaluationContext;
+
+      client.getBooleanValue(FLAG_KEY, false, undefined, {
+        hooks: [
+          {
+            before: (hookContext) => {
+              hook1Context = hookContext.context;
+              return { fromHook1: 'value1' };
+            },
+          },
+          {
+            before: (hookContext) => {
+              hook2Context = hookContext.context;
+              return { fromHook2: 'value2' };
+            },
+          },
+          {
+            before: (hookContext) => {
+              hook3Context = hookContext.context;
+              return { fromHook3: 'value3' };
+            },
+
+            after: (hookContext) => {
+              try {
+                expect(hookContext.context).toBe(hook1Context);
+                expect(hookContext.context).toBe(hook2Context);
+                expect(hookContext.context).toBe(hook3Context);
+                done();
+              } catch (err) {
+                done(err);
+              }
+            },
+          },
+        ],
+      });
+    });
   });
 
   describe('Requirement 4.3.5', () => {
