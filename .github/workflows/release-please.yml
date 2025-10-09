@@ -31,6 +31,7 @@ jobs:
     continue-on-error: true
     permissions:
       id-token: write
+      attestations: write
       contents: read
     strategy:
       matrix:
