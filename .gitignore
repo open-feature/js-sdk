@@ -112,6 +112,7 @@ typedoc
 
 # IDE
 .idea
+.cursor/
 
 # license files copied from root
 packages/**/LICENSE
