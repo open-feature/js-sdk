@@ -41,7 +41,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: ".nvmrc"
       - name: Update npm to >=11.5.1 (for OIDC support)
         run: npm install -g npm@^11.5.1
       - name: Install dependencies
@@ -69,7 +69,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: ".nvmrc"
           registry-url: "https://registry.npmjs.org"
           cache: "npm"
       - name: Update npm (for OIDC auth)
