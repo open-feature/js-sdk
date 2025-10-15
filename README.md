@@ -12,7 +12,7 @@
 [![codecov](https://codecov.io/gh/open-feature/js-sdk/branch/main/graph/badge.svg?token=3DC5XOEHMY)](https://codecov.io/gh/open-feature/js-sdk)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/6594/badge)](https://bestpractices.coreinfrastructure.org/projects/6594)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fopen-feature%2Fjs-sdk.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fopen-feature%2Fjs-sdk?ref=badge_shield)
-[![NPM Download](https://img.shields.io/npm/dm/%40openfeature%2Fcore)](https://www.npmjs.com/package/@openfeature/core)
+[![NPM Downloads](https://img.shields.io/npm/dm/%40openfeature%2Fcore)](https://www.npmjs.com/package/@openfeature/core)
 
 ## 👋 Hey there! Thanks for checking out the OpenFeature JavaScript SDKs
 
