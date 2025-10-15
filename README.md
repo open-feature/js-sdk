@@ -13,7 +13,7 @@
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/6594/badge)](https://bestpractices.coreinfrastructure.org/projects/6594)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fopen-feature%2Fjs-sdk.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fopen-feature%2Fjs-sdk?ref=badge_shield)
 <a href="https://www.npmjs.com/package/@openfeature/core">
-  <img alt="NPM Download" src="https://img.shields.io/npm/dm/%40openfeature%2Fcore" />
+  <img alt="NPM Downloads" src="https://img.shields.io/npm/dm/%40openfeature%2Fcore" />
 </a>
 
 ## 👋 Hey there! Thanks for checking out the OpenFeature JavaScript SDKs
