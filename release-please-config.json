@@ -10,7 +10,7 @@
       "bump-patch-for-minor-pre-major": true,
       "extra-files": ["README.md"],
       "versioning": "default",
-      "release-as": "patch"
+      "release-as": "1.19.1"
     },
     "packages/web": {
       "release-type": "node",
@@ -19,7 +19,7 @@
       "bump-patch-for-minor-pre-major": true,
       "extra-files": ["README.md"],
       "versioning": "default",
-      "release-as": "patch"
+      "release-as": "1.6.3"
     },
     "packages/react": {
       "release-type": "node",
@@ -28,7 +28,7 @@
       "bump-patch-for-minor-pre-major": true,
       "extra-files": ["README.md"],
       "versioning": "default",
-      "release-as": "patch"
+      "release-as": "1.0.2"
     },
     "packages/angular/projects/angular-sdk": {
       "release-type": "node",
@@ -37,7 +37,7 @@
       "bump-patch-for-minor-pre-major": true,
       "extra-files": ["README.md"],
       "versioning": "default",
-      "release-as": "patch"
+      "release-as": "0.0.18"
     },
     "packages/nest": {
       "release-type": "node",
@@ -46,7 +46,7 @@
       "bump-patch-for-minor-pre-major": true,
       "extra-files": ["README.md"],
       "versioning": "default",
-      "release-as": "patch"
+      "release-as": "0.2.6"
     },
     "packages/shared": {
       "release-type": "node",
@@ -54,7 +54,7 @@
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true,
       "versioning": "default",
-      "release-as": "patch"
+      "release-as": "1.9.2"
     }
   },
   "changelog-sections": [
