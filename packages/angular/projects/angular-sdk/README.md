@@ -10,6 +10,7 @@
 <h2 align="center">OpenFeature Angular SDK</h2>
 
 <!-- x-hide-in-docs-end -->
+
 <!-- The 'github-badges' class is used in the docs -->
 <p align="center" class="github-badges">
   <a href="https://github.com/open-feature/spec/releases/tag/v0.8.0">
