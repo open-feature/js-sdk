@@ -145,6 +145,63 @@ Once the provider has been registered, the status can be tracked using [events](
 In some situations, it may be beneficial to register multiple providers in the same application.
 This is possible using [domains](#domains), which is covered in more detail below.
 
+#### Multi-Provider
+
+The Multi-Provider allows you to use multiple underlying providers as sources of flag data for the OpenFeature web SDK. When a flag is being evaluated, the Multi-Provider will consult each underlying provider it is managing in order to determine the final result. Different evaluation strategies can be defined to control which providers get evaluated and which result is used.
+
+The Multi-Provider is a powerful tool for performing migrations between flag providers, or combining multiple providers into a single feature flagging interface. For example:
+
+- **Migration**: When migrating between two providers, you can run both in parallel under a unified flagging interface. As flags are added to the new provider, the Multi-Provider will automatically find and return them, falling back to the old provider if the new provider does not have the flag.
+- **Multiple Data Sources**: The Multi-Provider allows you to seamlessly combine many sources of flagging data, such as environment variables, local files, database values and SaaS hosted feature management systems.
+
+```ts
+import { WebMultiProvider } from '@openfeature/web-sdk';
+
+const multiProvider = new WebMultiProvider([
+  { provider: new ProviderA() },
+  { provider: new ProviderB() }
+]);
+
+await OpenFeature.setProviderAndWait(multiProvider);
+
+const client = OpenFeature.getClient();
+console.log(client.getBooleanDetails("my-flag", false));
+```
+
+By default, the Multi-Provider will evaluate all underlying providers in order and return the first successful result. If a provider indicates it does not have a flag (FLAG_NOT_FOUND error code), then it will be skipped and the next provider will be evaluated.
+
+##### Evaluation Strategies
+
+The Multi-Provider comes with three strategies out of the box:
+
+- **FirstMatchStrategy** (default): Evaluates all providers in order and returns the first successful result. Providers that indicate FLAG_NOT_FOUND error will be skipped and the next provider will be evaluated.
+- **FirstSuccessfulStrategy**: Evaluates all providers in order and returns the first successful result. Any error will cause that provider to be skipped.
+- **ComparisonStrategy**: Evaluates all providers sequentially. If every provider returns a successful result with the same value, then that result is returned. Otherwise, the result returned by the configured "fallback provider" will be used.
+
+```ts
+import { WebMultiProvider, FirstSuccessfulStrategy } from '@openfeature/web-sdk';
+
+const multiProvider = new WebMultiProvider(
+  [
+    { provider: new ProviderA() },
+    { provider: new ProviderB() }
+  ], 
+  new FirstSuccessfulStrategy()
+);
+```
+
+##### Tracking Support
+
+The Multi-Provider supports tracking events across multiple providers, allowing you to send analytics events to all configured providers simultaneously:
+
+```ts
+// Tracked events will be sent to all providers by default
+client.track('user-conversion', { 
+  value: 99.99, 
+  currency: 'USD' 
+});
+```
+
 ### Flag evaluation flow
 
 When a new provider is added to OpenFeature client the following process happens:
