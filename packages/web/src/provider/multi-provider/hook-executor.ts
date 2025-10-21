@@ -35,7 +35,6 @@ export class HookExecutor {
         if (err instanceof Error) {
           this.logger.error(err.stack);
         }
-        this.logger.error((err as Error)?.stack);
       }
     }
   }
@@ -55,7 +54,6 @@ export class HookExecutor {
         if (err instanceof Error) {
           this.logger.error(err.stack);
         }
-        this.logger.error((err as Error)?.stack);
       }
     }
   }
