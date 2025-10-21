@@ -9,7 +9,7 @@ feature flagging interface. For example:
 
 - *Migration*: When migrating between two providers, you can run both in parallel under a unified flagging interface. As flags are added to the
 new provider, the Multi-Provider will automatically find and return them, falling back to the old provider if the new provider does not have
-- *Multiple Data Sources*: The Multi-Provider allows you to seamlessly combine many sources of flagging data, such as environment variables, 
+- *Multiple Data Sources*: The Multi-Provider allows you to seamlessly combine many sources of flagging data, such as environment variables,
 local files, database values and SaaS hosted feature management systems.
 
 ## Usage
@@ -17,10 +17,10 @@ local files, database values and SaaS hosted feature management systems.
 The Multi-Provider is initialized with an array of providers it should evaluate:
 
 ```typescript
-import { WebMultiProvider } from '@openfeature/web-sdk'
+import { MultiProvider } from '@openfeature/web-sdk'
 import { OpenFeature } from '@openfeature/web-sdk'
 
-const multiProvider = new WebMultiProvider([
+const multiProvider = new MultiProvider([
   { provider: new ProviderA() },
   { provider: new ProviderB() }
 ])
@@ -41,9 +41,9 @@ will fail with a FLAG_NOT_FOUND error code.
 To change this behaviour, a different "strategy" can be provided:
 
 ```typescript
-import { WebMultiProvider, FirstSuccessfulStrategy } from '@openfeature/web-sdk'
+import { MultiProvider, FirstSuccessfulStrategy } from '@openfeature/web-sdk'
 
-const multiProvider = new WebMultiProvider(
+const multiProvider = new MultiProvider(
     [
       { provider: new ProviderA() },
       { provider: new ProviderB() }
@@ -67,10 +67,10 @@ in configuration without affecting flag behaviour.
 This strategy accepts several arguments during initialization:
 
 ```typescript
-import { WebMultiProvider, ComparisonStrategy } from '@openfeature/web-sdk'
+import { MultiProvider, ComparisonStrategy } from '@openfeature/web-sdk'
 
 const providerA = new ProviderA()
-const multiProvider = new WebMultiProvider(
+const multiProvider = new MultiProvider(
   [
     { provider: providerA },
     { provider: new ProviderB() }
@@ -137,10 +137,10 @@ The Multi-Provider supports tracking events across multiple providers, allowing 
 ### Basic Tracking Usage
 
 ```typescript
-import { WebMultiProvider } from '@openfeature/web-sdk'
+import { MultiProvider } from '@openfeature/web-sdk'
 import { OpenFeature } from '@openfeature/web-sdk'
 
-const multiProvider = new WebMultiProvider([
+const multiProvider = new MultiProvider([
   { provider: new ProviderA() },
   { provider: new ProviderB() }
 ])

@@ -155,9 +155,9 @@ The Multi-Provider is a powerful tool for performing migrations between flag pro
 - **Multiple Data Sources**: The Multi-Provider allows you to seamlessly combine many sources of flagging data, such as environment variables, local files, database values and SaaS hosted feature management systems.
 
 ```ts
-import { WebMultiProvider } from '@openfeature/web-sdk';
+import { MultiProvider } from '@openfeature/web-sdk';
 
-const multiProvider = new WebMultiProvider([
+const multiProvider = new MultiProvider([
   { provider: new ProviderA() },
   { provider: new ProviderB() }
 ]);
@@ -179,9 +179,9 @@ The Multi-Provider comes with three strategies out of the box:
 - **ComparisonStrategy**: Evaluates all providers sequentially. If every provider returns a successful result with the same value, then that result is returned. Otherwise, the result returned by the configured "fallback provider" will be used.
 
 ```ts
-import { WebMultiProvider, FirstSuccessfulStrategy } from '@openfeature/web-sdk';
+import { MultiProvider, FirstSuccessfulStrategy } from '@openfeature/web-sdk';
 
-const multiProvider = new WebMultiProvider(
+const multiProvider = new MultiProvider(
   [
     { provider: new ProviderA() },
     { provider: new ProviderB() }
