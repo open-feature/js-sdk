@@ -37,7 +37,7 @@
       "bump-patch-for-minor-pre-major": true,
       "extra-files": ["README.md"],
       "versioning": "default",
-      "release-as": "0.0.18"
+      "release-as": "0.0.19"
     },
     "packages/nest": {
       "release-type": "node",
