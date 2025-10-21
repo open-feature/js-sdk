@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.0.19](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.18...angular-sdk-v0.0.19) (2025-10-21)
+
+
+### 🧹 Chore
+
+* Test OIDC NPM Publishing Without Token ([#1262](https://github.com/open-feature/js-sdk/issues/1262)) ([c800ff1](https://github.com/open-feature/js-sdk/commit/c800ff176abf9489c2d2b7bfd2c92c01b83855a7))
+
 ## [0.0.18](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.17...angular-sdk-v0.0.18) (2025-10-20)
 
 
