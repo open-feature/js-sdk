@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.19.0...server-sdk-v1.20.0) (2025-10-21)
+
+
+### ✨ New Features
+
+* Migrate MultiProvider from js-sdk-contrib ([#1234](https://github.com/open-feature/js-sdk/issues/1234)) ([8686dbf](https://github.com/open-feature/js-sdk/commit/8686dbfbe2b95b20706718bf23287244eda36f60))
+
 ## [1.19.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.18.0...server-sdk-v1.19.0) (2025-08-14)
 
 
