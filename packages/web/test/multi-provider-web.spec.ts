@@ -19,10 +19,11 @@ import {
   InMemoryProvider,
   OpenFeatureEventEmitter,
   ClientProviderEvents,
+  ProviderStatus,
+  FirstMatchStrategy,
+  FirstSuccessfulStrategy,
+  ComparisonStrategy,
 } from '../src';
-import { FirstMatchStrategy } from '../src/provider/multi-provider/strategies';
-import { FirstSuccessfulStrategy } from '../src/provider/multi-provider/strategies';
-import { ComparisonStrategy } from '../src/provider/multi-provider/strategies';
 
 class TestProvider implements Provider {
   public metadata: ProviderMetadata = {
@@ -313,7 +314,7 @@ describe('MultiProvider', () => {
               provider: provider2,
             },
           ],
-          new ComparisonStrategy(provider1),
+          new ComparisonStrategy(ProviderStatus, provider1),
         );
 
         multiProvider.hooks[0].before?.(hookContext);
@@ -478,7 +479,7 @@ describe('MultiProvider', () => {
                 provider: provider2,
               },
             ],
-            new FirstMatchStrategy(),
+            new FirstMatchStrategy(ProviderStatus),
           );
 
           expect(() => callEvaluation(multiProvider, {})).toThrow('test error');
@@ -501,7 +502,7 @@ describe('MultiProvider', () => {
                 provider: provider2,
               },
             ],
-            new FirstMatchStrategy(),
+            new FirstMatchStrategy(ProviderStatus),
           );
 
           expect(() => callEvaluation(multiProvider, {})).toThrow('test error');
@@ -531,7 +532,7 @@ describe('MultiProvider', () => {
                 provider: provider3,
               },
             ],
-            new FirstMatchStrategy(),
+            new FirstMatchStrategy(ProviderStatus),
           );
           const result = callEvaluation(multiProvider, {});
           expect(result).toEqual({ value: true, flagKey: 'flag', flagMetadata: {} });
@@ -561,7 +562,7 @@ describe('MultiProvider', () => {
                 provider: provider3,
               },
             ],
-            new FirstMatchStrategy(),
+            new FirstMatchStrategy(ProviderStatus),
           );
           const result = callEvaluation(multiProvider, {});
           expect(result).toEqual({ value: true, flagKey: 'flag', flagMetadata: {} });
@@ -594,7 +595,7 @@ describe('MultiProvider', () => {
                 provider: provider3,
               },
             ],
-            new FirstSuccessfulStrategy(),
+            new FirstSuccessfulStrategy(ProviderStatus),
           );
           const result = callEvaluation(multiProvider, {});
           expect(result).toEqual({ value: true, flagKey: 'flag', flagMetadata: {} });
@@ -625,7 +626,7 @@ describe('MultiProvider', () => {
                 provider: provider3,
               },
             ],
-            new ComparisonStrategy(provider1),
+            new ComparisonStrategy(ProviderStatus, provider1),
           );
           const result = callEvaluation(multiProvider, {});
           expect(provider1.resolveBooleanEvaluation).toHaveBeenCalled();
@@ -663,7 +664,7 @@ describe('MultiProvider', () => {
                 provider: provider3,
               },
             ],
-            new ComparisonStrategy(provider1, onMismatch),
+            new ComparisonStrategy(ProviderStatus, provider1, onMismatch),
           );
           const result = callEvaluation(multiProvider, {});
           expect(provider1.resolveBooleanEvaluation).toHaveBeenCalled();
@@ -716,7 +717,7 @@ describe('MultiProvider', () => {
                 provider: provider3,
               },
             ],
-            new ComparisonStrategy(provider1),
+            new ComparisonStrategy(ProviderStatus, provider1),
           );
           expect(() => callEvaluation(multiProvider, {})).toThrow('test error');
           expect(provider1.resolveBooleanEvaluation).toHaveBeenCalled();
@@ -797,7 +798,10 @@ describe('MultiProvider', () => {
         const provider3 = new TestProvider();
 
         // Create a custom strategy that only allows the second provider to track
-        class MockStrategy extends FirstMatchStrategy {
+        class MockStrategy extends FirstMatchStrategy<ProviderStatus, Provider> {
+          constructor() {
+            super(ProviderStatus);
+          }
           override shouldTrackWithThisProvider = jest.fn().mockImplementation((strategyContext) => {
             return strategyContext.providerName === 'TestProvider-2';
           });
@@ -851,7 +855,10 @@ describe('MultiProvider', () => {
         const provider1 = new TestProvider();
         const provider2 = new TestProvider();
 
-        class MockStrategy extends FirstMatchStrategy {
+        class MockStrategy extends FirstMatchStrategy<ProviderStatus, Provider> {
+          constructor() {
+            super(ProviderStatus);
+          }
           override shouldTrackWithThisProvider = jest.fn().mockReturnValue(true);
         }
 

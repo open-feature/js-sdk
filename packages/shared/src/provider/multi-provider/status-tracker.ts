@@ -35,6 +35,13 @@ export class StatusTracker<
     provider.events?.addHandler(this.eventEnum.Ready as TProviderEvents, (details?: EventDetails) => {
       this.changeProviderStatus(providerEntry.name, this.statusEnum.READY, details);
     });
+
+    // Handle Reconciling event (web only - server doesn't have this)
+    if (this.eventEnum.Reconciling && this.statusEnum.RECONCILING) {
+      provider.events?.addHandler(this.eventEnum.Reconciling as TProviderEvents, (details?: EventDetails) => {
+        this.changeProviderStatus(providerEntry.name, this.statusEnum.RECONCILING, details);
+      });
+    }
   }
 
   providerStatus(name: string) {
@@ -51,6 +58,8 @@ export class StatusTracker<
       return this.statusEnum.ERROR;
     } else if (statuses.includes(this.statusEnum.STALE)) {
       return this.statusEnum.STALE;
+    } else if (this.statusEnum.RECONCILING && statuses.includes(this.statusEnum.RECONCILING)) {
+      return this.statusEnum.RECONCILING;
     }
     return this.statusEnum.READY;
   }
@@ -66,6 +75,8 @@ export class StatusTracker<
         this.events.emit(this.eventEnum.Stale as TProviderEvents, details);
       } else if (newStatus === this.statusEnum.READY) {
         this.events.emit(this.eventEnum.Ready as TProviderEvents, details);
+      } else if (this.statusEnum.RECONCILING && newStatus === this.statusEnum.RECONCILING) {
+        this.events.emit(this.eventEnum.Reconciling as TProviderEvents, details);
       }
     }
   }
