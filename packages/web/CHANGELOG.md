@@ -1,6 +1,18 @@
 # Changelog
 
 
+## [1.7.0](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.6.2...web-sdk-v1.7.0) (2025-10-21)
+
+
+### ✨ New Features
+
+* Migrate MultiProvider from js-sdk-contrib ([#1234](https://github.com/open-feature/js-sdk/issues/1234)) ([8686dbf](https://github.com/open-feature/js-sdk/commit/8686dbfbe2b95b20706718bf23287244eda36f60))
+
+
+### 🐛 Bug Fixes
+
+* correct MultiProvider class name in docs and remove duplicate error logging ([#1267](https://github.com/open-feature/js-sdk/issues/1267)) ([18c2719](https://github.com/open-feature/js-sdk/commit/18c2719391fbf755dce692c82b402823374b79aa))
+
 ## [1.6.2](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.6.1...web-sdk-v1.6.2) (2025-09-30)
 
 
