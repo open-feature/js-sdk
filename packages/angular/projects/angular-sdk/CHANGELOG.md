@@ -1,6 +1,12 @@
 # Changelog
 
 
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/web-sdk bumped from ^1.6.2 to ^1.7.1
+
 ## [0.0.19](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.18...angular-sdk-v0.0.19) (2025-10-21)
 
 
