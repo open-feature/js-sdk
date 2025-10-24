@@ -44,22 +44,30 @@ In addition to the features provided by the [web sdk](https://openfeature.dev/do
 
 - [Overview](#overview)
 - [Quick start](#quick-start)
-    - [Requirements](#requirements)
-    - [Install](#install)
-        - [npm](#npm)
-        - [yarn](#yarn)
-        - [Required peer dependencies](#required-peer-dependencies)
-    - [Usage](#usage)
-        - [Module](#module)
-            - [Minimal Example](#minimal-example)
-        - [How to use](#how-to-use)
-            - [Boolean Feature Flag](#boolean-feature-flag)
-            - [Number Feature Flag](#number-feature-flag)
-            - [String Feature Flag](#string-feature-flag)
-            - [Object Feature Flag](#object-feature-flag)
-            - [Opting-out of automatic re-rendering](#opting-out-of-automatic-re-rendering)
-            - [Consuming the evaluation details](#consuming-the-evaluation-details)
-            - [Setting Evaluation Context](#setting-evaluation-context)
+  - [Requirements](#requirements)
+  - [Install](#install)
+    - [npm](#npm)
+    - [yarn](#yarn)
+    - [Required peer dependencies](#required-peer-dependencies)
+  - [Usage](#usage)
+    - [Module](#module)
+      - [Minimal Example](#minimal-example)
+    - [How to use](#how-to-use)
+      - [Structural Directives](#structural-directives)
+        - [Boolean Feature Flag](#boolean-feature-flag)
+        - [Number Feature Flag](#number-feature-flag)
+        - [String Feature Flag](#string-feature-flag)
+        - [Object Feature Flag](#object-feature-flag)
+        - [Opting-out of automatic re-rendering](#opting-out-of-automatic-re-rendering)
+        - [Consuming the evaluation details](#consuming-the-evaluation-details)
+      - [FeatureFlagService](#featureflagservice)
+        - [Using with Observables](#using-with-observables)
+        - [Using with Angular Signals](#using-with-angular-signals)
+        - [Service Options](#service-options)
+      - [Setting evaluation context](#setting-evaluation-context)
+        - [Using a static object](#using-a-static-object)
+        - [Using a factory function](#using-a-factory-function)
+      - [Observability considerations](#observability-considerations)
 - [FAQ and troubleshooting](#faq-and-troubleshooting)
 - [Resources](#resources)
 
@@ -425,6 +433,12 @@ const contextFactory = (): EvaluationContext => loadContextFromLocalStorage();
 })
 export class AppModule {}
 ```
+
+##### Observability considerations
+
+Angular's lifecycle can result in flags being evaluated multiple times as a user interacts with a page.
+If you are using an OpenFeature hook for telemetry, this can result in inflated evaluation metrics.
+The [OpenFeature debounce hook](https://github.com/open-feature/js-sdk-contrib/tree/main/libs/hooks/debounce) can help to reduce the amount of redundant evaluations reported to your observability platform by limiting the frequency at which evaluation metrics are reported.
 
 ## FAQ and troubleshooting
 
