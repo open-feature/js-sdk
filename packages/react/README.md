@@ -55,6 +55,7 @@ In addition to the feature provided by the [web sdk](https://openfeature.dev/doc
     - [Re-rendering with Flag Configuration Changes](#re-rendering-with-flag-configuration-changes)
     - [Suspense Support](#suspense-support)
     - [Tracking](#tracking)
+    - [Observability Considerations](#observability-considerations)
   - [Testing](#testing)
 - [FAQ and troubleshooting](#faq-and-troubleshooting)
 - [Resources](#resources)
@@ -302,6 +303,12 @@ function MyComponent() {
   return <>...</>;
 }
 ```
+
+#### Observability Considerations
+
+React's lifecycle can result in flags being evaluated multiple times as a user interacts with a page.
+If you are using an OpenFeature hook for telemetry, this can result in inflated evaluation metrics.
+The [OpenFeature debounce hook](https://github.com/open-feature/js-sdk-contrib/tree/main/libs/hooks/debounce) can help to reduce the amount of redundant evaluations reported to your observability platform by limiting the frequency at which evaluation metrics are reported.
 
 ### Testing
 
