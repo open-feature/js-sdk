@@ -10,7 +10,7 @@ import type {
   ProviderEmittableEvents,
   ProviderMetadata,
   TrackingEventDetails,
-} from '@openfeature/web-sdk';
+} from '../src';
 import {
   DefaultLogger,
   MapHookData,
@@ -19,7 +19,7 @@ import {
   InMemoryProvider,
   OpenFeatureEventEmitter,
   ClientProviderEvents,
-} from '@openfeature/web-sdk';
+} from '../src';
 import { FirstMatchStrategy } from '../src/provider/multi-provider/strategies';
 import { FirstSuccessfulStrategy } from '../src/provider/multi-provider/strategies';
 import { ComparisonStrategy } from '../src/provider/multi-provider/strategies';

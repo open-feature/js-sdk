@@ -9,7 +9,7 @@ import type {
   Provider,
   ProviderMetadata,
   TrackingEventDetails,
-} from '@openfeature/server-sdk';
+} from '../src';
 import {
   DefaultLogger,
   MapHookData,
@@ -18,7 +18,7 @@ import {
   InMemoryProvider,
   OpenFeatureEventEmitter,
   ServerProviderEvents,
-} from '@openfeature/server-sdk';
+} from '../src';
 import { FirstMatchStrategy } from '../src/provider/multi-provider/strategies';
 import { FirstSuccessfulStrategy } from '../src/provider/multi-provider/strategies';
 import { ComparisonStrategy } from '../src/provider/multi-provider/strategies';
