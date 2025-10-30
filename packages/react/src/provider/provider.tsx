@@ -32,9 +32,7 @@ type ProviderProps = {
    * @returns {OpenFeatureProvider} context provider
    */
 export function OpenFeatureProvider({ client, domain, children, ...options }: ProviderProps): JSX.Element {
-  if (!client) {
-    client = OpenFeature.getClient(domain);
-  }
+  const stableClient = React.useMemo(() => client || OpenFeature.getClient(domain), [client, domain]);
 
-  return <Context.Provider value={{ client, options, domain }}>{children}</Context.Provider>;
+  return <Context.Provider value={{ client: stableClient, options, domain }}>{children}</Context.Provider>;
 }
