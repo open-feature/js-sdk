@@ -78,6 +78,20 @@ describe('OpenFeatureProvider', () => {
 
         expect(result.current.metadata.domain).toEqual(DOMAIN);
       });
+
+      it('should return a stable client across renders', () => {
+        const wrapper = ({ children }: Parameters<typeof OpenFeatureProvider>[0]) => (
+          <OpenFeatureProvider domain={DOMAIN}>{children}</OpenFeatureProvider>
+        );
+
+        const { result, rerender } = renderHook(() => useOpenFeatureClient(), { wrapper });
+
+        const firstClient = result.current;
+        rerender();
+        const secondClient = result.current;
+
+        expect(firstClient).toBe(secondClient);
+      });
     });
   });
 
