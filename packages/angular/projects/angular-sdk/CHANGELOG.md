@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.0.20](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.19...angular-sdk-v0.0.20) (2025-10-31)
+
+
+### 🧹 Chore
+
+* mention debounce hook in react/ng docs ([#1272](https://github.com/open-feature/js-sdk/issues/1272)) ([27666b8](https://github.com/open-feature/js-sdk/commit/27666b8c2d3f8131ba0b3f704ca1c87df007a5fe))
+
 ## [0.0.19](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.18...angular-sdk-v0.0.19) (2025-10-21)
 
 
