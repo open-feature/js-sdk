@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.1](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.20.0...server-sdk-v1.20.1) (2025-10-31)
+
+
+### 📚 Documentation
+
+* add Multi-Provider to features list in README's ([#1269](https://github.com/open-feature/js-sdk/issues/1269)) ([752fa0d](https://github.com/open-feature/js-sdk/commit/752fa0d4a199342d6956e625e8aa9e757e1830e3))
+
 ## [1.20.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.19.0...server-sdk-v1.20.0) (2025-10-21)
 
 
