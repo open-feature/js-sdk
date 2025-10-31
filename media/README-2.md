@@ -16,8 +16,8 @@
     <img alt="Specification" src="https://img.shields.io/static/v1?label=specification&message=v0.8.0&color=yellow&style=for-the-badge" />
   </a>
   <!-- x-release-please-start-version -->
-  <a href="https://github.com/open-feature/js-sdk/releases/tag/web-sdk-v1.7.0">
-    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v1.7.0&color=blue&style=for-the-badge" />
+  <a href="https://github.com/open-feature/js-sdk/releases/tag/web-sdk-v1.7.1">
+    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v1.7.1&color=blue&style=for-the-badge" />
   </a>
   <!-- x-release-please-end -->
   <br/>
@@ -109,6 +109,7 @@ See [here](https://open-feature.github.io/js-sdk/modules/_openfeature_web_sdk.ht
 | ✅      | [Tracking](#tracking)               | Associate user actions with feature flag evaluations, particularly for A/B testing.                                                |
 | ✅      | [Shutdown](#shutdown)               | Gracefully clean up a provider during application shutdown.                                                                        |
 | ✅      | [Extending](#extending)             | Extend OpenFeature with custom providers and hooks.                                                                                |
+| ✅      | [Multi-Provider](#multi-provider)   | Combine multiple providers with configurable evaluation strategies.                                                                |
 
 <sub>Implemented: ✅ | In-progress: ⚠️ | Not implemented yet: ❌</sub>
 

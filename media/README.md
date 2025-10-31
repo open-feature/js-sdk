@@ -110,6 +110,7 @@ See [here](https://open-feature.github.io/js-sdk/modules/_openfeature_server_sdk
 | ✅      | [Tracking](#tracking)                                               | Associate user actions with feature flag evaluations, particularly for A/B testing.                                                   |
 | ✅      | [Shutdown](#shutdown)                                               | Gracefully clean up a provider during application shutdown.                                                                           |
 | ✅      | [Extending](#extending)                                             | Extend OpenFeature with custom providers and hooks.                                                                                   |
+| ✅      | [Multi-Provider](#multi-provider)                                   | Combine multiple providers with configurable evaluation strategies.                                                                    |
 
 <sub>Implemented: ✅ | In-progress: ⚠️ | Not implemented yet: ❌</sub>
 
