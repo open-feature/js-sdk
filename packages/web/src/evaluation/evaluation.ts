@@ -5,6 +5,68 @@ export interface FlagEvaluationOptions {
   hookHints?: HookHints;
 }
 
+export interface ContextChangeSubscriptions {
+  /**
+   * Subscribes to context changes for a boolean flag.
+   * @param flagKey The flag key uniquely identifies a particular flag
+   * @param defaultValue The value returned if an error occurs
+   * @param callback Function called when context changes, receives new and old evaluation details
+   * @param options Additional flag evaluation options
+   * @returns Unsubscribe function to remove the listener
+   */
+  onBooleanContextChanged(
+    flagKey: string,
+    defaultValue: boolean,
+    callback: (newDetails: EvaluationDetails<boolean>, oldDetails: EvaluationDetails<boolean>) => void,
+    options?: FlagEvaluationOptions,
+  ): () => void;
+
+  /**
+   * Subscribes to context changes for a string flag.
+   * @param flagKey The flag key uniquely identifies a particular flag
+   * @param defaultValue The value returned if an error occurs
+   * @param callback Function called when context changes, receives new and old evaluation details
+   * @param options Additional flag evaluation options
+   * @returns Unsubscribe function to remove the listener
+   */
+  onStringContextChanged(
+    flagKey: string,
+    defaultValue: string,
+    callback: (newDetails: EvaluationDetails<string>, oldDetails: EvaluationDetails<string>) => void,
+    options?: FlagEvaluationOptions,
+  ): () => void;
+
+  /**
+   * Subscribes to context changes for a number flag.
+   * @param flagKey The flag key uniquely identifies a particular flag
+   * @param defaultValue The value returned if an error occurs
+   * @param callback Function called when context changes, receives new and old evaluation details
+   * @param options Additional flag evaluation options
+   * @returns Unsubscribe function to remove the listener
+   */
+  onNumberContextChanged(
+    flagKey: string,
+    defaultValue: number,
+    callback: (newDetails: EvaluationDetails<number>, oldDetails: EvaluationDetails<number>) => void,
+    options?: FlagEvaluationOptions,
+  ): () => void;
+
+  /**
+   * Subscribes to context changes for an object flag.
+   * @param flagKey The flag key uniquely identifies a particular flag
+   * @param defaultValue The value returned if an error occurs
+   * @param callback Function called when context changes, receives new and old evaluation details
+   * @param options Additional flag evaluation options
+   * @returns Unsubscribe function to remove the listener
+   */
+  onObjectContextChanged<T extends JsonValue = JsonValue>(
+    flagKey: string,
+    defaultValue: T,
+    callback: (newDetails: EvaluationDetails<T>, oldDetails: EvaluationDetails<T>) => void,
+    options?: FlagEvaluationOptions,
+  ): () => void;
+}
+
 export interface Features {
   /**
    * Performs a flag evaluation that returns a boolean.
