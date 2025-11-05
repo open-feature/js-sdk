@@ -217,6 +217,22 @@ export abstract class OpenFeatureCommonAPI<
     contextOrUndefined?: EvaluationContext,
   ): this;
 
+  protected setAwaitableProviderWithOptions(
+    domainOrProvider?: string | P,
+    providerOrUndefined?: P,
+    options?: { timeout?: number; signal?: AbortSignal }
+  ): Promise<void> | void {
+    const initializationPromise = this.setAwaitableProvider(domainOrProvider, providerOrUndefined);
+
+    // If no promise is returned, no timeout/cancellation is needed
+    if (!initializationPromise || !options) {
+      return initializationPromise;
+    }
+
+    // Apply timeout and cancellation wrapping
+    return this.withProviderTimeoutAndCancellation(initializationPromise, options);
+  }
+
   protected setAwaitableProvider(domainOrProvider?: string | P, providerOrUndefined?: P): Promise<void> | void {
     const domain = stringOrUndefined(domainOrProvider);
     const provider = objectOrUndefined<P>(domainOrProvider) ?? objectOrUndefined<P>(providerOrUndefined);
@@ -439,5 +455,43 @@ export abstract class OpenFeatureCommonAPI<
   private handleShutdownError(provider: P, err: unknown) {
     this._logger.error(`Error during shutdown of provider ${provider.metadata.name}: ${err}`);
     this._logger.error((err as Error)?.stack);
+  }
+
+  private async withProviderTimeoutAndCancellation(
+    initializationPromise: Promise<void>,
+    options: { timeout?: number; signal?: AbortSignal }
+  ): Promise<void> {
+    const promises: Promise<void>[] = [initializationPromise];
+
+    // Add timeout promise if timeout is specified
+    if (options.timeout && options.timeout > 0) {
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => {
+          const timeoutError = new GeneralError(`Provider initialization timed out after ${options.timeout}ms`);
+          timeoutError.code = ErrorCode.TIMEOUT;
+          reject(timeoutError);
+        }, options.timeout);
+      });
+      promises.push(timeoutPromise);
+    }
+
+    // Add cancellation promise if AbortSignal is specified
+    if (options.signal && !options.signal.aborted) {
+      const cancellationPromise = new Promise<never>((_, reject) => {
+        const onAbort = () => {
+          const cancelError = new GeneralError('Provider initialization was cancelled');
+          reject(cancelError);
+        };
+
+        options.signal!.addEventListener('abort', onAbort, { once: true });
+      });
+      promises.push(cancellationPromise);
+    } else if (options.signal?.aborted) {
+      // Signal is already aborted, reject immediately
+      const cancelError = new GeneralError('Provider initialization was cancelled');
+      throw cancelError;
+    }
+
+    return Promise.race(promises);
   }
 }

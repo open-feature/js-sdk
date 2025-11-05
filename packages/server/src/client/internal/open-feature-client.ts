@@ -301,7 +301,10 @@ export class OpenFeatureClient implements Client {
       this.shortCircuitIfNotReady();
 
       // run the referenced resolver, binding the provider.
-      const resolution = await resolver.call(this._provider, flagKey, defaultValue, frozenContext, this._logger);
+      const resolution = await this.withTimeoutAndCancellation(
+        () => resolver.call(this._provider, flagKey, defaultValue, frozenContext, this._logger),
+        options
+      );
 
       const resolutionDetails = {
         ...resolution,
@@ -456,5 +459,45 @@ export class OpenFeatureClient implements Client {
       flagMetadata: Object.freeze(flagMetadata),
       flagKey,
     };
+  }
+
+  private async withTimeoutAndCancellation<T>(
+    evaluationFn: () => Promise<T>,
+    options: FlagEvaluationOptions
+  ): Promise<T> {
+    const promises: Promise<T>[] = [evaluationFn()];
+
+    // Add timeout promise if timeout is specified
+    if (options.timeout && options.timeout > 0) {
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => {
+          const timeoutError = new Error(`Evaluation timed out after ${options.timeout}ms`);
+          (timeoutError as OpenFeatureError).code = ErrorCode.TIMEOUT;
+          reject(timeoutError);
+        }, options.timeout);
+      });
+      promises.push(timeoutPromise);
+    }
+
+    // Add cancellation promise if AbortSignal is specified
+    if (options.signal && !options.signal.aborted) {
+      const cancellationPromise = new Promise<never>((_, reject) => {
+        const onAbort = () => {
+          const cancelError = new Error('Evaluation was cancelled');
+          (cancelError as OpenFeatureError).code = ErrorCode.GENERAL;
+          reject(cancelError);
+        };
+
+        options.signal!.addEventListener('abort', onAbort, { once: true });
+      });
+      promises.push(cancellationPromise);
+    } else if (options.signal?.aborted) {
+      // Signal is already aborted, reject immediately
+      const cancelError = new Error('Evaluation was cancelled');
+      (cancelError as OpenFeatureError).code = ErrorCode.GENERAL;
+      throw cancelError;
+    }
+
+    return Promise.race(promises);
   }
 }

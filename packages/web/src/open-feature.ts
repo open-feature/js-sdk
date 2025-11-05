@@ -11,6 +11,7 @@ import {
 } from '@openfeature/core';
 import type { Client } from './client';
 import { OpenFeatureClient } from './client/internal/open-feature-client';
+import type { ProviderWaitOptions } from './evaluation';
 import { OpenFeatureEventEmitter, ProviderEvents } from './events';
 import type { Hook } from './hooks';
 import type { Provider} from './provider';
@@ -91,6 +92,27 @@ export class OpenFeatureAPI
    */
   setProviderAndWait(provider: Provider, context: EvaluationContext): Promise<void>;
   /**
+   * Sets the default provider for flag evaluations and returns a promise that resolves when the provider is ready.
+   * This provider will be used by domainless clients and clients associated with domains to which no provider is bound.
+   * Setting a provider supersedes the current provider used in new and existing unbound clients.
+   * @param {Provider} provider The provider responsible for flag evaluations.
+   * @param {ProviderWaitOptions} options Options for provider initialization including timeout and cancellation.
+   * @returns {Promise<void>}
+   * @throws {Error} If the provider throws an exception during initialization or times out.
+   */
+  setProviderAndWait(provider: Provider, options: ProviderWaitOptions): Promise<void>;
+  /**
+   * Sets the default provider for flag evaluations and returns a promise that resolves when the provider is ready.
+   * This provider will be used by domainless clients and clients associated with domains to which no provider is bound.
+   * Setting a provider supersedes the current provider used in new and existing unbound clients.
+   * @param {Provider} provider The provider responsible for flag evaluations.
+   * @param {EvaluationContext} context The evaluation context to use for flag evaluations.
+   * @param {ProviderWaitOptions} options Options for provider initialization including timeout and cancellation.
+   * @returns {Promise<void>}
+   * @throws {Error} If the provider throws an exception during initialization or times out.
+   */
+  setProviderAndWait(provider: Provider, context: EvaluationContext, options: ProviderWaitOptions): Promise<void>;
+  /**
    * Sets the provider that OpenFeature will use for flag evaluations on clients bound to the same domain.
    * A promise is returned that resolves when the provider is ready.
    * Setting a provider supersedes the current provider used in new and existing clients bound to the same domain.
@@ -111,18 +133,69 @@ export class OpenFeatureAPI
    * @throws {Error} If the provider throws an exception during initialization.
    */
   setProviderAndWait(domain: string, provider: Provider, context: EvaluationContext): Promise<void>;
+  /**
+   * Sets the provider that OpenFeature will use for flag evaluations on clients bound to the same domain.
+   * A promise is returned that resolves when the provider is ready.
+   * Setting a provider supersedes the current provider used in new and existing clients bound to the same domain.
+   * @param {string} domain The name to identify the client
+   * @param {Provider} provider The provider responsible for flag evaluations.
+   * @param {ProviderWaitOptions} options Options for provider initialization including timeout and cancellation.
+   * @returns {Promise<void>}
+   * @throws {Error} If the provider throws an exception during initialization or times out.
+   */
+  setProviderAndWait(domain: string, provider: Provider, options: ProviderWaitOptions): Promise<void>;
+  /**
+   * Sets the provider that OpenFeature will use for flag evaluations on clients bound to the same domain.
+   * A promise is returned that resolves when the provider is ready.
+   * Setting a provider supersedes the current provider used in new and existing clients bound to the same domain.
+   * @param {string} domain The name to identify the client
+   * @param {Provider} provider The provider responsible for flag evaluations.
+   * @param {EvaluationContext} context The evaluation context to use for flag evaluations.
+   * @param {ProviderWaitOptions} options Options for provider initialization including timeout and cancellation.
+   * @returns {Promise<void>}
+   * @throws {Error} If the provider throws an exception during initialization or times out.
+   */
+  setProviderAndWait(domain: string, provider: Provider, context: EvaluationContext, options: ProviderWaitOptions): Promise<void>;
   async setProviderAndWait(
     clientOrProvider?: string | Provider,
-    providerContextOrUndefined?: Provider | EvaluationContext,
-    contextOrUndefined?: EvaluationContext,
+    providerContextOrOptions?: Provider | EvaluationContext | ProviderWaitOptions,
+    contextOrOptions?: EvaluationContext | ProviderWaitOptions,
+    optionsOrUndefined?: ProviderWaitOptions,
   ): Promise<void> {
     const domain = stringOrUndefined(clientOrProvider);
-    const provider = domain
-      ? objectOrUndefined<Provider>(providerContextOrUndefined)
-      : objectOrUndefined<Provider>(clientOrProvider);
-    const context = domain
-      ? objectOrUndefined<EvaluationContext>(contextOrUndefined)
-      : objectOrUndefined<EvaluationContext>(providerContextOrUndefined);
+    let provider: Provider | undefined;
+    let context: EvaluationContext | undefined;
+    let options: ProviderWaitOptions | undefined;
+
+    if (domain) {
+      // Domain is specified: setProviderAndWait(domain, provider, context?, options?)
+      provider = objectOrUndefined<Provider>(providerContextOrOptions);
+
+      // Check if contextOrOptions is options or context
+      if (contextOrOptions) {
+        if ('timeout' in contextOrOptions || 'signal' in contextOrOptions) {
+          options = contextOrOptions as ProviderWaitOptions;
+        } else {
+          context = contextOrOptions as EvaluationContext;
+          options = objectOrUndefined<ProviderWaitOptions>(optionsOrUndefined);
+        }
+      }
+    } else {
+      // No domain: setProviderAndWait(provider, context?, options?) or setProviderAndWait(provider, options?)
+      provider = objectOrUndefined<Provider>(clientOrProvider);
+
+      if (providerContextOrOptions) {
+        if ('timeout' in providerContextOrOptions || 'signal' in providerContextOrOptions) {
+          options = providerContextOrOptions as ProviderWaitOptions;
+        } else {
+          context = providerContextOrOptions as EvaluationContext;
+          // Check if contextOrOptions is options
+          if (contextOrOptions && ('timeout' in contextOrOptions || 'signal' in contextOrOptions)) {
+            options = contextOrOptions as ProviderWaitOptions;
+          }
+        }
+      }
+    }
 
     if (context) {
       // synonymously setting context prior to provider initialization.
@@ -134,7 +207,7 @@ export class OpenFeatureAPI
       }
     }
 
-    await this.setAwaitableProvider(domain, provider);
+    await this.setAwaitableProviderWithOptions(domain, provider, options);
   }
 
   /**

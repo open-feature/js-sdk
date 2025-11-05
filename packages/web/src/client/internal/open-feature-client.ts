@@ -255,6 +255,9 @@ export class OpenFeatureClient implements Client {
 
       this.shortCircuitIfNotReady();
 
+      // Check for cancellation before evaluation
+      this.checkCancellation(options);
+
       // run the referenced resolver, binding the provider.
       const resolution = resolver.call(this._provider, flagKey, defaultValue, context, this._logger);
 
@@ -374,5 +377,22 @@ export class OpenFeatureClient implements Client {
       flagMetadata: Object.freeze(flagMetadata),
       flagKey,
     };
+  }
+
+  private checkCancellation(options: FlagEvaluationOptions): void {
+    // Check for cancellation (timeouts are less relevant for synchronous operations)
+    if (options.signal?.aborted) {
+      const cancelError = new Error('Evaluation was cancelled');
+      (cancelError as OpenFeatureError).code = ErrorCode.GENERAL;
+      throw cancelError;
+    }
+
+    // Log warning if timeout is specified for synchronous operations
+    if (options.timeout !== undefined) {
+      this._logger.warn(
+        'Timeout option is not supported for synchronous web client evaluations. ' +
+        'Consider using server-side SDK for timeout support with async operations.'
+      );
+    }
   }
 }

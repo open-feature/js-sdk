@@ -116,6 +116,11 @@ export enum ErrorCode {
   INVALID_CONTEXT = 'INVALID_CONTEXT',
 
   /**
+   * The evaluation request timed out.
+   */
+  TIMEOUT = 'TIMEOUT',
+
+  /**
    * An error with an unspecified code.
    */
   GENERAL = 'GENERAL',

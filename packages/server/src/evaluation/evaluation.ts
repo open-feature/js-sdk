@@ -4,6 +4,29 @@ import type { Hook } from '../hooks';
 export interface FlagEvaluationOptions {
   hooks?: Hook[];
   hookHints?: HookHints;
+  /**
+   * Timeout in milliseconds for the flag evaluation. If the evaluation takes longer than this timeout,
+   * it will be rejected with a TIMEOUT error.
+   */
+  timeout?: number;
+  /**
+   * AbortSignal for cancelling the flag evaluation. When the signal is aborted, the evaluation
+   * will be rejected with a GENERAL error.
+   */
+  signal?: AbortSignal;
+}
+
+export interface ProviderWaitOptions {
+  /**
+   * Timeout in milliseconds for provider initialization. If the provider takes longer than this timeout
+   * to initialize, the promise will be rejected with a TIMEOUT error.
+   */
+  timeout?: number;
+  /**
+   * AbortSignal for cancelling the provider initialization. When the signal is aborted,
+   * the promise will be rejected with a GENERAL error.
+   */
+  signal?: AbortSignal;
 }
 
 export interface Features {

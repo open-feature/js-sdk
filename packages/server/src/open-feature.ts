@@ -10,6 +10,7 @@ import {
 } from '@openfeature/core';
 import type { Client } from './client';
 import { OpenFeatureClient } from './client/internal/open-feature-client';
+import type { ProviderWaitOptions } from './evaluation';
 import { OpenFeatureEventEmitter } from './events';
 import type { Hook } from './hooks';
 import type { Provider} from './provider';
@@ -86,6 +87,16 @@ export class OpenFeatureAPI
    */
   setProviderAndWait(provider: Provider): Promise<void>;
   /**
+   * Sets the default provider for flag evaluations and returns a promise that resolves when the provider is ready.
+   * This provider will be used by domainless clients and clients associated with domains to which no provider is bound.
+   * Setting a provider supersedes the current provider used in new and existing unbound clients.
+   * @param {Provider} provider The provider responsible for flag evaluations.
+   * @param {ProviderWaitOptions} options Options for provider initialization including timeout and cancellation.
+   * @returns {Promise<void>}
+   * @throws {Error} If the provider throws an exception during initialization or times out.
+   */
+  setProviderAndWait(provider: Provider, options: ProviderWaitOptions): Promise<void>;
+  /**
    * Sets the provider that OpenFeature will use for flag evaluations on clients bound to the same domain.
    * A promise is returned that resolves when the provider is ready.
    * Setting a provider supersedes the current provider used in new and existing clients bound to the same domain.
@@ -95,13 +106,41 @@ export class OpenFeatureAPI
    * @throws {Error} If the provider throws an exception during initialization.
    */
   setProviderAndWait(domain: string, provider: Provider): Promise<void>;
-  async setProviderAndWait(domainOrProvider?: string | Provider, providerOrUndefined?: Provider): Promise<void> {
+  /**
+   * Sets the provider that OpenFeature will use for flag evaluations on clients bound to the same domain.
+   * A promise is returned that resolves when the provider is ready.
+   * Setting a provider supersedes the current provider used in new and existing clients bound to the same domain.
+   * @param {string} domain The name to identify the client
+   * @param {Provider} provider The provider responsible for flag evaluations.
+   * @param {ProviderWaitOptions} options Options for provider initialization including timeout and cancellation.
+   * @returns {Promise<void>}
+   * @throws {Error} If the provider throws an exception during initialization or times out.
+   */
+  setProviderAndWait(domain: string, provider: Provider, options: ProviderWaitOptions): Promise<void>;
+  async setProviderAndWait(
+    domainOrProvider?: string | Provider,
+    providerOrOptions?: Provider | ProviderWaitOptions,
+    optionsOrUndefined?: ProviderWaitOptions
+  ): Promise<void> {
     const domain = stringOrUndefined(domainOrProvider);
-    const provider = domain
-      ? objectOrUndefined<Provider>(providerOrUndefined)
-      : objectOrUndefined<Provider>(domainOrProvider);
+    let provider: Provider | undefined;
+    let options: ProviderWaitOptions | undefined;
 
-    await this.setAwaitableProvider(domain, provider);
+    if (domain) {
+      // Domain is specified: setProviderAndWait(domain, provider, options?)
+      provider = objectOrUndefined<Provider>(providerOrOptions);
+      options = objectOrUndefined<ProviderWaitOptions>(optionsOrUndefined);
+    } else {
+      // No domain: setProviderAndWait(provider, options?)
+      provider = objectOrUndefined<Provider>(domainOrProvider);
+
+      // Check if providerOrOptions is actually options
+      if (providerOrOptions && !('metadata' in providerOrOptions)) {
+        options = providerOrOptions as ProviderWaitOptions;
+      }
+    }
+
+    await this.setAwaitableProviderWithOptions(domain, provider, options);
   }
 
   /**
