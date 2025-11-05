@@ -69,17 +69,22 @@ describe('Context Change Subscriptions', () => {
   });
 
   describe('Client-level onBooleanContextChanged', () => {
-    it('should fire callback when context changes', (done) => {
+    it('should fire callback immediately and when context changes', (done) => {
       const client = OpenFeature.getClient(domain);
       let callCount = 0;
 
       client.onBooleanContextChanged('test-flag', false, (newDetails, oldDetails) => {
         callCount++;
         if (callCount === 1) {
+          // Initial callback
           expect(newDetails.value).toBe(BOOLEAN_VALUE);
           expect(oldDetails.value).toBe(BOOLEAN_VALUE);
           expect(newDetails.flagKey).toBe('test-flag');
           expect(oldDetails.flagKey).toBe('test-flag');
+        } else if (callCount === 2) {
+          // Context change callback
+          expect(newDetails.value).toBe(BOOLEAN_VALUE);
+          expect(oldDetails.value).toBe(BOOLEAN_VALUE);
           done();
         }
       });
@@ -87,15 +92,20 @@ describe('Context Change Subscriptions', () => {
       OpenFeature.setContext(domain, { user: 'test' });
     });
 
-    it('should pass correct old and new details on context change', (done) => {
+    it('should pass correct old and new details immediately and on context change', (done) => {
       const client = OpenFeature.getClient(domain);
+      let callCount = 0;
 
       client.onBooleanContextChanged('test-flag', false, (newDetails, oldDetails) => {
+        callCount++;
         expect(oldDetails.value).toBeDefined();
         expect(newDetails.value).toBeDefined();
         expect(oldDetails.flagKey).toBe('test-flag');
         expect(newDetails.flagKey).toBe('test-flag');
-        done();
+
+        if (callCount === 2) {
+          done();
+        }
       });
 
       OpenFeature.setContext(domain, { user: 'test' });
@@ -109,14 +119,17 @@ describe('Context Change Subscriptions', () => {
         callCount++;
       });
 
+      // Callback fires immediately (callCount = 1)
       OpenFeature.setContext(domain, { user: 'test1' });
 
       setTimeout(() => {
+        // Callback fires on context change (callCount = 2)
         unsubscribe();
         OpenFeature.setContext(domain, { user: 'test2' });
 
         setTimeout(() => {
-          expect(callCount).toBe(1);
+          // Should only be 2 (initial + one context change before unsubscribe)
+          expect(callCount).toBe(2);
           done();
         }, 50);
       }, 50);
@@ -133,7 +146,8 @@ describe('Context Change Subscriptions', () => {
 
       client.onBooleanContextChanged('test-flag', false, () => {
         callCount2++;
-        if (callCount1 === 1 && callCount2 === 1) {
+        // Both should have fired once initially, then once on context change
+        if (callCount1 === 2 && callCount2 === 2) {
           done();
         }
       });
@@ -143,14 +157,18 @@ describe('Context Change Subscriptions', () => {
   });
 
   describe('Client-level onStringContextChanged', () => {
-    it('should fire callback when context changes', (done) => {
+    it('should fire callback immediately and when context changes', (done) => {
       const client = OpenFeature.getClient(domain);
+      let callCount = 0;
 
       client.onStringContextChanged('test-flag', 'default', (newDetails, oldDetails) => {
+        callCount++;
         expect(newDetails.value).toBe(STRING_VALUE);
         expect(oldDetails.value).toBe(STRING_VALUE);
         expect(newDetails.flagKey).toBe('test-flag');
-        done();
+        if (callCount === 2) {
+          done();
+        }
       });
 
       OpenFeature.setContext(domain, { user: 'test' });
@@ -158,14 +176,18 @@ describe('Context Change Subscriptions', () => {
   });
 
   describe('Client-level onNumberContextChanged', () => {
-    it('should fire callback when context changes', (done) => {
+    it('should fire callback immediately and when context changes', (done) => {
       const client = OpenFeature.getClient(domain);
+      let callCount = 0;
 
       client.onNumberContextChanged('test-flag', 0, (newDetails, oldDetails) => {
+        callCount++;
         expect(newDetails.value).toBe(NUMBER_VALUE);
         expect(oldDetails.value).toBe(NUMBER_VALUE);
         expect(newDetails.flagKey).toBe('test-flag');
-        done();
+        if (callCount === 2) {
+          done();
+        }
       });
 
       OpenFeature.setContext(domain, { user: 'test' });
@@ -173,14 +195,23 @@ describe('Context Change Subscriptions', () => {
   });
 
   describe('Client-level onObjectContextChanged', () => {
-    it('should fire callback when context changes', (done) => {
+    it('should fire callback immediately and when context changes', (done) => {
       const client = OpenFeature.getClient(domain);
+      let callCount = 0;
 
       client.onObjectContextChanged('test-flag', {}, (newDetails, oldDetails) => {
-        expect(newDetails.value).toEqual(OBJECT_VALUE);
-        expect(oldDetails.value).toEqual({});
-        expect(newDetails.flagKey).toBe('test-flag');
-        done();
+        callCount++;
+        if (callCount === 1) {
+          // Initial callback - both old and new are same initially
+          expect(newDetails.value).toEqual(OBJECT_VALUE);
+          expect(oldDetails.value).toEqual(OBJECT_VALUE);
+        } else if (callCount === 2) {
+          // Context change callback
+          expect(newDetails.value).toEqual(OBJECT_VALUE);
+          expect(oldDetails.value).toEqual(OBJECT_VALUE);
+          expect(newDetails.flagKey).toBe('test-flag');
+          done();
+        }
       });
 
       OpenFeature.setContext(domain, { user: 'test' });
@@ -254,6 +285,7 @@ describe('Context Change Subscriptions', () => {
           OpenFeature.setContext(domain, { user: 'test2' });
 
           setTimeout(() => {
+            // Should only be 1 (one context change before unsubscribe)
             expect(callCount).toBe(1);
             done();
           }, 50);
@@ -337,6 +369,7 @@ describe('Context Change Subscriptions', () => {
       if ('onContextChanged' in details && typeof details.onContextChanged === 'function') {
         details.onContextChanged(() => {
           callCount++;
+          // Two context changes
           if (callCount === 2) {
             done();
           }

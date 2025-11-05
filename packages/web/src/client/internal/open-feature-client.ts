@@ -268,6 +268,8 @@ export class OpenFeatureClient implements Client {
         throw new Error(`Unsupported flag type: ${flagType}`);
     }
 
+    callback(currentDetails, { ...currentDetails });
+
     const handler = () => {
       const oldDetails = { ...currentDetails };
       let newDetails: EvaluationDetails<T>;
