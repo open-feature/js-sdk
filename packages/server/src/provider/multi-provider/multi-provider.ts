@@ -30,8 +30,9 @@ export class MultiProvider implements Provider {
 
   public readonly events = new OpenFeatureEventEmitter();
 
-  private hookContents: Array<[HookContext, HookHints]> = [];
-  
+  private hookContexts: WeakMap<EvaluationContext, HookContext> = new WeakMap<EvaluationContext, HookContext>();
+  private hookHints: WeakMap<EvaluationContext, HookHints> = new WeakMap<EvaluationContext, HookHints>();
+
   metadata: ProviderMetadata;
 
   providerEntries: RegisteredProvider[] = [];
@@ -139,8 +140,9 @@ export class MultiProvider implements Provider {
     defaultValue: T,
     context: EvaluationContext,
   ): Promise<ResolutionDetails<T>> {
-    const [hookContext, hookHints] = this.hookContents.shift() ?? [];
-    
+    const hookContext = this.hookContexts.get(context);
+    const hookHints = this.hookHints.get(context);
+
     if (!hookContext || !hookHints) {
       throw new GeneralError('Hook context not available for evaluation');
     }
@@ -297,7 +299,8 @@ export class MultiProvider implements Provider {
     return [
       {
         before: async (hookContext: BeforeHookContext, hints: HookHints): Promise<EvaluationContext> => {
-          this.hookContents.push([hookContext, hints ?? {}]);
+          this.hookContexts.set(hookContext.context, hookContext);
+          this.hookHints.set(hookContext.context, hints ?? {});
           return hookContext.context;
         },
       },

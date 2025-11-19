@@ -811,6 +811,40 @@ describe('OpenFeatureClient', () => {
         client.setContext({ [KEY]: VAL });
         expect(client.getContext()[KEY]).toEqual(VAL);
       });
+
+      it('context object is reference stable between hook and evaluation calls', async () => {
+        let hookContextRef;
+        const contextMap = new WeakMap<EvaluationContext, HookContext>();
+        const contextStabilityProvider = {
+          metadata: {
+            name: 'evaluation-context',
+          },
+          hooks: [
+            {
+              before: jest.fn((hookContext: HookContext) => {
+                contextMap.set(hookContext.context, hookContext);
+                return hookContext.context;
+              })
+            }
+          ],
+          resolveBooleanEvaluation: jest.fn((_flagKey, _defaultValue, context): Promise<ResolutionDetails<boolean>> => {
+            // We expect that the context object reference is the same as that captured in the hook
+            hookContextRef = contextMap.get(context);
+            return Promise.resolve({
+              value: true,
+            });
+          }),
+        } as unknown as Provider;
+
+        await OpenFeature.setProviderAndWait(contextStabilityProvider);
+        const client = OpenFeature.getClient();
+        
+        const context = { data: 1, value: '2' };
+        await client.getBooleanValue('some-other-flag', false, context);
+        expect(contextStabilityProvider.resolveBooleanEvaluation).toHaveBeenCalled();
+        expect(contextStabilityProvider.hooks?.[0].before).toHaveBeenCalled();
+        expect(hookContextRef).toBeDefined();
+      });
     });
   });
 
