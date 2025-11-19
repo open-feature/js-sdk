@@ -332,7 +332,7 @@ export class OpenFeatureClient implements Client {
     mergedContext: EvaluationContext,
     options: FlagEvaluationOptions,
   ) {
-    let accumulatedContext = mergedContext;
+    const accumulatedContext = mergedContext;
 
     for (const [index, hook] of hooks.entries()) {
       const hookContextIndex = hooks.length - 1 - index; // reverse index for before hooks
@@ -343,10 +343,7 @@ export class OpenFeatureClient implements Client {
 
       const hookResult = await hook?.before?.(hookContext, Object.freeze(options.hookHints));
       if (hookResult) {
-        accumulatedContext = {
-          ...accumulatedContext,
-          ...hookResult,
-        };
+        Object.assign(accumulatedContext, hookResult);
 
         for (let i = 0; i < hooks.length; i++) {
           Object.assign(hookContexts[hookContextIndex].context, accumulatedContext);
