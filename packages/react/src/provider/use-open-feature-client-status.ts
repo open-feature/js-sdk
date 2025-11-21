@@ -5,14 +5,15 @@ import { ProviderEvents } from '@openfeature/web-sdk';
 
 /**
  * Get the {@link ProviderStatus} for the OpenFeatureClient.
+ * Reacts to changes in provider status.
  * @returns {ProviderStatus} status of the client for this scope
  */
 export function useOpenFeatureClientStatus(): ProviderStatus {
   const client = useOpenFeatureClient();
   const [status, setStatus] = useState<ProviderStatus>(client.providerStatus);
-  const controller = new AbortController();
 
   useEffect(() => {
+    const controller = new AbortController();
     const updateStatus = () => setStatus(client.providerStatus);
     client.addHandler(ProviderEvents.ConfigurationChanged, updateStatus, { signal: controller.signal });
     client.addHandler(ProviderEvents.ContextChanged, updateStatus, { signal: controller.signal });
