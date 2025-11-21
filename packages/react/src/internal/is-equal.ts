@@ -1,6 +1,9 @@
 /**
  * Deeply compare two values to determine if they are equal.
  * Supports primitives and serializable objects.
+ * 
+ * Note: Does not handle Date, RegExp, Map, Set, or circular references.
+ * Suitable for comparing EvaluationDetails and other JSON-serializable data.
  * @param {unknown} value First value to compare
  * @param {unknown} other Second value to compare
  * @returns {boolean} True if the values are equal
