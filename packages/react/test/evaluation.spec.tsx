@@ -585,6 +585,79 @@ describe('evaluation', () => {
       return new TestingProvider(CONFIG, DELAY); // delay init by 100ms
     };
 
+    describe('provider ready event updates', () => {
+      it('should update EvaluationDetails when provider becomes ready (including reason)', async () => {
+        const PROVIDER_READY_DOMAIN = 'provider-ready-test';
+        const TEST_FLAG_KEY = 'test-flag';
+        const FLAG_VALUE = true;
+
+        // Create a provider that will delay initialization
+        const provider = new TestingProvider(
+          {
+            [TEST_FLAG_KEY]: {
+              disabled: false,
+              variants: {
+                on: FLAG_VALUE,
+                off: false,
+              },
+              defaultVariant: 'on',
+            },
+          },
+          DELAY,
+        );
+
+        OpenFeature.setProvider(PROVIDER_READY_DOMAIN, provider);
+
+        let capturedDetails: EvaluationDetails<boolean> | undefined;
+        let renderCount = 0;
+
+        function TestComponent() {
+          renderCount++;
+          const details = useBooleanFlagDetails(TEST_FLAG_KEY, FLAG_VALUE);
+          capturedDetails = details;
+
+          return (
+            <div>
+              <div data-testid="value">{String(details.value)}</div>
+              <div data-testid="reason">{details.reason}</div>
+              <div data-testid="render-count">{renderCount}</div>
+            </div>
+          );
+        }
+
+        render(
+          <OpenFeatureProvider domain={PROVIDER_READY_DOMAIN}>
+            <TestComponent />
+          </OpenFeatureProvider>,
+        );
+
+        // Initial render - provider is NOT_READY, should use default value with ERROR reason
+        expect(capturedDetails?.value).toBe(FLAG_VALUE);
+        expect(capturedDetails?.reason).toBe(StandardResolutionReasons.ERROR);
+        expect(capturedDetails?.errorCode).toBe(ErrorCode.PROVIDER_NOT_READY);
+        expect(screen.getByTestId('reason')).toHaveTextContent(StandardResolutionReasons.ERROR);
+
+        const initialRenderCount = renderCount;
+
+        // Wait for provider to become ready and component to re-render
+        await waitFor(
+          () => {
+            expect(capturedDetails?.reason).toBe(StandardResolutionReasons.STATIC);
+          },
+          { timeout: DELAY * 2 },
+        );
+
+        // After provider is ready, same value but different reason and no error
+        expect(capturedDetails?.value).toBe(FLAG_VALUE);
+        expect(capturedDetails?.errorCode).toBeUndefined();
+        expect(screen.getByTestId('value')).toHaveTextContent(String(FLAG_VALUE));
+        expect(screen.getByTestId('reason')).toHaveTextContent(StandardResolutionReasons.STATIC);
+
+        // Verify that a re-render occurred
+        expect(renderCount).toBeGreaterThan(initialRenderCount);
+      });
+    });
+
     describe('when using the noop provider', () => {
       function TestComponent() {
         const { value } = useSuspenseFlag(SUSPENSE_FLAG_KEY, DEFAULT);
