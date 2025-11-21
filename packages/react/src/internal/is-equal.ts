@@ -1,13 +1,11 @@
-import { type FlagValue } from '@openfeature/web-sdk';
-
 /**
  * Deeply compare two values to determine if they are equal.
  * Supports primitives and serializable objects.
- * @param {FlagValue} value First value to compare
- * @param {FlagValue} other Second value to compare
+ * @param {unknown} value First value to compare
+ * @param {unknown} other Second value to compare
  * @returns {boolean} True if the values are equal
  */
-export function isEqual(value: FlagValue, other: FlagValue): boolean {
+export function isEqual(value: unknown, other: unknown): boolean {
   if (value === other) {
     return true;
   }
@@ -16,7 +14,7 @@ export function isEqual(value: FlagValue, other: FlagValue): boolean {
     return false;
   }
 
-  if (typeof value === 'object' && value !== null && other !== null) {
+  if (typeof value === 'object' && value !== null && typeof other === 'object' && other !== null) {
     const valueKeys = Object.keys(value);
     const otherKeys = Object.keys(other);
 
