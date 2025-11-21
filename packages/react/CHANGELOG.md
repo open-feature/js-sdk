@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.0.3](https://github.com/open-feature/js-sdk/compare/react-sdk-v1.0.2...react-sdk-v1.0.3) (2025-11-21)
+
+
+### 🐛 Bug Fixes
+
+* in-line docs, un-needed AbortController creation ([#1291](https://github.com/open-feature/js-sdk/issues/1291)) ([9b05be9](https://github.com/open-feature/js-sdk/commit/9b05be9a045232b36dec008611981bd721694abe))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/web-sdk bumped from * to 1.7.2
+
 ## [1.0.2](https://github.com/open-feature/js-sdk/compare/react-sdk-v1.0.1...react-sdk-v1.0.2) (2025-10-31)
 
 
