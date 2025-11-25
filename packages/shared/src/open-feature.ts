@@ -27,6 +27,8 @@ type AnyProviderStatus = ClientProviderStatus | ServerProviderStatus;
  */
 export class ProviderWrapper<P extends CommonProvider<AnyProviderStatus>, S extends AnyProviderStatus> {
   private _pendingContextChanges = 0;
+  private _initializing = false;
+  private _initialized = false;
 
   constructor(
     private _provider: P,
@@ -49,6 +51,8 @@ export class ProviderWrapper<P extends CommonProvider<AnyProviderStatus>, S exte
         this._status = _statusEnumType.ERROR as S;
       }
     });
+
+    this._initialized = !(typeof _provider.initialize === 'function');
   }
 
   get provider(): P {
@@ -65,6 +69,22 @@ export class ProviderWrapper<P extends CommonProvider<AnyProviderStatus>, S exte
 
   set status(status: S) {
     this._status = status;
+  }
+
+  get initializing() {
+    return this._initializing;
+  }
+
+  set initializing(initializing: boolean) {
+    this._initializing = initializing;
+  }
+
+  get initialized() {
+    return this._initialized;
+  }
+
+  set initialized(initialized: boolean) {
+    this._initialized = initialized;
   }
 
   get allContextChangesSettled() {
@@ -221,10 +241,11 @@ export abstract class OpenFeatureCommonAPI<
     wrapper: ProviderWrapper<P, AnyProviderStatus>,
     domain?: string,
   ): Promise<void> | void {
-    if (typeof wrapper.provider.initialize !== 'function') {
+    if (typeof wrapper.provider.initialize !== 'function' || wrapper.initializing || wrapper.initialized) {
       return;
     }
 
+    wrapper.initializing = true;
     return wrapper.provider
       .initialize(domain ? (this._domainScopedContext.get(domain) ?? this._context) : this._context)
       .then(() => {
@@ -266,6 +287,10 @@ export abstract class OpenFeatureCommonAPI<
         });
         // rethrow after emitting error events, so that public methods can control error handling
         throw error;
+      })
+      .finally(() => {
+        wrapper.initialized = true;
+        wrapper.initializing = false;
       });
   }
 
