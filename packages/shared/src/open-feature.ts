@@ -228,13 +228,15 @@ export abstract class OpenFeatureCommonAPI<
   abstract setProviderAndWait(
     clientOrProvider?: string | P,
     providerContextOrUndefined?: P | EvaluationContext,
-    contextOrUndefined?: EvaluationContext,
+    contextOptionsOrUndefined?: EvaluationContext | Record<never, never>,
+    optionsOrUndefined?: Record<never, never>,
   ): Promise<void>;
 
   abstract setProvider(
     clientOrProvider?: string | P,
     providerContextOrUndefined?: P | EvaluationContext,
-    contextOrUndefined?: EvaluationContext,
+    contextOptionsOrUndefined?: EvaluationContext | Record<never, never>,
+    optionsOrUndefined?: Record<never, never>,
   ): this;
 
   protected initializeProviderForDomain(
@@ -294,7 +296,11 @@ export abstract class OpenFeatureCommonAPI<
       });
   }
 
-  protected setAwaitableProvider(domainOrProvider?: string | P, providerOrUndefined?: P): Promise<void> | void {
+  protected setAwaitableProvider(
+    domainOrProvider?: string | P,
+    providerOrUndefined?: P,
+    skipInitialization = false,
+  ): Promise<void> | void {
     const domain = stringOrUndefined(domainOrProvider);
     const provider = objectOrUndefined<P>(domainOrProvider) ?? objectOrUndefined<P>(providerOrUndefined);
 
@@ -327,17 +333,19 @@ export abstract class OpenFeatureCommonAPI<
       this._statusEnumType,
     );
 
-    // initialize the provider if it's not already registered and it implements "initialize"
-    if (!this.allProviders.includes(provider)) {
-      initializationPromise = this.initializeProviderForDomain(wrappedProvider, domain);
-    }
+    if (!skipInitialization) {
+      // initialize the provider if it's not already registered and it implements "initialize"
+      if (!this.allProviders.includes(provider)) {
+        initializationPromise = this.initializeProviderForDomain(wrappedProvider, domain);
+      }
 
-    if (!initializationPromise) {
-      wrappedProvider.status = this._statusEnumType.READY;
-      emitters.forEach((emitter) => {
-        emitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
-      });
-      this._apiEmitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
+      if (!initializationPromise) {
+        wrappedProvider.status = this._statusEnumType.READY;
+        emitters.forEach((emitter) => {
+          emitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
+        });
+        this._apiEmitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
+      }
     }
 
     if (domain) {
