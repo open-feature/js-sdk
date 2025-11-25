@@ -12,7 +12,7 @@ interface ProviderOptions {
    * If provided, will be used to check if the current context is valid during initialization and context changes.
    * When calling `setProvider`, returning `false` will skip provider initialization. Throwing will move the provider to the ERROR state.
    * When calling `setProviderAndWait`, returning `false` will skip provider initialization. Throwing will reject the promise.
-   * TODO: When calling `setContext`, returning `false` will skip provider context change handling. Throwing will move the provider to the ERROR state.
+   * When calling `setContext`, returning `false` will skip provider context change handling. Throwing will move the provider to the ERROR state.
    * @param context The evaluation context to validate.
    */
   validateContext?: (context: EvaluationContext) => boolean;
@@ -44,6 +44,8 @@ export class OpenFeatureAPI
   );
   protected _domainScopedProviders: Map<string, ProviderWrapper<Provider, ClientProviderStatus>> = new Map();
   protected _createEventEmitter = () => new OpenFeatureEventEmitter();
+  protected _defaultOptions: ProviderOptions = {};
+  protected _domainScopedOptions: Map<string, ProviderOptions> = new Map();
 
   private constructor() {
     super('client');
@@ -71,6 +73,14 @@ export class OpenFeatureAPI
     }
 
     return this._domainScopedProviders.get(domain)?.status ?? this._defaultProvider.status;
+  }
+
+  private getProviderOptions(domain?: string): ProviderOptions {
+    if (!domain) {
+      return this._defaultOptions;
+    }
+
+    return this._domainScopedOptions.get(domain) ?? this._defaultOptions;
   }
 
   /**
@@ -136,6 +146,12 @@ export class OpenFeatureAPI
     const options = domain
       ? objectOrUndefined<ProviderOptions>(optionsOrUndefined)
       : objectOrUndefined<ProviderOptions>(contextOptionsOrUndefined);
+
+    if (domain) {
+      this._domainScopedOptions.set(domain, options ?? {});
+    } else {
+      this._defaultOptions = options ?? {};
+    }
 
     let skipInitialization = false;
     if (context) {
@@ -214,6 +230,12 @@ export class OpenFeatureAPI
     const options = domain
       ? objectOrUndefined<ProviderOptions>(optionsOrUndefined)
       : objectOrUndefined<ProviderOptions>(contextOptionsOrUndefined);
+
+    if (domain) {
+      this._domainScopedOptions.set(domain, options ?? {});
+    } else {
+      this._defaultOptions = options ?? {};
+    }
 
     let skipInitialization = false;
     let validateContextError: unknown;
@@ -325,8 +347,6 @@ export class OpenFeatureAPI
   async setContext<T extends EvaluationContext>(domainOrContext: T | string, contextOrUndefined?: T): Promise<void> {
     const domain = stringOrUndefined(domainOrContext);
     const context = objectOrUndefined<T>(domainOrContext) ?? objectOrUndefined(contextOrUndefined) ?? {};
-
-    // TODO: We need to store and call `validateContext` here if provided in `setProvider` options
 
     if (domain) {
       const wrapper = this._domainScopedProviders.get(domain);
@@ -468,8 +488,19 @@ export class OpenFeatureAPI
     const providerName = wrapper.provider?.metadata?.name || 'unnamed-provider';
 
     try {
+      // validate the context to decide if we should run the context change handler.
+      const options = this.getProviderOptions(domain);
+      if (typeof options.validateContext === 'function') {
+        if (!options.validateContext(newContext)) {
+          this._logger.debug(
+            `Skipping context change for domain '${domain ?? 'default'}' due to validateContext returning false.`,
+          );
+          return;
+        }
+      }
+
       // if the provider hasn't initialized yet, and isn't actively initializing, initialize instead of running context change handler
-      // the provider will be in this state if the user requested delayed initialization until the first context change
+      // the provider will be in this state if validateContext was used during setProvider to skip initialization
       const initializationPromise = this.initializeProviderForDomain(wrapper, domain);
       if (initializationPromise) {
         await initializationPromise;
