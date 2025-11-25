@@ -68,6 +68,7 @@ describe('validateContext', () => {
 
       expect(initializeMock).toHaveBeenCalledTimes(1);
       expect(contextChangeMock).toHaveBeenCalledTimes(1);
+      expect(OpenFeature.getContext()).toEqual({ user: 'test-user' });
     });
   });
 
@@ -109,6 +110,7 @@ describe('validateContext', () => {
         expect(validateContext).toHaveBeenCalledTimes(2);
         expect(initializeMock).toHaveBeenCalledTimes(1);
         expect(contextChangeMock).toHaveBeenCalledTimes(1);
+        expect(OpenFeature.getContext()).toEqual({ user: 'test-user' });
       });
     });
 
@@ -128,6 +130,7 @@ describe('validateContext', () => {
         expect(validateContext).toHaveBeenCalledTimes(2);
         expect(initializeMock).toHaveBeenCalledTimes(1);
         expect(contextChangeMock).toHaveBeenCalledTimes(0);
+        expect(OpenFeature.getContext()).toEqual({ user: 'test-user' });
         expect(OpenFeature.getClient().providerStatus).toBe(ProviderStatus.READY);
 
         await OpenFeature.setContext({ user: 'another-user' });
@@ -135,6 +138,7 @@ describe('validateContext', () => {
         expect(validateContext).toHaveBeenCalledTimes(3);
         expect(initializeMock).toHaveBeenCalledTimes(1);
         expect(contextChangeMock).toHaveBeenCalledTimes(1);
+        expect(OpenFeature.getContext()).toEqual({ user: 'another-user' });
       });
     });
   });
@@ -178,6 +182,7 @@ describe('validateContext', () => {
         expect(validateContext).toHaveBeenCalledTimes(2);
         expect(initializeMock).toHaveBeenCalledTimes(1);
         expect(contextChangeMock).toHaveBeenCalledTimes(0);
+        expect(OpenFeature.getContext()).toEqual({ user: 'test-user' });
       });
     });
 
@@ -196,6 +201,7 @@ describe('validateContext', () => {
         expect(validateContext).toHaveBeenCalledTimes(2);
         expect(initializeMock).toHaveBeenCalledTimes(0);
         expect(contextChangeMock).toHaveBeenCalledTimes(0);
+        expect(OpenFeature.getContext()).toEqual({ user: 'test-user' });
         expect(OpenFeature.getClient().providerStatus).toBe(ProviderStatus.NOT_READY);
 
         validateContext.mockReturnValue(true);
@@ -204,6 +210,7 @@ describe('validateContext', () => {
         expect(validateContext).toHaveBeenCalledTimes(3);
         expect(initializeMock).toHaveBeenCalledTimes(1);
         expect(contextChangeMock).toHaveBeenCalledTimes(0);
+        expect(OpenFeature.getContext()).toEqual({ user: 'another-user' });
         expect(OpenFeature.getClient().providerStatus).toBe(ProviderStatus.READY);
 
         await OpenFeature.setContext({ user: 'final-user' });
@@ -211,6 +218,7 @@ describe('validateContext', () => {
         expect(validateContext).toHaveBeenCalledTimes(4);
         expect(initializeMock).toHaveBeenCalledTimes(1);
         expect(contextChangeMock).toHaveBeenCalledTimes(1);
+        expect(OpenFeature.getContext()).toEqual({ user: 'final-user' });
       });
     });
   });
@@ -264,6 +272,7 @@ describe('validateContext', () => {
         expect(validateContext).toHaveBeenCalledTimes(2);
         expect(initializeMock).toHaveBeenCalledTimes(1);
         expect(contextChangeMock).toHaveBeenCalledTimes(0);
+        expect(OpenFeature.getContext()).toEqual({ user: 'test-user' });
         expect(OpenFeature.getClient().providerStatus).toBe(ProviderStatus.ERROR);
       });
     });
@@ -286,6 +295,7 @@ describe('validateContext', () => {
         expect(validateContext).toHaveBeenCalledTimes(2);
         expect(initializeMock).toHaveBeenCalledTimes(0);
         expect(contextChangeMock).toHaveBeenCalledTimes(0);
+        expect(OpenFeature.getContext()).toEqual({ user: 'test-user' });
         expect(OpenFeature.getClient().providerStatus).toBe(ProviderStatus.ERROR);
       });
     });

@@ -12,7 +12,7 @@ interface ProviderOptions {
    * If provided, will be used to check if the current context is valid during initialization and context changes.
    * When calling `setProvider`, returning `false` will skip provider initialization. Throwing will move the provider to the ERROR state.
    * When calling `setProviderAndWait`, returning `false` will skip provider initialization. Throwing will reject the promise.
-   * When calling `setContext`, returning `false` will skip provider context change handling. Throwing will move the provider to the ERROR state.
+   * When calling `setContext`, returning `false` will skip provider reconciliation of the context change. Throwing will move the provider to the ERROR state.
    * @param context The evaluation context to validate.
    */
   validateContext?: (context: EvaluationContext) => boolean;
@@ -489,6 +489,7 @@ export class OpenFeatureAPI
 
     try {
       // validate the context to decide if we should run the context change handler.
+      // notably, the stored context will still be updated by this point, this just skips reconciliation.
       const options = this.getProviderOptions(domain);
       if (typeof options.validateContext === 'function') {
         if (!options.validateContext(newContext)) {
