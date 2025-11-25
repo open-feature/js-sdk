@@ -380,6 +380,14 @@ export class OpenFeatureAPI
     const providerName = wrapper.provider?.metadata?.name || 'unnamed-provider';
 
     try {
+      // if the provider hasn't initialized yet, and isn't actively initializing, initialize instead of running context change handler
+      // the provider will be in this state if the user requested delayed initialization until the first context change
+      const initializationPromise = this.initializeProviderForDomain(wrapper, domain);
+      if (initializationPromise) {
+        await initializationPromise;
+        return;
+      }
+
       if (typeof wrapper.provider.onContextChange === 'function') {
         const maybePromise = wrapper.provider.onContextChange(oldContext, newContext);
 
