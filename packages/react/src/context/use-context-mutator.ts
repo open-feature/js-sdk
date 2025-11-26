@@ -18,10 +18,10 @@ export type ContextMutation = {
    * Context-aware function to set the desired context (see: {@link ContextMutationOptions} for details).
    * There's generally no need to await the result of this function; flag evaluation hooks will re-render when the context is updated.
    * This promise never rejects.
-   * @param updatedContext
+   * @param updatedContext New context object or method to generate it from the current context
    * @returns Promise for awaiting the context update
    */
-  setContext: (updatedContext: EvaluationContext | ((previousContext: EvaluationContext) => EvaluationContext)) => Promise<void>;
+  setContext: (updatedContext: EvaluationContext | ((currentContext: EvaluationContext) => EvaluationContext)) => Promise<void>;
 };
 
 /**
@@ -34,7 +34,7 @@ export function useContextMutator(options: ContextMutationOptions = { defaultCon
     const { domain } = useContext(Context) || {};
     const previousContext = useRef<null | EvaluationContext>(null);
 
-    const setContext = useCallback(async (updatedContext: EvaluationContext | ((previousContext: EvaluationContext) => EvaluationContext)): Promise<void> => {
+    const setContext = useCallback(async (updatedContext: EvaluationContext | ((currentContext: EvaluationContext) => EvaluationContext)): Promise<void> => {
         const resolvedContext = typeof updatedContext === 'function'
             ? updatedContext(OpenFeature.getContext(options?.defaultContext ? undefined : domain))
             : updatedContext;
