@@ -162,17 +162,18 @@ describe('OpenFeatureProvider', () => {
     });
   });
   describe('useMutateContext', () => {
-    const MutateButton = () => {
+    const MutateButton = ({ setter }: { setter?: (prevContext: EvaluationContext) => EvaluationContext }) => {
       const { setContext } = useContextMutator();
 
-      return <button onClick={() => setContext({ user: 'bob@flags.com' })}>Update Context</button>;
+      return <button onClick={() => setContext(setter ?? { user: 'bob@flags.com' })}>Update Context</button>;
     };
-    const TestComponent = ({ name }: { name: string }) => {
+
+    const TestComponent = ({ name, setter }: { name: string; setter?: (prevContext: EvaluationContext) => EvaluationContext }) => {
       const flagValue = useStringFlagValue<'hi' | 'bye' | 'aloha'>(SUSPENSE_FLAG_KEY, 'hi');
 
       return (
         <div>
-          <MutateButton />
+          <MutateButton setter={setter} />
           <div>{`${name} says ${flagValue}`}</div>
         </div>
       );
@@ -303,6 +304,38 @@ describe('OpenFeatureProvider', () => {
       );
 
       expect(screen.getByText('Will says aloha')).toBeInTheDocument();
+    });
+
+    it('should accept a method taking the previous context', async () => {
+      const DOMAIN = 'mutate-context-with-function';
+      OpenFeature.setProvider(DOMAIN, suspendingProvider(), { done: false });
+
+      const setter = jest.fn((prevContext: EvaluationContext) => ({ ...prevContext, user: 'bob@flags.com' }));
+      render(
+        <OpenFeatureProvider domain={DOMAIN}>
+          <React.Suspense fallback={<div>{FALLBACK}</div>}>
+            <TestComponent name="Will" setter={setter} />
+          </React.Suspense>
+        </OpenFeatureProvider>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('Will says hi')).toBeInTheDocument();
+      });
+
+      act(() => {
+        fireEvent.click(screen.getByText('Update Context'));
+      });
+      await waitFor(
+        () => {
+          expect(screen.getByText('Will says aloha')).toBeInTheDocument();
+        },
+        { timeout: DELAY * 4 },
+      );
+
+      expect(setter).toHaveBeenCalledTimes(1);
+      expect(setter).toHaveBeenCalledWith({ done: false });
+      expect(OpenFeature.getContext(DOMAIN)).toEqual({ done: false, user: 'bob@flags.com' });
     });
   });
 });
