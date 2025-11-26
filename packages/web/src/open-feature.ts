@@ -276,21 +276,17 @@ export class OpenFeatureAPI
       const wrapper = domain ? this._domainScopedProviders.get(domain) : this._defaultProvider;
       if (wrapper) {
         wrapper.status = this._statusEnumType.ERROR;
-        const providerName = wrapper.provider?.metadata?.name || 'unnamed-provider';
-        this.getAssociatedEventEmitters(domain).forEach((emitter) => {
-          emitter?.emit(ProviderEvents.Error, {
-            clientName: domain,
-            domain,
-            providerName,
-            message: `Error validating context during setProvider: ${validateContextError instanceof Error ? validateContextError.message : String(validateContextError)}`,
-          });
-        });
-        this._apiEmitter?.emit(ProviderEvents.Error, {
+        const payload = {
           clientName: domain,
           domain,
-          providerName,
+          providerName: wrapper.provider?.metadata?.name || 'unnamed-provider',
           message: `Error validating context during setProvider: ${validateContextError instanceof Error ? validateContextError.message : String(validateContextError)}`,
+        };
+
+        this.getAssociatedEventEmitters(domain).forEach((emitter) => {
+          emitter?.emit(ProviderEvents.Error, { ...payload });
         });
+        this._apiEmitter?.emit(ProviderEvents.Error, { ...payload });
         this._logger.error('Error validating context during setProvider:', validateContextError);
       }
     }

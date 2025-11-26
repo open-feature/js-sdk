@@ -252,19 +252,13 @@ export abstract class OpenFeatureCommonAPI<
       .initialize(domain ? (this._domainScopedContext.get(domain) ?? this._context) : this._context)
       .then(() => {
         wrapper.status = this._statusEnumType.READY;
+        const payload = { clientName: domain, domain, providerName: wrapper.provider.metadata.name };
+
         // fetch the most recent event emitters, some may have been added during init
         this.getAssociatedEventEmitters(domain).forEach((emitter) => {
-          emitter?.emit(AllProviderEvents.Ready, {
-            clientName: domain,
-            domain,
-            providerName: wrapper.provider.metadata.name,
-          });
+          emitter?.emit(AllProviderEvents.Ready, { ...payload });
         });
-        this._apiEmitter?.emit(AllProviderEvents.Ready, {
-          clientName: domain,
-          domain,
-          providerName: wrapper.provider.metadata.name,
-        });
+        this._apiEmitter?.emit(AllProviderEvents.Ready, { ...payload });
       })
       .catch((error) => {
         // if this is a fatal error, transition to FATAL status
@@ -273,20 +267,19 @@ export abstract class OpenFeatureCommonAPI<
         } else {
           wrapper.status = this._statusEnumType.ERROR;
         }
-        this.getAssociatedEventEmitters(domain).forEach((emitter) => {
-          emitter?.emit(AllProviderEvents.Error, {
-            clientName: domain,
-            domain,
-            providerName: wrapper.provider.metadata.name,
-            message: error?.message,
-          });
-        });
-        this._apiEmitter?.emit(AllProviderEvents.Error, {
+        const payload = {
           clientName: domain,
           domain,
           providerName: wrapper.provider.metadata.name,
           message: error?.message,
+        };
+
+        // fetch the most recent event emitters, some may have been added during init
+        this.getAssociatedEventEmitters(domain).forEach((emitter) => {
+          emitter?.emit(AllProviderEvents.Error, { ...payload });
         });
+        this._apiEmitter?.emit(AllProviderEvents.Error, { ...payload });
+
         // rethrow after emitting error events, so that public methods can control error handling
         throw error;
       })
