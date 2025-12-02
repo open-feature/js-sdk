@@ -1,4 +1,4 @@
-import { useCallback, useContext, useRef } from 'react';
+import { useCallback, useContext } from 'react';
 import type { EvaluationContext } from '@openfeature/web-sdk';
 import { OpenFeature } from '@openfeature/web-sdk';
 import { Context } from '../internal';
@@ -32,20 +32,19 @@ export type ContextMutation = {
  */
 export function useContextMutator(options: ContextMutationOptions = { defaultContext: false }): ContextMutation {
     const { domain } = useContext(Context) || {};
-    const previousContext = useRef<null | EvaluationContext>(null);
 
     const setContext = useCallback(async (updatedContext: EvaluationContext | ((currentContext: EvaluationContext) => EvaluationContext)): Promise<void> => {
+        const previousContext = OpenFeature.getContext(options?.defaultContext ? undefined : domain);
         const resolvedContext = typeof updatedContext === 'function'
-            ? updatedContext(OpenFeature.getContext(options?.defaultContext ? undefined : domain))
+            ? updatedContext(previousContext)
             : updatedContext;
 
-        if (previousContext.current !== resolvedContext) {
+        if (previousContext !== resolvedContext) {
             if (!domain || options?.defaultContext) {
                 OpenFeature.setContext(resolvedContext);
             } else {
                 OpenFeature.setContext(domain, resolvedContext);
             }
-            previousContext.current = resolvedContext;
         }
     }, [domain, options?.defaultContext]);
 
