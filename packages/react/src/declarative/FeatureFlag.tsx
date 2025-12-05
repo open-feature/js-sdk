@@ -2,6 +2,7 @@ import React from 'react';
 import { useFlag } from '../evaluation';
 import type { FlagQuery } from '../query';
 import type { FlagValue, EvaluationDetails } from '@openfeature/core';
+import { isEqual } from '../internal';
 
 /**
  * Default predicate function that checks if the expected value equals the actual flag value.
@@ -10,7 +11,7 @@ import type { FlagValue, EvaluationDetails } from '@openfeature/core';
  * @returns {boolean} true if the values match, false otherwise
  */
 function equals<T extends FlagValue>(expected: T, actual: EvaluationDetails<T>): boolean {
-  return expected === actual.value;
+  return isEqual(expected, actual.value);
 }
 
 /**
