@@ -69,7 +69,7 @@ describe('Feature Component', () => {
       expect(screen.queryByText(childText)).toBeInTheDocument();
     });
 
-    it('should not show a non-boolean feature flag without match', async () => {
+    it('should not show a non-boolean feature flag without match', () => {
       render(
         <OpenFeatureProvider domain={EVALUATION}>
           <FeatureFlag flagKey={STRING_FLAG_KEY} defaultValue={'hi'}>
