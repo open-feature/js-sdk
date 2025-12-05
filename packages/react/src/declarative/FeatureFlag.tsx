@@ -90,9 +90,11 @@ export function FeatureFlag<T extends FlagValue = FlagValue>({
   } else if (match !== undefined) {
     // Default behavior: check if match value equals flag value
     shouldRender = equals(match, details.details as EvaluationDetails<T>);
-  } else {
+  } else if (details.type === 'boolean') {
     // If no match value is provided, render if flag is truthy
     shouldRender = Boolean(details.value);
+  } else {
+    shouldRender = false;
   }
 
   if (shouldRender) {

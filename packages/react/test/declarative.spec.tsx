@@ -69,6 +69,18 @@ describe('Feature Component', () => {
       expect(screen.queryByText(childText)).toBeInTheDocument();
     });
 
+    it('should not show a non-boolean feature flag without match', async () => {
+      render(
+        <OpenFeatureProvider domain={EVALUATION}>
+          <FeatureFlag flagKey={STRING_FLAG_KEY} defaultValue={'hi'}>
+            <ChildComponent />
+          </FeatureFlag>
+        </OpenFeatureProvider>,
+      );
+
+      expect(screen.queryByText(childText)).not.toBeInTheDocument();
+    });
+
     it('should fallback when provided', () => {
       render(
         <OpenFeatureProvider domain={EVALUATION}>
@@ -138,7 +150,7 @@ describe('Feature Component', () => {
 
     it('should support function-based fallback with EvaluationDetails', () => {
       const fallbackFunction = jest.fn((details: EvaluationDetails<boolean>) => <div>Fallback: {details.flagKey}</div>);
-      
+
       render(
         <OpenFeatureProvider domain={EVALUATION}>
           <FeatureFlag flagKey={MISSING_FLAG_KEY} defaultValue={false} fallback={fallbackFunction}>
@@ -158,7 +170,7 @@ describe('Feature Component', () => {
       const fallbackFunction = jest.fn((details: EvaluationDetails<boolean>) => {
         return <div>Flag: {details.flagKey}, Value: {String(details.value)}, Reason: {details.reason}</div>;
       });
-      
+
       render(
         <OpenFeatureProvider domain={EVALUATION}>
           <FeatureFlag flagKey={MISSING_FLAG_KEY} defaultValue={false} fallback={fallbackFunction}>
@@ -178,9 +190,9 @@ describe('Feature Component', () => {
       // Create a provider that will cause an error
       const errorProvider = new InMemoryProvider({});
       OpenFeature.setProvider('error-test', errorProvider);
-      
+
       const fallbackFunction = jest.fn((details: EvaluationDetails<boolean>) => <div>Error fallback: {details.reason}</div>);
-      
+
       render(
         <OpenFeatureProvider domain="error-test">
           <FeatureFlag flagKey={MISSING_FLAG_KEY} defaultValue={false} fallback={fallbackFunction}>
