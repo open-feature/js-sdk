@@ -1,8 +1,8 @@
 {
   "packages/nest": "0.2.5",
-  "packages/react": "1.0.2",
-  "packages/web": "1.7.1",
-  "packages/server": "1.20.0",
+  "packages/react": "1.1.0",
+  "packages/web": "1.7.2",
+  "packages/server": "1.20.1",
   "packages/shared": "1.9.1",
   "packages/angular/projects/angular-sdk": "0.0.19"
 }

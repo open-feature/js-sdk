@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.20.1](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.20.0...server-sdk-v1.20.1) (2025-12-09)
+
+
+### 🐛 Bug Fixes
+
+* multi-provider hook context management ([#1282](https://github.com/open-feature/js-sdk/issues/1282)) ([2f9e0d3](https://github.com/open-feature/js-sdk/commit/2f9e0d34c7fd9632c2f1ded7f89cb81013091ad8))
+
+
+### 🧹 Chore
+
+* update copyright to OpenFeature Maintainers ([#1283](https://github.com/open-feature/js-sdk/issues/1283)) ([d751b8b](https://github.com/open-feature/js-sdk/commit/d751b8beac4fe25df7917e12752b003defcd3536))
+
+
+### 📚 Documentation
+
+* add Multi-Provider to features list in README's ([#1269](https://github.com/open-feature/js-sdk/issues/1269)) ([752fa0d](https://github.com/open-feature/js-sdk/commit/752fa0d4a199342d6956e625e8aa9e757e1830e3))
+
 ## [1.20.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.19.0...server-sdk-v1.20.0) (2025-10-21)
 
 

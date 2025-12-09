@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.7.2](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.7.1...web-sdk-v1.7.2) (2025-12-09)
+
+
+### 🧹 Chore
+
+* update copyright to OpenFeature Maintainers ([#1283](https://github.com/open-feature/js-sdk/issues/1283)) ([d751b8b](https://github.com/open-feature/js-sdk/commit/d751b8beac4fe25df7917e12752b003defcd3536))
+
 ## [1.7.1](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.7.0...web-sdk-v1.7.1) (2025-10-31)
 
 
