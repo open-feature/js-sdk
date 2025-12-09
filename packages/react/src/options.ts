@@ -48,6 +48,9 @@ export type ReactFlagEvaluationOptions = (
 } & FlagEvaluationOptions;
 
 // suspense options removed for the useSuspenseFlag hooks
-export type ReactFlagEvaluationNoSuspenseOptions = Omit<ReactFlagEvaluationOptions, 'suspend' | 'suspendUntilReady' | 'suspendWhileReconciling'>;
+export type ReactFlagEvaluationNoSuspenseOptions = Omit<
+  ReactFlagEvaluationOptions,
+  'suspend' | 'suspendUntilReady' | 'suspendWhileReconciling'
+>;
 
 export type NormalizedOptions = Omit<ReactFlagEvaluationOptions, 'suspend'>;

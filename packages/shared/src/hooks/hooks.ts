@@ -17,6 +17,9 @@ export interface HookContext<T extends FlagValue = FlagValue, TData = Record<str
   readonly hookData: HookData<TData>;
 }
 
-export interface BeforeHookContext<T extends FlagValue = FlagValue, TData = Record<string, unknown>> extends HookContext<T, TData> {
+export interface BeforeHookContext<
+  T extends FlagValue = FlagValue,
+  TData = Record<string, unknown>,
+> extends HookContext<T, TData> {
   context: EvaluationContext;
 }

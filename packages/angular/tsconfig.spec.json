@@ -2,15 +2,9 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
-    "types": [
-      "vitest/globals",
-      "node"
-    ],
+    "types": ["vitest/globals", "node"],
     "esModuleInterop": true,
     "emitDecoratorMetadata": true
   },
-  "include": [
-    "projects/angular-sdk/src/**/*.spec.ts",
-    "projects/angular-sdk/src/**/*.d.ts"
-  ]
+  "include": ["projects/angular-sdk/src/**/*.spec.ts", "projects/angular-sdk/src/**/*.d.ts"]
 }

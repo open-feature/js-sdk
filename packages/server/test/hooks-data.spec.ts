@@ -1,14 +1,7 @@
 import { OpenFeature } from '../src';
 import type { Client } from '../src/client';
-import type {
-  JsonValue,
-  ResolutionDetails,
-  HookContext,
-  BeforeHookContext,
-  HookData} from '@openfeature/core';
-import {
-  StandardResolutionReasons
-} from '@openfeature/core';
+import type { JsonValue, ResolutionDetails, HookContext, BeforeHookContext, HookData } from '@openfeature/core';
+import { StandardResolutionReasons } from '@openfeature/core';
 import type { Provider } from '../src/provider';
 import type { Hook } from '../src/hooks';
 
@@ -63,10 +56,10 @@ class TypedOpenTelemetryHook implements Hook {
   async before(hookContext: BeforeHookContext) {
     const spanId = `span-${Math.random().toString(36).substring(2, 11)}`;
     const traceId = `trace-${Math.random().toString(36).substring(2, 11)}`;
-    
+
     // Demonstrate that we can cast for type safety while maintaining compatibility
     const typedHookData = hookContext.hookData as unknown as HookData<OpenTelemetryData>;
-    
+
     // Type-safe setting with proper intellisense
     typedHookData.set('spanId', spanId);
     typedHookData.set('traceId', traceId);
@@ -76,7 +69,7 @@ class TypedOpenTelemetryHook implements Hook {
       clientName: hookContext.clientMetadata.name || 'unknown',
       providerName: hookContext.providerMetadata.name,
     });
-    
+
     this.spanId = spanId;
   }
 
@@ -85,7 +78,7 @@ class TypedOpenTelemetryHook implements Hook {
     const typedHookData = hookContext.hookData as unknown as HookData<OpenTelemetryData>;
     const startTime: number | undefined = typedHookData.get('startTime');
     const spanId: string | undefined = typedHookData.get('spanId');
-    
+
     if (startTime && spanId) {
       this.duration = Date.now() - startTime;
       // Simulate span completion

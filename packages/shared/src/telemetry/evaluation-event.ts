@@ -7,13 +7,7 @@ import { TelemetryFlagMetadata } from './flag-metadata';
  * Attribute types for OpenTelemetry.
  * @see https://github.com/open-telemetry/opentelemetry-js/blob/fbbce6e1c0de86e4c504b5788d876fae4d3bc254/api/src/common/Attributes.ts#L35
  */
-export declare type AttributeValue =
-  | string
-  | number
-  | boolean
-  | string[]
-  | number[]
-  | boolean[];
+export declare type AttributeValue = string | number | boolean | string[] | number[] | boolean[];
 
 type EvaluationEvent = {
   /**

@@ -7,30 +7,27 @@ the final result. Different evaluation strategies can be defined to control whic
 The Multi-Provider is a powerful tool for performing migrations between flag providers, or combining multiple providers into a single
 feature flagging interface. For example:
 
-- *Migration*: When migrating between two providers, you can run both in parallel under a unified flagging interface. As flags are added to the
-new provider, the Multi-Provider will automatically find and return them, falling back to the old provider if the new provider does not have
-- *Multiple Data Sources*: The Multi-Provider allows you to seamlessly combine many sources of flagging data, such as environment variables,
-local files, database values and SaaS hosted feature management systems.
+- _Migration_: When migrating between two providers, you can run both in parallel under a unified flagging interface. As flags are added to the
+  new provider, the Multi-Provider will automatically find and return them, falling back to the old provider if the new provider does not have
+- _Multiple Data Sources_: The Multi-Provider allows you to seamlessly combine many sources of flagging data, such as environment variables,
+  local files, database values and SaaS hosted feature management systems.
 
 ## Usage
 
 The Multi-Provider is initialized with an array of providers it should evaluate:
 
 ```typescript
-import { MultiProvider } from '@openfeature/server-sdk'
-import { OpenFeature } from '@openfeature/server-sdk'
+import { MultiProvider } from '@openfeature/server-sdk';
+import { OpenFeature } from '@openfeature/server-sdk';
 
-const multiProvider = new MultiProvider([
-  { provider: new ProviderA() },
-  { provider: new ProviderB() }
-])
+const multiProvider = new MultiProvider([{ provider: new ProviderA() }, { provider: new ProviderB() }]);
 
-await OpenFeature.setProviderAndWait(multiProvider)
+await OpenFeature.setProviderAndWait(multiProvider);
 
-const client = OpenFeature.getClient()
+const client = OpenFeature.getClient();
 
-console.log("Evaluating flag")
-console.log(await client.getBooleanDetails("my-flag", false));
+console.log('Evaluating flag');
+console.log(await client.getBooleanDetails('my-flag', false));
 ```
 
 By default, the Multi-Provider will evaluate all underlying providers in order and return the first successful result. If a provider indicates
@@ -41,15 +38,12 @@ will fail with a FLAG_NOT_FOUND error code.
 To change this behaviour, a different "strategy" can be provided:
 
 ```typescript
-import { MultiProvider, FirstSuccessfulStrategy } from '@openfeature/server-sdk'
+import { MultiProvider, FirstSuccessfulStrategy } from '@openfeature/server-sdk';
 
 const multiProvider = new MultiProvider(
-    [
-      { provider: new ProviderA() },
-      { provider: new ProviderB() }
-    ], 
-    new FirstSuccessfulStrategy()
-)
+  [{ provider: new ProviderA() }, { provider: new ProviderB() }],
+  new FirstSuccessfulStrategy(),
+);
 ```
 
 ## Strategies
@@ -58,27 +52,24 @@ The Multi-Provider comes with three strategies out of the box:
 
 - `FirstMatchStrategy` (default): Evaluates all providers in order and returns the first successful result. Providers that indicate FLAG_NOT_FOUND error will be skipped and the next provider will be evaluated. Any other error will cause the operation to fail and the set of errors to be thrown.
 - `FirstSuccessfulStrategy`: Evaluates all providers in order and returns the first successful result. Any error will cause that provider to be skipped.
-If no successful result is returned, the set of errors will be thrown.
+  If no successful result is returned, the set of errors will be thrown.
 - `ComparisonStrategy`: Evaluates all providers in parallel. If every provider returns a successful result with the same value, then that result is returned.
-Otherwise, the result returned by the configured "fallback provider" will be used. When values do not agree, an optional callback will be executed to notify
-you of the mismatch. This can be useful when migrating between providers that are expected to contain identical configuration. You can easily spot mismatches
-in configuration without affecting flag behaviour.
+  Otherwise, the result returned by the configured "fallback provider" will be used. When values do not agree, an optional callback will be executed to notify
+  you of the mismatch. This can be useful when migrating between providers that are expected to contain identical configuration. You can easily spot mismatches
+  in configuration without affecting flag behaviour.
 
 This strategy accepts several arguments during initialization:
 
 ```typescript
-import { MultiProvider, ComparisonStrategy } from '@openfeature/server-sdk'
+import { MultiProvider, ComparisonStrategy } from '@openfeature/server-sdk';
 
-const providerA = new ProviderA()
+const providerA = new ProviderA();
 const multiProvider = new MultiProvider(
-  [
-    { provider: providerA },
-    { provider: new ProviderB() }
-  ],
+  [{ provider: providerA }, { provider: new ProviderB() }],
   new ComparisonStrategy(providerA, (details) => {
-      console.log("Mismatch detected", details)
-  })
-)
+    console.log('Mismatch detected', details);
+  }),
+);
 ```
 
 The first argument is the "fallback provider" whose value to use in the event that providers do not agree. It should be the same object reference as one of the providers in the list. The second argument is a callback function that will be executed when a mismatch is detected. The callback will be passed an object containing the details of each provider's resolution, including the flag key, the value returned, and any errors that were thrown.
@@ -88,19 +79,16 @@ The first argument is the "fallback provider" whose value to use in the event th
 The Multi-Provider supports tracking events across multiple providers. When you call the `track` method, it will by default send the tracking event to all underlying providers that implement the `track` method.
 
 ```typescript
-import { OpenFeature } from '@openfeature/server-sdk'
-import { MultiProvider } from '@openfeature/server-sdk'
+import { OpenFeature } from '@openfeature/server-sdk';
+import { MultiProvider } from '@openfeature/server-sdk';
 
-const multiProvider = new MultiProvider([
-  { provider: new ProviderA() },
-  { provider: new ProviderB() }
-])
+const multiProvider = new MultiProvider([{ provider: new ProviderA() }, { provider: new ProviderB() }]);
 
-await OpenFeature.setProviderAndWait(multiProvider)
-const client = OpenFeature.getClient()
+await OpenFeature.setProviderAndWait(multiProvider);
+const client = OpenFeature.getClient();
 
 // Tracked events will be sent to all providers by default
-client.track('purchase', { targetingKey: 'user123' }, { value: 99.99, currency: 'USD' })
+client.track('purchase', { targetingKey: 'user123' }, { value: 99.99, currency: 'USD' });
 ```
 
 ### Tracking Behavior
@@ -115,7 +103,7 @@ client.track('purchase', { targetingKey: 'user123' }, { value: 99.99, currency: 
 You can customize which providers receive tracking calls by overriding the `shouldTrackWithThisProvider` method in your custom strategy:
 
 ```typescript
-import { BaseEvaluationStrategy, StrategyPerProviderContext } from '@openfeature/server-sdk'
+import { BaseEvaluationStrategy, StrategyPerProviderContext } from '@openfeature/server-sdk';
 
 class CustomTrackingStrategy extends BaseEvaluationStrategy {
   shouldTrackWithThisProvider(
@@ -128,12 +116,12 @@ class CustomTrackingStrategy extends BaseEvaluationStrategy {
     if (strategyContext.providerName === 'primary-provider') {
       return true;
     }
-    
+
     // Skip tracking for analytics events on backup providers
     if (trackingEventName.startsWith('analytics.')) {
       return false;
     }
-    
+
     return super.shouldTrackWithThisProvider(strategyContext, context, trackingEventName, trackingEventDetails);
   }
 }
@@ -145,28 +133,31 @@ It is also possible to implement your own strategy if the above options do not f
 
 ```typescript
 export abstract class BaseEvaluationStrategy {
-    public runMode: 'parallel' | 'sequential' = 'sequential';
+  public runMode: 'parallel' | 'sequential' = 'sequential';
 
-    abstract shouldEvaluateThisProvider(strategyContext: StrategyPerProviderContext, evalContext: EvaluationContext): boolean;
+  abstract shouldEvaluateThisProvider(
+    strategyContext: StrategyPerProviderContext,
+    evalContext: EvaluationContext,
+  ): boolean;
 
-    abstract shouldEvaluateNextProvider<T extends FlagValue>(
-        strategyContext: StrategyPerProviderContext,
-        context: EvaluationContext,
-        result: ProviderResolutionResult<T>,
-    ): boolean;
+  abstract shouldEvaluateNextProvider<T extends FlagValue>(
+    strategyContext: StrategyPerProviderContext,
+    context: EvaluationContext,
+    result: ProviderResolutionResult<T>,
+  ): boolean;
 
-    abstract shouldTrackWithThisProvider(
-        strategyContext: StrategyPerProviderContext,
-        context: EvaluationContext,
-        trackingEventName: string,
-        trackingEventDetails: TrackingEventDetails,
-    ): boolean;
+  abstract shouldTrackWithThisProvider(
+    strategyContext: StrategyPerProviderContext,
+    context: EvaluationContext,
+    trackingEventName: string,
+    trackingEventDetails: TrackingEventDetails,
+  ): boolean;
 
-    abstract determineFinalResult<T extends FlagValue>(
-        strategyContext: StrategyEvaluationContext,
-        context: EvaluationContext,
-        resolutions: ProviderResolutionResult<T>[],
-    ): FinalResult<T>;
+  abstract determineFinalResult<T extends FlagValue>(
+    strategyContext: StrategyEvaluationContext,
+    context: EvaluationContext,
+    resolutions: ProviderResolutionResult<T>[],
+  ): FinalResult<T>;
 }
 ```
 

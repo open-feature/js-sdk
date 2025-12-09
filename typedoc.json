@@ -1,13 +1,7 @@
 {
-    "$schema": "https://typedoc.org/schema.json",
-    "entryPointStrategy": "packages",
-    "entryPoints": [
-        "packages/server",
-        "packages/web",
-        "packages/shared",
-    ],
-    "sort": [
-        "source-order"
-    ],
-    "out": "typedoc"
-  }
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPointStrategy": "packages",
+  "entryPoints": ["packages/server", "packages/web", "packages/shared"],
+  "sort": ["source-order"],
+  "out": "typedoc"
+}

@@ -1,7 +1,6 @@
 import type { TrackingEventDetails } from '@openfeature/core';
 
 export interface Tracking {
-
   /**
    * Track a user action or application state, usually representing a business objective or outcome.
    * @param trackingEventName an identifier for the event
