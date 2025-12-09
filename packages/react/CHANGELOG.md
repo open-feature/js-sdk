@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.1.0](https://github.com/open-feature/js-sdk/compare/react-sdk-v1.0.2...react-sdk-v1.1.0) (2025-12-09)
+
+
+### ✨ New Features
+
+* allow method to be passed into setContext hook ([#1301](https://github.com/open-feature/js-sdk/issues/1301)) ([279f9bf](https://github.com/open-feature/js-sdk/commit/279f9bf624d4e8a2171522dea49871173ea6ccd3))
+
+
+### 🐛 Bug Fixes
+
+* await context change in useContextMutator setContext ([#1306](https://github.com/open-feature/js-sdk/issues/1306)) ([7ef721a](https://github.com/open-feature/js-sdk/commit/7ef721aa9ba4c70497759a4de462715d1b32b240))
+* compare full EvaluationDetails to prevent stale data ([#1287](https://github.com/open-feature/js-sdk/issues/1287)) ([8133a4f](https://github.com/open-feature/js-sdk/commit/8133a4f5c3d9f61ad30c84f532e01df8c7785a4f))
+* in-line docs, un-needed AbortController creation ([#1291](https://github.com/open-feature/js-sdk/issues/1291)) ([9b05be9](https://github.com/open-feature/js-sdk/commit/9b05be9a045232b36dec008611981bd721694abe))
+* use actual previous context to noop useContextMutator setContext ([#1305](https://github.com/open-feature/js-sdk/issues/1305)) ([4d15a86](https://github.com/open-feature/js-sdk/commit/4d15a86b2b86764104f23965a2312a4b2f712a4e))
+
 ## [1.0.2](https://github.com/open-feature/js-sdk/compare/react-sdk-v1.0.1...react-sdk-v1.0.2) (2025-10-31)
 
 
