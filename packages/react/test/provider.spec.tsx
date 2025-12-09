@@ -164,8 +164,18 @@ describe('OpenFeatureProvider', () => {
   describe('useMutateContext', () => {
     const MutateButton = ({ setter }: { setter?: (prevContext: EvaluationContext) => EvaluationContext }) => {
       const { setContext } = useContextMutator();
+      const [loading, setLoading] = React.useState(false);
 
-      return <button onClick={() => setContext(setter ?? { user: 'bob@flags.com' })}>Update Context</button>;
+      return (
+        <button
+          onClick={() => {
+            setLoading(true);
+            setContext(setter ?? { user: 'bob@flags.com' }).finally(() => setLoading(false));
+          }}
+        >
+          {loading ? 'Updating context...' : 'Update Context'}
+        </button>
+      );
     };
 
     const TestComponent = ({ name, setter }: { name: string; setter?: (prevContext: EvaluationContext) => EvaluationContext }) => {
@@ -182,6 +192,10 @@ describe('OpenFeatureProvider', () => {
     it('should update context when a domain is set', async () => {
       const DOMAIN = 'mutate-context-tests';
       OpenFeature.setProvider(DOMAIN, suspendingProvider());
+
+      const changed = jest.fn();
+      OpenFeature.getClient(DOMAIN).addHandler(ProviderEvents.ContextChanged, changed);
+
       render(
         <OpenFeatureProvider domain={DOMAIN}>
           <React.Suspense fallback={<div>{FALLBACK}</div>}>
@@ -197,12 +211,17 @@ describe('OpenFeatureProvider', () => {
       act(() => {
         fireEvent.click(screen.getByText('Update Context'));
       });
+      expect(screen.getByText('Updating context...')).toBeInTheDocument();
+
       await waitFor(
         () => {
-          expect(screen.getByText('Will says aloha')).toBeInTheDocument();
+          expect(screen.getByText('Update Context')).toBeInTheDocument();
         },
-        { timeout: DELAY * 4 },
+        { timeout: DELAY * 2 },
       );
+      expect(changed).toHaveBeenCalledTimes(1);
+
+      expect(screen.getByText('Will says aloha')).toBeInTheDocument();
     });
 
     it('should update nested contexts', async () => {
@@ -231,18 +250,17 @@ describe('OpenFeatureProvider', () => {
         // Click the Update context button in Todds domain
         fireEvent.click(screen.getAllByText('Update Context')[1]);
       });
+      expect(screen.getByText('Updating context...')).toBeInTheDocument();
+
       await waitFor(
         () => {
-          expect(screen.getByText('Todd says aloha')).toBeInTheDocument();
+          expect(screen.getAllByText('Update Context')).toHaveLength(2);
         },
-        { timeout: DELAY * 4 },
+        { timeout: DELAY * 2 },
       );
-      await waitFor(
-        () => {
-          expect(screen.getByText('Will says hi')).toBeInTheDocument();
-        },
-        { timeout: DELAY * 4 },
-      );
+
+      expect(screen.getByText('Todd says aloha')).toBeInTheDocument();
+      expect(screen.getByText('Will says hi')).toBeInTheDocument();
     });
 
     it('should update nested global contexts', async () => {
@@ -296,13 +314,16 @@ describe('OpenFeatureProvider', () => {
         // Click the Update context button in Todds domain
         fireEvent.click(screen.getAllByText('Update Context')[1]);
       });
+      expect(screen.getByText('Updating context...')).toBeInTheDocument();
+
       await waitFor(
         () => {
-          expect(screen.getByText('Todd likes to Frown')).toBeInTheDocument();
+          expect(screen.getAllByText('Update Context')).toHaveLength(2);
         },
-        { timeout: DELAY * 4 },
+        { timeout: DELAY * 2 },
       );
 
+      expect(screen.getByText('Todd likes to Frown')).toBeInTheDocument();
       expect(screen.getByText('Will says aloha')).toBeInTheDocument();
     });
 

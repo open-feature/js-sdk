@@ -41,9 +41,9 @@ export function useContextMutator(options: ContextMutationOptions = { defaultCon
 
         if (previousContext !== resolvedContext) {
             if (!domain || options?.defaultContext) {
-                OpenFeature.setContext(resolvedContext);
+                await OpenFeature.setContext(resolvedContext);
             } else {
-                OpenFeature.setContext(domain, resolvedContext);
+                await OpenFeature.setContext(domain, resolvedContext);
             }
         }
     }, [domain, options?.defaultContext]);
