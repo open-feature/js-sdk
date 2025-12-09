@@ -15,6 +15,8 @@
     "e2e": "npm run e2e-server && npm run e2e-web",
     "lint": "npm run lint --workspace=packages/shared --workspace=packages/server --workspace=packages/web --workspace=packages/react --workspace=packages/angular --workspace=packages/nest",
     "lint:fix": "npm run lint:fix --workspace=packages/shared --workspace=packages/server --workspace=packages/web --workspace=packages/react --workspace=packages/angular --workspace=packages/nest",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
     "clean": "shx rm -rf ./dist",
     "build": "npm run build --workspace=packages/shared --workspace=packages/server --workspace=packages/web --workspace=packages/react --workspace=packages/angular --workspace=packages/nest",
     "publish-all": "npm run publish-if-not-exists --workspace=packages/shared --workspace=packages/server --workspace=packages/web --workspace=packages/react --workspace=packages/angular --workspace=packages/nest",
