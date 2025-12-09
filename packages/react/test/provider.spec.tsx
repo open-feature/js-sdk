@@ -1,5 +1,5 @@
 import type { EvaluationContext} from '@openfeature/web-sdk';
-import { InMemoryProvider, OpenFeature } from '@openfeature/web-sdk';
+import { InMemoryProvider, OpenFeature, ProviderEvents } from '@openfeature/web-sdk';
 import '@testing-library/jest-dom'; // see: https://testing-library.com/docs/react-testing-library/setup
 import { render, renderHook, screen, waitFor, fireEvent, act } from '@testing-library/react';
 import * as React from 'react';
@@ -306,36 +306,50 @@ describe('OpenFeatureProvider', () => {
       expect(screen.getByText('Will says aloha')).toBeInTheDocument();
     });
 
-    it('should accept a method taking the previous context', async () => {
+    it('should accept a method taking the previous context', () => {
       const DOMAIN = 'mutate-context-with-function';
       OpenFeature.setProvider(DOMAIN, suspendingProvider(), { done: false });
+
+      const reconcile = jest.fn();
+      OpenFeature.getClient(DOMAIN).addHandler(ProviderEvents.Reconciling, reconcile);
 
       const setter = jest.fn((prevContext: EvaluationContext) => ({ ...prevContext, user: 'bob@flags.com' }));
       render(
         <OpenFeatureProvider domain={DOMAIN}>
-          <React.Suspense fallback={<div>{FALLBACK}</div>}>
-            <TestComponent name="Will" setter={setter} />
-          </React.Suspense>
+          <MutateButton setter={setter} />
         </OpenFeatureProvider>,
       );
-
-      await waitFor(() => {
-        expect(screen.getByText('Will says hi')).toBeInTheDocument();
-      });
 
       act(() => {
         fireEvent.click(screen.getByText('Update Context'));
       });
-      await waitFor(
-        () => {
-          expect(screen.getByText('Will says aloha')).toBeInTheDocument();
-        },
-        { timeout: DELAY * 4 },
-      );
-
       expect(setter).toHaveBeenCalledTimes(1);
       expect(setter).toHaveBeenCalledWith({ done: false });
+      expect(reconcile).toHaveBeenCalledTimes(1);
       expect(OpenFeature.getContext(DOMAIN)).toEqual({ done: false, user: 'bob@flags.com' });
+    });
+
+    it('should noop if the previous context is passed in unchanged', () => {
+      const DOMAIN = 'mutate-context-noop';
+      OpenFeature.setProvider(DOMAIN, suspendingProvider(), { done: false });
+
+      const reconcile = jest.fn();
+      OpenFeature.getClient(DOMAIN).addHandler(ProviderEvents.Reconciling, reconcile);
+
+      const setter = jest.fn((prevContext: EvaluationContext) => prevContext);
+      render(
+        <OpenFeatureProvider domain={DOMAIN}>
+          <MutateButton setter={setter} />
+        </OpenFeatureProvider>,
+      );
+
+      act(() => {
+        fireEvent.click(screen.getByText('Update Context'));
+      });
+      expect(setter).toHaveBeenCalledTimes(1);
+      expect(setter).toHaveBeenCalledWith({ done: false });
+      expect(reconcile).toHaveBeenCalledTimes(0);
+      expect(OpenFeature.getContext(DOMAIN)).toEqual({ done: false });
     });
   });
 });
