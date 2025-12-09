@@ -1,4 +1,4 @@
-import type { Logger, ManageLogger} from '../logger';
+import type { Logger, ManageLogger } from '../logger';
 import { SafeLogger } from '../logger';
 import type { ProviderEventEmitter } from './provider-event-emitter';
 import type { EventContext, EventDetails, EventHandler } from './eventing';
