@@ -1,15 +1,10 @@
-import type {
-  EvaluationContext,
-  FlagValueType,
-  JsonValue,
-  Logger,
-  ResolutionDetails} from '@openfeature/core';
+import type { EvaluationContext, FlagValueType, JsonValue, Logger, ResolutionDetails } from '@openfeature/core';
 import {
   FlagNotFoundError,
   GeneralError,
   OpenFeatureError,
   StandardResolutionReasons,
-  TypeMismatchError
+  TypeMismatchError,
 } from '@openfeature/core';
 import type { Provider } from '../provider';
 import type { Flag, FlagConfiguration } from './flag-configuration';
@@ -96,7 +91,7 @@ export class InMemoryProvider implements Provider {
       return resolutionResult;
     } catch (error: unknown) {
       if (!(error instanceof OpenFeatureError)) {
-        throw new GeneralError((error as Error)?.message || 'unknown error'); 
+        throw new GeneralError((error as Error)?.message || 'unknown error');
       }
       throw error;
     }

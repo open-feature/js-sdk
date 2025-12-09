@@ -1,4 +1,4 @@
-import type { EvaluationContext} from '@openfeature/web-sdk';
+import type { EvaluationContext } from '@openfeature/web-sdk';
 import { InMemoryProvider, OpenFeature, ProviderEvents } from '@openfeature/web-sdk';
 import '@testing-library/jest-dom'; // see: https://testing-library.com/docs/react-testing-library/setup
 import { render, renderHook, screen, waitFor, fireEvent, act } from '@testing-library/react';
@@ -178,7 +178,13 @@ describe('OpenFeatureProvider', () => {
       );
     };
 
-    const TestComponent = ({ name, setter }: { name: string; setter?: (prevContext: EvaluationContext) => EvaluationContext }) => {
+    const TestComponent = ({
+      name,
+      setter,
+    }: {
+      name: string;
+      setter?: (prevContext: EvaluationContext) => EvaluationContext;
+    }) => {
       const flagValue = useStringFlagValue<'hi' | 'bye' | 'aloha'>(SUSPENSE_FLAG_KEY, 'hi');
 
       return (
@@ -266,23 +272,25 @@ describe('OpenFeatureProvider', () => {
     it('should update nested global contexts', async () => {
       const DOMAIN1 = 'Wills Domain';
       OpenFeature.setProvider(DOMAIN1, suspendingProvider());
-      OpenFeature.setProvider(new InMemoryProvider({
-        globalFlagsHere: {
-          defaultVariant: 'a',
-          variants: {
-            a: 'Smile',
-            b: 'Frown',
-          },
-          disabled: false,
-          contextEvaluator: (ctx: EvaluationContext) => {
-            if (ctx.user === 'bob@flags.com') {
-              return 'b';
-            }
+      OpenFeature.setProvider(
+        new InMemoryProvider({
+          globalFlagsHere: {
+            defaultVariant: 'a',
+            variants: {
+              a: 'Smile',
+              b: 'Frown',
+            },
+            disabled: false,
+            contextEvaluator: (ctx: EvaluationContext) => {
+              if (ctx.user === 'bob@flags.com') {
+                return 'b';
+              }
 
-            return 'a';
+              return 'a';
+            },
           },
-        }
-      }));
+        }),
+      );
       const GlobalComponent = ({ name }: { name: string }) => {
         const flagValue = useStringFlagValue<'b' | 'a'>('globalFlagsHere', 'a');
 

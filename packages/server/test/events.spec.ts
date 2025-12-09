@@ -1,18 +1,6 @@
 import { v4 as uuid } from 'uuid';
-import type {
-  JsonValue,
-  Provider,
-  ProviderMetadata,
-  ResolutionDetails,
-  StaleEvent
-} from '../src';
-import {
-  NOOP_PROVIDER,
-  OpenFeature,
-  OpenFeatureEventEmitter,
-  ProviderEvents,
-  ProviderStatus
-} from '../src';
+import type { JsonValue, Provider, ProviderMetadata, ResolutionDetails, StaleEvent } from '../src';
+import { NOOP_PROVIDER, OpenFeature, OpenFeatureEventEmitter, ProviderEvents, ProviderStatus } from '../src';
 
 const TIMEOUT = 1000;
 
@@ -541,13 +529,13 @@ describe('Events', () => {
       });
     });
   });
-  
+
   describe('Requirement 5.3.3', () => {
     describe('API', () => {
       describe('Handlers attached after the provider is already in the associated state, MUST run immediately.', () => {
         it('Ready', (done) => {
           const provider = new MockProvider({ hasInitialize: false });
-  
+
           OpenFeature.setProviderAndWait(domain, provider).then(() => {
             OpenFeature.addHandler(ProviderEvents.Ready, () => {
               done();
@@ -557,7 +545,7 @@ describe('Events', () => {
 
         it('Error', (done) => {
           const provider = new MockProvider({ failOnInit: true });
-  
+
           OpenFeature.setProviderAndWait(domain, provider).catch(() => {
             OpenFeature.addHandler(ProviderEvents.Error, () => {
               done();
@@ -572,7 +560,7 @@ describe('Events', () => {
         it('Ready', (done) => {
           const provider = new MockProvider({ hasInitialize: false });
           const client = OpenFeature.getClient(domain);
-  
+
           OpenFeature.setProviderAndWait(domain, provider).then(() => {
             client.addHandler(ProviderEvents.Ready, () => {
               done();
@@ -583,7 +571,7 @@ describe('Events', () => {
         it('Error', (done) => {
           const provider = new MockProvider({ failOnInit: true });
           const client = OpenFeature.getClient(domain);
-  
+
           OpenFeature.setProviderAndWait(domain, provider).catch(() => {
             client.addHandler(ProviderEvents.Error, () => {
               done();

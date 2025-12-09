@@ -300,7 +300,7 @@ function attachHandlersAndResolve<T extends FlagValue>(
   const [evaluationDetails, setEvaluationDetails] = useState<EvaluationDetails<T>>(() =>
     resolver(client).call(client, flagKey, defaultValue, options),
   );
-  
+
   // Re-evaluate when dependencies change (handles prop changes like flagKey), or if during a re-render, we have detected a change in the evaluated value
   useEffect(() => {
     if (isFirstRender.current) {

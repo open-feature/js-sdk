@@ -17,7 +17,7 @@ jobs:
           command: manifest
           token: ${{secrets.RELEASE_PLEASE_ACTION_TOKEN}}
           default-branch: main
-          signoff: "OpenFeature Bot <109696520+openfeaturebot@users.noreply.github.com>"
+          signoff: 'OpenFeature Bot <109696520+openfeaturebot@users.noreply.github.com>'
     outputs:
       release_created: ${{ steps.release.outputs.releases_created }}
       all: ${{ toJSON(steps.release.outputs) }}
@@ -42,7 +42,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
+          node-version-file: '.nvmrc'
       - name: Update npm to >=11.5.1 (for OIDC support)
         run: npm install -g npm@^11.5.1
       - name: Install dependencies
@@ -70,9 +70,9 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
-          registry-url: "https://registry.npmjs.org"
-          cache: "npm"
+          node-version-file: '.nvmrc'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
       - name: Update npm (for OIDC auth)
         run: npm install -g npm@^11.5.1
       - name: Build Packages

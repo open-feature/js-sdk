@@ -1,12 +1,5 @@
-import type {
-  EvaluationContext,
-  EvaluationDetails,
-  JsonObject,
-  JsonValue,
-  ResolutionDetails} from '@openfeature/core';
-import {
-  StandardResolutionReasons,
-} from '@openfeature/core';
+import type { EvaluationContext, EvaluationDetails, JsonObject, JsonValue, ResolutionDetails } from '@openfeature/core';
+import { StandardResolutionReasons } from '@openfeature/core';
 import { defineFeature, loadFeature } from 'jest-cucumber';
 import { InMemoryProvider, OpenFeature } from '../../src';
 import flagConfiguration from './flags-config';

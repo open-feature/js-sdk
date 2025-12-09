@@ -1,19 +1,7 @@
 import type { EventDetails } from '@openfeature/core';
 import { v4 as uuid } from 'uuid';
-import type {
-  JsonValue,
-  Provider,
-  ProviderMetadata,
-  ResolutionDetails,
-  StaleEvent
-} from '../src';
-import {
-  NOOP_PROVIDER,
-  OpenFeature,
-  OpenFeatureEventEmitter,
-  ProviderEvents,
-  ProviderStatus
-} from '../src';
+import type { JsonValue, Provider, ProviderMetadata, ResolutionDetails, StaleEvent } from '../src';
+import { NOOP_PROVIDER, OpenFeature, OpenFeatureEventEmitter, ProviderEvents, ProviderStatus } from '../src';
 
 const TIMEOUT = 1000;
 const ERR_MESSAGE = 'fake err';

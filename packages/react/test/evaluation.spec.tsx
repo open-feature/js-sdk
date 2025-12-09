@@ -1007,10 +1007,10 @@ describe('evaluation', () => {
       });
     });
 
-    describe('re-render behavior when flag values change without provider events', ()=> {
+    describe('re-render behavior when flag values change without provider events', () => {
       it('should reflect provider state changes on re-render even without provider events', async () => {
         let providerValue = 'initial-value';
-        
+
         class SilentUpdateProvider extends InMemoryProvider {
           resolveBooleanEvaluation() {
             return {
@@ -1019,7 +1019,7 @@ describe('evaluation', () => {
               reason: StandardResolutionReasons.STATIC,
             };
           }
-          
+
           resolveStringEvaluation() {
             return {
               value: providerValue,
@@ -1028,45 +1028,49 @@ describe('evaluation', () => {
             };
           }
         }
-        
+
         const provider = new SilentUpdateProvider({});
         await OpenFeature.setProviderAndWait('test', provider);
-        
+
         // The triggerRender prop forces a re-render
         const TestComponent = ({ triggerRender }: { triggerRender: number }) => {
           const { value } = useFlag('test-flag', 'default');
-          return <div data-testid="flag-value" data-render-count={triggerRender}>{value}</div>;
+          return (
+            <div data-testid="flag-value" data-render-count={triggerRender}>
+              {value}
+            </div>
+          );
         };
-        
+
         const WrapperComponent = () => {
           const [renderCount, setRenderCount] = useState(0);
           return (
             <>
-              <button onClick={() => setRenderCount(c => c + 1)}>Force Re-render</button>
+              <button onClick={() => setRenderCount((c) => c + 1)}>Force Re-render</button>
               <TestComponent triggerRender={renderCount} />
             </>
           );
         };
-        
+
         const { getByText } = render(
           <OpenFeatureProvider client={OpenFeature.getClient('test')}>
             <WrapperComponent />
-          </OpenFeatureProvider>
+          </OpenFeatureProvider>,
         );
-        
+
         // Initial value should be rendered
         await waitFor(() => {
           expect(screen.getByTestId('flag-value')).toHaveTextContent('initial-value');
         });
-        
+
         // Change the provider's internal state (without emitting events)
         providerValue = 'updated-value';
-        
+
         // Force a re-render of the component
         act(() => {
           getByText('Force Re-render').click();
         });
-        
+
         await waitFor(() => {
           expect(screen.getByTestId('flag-value')).toHaveTextContent('updated-value');
         });
@@ -1085,31 +1089,31 @@ describe('evaluation', () => {
             defaultVariant: 'on',
           },
         });
-        
+
         await OpenFeature.setProviderAndWait(EVALUATION, provider);
-        
+
         const TestComponent = ({ flagKey }: { flagKey: string }) => {
           const { value } = useFlag(flagKey, 'default');
           return <div data-testid="flag-value">{value}</div>;
         };
-        
+
         const { rerender } = render(
           <OpenFeatureProvider client={OpenFeature.getClient(EVALUATION)}>
             <TestComponent flagKey="flag-a" />
-          </OpenFeatureProvider>
+          </OpenFeatureProvider>,
         );
-        
+
         await waitFor(() => {
           expect(screen.getByTestId('flag-value')).toHaveTextContent('value-a');
         });
-        
+
         // Change to flag-b (without any provider events)
         rerender(
           <OpenFeatureProvider client={OpenFeature.getClient(EVALUATION)}>
             <TestComponent flagKey="flag-b" />
-          </OpenFeatureProvider>
+          </OpenFeatureProvider>,
         );
-        
+
         await waitFor(() => {
           expect(screen.getByTestId('flag-value')).toHaveTextContent('value-b');
         });
@@ -1367,4 +1371,3 @@ describe('evaluation', () => {
     });
   });
 });
-

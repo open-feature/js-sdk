@@ -81,10 +81,10 @@ export class ProviderWrapper<P extends CommonProvider<AnyProviderStatus>, S exte
 }
 
 export abstract class OpenFeatureCommonAPI<
-    S extends AnyProviderStatus,
-    P extends CommonProvider<S> = CommonProvider<S>,
-    H extends BaseHook = BaseHook,
-  >
+  S extends AnyProviderStatus,
+  P extends CommonProvider<S> = CommonProvider<S>,
+  H extends BaseHook = BaseHook,
+>
   implements
     Eventing<AnyProviderEvent>,
     EvaluationLifeCycle<OpenFeatureCommonAPI<S, P>>,

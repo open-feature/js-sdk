@@ -1,11 +1,5 @@
-import type {
-  JsonValue,
-  Provider} from '@openfeature/web-sdk';
-import {
-  InMemoryProvider,
-  NOOP_PROVIDER,
-  OpenFeature
-} from '@openfeature/web-sdk';
+import type { JsonValue, Provider } from '@openfeature/web-sdk';
+import { InMemoryProvider, NOOP_PROVIDER, OpenFeature } from '@openfeature/web-sdk';
 import React from 'react';
 import type { NormalizedOptions } from '../options';
 import { OpenFeatureProvider } from './provider';
@@ -38,12 +32,11 @@ type TestProviderProps = Omit<React.ComponentProps<typeof OpenFeatureProvider>, 
       }
   );
 
-  const TEST_VARIANT = 'test-variant';
-  const TEST_PROVIDER = 'test-provider';
+const TEST_VARIANT = 'test-variant';
+const TEST_PROVIDER = 'test-provider';
 
 // internal provider which is basically the in-memory provider with a simpler config and some optional fake delays
 class TestProvider extends InMemoryProvider {
-
   // initially make this undefined, we still set it if a delay is specified
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore - For maximum compatibility with previous versions, we ignore a possible TS error here,
@@ -108,8 +101,10 @@ export function OpenFeatureTestProvider(testProviderOptions: TestProviderProps) 
 // mix in the no-op provider when the partial is passed
 function mixInNoop(provider: Partial<Provider> = {}) {
   // fill in any missing methods with no-ops
-  for (const prop of Object.getOwnPropertyNames(Object.getPrototypeOf(NOOP_PROVIDER)).filter(prop => prop !== 'constructor')) {
-    const patchedProvider = provider as {[key: string]: keyof Provider};
+  for (const prop of Object.getOwnPropertyNames(Object.getPrototypeOf(NOOP_PROVIDER)).filter(
+    (prop) => prop !== 'constructor',
+  )) {
+    const patchedProvider = provider as { [key: string]: keyof Provider };
     if (!Object.getPrototypeOf(patchedProvider)[prop] && !patchedProvider[prop]) {
       patchedProvider[prop] = Object.getPrototypeOf(NOOP_PROVIDER)[prop];
     }

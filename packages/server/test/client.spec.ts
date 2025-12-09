@@ -824,8 +824,8 @@ describe('OpenFeatureClient', () => {
               before: jest.fn((hookContext: HookContext) => {
                 contextMap.set(hookContext.context, hookContext);
                 return hookContext.context;
-              })
-            }
+              }),
+            },
           ],
           resolveBooleanEvaluation: jest.fn((_flagKey, _defaultValue, context): Promise<ResolutionDetails<boolean>> => {
             // We expect that the context object reference is the same as that captured in the hook
@@ -838,7 +838,7 @@ describe('OpenFeatureClient', () => {
 
         await OpenFeature.setProviderAndWait(contextStabilityProvider);
         const client = OpenFeature.getClient();
-        
+
         const context = { data: 1, value: '2' };
         await client.getBooleanValue('some-other-flag', false, context);
         expect(contextStabilityProvider.resolveBooleanEvaluation).toHaveBeenCalled();
@@ -898,11 +898,7 @@ describe('OpenFeatureClient', () => {
         const client = OpenFeature.getClient();
         client.track(eventName);
 
-        expect(MOCK_PROVIDER.track).toHaveBeenCalledWith(
-          eventName,
-          expect.any(Object),
-          expect.any(Object),
-        );
+        expect(MOCK_PROVIDER.track).toHaveBeenCalledWith(eventName, expect.any(Object), expect.any(Object));
       });
 
       it('should call provider with correct context', async () => {

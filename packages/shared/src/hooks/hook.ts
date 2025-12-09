@@ -2,10 +2,10 @@ import type { BeforeHookContext, HookContext, HookHints } from './hooks';
 import type { EvaluationDetails, FlagValue } from '../evaluation';
 
 export interface BaseHook<
-  T extends FlagValue = FlagValue, 
+  T extends FlagValue = FlagValue,
   TData = Record<string, unknown>,
-  BeforeHookReturn = unknown, 
-  HooksReturn = unknown
+  BeforeHookReturn = unknown,
+  HooksReturn = unknown,
 > {
   /**
    * Runs before flag values are resolved from the provider.
@@ -47,4 +47,3 @@ export interface BaseHook<
     hookHints?: HookHints,
   ): HooksReturn;
 }
-

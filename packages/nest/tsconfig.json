@@ -11,9 +11,7 @@
     /* Language and Environment */
     "target": "ES2015",
     /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
-    "lib": [
-      "ES2015"
-    ],
+    "lib": ["ES2015"],
     /* Specify a set of bundled library declaration files that describe the target runtime environment. */
     // "jsx": "preserve",                                /* Specify what JSX code is generated. */
     "experimentalDecorators": true,
@@ -64,7 +62,7 @@
     // "inlineSources": true,                            /* Include source code in the sourcemaps inside the emitted JavaScript. */
     // "emitBOM": true,                                  /* Emit a UTF-8 Byte Order Mark (BOM) in the beginning of output files. */
     // "newLine": "crlf",                                /* Set the newline character for emitting files. */
-    "stripInternal": true,                               /* Disable emitting declarations that have `@internal` in their JSDoc comments. */
+    "stripInternal": true /* Disable emitting declarations that have `@internal` in their JSDoc comments. */,
     // "noEmitHelpers": true,                            /* Disable generating custom helper functions like `__extends` in compiled output. */
     // "noEmitOnError": true,                            /* Disable emitting files if any type checking errors are reported. */
     // "preserveConstEnums": true,                       /* Disable erasing `const enum` declarations in generated code. */
@@ -106,15 +104,10 @@
     /* Skip type checking all .d.ts files. */
     "resolveJsonModule": true,
     "paths": {
-      "@openfeature/core": [ "../shared/src" ],
-      "@openfeature/server-sdk": [ "../server/src" ]
+      "@openfeature/core": ["../shared/src"],
+      "@openfeature/server-sdk": ["../server/src"]
     }
   },
-  "include": [
-    "./src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/*.test.js"
-  ]
+  "include": ["./src/**/*"],
+  "exclude": ["node_modules", "**/*.test.js"]
 }

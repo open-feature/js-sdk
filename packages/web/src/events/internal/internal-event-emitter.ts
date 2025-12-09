@@ -1,4 +1,4 @@
-import type { CommonEventDetails} from '@openfeature/core';
+import type { CommonEventDetails } from '@openfeature/core';
 import { GenericEventEmitter } from '@openfeature/core';
 import type { ProviderEvents } from '../events';
 
@@ -7,4 +7,4 @@ import type { ProviderEvents } from '../events';
  * OpenFeatureEventEmitter to include additional properties that can be included
  * in the event details.
  */
-export abstract class InternalEventEmitter extends GenericEventEmitter<ProviderEvents, CommonEventDetails> {};
+export abstract class InternalEventEmitter extends GenericEventEmitter<ProviderEvents, CommonEventDetails> {}

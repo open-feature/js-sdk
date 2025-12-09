@@ -87,8 +87,8 @@ yarn add @openfeature/react-sdk @openfeature/web-sdk @openfeature/core
 The following list contains the peer dependencies of `@openfeature/react-sdk`.
 See the [package.json](./package.json) for the required versions.
 
-* `@openfeature/web-sdk`
-* `react`
+- `@openfeature/web-sdk`
+- `react`
 
 ### Usage
 
@@ -108,13 +108,13 @@ const flagConfig = {
       on: true,
       off: false,
     },
-    defaultVariant: "on",
+    defaultVariant: 'on',
     contextEvaluator: (context: EvaluationContext) => {
       if (context.silly) {
         return 'on';
       }
-      return 'off'
-    }
+      return 'off';
+    },
   },
 };
 
@@ -146,7 +146,7 @@ function Page() {
         {showNewMessage ? <p>Welcome to this OpenFeature-enabled React app!</p> : <p>Welcome to this React app.</p>}
       </header>
     </div>
-  )
+  );
 }
 ```
 
@@ -163,12 +163,7 @@ const value = useBooleanFlagValue('new-message', false);
 import { useBooleanFlagDetails } from '@openfeature/react-sdk';
 
 // "detailed" boolean flag evaluation
-const {
-  value,
-  variant,
-  reason,
-  flagMetadata
-} = useBooleanFlagDetails('new-message', false);
+const { value, variant, reason, flagMetadata } = useBooleanFlagDetails('new-message', false);
 ```
 
 #### Multiple Providers and Domains
@@ -406,4 +401,4 @@ Avoid importing anything from `@openfeature/web-sdk` or `@openfeature/core`.
 
 ## Resources
 
- - [Example repo](https://github.com/open-feature/react-test-app)
+- [Example repo](https://github.com/open-feature/react-test-app)
