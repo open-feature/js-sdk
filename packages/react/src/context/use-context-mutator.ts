@@ -6,7 +6,7 @@ import { Context } from '../internal';
 export type ContextMutationOptions = {
   /**
    * Mutate the default context instead of the domain scoped context applied at the `<OpenFeatureProvider/>`.
-   * Note, if the `<OpenFeatureProvider/>` has no domain specified, the default is used.
+   * By default, will use the domain set on `<OpenFeatureProvider/>` (or the domain associated with the client set on `<OpenFeatureProvider/>`).
    * See the {@link https://openfeature.dev/docs/reference/technologies/client/web/#manage-evaluation-context-for-domains|documentation} for more information.
    * @default false
    */
@@ -33,7 +33,11 @@ export type ContextMutation = {
  * @returns {ContextMutation} context-aware function(s) to mutate evaluation context
  */
 export function useContextMutator(options: ContextMutationOptions = { defaultContext: false }): ContextMutation {
-  const { domain } = useContext(Context) || {};
+  const { client } = useContext(Context) || {};
+  const domain = client?.metadata.domain;
+
+  // TODO: If `defaultContext` is `false`, and we don't have a `client`,
+  //       should we throw an error (that we're not inside `<OpenFeatureProvider/>`)?
 
   const setContext = useCallback(
     async (
