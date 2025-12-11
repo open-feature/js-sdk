@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/open-feature/js-sdk/compare/react-sdk-v1.1.0...react-sdk-v1.1.1) (2025-12-11)
+
+
+### 🐛 Bug Fixes
+
+* remove explicit return type for React `OpenFeatureProvider` ([#1313](https://github.com/open-feature/js-sdk/issues/1313)) ([fb6cdc9](https://github.com/open-feature/js-sdk/commit/fb6cdc96b284ebcdf2e425425990a9c6255b84ee))
+
 ## [1.1.0](https://github.com/open-feature/js-sdk/compare/react-sdk-v1.0.2...react-sdk-v1.1.0) (2025-12-09)
 
 
