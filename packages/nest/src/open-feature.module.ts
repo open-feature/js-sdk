@@ -3,11 +3,9 @@ import type {
   FactoryProvider as NestFactoryProvider,
   ValueProvider,
   ClassProvider,
-  Provider as NestProvider} from '@nestjs/common';
-import {
-  Module,
-  ExecutionContext,
+  Provider as NestProvider,
 } from '@nestjs/common';
+import { Module, ExecutionContext } from '@nestjs/common';
 import type {
   Client,
   Hook,
@@ -15,12 +13,10 @@ import type {
   EvaluationContext,
   ServerProviderEvents,
   EventHandler,
-  Logger} from '@openfeature/server-sdk';
-import {
-  OpenFeature,
-  AsyncLocalStorageTransactionContextPropagator,
+  Logger,
 } from '@openfeature/server-sdk';
-import type { ContextFactory} from './context-factory';
+import { OpenFeature, AsyncLocalStorageTransactionContextPropagator } from '@openfeature/server-sdk';
+import type { ContextFactory } from './context-factory';
 import { ContextFactoryToken } from './context-factory';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { EvaluationContextInterceptor } from './evaluation-context-interceptor';

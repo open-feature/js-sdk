@@ -6,4 +6,4 @@ import type { ProviderEvents } from '../events';
  * OpenFeatureEventEmitter to include additional properties that can be included
  * in the event details.
  */
-export abstract class InternalEventEmitter extends GenericEventEmitter<ProviderEvents> {};
+export abstract class InternalEventEmitter extends GenericEventEmitter<ProviderEvents> {}

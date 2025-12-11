@@ -62,7 +62,6 @@ export enum ClientProviderEvents {
   Stale = 'PROVIDER_STALE',
 }
 
-
 /* alias because in many cases, we iterate over all possible events in code,
 so we have to do this on ClientProviderEvents to be exhaustive */
 export { ClientProviderEvents as AllProviderEvents };

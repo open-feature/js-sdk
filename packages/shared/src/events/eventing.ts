@@ -1,5 +1,5 @@
 import type { ErrorCode } from '../evaluation';
-import type { ClientProviderEvents, ServerProviderEvents} from './events';
+import type { ClientProviderEvents, ServerProviderEvents } from './events';
 import { AnyProviderEvent } from './events';
 
 export type EventMetadata = {
@@ -42,10 +42,7 @@ type ClientEventMap = {
   [ClientProviderEvents.ContextChanged]: CommonEventProps;
 };
 
-type ServerNotChangeEvents =
-  | ServerProviderEvents.Ready
-  | ServerProviderEvents.Error
-  | ServerProviderEvents.Stale;
+type ServerNotChangeEvents = ServerProviderEvents.Ready | ServerProviderEvents.Error | ServerProviderEvents.Stale;
 type ClientNotChangeEvents =
   | ClientProviderEvents.Ready
   | ClientProviderEvents.Error

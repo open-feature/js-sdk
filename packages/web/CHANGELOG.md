@@ -1,6 +1,32 @@
 # Changelog
 
 
+## [1.7.2](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.7.1...web-sdk-v1.7.2) (2025-12-09)
+
+
+### 🧹 Chore
+
+* update copyright to OpenFeature Maintainers ([#1283](https://github.com/open-feature/js-sdk/issues/1283)) ([d751b8b](https://github.com/open-feature/js-sdk/commit/d751b8beac4fe25df7917e12752b003defcd3536))
+
+## [1.7.1](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.7.0...web-sdk-v1.7.1) (2025-10-31)
+
+
+### 📚 Documentation
+
+* add Multi-Provider to features list in README's ([#1269](https://github.com/open-feature/js-sdk/issues/1269)) ([752fa0d](https://github.com/open-feature/js-sdk/commit/752fa0d4a199342d6956e625e8aa9e757e1830e3))
+
+## [1.7.0](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.6.2...web-sdk-v1.7.0) (2025-10-21)
+
+
+### ✨ New Features
+
+* Migrate MultiProvider from js-sdk-contrib ([#1234](https://github.com/open-feature/js-sdk/issues/1234)) ([8686dbf](https://github.com/open-feature/js-sdk/commit/8686dbfbe2b95b20706718bf23287244eda36f60))
+
+
+### 🐛 Bug Fixes
+
+* correct MultiProvider class name in docs and remove duplicate error logging ([#1267](https://github.com/open-feature/js-sdk/issues/1267)) ([18c2719](https://github.com/open-feature/js-sdk/commit/18c2719391fbf755dce692c82b402823374b79aa))
+
 ## [1.6.2](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.6.1...web-sdk-v1.6.2) (2025-09-30)
 
 

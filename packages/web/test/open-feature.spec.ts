@@ -1,5 +1,5 @@
 import type { Paradigm } from '@openfeature/core';
-import type { Provider} from '../src';
+import type { Provider } from '../src';
 import { OpenFeature, OpenFeatureAPI, ProviderStatus } from '../src';
 import { OpenFeatureClient } from '../src/client/internal/open-feature-client';
 

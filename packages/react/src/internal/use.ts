@@ -8,12 +8,11 @@ import React from 'react';
  * More information can be found in the React RFE for the use hook.
  * @see https://github.com/reactjs/rfcs/pull/229
  */
-export type UsePromise<T> =
-  Promise<T> & {
-    status?: 'pending' | 'fulfilled' | 'rejected';
-    value?: T;
-    reason?: unknown;
-  };
+export type UsePromise<T> = Promise<T> & {
+  status?: 'pending' | 'fulfilled' | 'rejected';
+  value?: T;
+  reason?: unknown;
+};
 
 /**
  * React.use is a React API that lets you read the value of a resource like a Promise or context.

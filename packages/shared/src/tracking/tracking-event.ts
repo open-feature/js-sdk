@@ -1,10 +1,6 @@
 import type { PrimitiveValue } from '../types';
 
-export type TrackingEventValue =
-  | PrimitiveValue
-  | Date
-  | { [key: string]: TrackingEventValue }
-  | TrackingEventValue[];
+export type TrackingEventValue = PrimitiveValue | Date | { [key: string]: TrackingEventValue } | TrackingEventValue[];
 
 /**
  * A container for arbitrary data that can relevant to tracking events.

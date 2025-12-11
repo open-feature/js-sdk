@@ -2,20 +2,22 @@ on:
   push:
     branches:
       - main
+
 name: Run Release Please
+
 jobs:
   release-please:
     runs-on: ubuntu-latest
 
     # Release-please creates a PR that tracks all changes
     steps:
-      - uses: google-github-actions/release-please-action@v3
+      - uses: googleapis/release-please-action@v3
         id: release
         with:
           command: manifest
           token: ${{secrets.RELEASE_PLEASE_ACTION_TOKEN}}
           default-branch: main
-          signoff: "OpenFeature Bot <109696520+openfeaturebot@users.noreply.github.com>"
+          signoff: 'OpenFeature Bot <109696520+openfeaturebot@users.noreply.github.com>'
     outputs:
       release_created: ${{ steps.release.outputs.releases_created }}
       all: ${{ toJSON(steps.release.outputs) }}
@@ -27,28 +29,31 @@ jobs:
     if: ${{ fromJSON(needs.release-please.outputs.paths_released)[0] != null }}
     # Continues with the release process even if SBOM generation fails.
     continue-on-error: true
+    permissions:
+      id-token: write
+      attestations: write
+      contents: read
     strategy:
       matrix:
         release: ${{ fromJSON(needs.release-please.outputs.paths_released) }}
-    env:
-      TAG: ${{ fromJSON(needs.release-please.outputs.all)[format('{0}--tag_name', matrix.release)] }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: '.nvmrc'
+      - name: Update npm to >=11.5.1 (for OIDC support)
+        run: npm install -g npm@^11.5.1
+      - name: Install dependencies
+        run: npm ci
       - name: Generate SBOM
-        run: |
-          npm install -g npm@^10.2.0
-          npm ci
-          npm sbom --sbom-format=cyclonedx --omit=dev --omit=peer --workspace=${{matrix.release}} > bom.json
-      - name: Attach SBOM to artifact
-        env:
-          GITHUB_TOKEN: ${{secrets.RELEASE_PLEASE_ACTION_TOKEN}}
-        run:
-          gh release upload $TAG bom.json
+        run: npm sbom --sbom-format=cyclonedx --omit=dev --omit=peer --workspace=${{ matrix.release }} > sbom.json
+      - name: Attest SBOM
+        uses: actions/attest-sbom@v3
+        with:
+          subject-path: ${{ matrix.release }}/package.json
+          sbom-path: ./sbom.json
 
   npm-release:
     needs: release-please
@@ -65,9 +70,11 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          registry-url: "https://registry.npmjs.org"
+          node-version-file: '.nvmrc'
+          registry-url: 'https://registry.npmjs.org'
           cache: 'npm'
+      - name: Update npm (for OIDC auth)
+        run: npm install -g npm@^11.5.1
       - name: Build Packages
         run: |
           npm ci
@@ -77,7 +84,6 @@ jobs:
       # Our scripts only publish versions that do not already exist.
       - name: Publish to NPM
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
           # https://docs.npmjs.com/generating-provenance-statements
           NPM_CONFIG_PROVENANCE: true
         run: npm run publish-all

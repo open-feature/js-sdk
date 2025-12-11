@@ -1,9 +1,4 @@
-import type {
-  EvaluationContext,
-  FlagValueType,
-  JsonValue,
-  Logger,
-  ResolutionDetails} from '@openfeature/core';
+import type { EvaluationContext, FlagValueType, JsonValue, Logger, ResolutionDetails } from '@openfeature/core';
 import {
   FlagNotFoundError,
   GeneralError,
@@ -38,8 +33,7 @@ export class InMemoryProvider implements Provider {
    */
   async putConfiguration(flagConfiguration: FlagConfiguration) {
     try {
-      const flagsChanged = Object.entries({...flagConfiguration, ...this._flagConfiguration})
-        .map(([key]) => key);
+      const flagsChanged = Object.entries({ ...flagConfiguration, ...this._flagConfiguration }).map(([key]) => key);
 
       this._flagConfiguration = { ...flagConfiguration };
       this.events.emit(ProviderEvents.ConfigurationChanged, { flagsChanged });

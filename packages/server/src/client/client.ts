@@ -1,17 +1,12 @@
-import type {
-  ClientMetadata,
-  EvaluationLifeCycle,
-  Eventing,
-  ManageContext,
-  ManageLogger,
-} from '@openfeature/core';
+import type { ClientMetadata, EvaluationLifeCycle, Eventing, ManageContext, ManageLogger } from '@openfeature/core';
 import type { Features } from '../evaluation';
 import type { ProviderStatus } from '../provider';
 import type { ProviderEvents } from '../events';
 import type { Tracking } from '../tracking';
 
 export interface Client
-  extends EvaluationLifeCycle<Client>,
+  extends
+    EvaluationLifeCycle<Client>,
     Features,
     ManageContext<Client>,
     ManageLogger<Client>,

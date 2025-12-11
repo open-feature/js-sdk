@@ -4,9 +4,7 @@
     "outDir": "./dist/tests",
     "types": ["jest", "node"],
     "rootDir": ".",
-    "resolveJsonModule": true,
+    "resolveJsonModule": true
   },
-  "include": [
-    "./test/**/*"
-  ]
+  "include": ["./test/**/*"]
 }

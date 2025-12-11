@@ -16,8 +16,8 @@
     <img alt="Specification" src="https://img.shields.io/static/v1?label=specification&message=v0.8.0&color=yellow&style=for-the-badge" />
   </a>
   <!-- x-release-please-start-version -->
-  <a href="https://github.com/open-feature/js-sdk/releases/tag/react-sdk-v1.0.1">
-    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v1.0.1&color=blue&style=for-the-badge" />
+  <a href="https://github.com/open-feature/js-sdk/releases/tag/react-sdk-v1.1.0">
+    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v1.1.0&color=blue&style=for-the-badge" />
   </a>
   <!-- x-release-please-end -->
   <br/>
@@ -55,6 +55,7 @@ In addition to the feature provided by the [web sdk](https://openfeature.dev/doc
     - [Re-rendering with Flag Configuration Changes](#re-rendering-with-flag-configuration-changes)
     - [Suspense Support](#suspense-support)
     - [Tracking](#tracking)
+    - [Observability Considerations](#observability-considerations)
   - [Testing](#testing)
 - [FAQ and troubleshooting](#faq-and-troubleshooting)
 - [Resources](#resources)
@@ -86,8 +87,8 @@ yarn add @openfeature/react-sdk @openfeature/web-sdk @openfeature/core
 The following list contains the peer dependencies of `@openfeature/react-sdk`.
 See the [package.json](./package.json) for the required versions.
 
-* `@openfeature/web-sdk`
-* `react`
+- `@openfeature/web-sdk`
+- `react`
 
 ### Usage
 
@@ -107,13 +108,13 @@ const flagConfig = {
       on: true,
       off: false,
     },
-    defaultVariant: "on",
+    defaultVariant: 'on',
     contextEvaluator: (context: EvaluationContext) => {
       if (context.silly) {
         return 'on';
       }
-      return 'off'
-    }
+      return 'off';
+    },
   },
 };
 
@@ -145,7 +146,7 @@ function Page() {
         {showNewMessage ? <p>Welcome to this OpenFeature-enabled React app!</p> : <p>Welcome to this React app.</p>}
       </header>
     </div>
-  )
+  );
 }
 ```
 
@@ -162,12 +163,7 @@ const value = useBooleanFlagValue('new-message', false);
 import { useBooleanFlagDetails } from '@openfeature/react-sdk';
 
 // "detailed" boolean flag evaluation
-const {
-  value,
-  variant,
-  reason,
-  flagMetadata
-} = useBooleanFlagDetails('new-message', false);
+const { value, variant, reason, flagMetadata } = useBooleanFlagDetails('new-message', false);
 ```
 
 #### Multiple Providers and Domains
@@ -303,6 +299,12 @@ function MyComponent() {
 }
 ```
 
+#### Observability Considerations
+
+React's lifecycle can result in flags being evaluated multiple times as a user interacts with a page.
+If you are using an OpenFeature hook for telemetry, this can result in inflated evaluation metrics.
+The [OpenFeature debounce hook](https://github.com/open-feature/js-sdk-contrib/tree/main/libs/hooks/debounce) can help to reduce the amount of redundant evaluations reported to your observability platform by limiting the frequency at which evaluation metrics are reported.
+
 ### Testing
 
 The React SDK includes a built-in context provider for testing.
@@ -399,4 +401,4 @@ Avoid importing anything from `@openfeature/web-sdk` or `@openfeature/core`.
 
 ## Resources
 
- - [Example repo](https://github.com/open-feature/react-test-app)
+- [Example repo](https://github.com/open-feature/react-test-app)

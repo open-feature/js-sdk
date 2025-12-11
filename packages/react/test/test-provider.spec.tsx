@@ -12,7 +12,7 @@ function TestComponent(props: { suspend: boolean }) {
     <>
       <div>{thumbs ? '👍' : '👎'}</div>
       <div>reason: {`${reason}`}</div>
-      </>
+    </>
   );
 }
 

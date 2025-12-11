@@ -1,7 +1,3 @@
 {
-  "recommendations": [
-    "esbenp.prettier-vscode",
-    "firsttris.vscode-jest-runner",
-    "dbaeumer.vscode-eslint"
-  ]
+  "recommendations": ["esbenp.prettier-vscode", "firsttris.vscode-jest-runner", "dbaeumer.vscode-eslint"]
 }

@@ -660,11 +660,7 @@ describe('OpenFeatureClient', () => {
         const client = OpenFeature.getClient();
         client.track(eventName);
 
-        expect(MOCK_PROVIDER.track).toHaveBeenCalledWith(
-          eventName,
-          expect.any(Object),
-          expect.any(Object),
-        );
+        expect(MOCK_PROVIDER.track).toHaveBeenCalledWith(eventName, expect.any(Object), expect.any(Object));
       });
 
       it('should no-op and not throw if provider throws', async () => {

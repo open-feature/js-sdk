@@ -300,16 +300,16 @@ function attachHandlersAndResolve<T extends FlagValue>(
   const [evaluationDetails, setEvaluationDetails] = useState<EvaluationDetails<T>>(() =>
     resolver(client).call(client, flagKey, defaultValue, options),
   );
-  
+
   // Re-evaluate when dependencies change (handles prop changes like flagKey), or if during a re-render, we have detected a change in the evaluated value
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
     }
-    
+
     const newDetails = resolver(client).call(client, flagKey, defaultValue, options);
-    if (!isEqual(newDetails.value, evaluationDetails.value)) {
+    if (!isEqual(newDetails, evaluationDetails)) {
       setEvaluationDetails(newDetails);
     }
   }, [client, flagKey, defaultValue, options, resolver, evaluationDetails]);
@@ -324,11 +324,9 @@ function attachHandlersAndResolve<T extends FlagValue>(
     const updatedEvaluationDetails = resolver(client).call(client, flagKey, defaultValue, options);
 
     /**
-     * Avoid re-rendering if the value hasn't changed. We could expose a means
-     * to define a custom comparison function if users require a more
-     * sophisticated comparison in the future.
+     * Avoid re-rendering if the evaluation details haven't changed.
      */
-    if (!isEqual(updatedEvaluationDetails.value, evaluationDetailsRef.current.value)) {
+    if (!isEqual(updatedEvaluationDetails, evaluationDetailsRef.current)) {
       setEvaluationDetails(updatedEvaluationDetails);
     }
   }, [client, flagKey, defaultValue, options, resolver]);

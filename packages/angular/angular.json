@@ -27,10 +27,7 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "projects/angular-sdk/**/*.ts",
-              "projects/angular-sdk/**/*.html"
-            ]
+            "lintFilePatterns": ["projects/angular-sdk/**/*.ts", "projects/angular-sdk/**/*.html"]
           }
         },
         "test": {
@@ -46,9 +43,7 @@
     }
   },
   "cli": {
-    "schematicCollections": [
-      "@angular-eslint/schematics"
-    ],
+    "schematicCollections": ["@angular-eslint/schematics"],
     "analytics": false
   }
 }

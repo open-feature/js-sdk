@@ -1,11 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended",
-    ":automergeTypes",
-    ":automergeStableNonMajor",
-    "npm:unpublishSafe"
-  ],
+  "extends": ["config:recommended", ":automergeTypes", ":automergeStableNonMajor", "npm:unpublishSafe"],
   "semanticCommits": "enabled",
   "regexManagers": [
     {

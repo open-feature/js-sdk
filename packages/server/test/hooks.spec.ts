@@ -1,15 +1,5 @@
-import type {
-  Provider,
-  ResolutionDetails,
-  Client,
-  FlagValueType,
-  EvaluationContext,
-  Hook} from '../src';
-import {
-  OpenFeature,
-  StandardResolutionReasons,
-  ErrorCode,
-} from '../src';
+import type { Provider, ResolutionDetails, Client, FlagValueType, EvaluationContext, Hook } from '../src';
+import { OpenFeature, StandardResolutionReasons, ErrorCode } from '../src';
 
 const BOOLEAN_VALUE = true;
 

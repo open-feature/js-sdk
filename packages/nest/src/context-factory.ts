@@ -1,5 +1,5 @@
 import type { EvaluationContext } from '@openfeature/core';
-import type { ExecutionContext} from '@nestjs/common';
+import type { ExecutionContext } from '@nestjs/common';
 import { Inject } from '@nestjs/common';
 
 /**

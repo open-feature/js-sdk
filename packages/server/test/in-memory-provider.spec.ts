@@ -1,4 +1,10 @@
-import { FlagNotFoundError, InMemoryProvider, ProviderEvents, StandardResolutionReasons, TypeMismatchError } from '../src';
+import {
+  FlagNotFoundError,
+  InMemoryProvider,
+  ProviderEvents,
+  StandardResolutionReasons,
+  TypeMismatchError,
+} from '../src';
 import { VariantFoundError } from '../src/provider/in-memory-provider/variant-not-found-error';
 
 describe('in-memory provider', () => {

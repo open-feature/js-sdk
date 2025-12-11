@@ -1,4 +1,4 @@
-import { useCallback, useContext, useRef } from 'react';
+import { useCallback, useContext } from 'react';
 import type { EvaluationContext } from '@openfeature/web-sdk';
 import { OpenFeature } from '@openfeature/web-sdk';
 import { Context } from '../internal';
@@ -18,10 +18,12 @@ export type ContextMutation = {
    * Context-aware function to set the desired context (see: {@link ContextMutationOptions} for details).
    * There's generally no need to await the result of this function; flag evaluation hooks will re-render when the context is updated.
    * This promise never rejects.
-   * @param updatedContext
+   * @param updatedContext New context object or method to generate it from the current context
    * @returns Promise for awaiting the context update
    */
-  setContext: (updatedContext: EvaluationContext) => Promise<void>;
+  setContext: (
+    updatedContext: EvaluationContext | ((currentContext: EvaluationContext) => EvaluationContext),
+  ) => Promise<void>;
 };
 
 /**
@@ -31,21 +33,27 @@ export type ContextMutation = {
  * @returns {ContextMutation} context-aware function(s) to mutate evaluation context
  */
 export function useContextMutator(options: ContextMutationOptions = { defaultContext: false }): ContextMutation {
-    const { domain } = useContext(Context) || {};
-    const previousContext = useRef<null | EvaluationContext>(null);
+  const { domain } = useContext(Context) || {};
 
-    const setContext = useCallback(async (updatedContext: EvaluationContext) => {
-        if (previousContext.current !== updatedContext) {
-            if (!domain || options?.defaultContext) {
-                OpenFeature.setContext(updatedContext);
-            } else {
-                OpenFeature.setContext(domain, updatedContext);
-            }
-            previousContext.current = updatedContext;
+  const setContext = useCallback(
+    async (
+      updatedContext: EvaluationContext | ((currentContext: EvaluationContext) => EvaluationContext),
+    ): Promise<void> => {
+      const previousContext = OpenFeature.getContext(options?.defaultContext ? undefined : domain);
+      const resolvedContext = typeof updatedContext === 'function' ? updatedContext(previousContext) : updatedContext;
+
+      if (previousContext !== resolvedContext) {
+        if (!domain || options?.defaultContext) {
+          await OpenFeature.setContext(resolvedContext);
+        } else {
+          await OpenFeature.setContext(domain, resolvedContext);
         }
-    }, [domain]);
+      }
+    },
+    [domain, options?.defaultContext],
+  );
 
-    return {
-        setContext,
-    };
+  return {
+    setContext,
+  };
 }

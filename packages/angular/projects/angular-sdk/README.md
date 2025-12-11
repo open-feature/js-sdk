@@ -16,8 +16,8 @@
     <img alt="Specification" src="https://img.shields.io/static/v1?label=specification&message=v0.8.0&color=yellow&style=for-the-badge" />
   </a>
   <!-- x-release-please-start-version -->
-  <a href="https://github.com/open-feature/js-sdk/releases/tag/angular-sdk-v0.0.17">
-    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v0.0.17&color=blue&style=for-the-badge" />
+  <a href="https://github.com/open-feature/js-sdk/releases/tag/angular-sdk-v0.0.19">
+    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v0.0.19&color=blue&style=for-the-badge" />
   </a>
   <!-- x-release-please-end -->
   <br/>
@@ -44,22 +44,30 @@ In addition to the features provided by the [web sdk](https://openfeature.dev/do
 
 - [Overview](#overview)
 - [Quick start](#quick-start)
-    - [Requirements](#requirements)
-    - [Install](#install)
-        - [npm](#npm)
-        - [yarn](#yarn)
-        - [Required peer dependencies](#required-peer-dependencies)
-    - [Usage](#usage)
-        - [Module](#module)
-            - [Minimal Example](#minimal-example)
-        - [How to use](#how-to-use)
-            - [Boolean Feature Flag](#boolean-feature-flag)
-            - [Number Feature Flag](#number-feature-flag)
-            - [String Feature Flag](#string-feature-flag)
-            - [Object Feature Flag](#object-feature-flag)
-            - [Opting-out of automatic re-rendering](#opting-out-of-automatic-re-rendering)
-            - [Consuming the evaluation details](#consuming-the-evaluation-details)
-            - [Setting Evaluation Context](#setting-evaluation-context)
+  - [Requirements](#requirements)
+  - [Install](#install)
+    - [npm](#npm)
+    - [yarn](#yarn)
+    - [Required peer dependencies](#required-peer-dependencies)
+  - [Usage](#usage)
+    - [Module](#module)
+      - [Minimal Example](#minimal-example)
+    - [How to use](#how-to-use)
+      - [Structural Directives](#structural-directives)
+        - [Boolean Feature Flag](#boolean-feature-flag)
+        - [Number Feature Flag](#number-feature-flag)
+        - [String Feature Flag](#string-feature-flag)
+        - [Object Feature Flag](#object-feature-flag)
+        - [Opting-out of automatic re-rendering](#opting-out-of-automatic-re-rendering)
+        - [Consuming the evaluation details](#consuming-the-evaluation-details)
+      - [FeatureFlagService](#featureflagservice)
+        - [Using with Observables](#using-with-observables)
+        - [Using with Angular Signals](#using-with-angular-signals)
+        - [Service Options](#service-options)
+      - [Setting evaluation context](#setting-evaluation-context)
+        - [Using a static object](#using-a-static-object)
+        - [Using a factory function](#using-a-factory-function)
+      - [Observability considerations](#observability-considerations)
 - [FAQ and troubleshooting](#faq-and-troubleshooting)
 - [Resources](#resources)
 
@@ -90,9 +98,9 @@ yarn add @openfeature/angular-sdk @openfeature/web-sdk @openfeature/core
 The following list contains the peer dependencies of `@openfeature/angular-sdk`.
 See the [package.json](./package.json) for the required versions.
 
-* `@openfeature/web-sdk`
-* `@angular/common`
-* `@angular/core`
+- `@openfeature/web-sdk`
+- `@angular/common`
+- `@angular/core`
 
 ### Usage
 
@@ -119,11 +127,10 @@ import { OpenFeatureModule } from '@openfeature/angular-sdk';
         domain1: new YourOpenFeatureProvider(),
         domain2: new YourOtherOpenFeatureProvider(),
       },
-    })
+    }),
   ],
 })
-export class AppModule {
-}
+export class AppModule {}
 ```
 
 ##### Minimal Example
@@ -134,9 +141,7 @@ If `initializing` and `reconciling` are not given, the feature flag value that i
 determine what will be rendered.
 
 ```html
-<div *booleanFeatureFlag="'isFeatureEnabled'; default: true">
-  This is shown when the feature flag is enabled.
-</div>
+<div *booleanFeatureFlag="'isFeatureEnabled'; default: true">This is shown when the feature flag is enabled.</div>
 ```
 
 This example shows content when the feature flag `isFeatureEnabled` is true with a default value of true.
@@ -178,72 +183,58 @@ This parameter is _optional_, if omitted, the `then` and `else` templates will b
 
 ```html
 <div
-  *booleanFeatureFlag="'isFeatureEnabled'; default: true; domain: 'userDomain'; else: booleanFeatureElse; initializing: booleanFeatureInitializing; reconciling: booleanFeatureReconciling">
+  *booleanFeatureFlag="'isFeatureEnabled'; default: true; domain: 'userDomain'; else: booleanFeatureElse; initializing: booleanFeatureInitializing; reconciling: booleanFeatureReconciling"
+>
   This is shown when the feature flag is enabled.
 </div>
-<ng-template #booleanFeatureElse>
-  This is shown when the feature flag is disabled.
-</ng-template>
-<ng-template #booleanFeatureInitializing>
-  This is shown when the feature flag is initializing.
-</ng-template>
-<ng-template #booleanFeatureReconciling>
-  This is shown when the feature flag is reconciling.
-</ng-template>
+<ng-template #booleanFeatureElse> This is shown when the feature flag is disabled. </ng-template>
+<ng-template #booleanFeatureInitializing> This is shown when the feature flag is initializing. </ng-template>
+<ng-template #booleanFeatureReconciling> This is shown when the feature flag is reconciling. </ng-template>
 ```
 
 ###### Number Feature Flag
 
 ```html
 <div
-  *numberFeatureFlag="'discountRate'; value: 10; default: 5; domain: 'userDomain'; else: numberFeatureElse; initializing: numberFeatureInitializing; reconciling: numberFeatureReconciling">
+  *numberFeatureFlag="'discountRate'; value: 10; default: 5; domain: 'userDomain'; else: numberFeatureElse; initializing: numberFeatureInitializing; reconciling: numberFeatureReconciling"
+>
   This is shown when the feature flag matches the specified discount rate.
 </div>
 <ng-template #numberFeatureElse>
   This is shown when the feature flag does not match the specified discount rate.
 </ng-template>
-<ng-template #numberFeatureInitializing>
-  This is shown when the feature flag is initializing.
-</ng-template>
-<ng-template #numberFeatureReconciling>
-  This is shown when the feature flag is reconciling.
-</ng-template>
+<ng-template #numberFeatureInitializing> This is shown when the feature flag is initializing. </ng-template>
+<ng-template #numberFeatureReconciling> This is shown when the feature flag is reconciling. </ng-template>
 ```
 
 ###### String Feature Flag
 
 ```html
 <div
-  *stringFeatureFlag="'themeColor'; value: 'dark'; default: 'light'; domain: 'userDomain'; else: stringFeatureElse; initializing: stringFeatureInitializing; reconciling: stringFeatureReconciling">
+  *stringFeatureFlag="'themeColor'; value: 'dark'; default: 'light'; domain: 'userDomain'; else: stringFeatureElse; initializing: stringFeatureInitializing; reconciling: stringFeatureReconciling"
+>
   This is shown when the feature flag matches the specified theme color.
 </div>
 <ng-template #stringFeatureElse>
   This is shown when the feature flag does not match the specified theme color.
 </ng-template>
-<ng-template #stringFeatureInitializing>
-  This is shown when the feature flag is initializing.
-</ng-template>
-<ng-template #stringFeatureReconciling>
-  This is shown when the feature flag is reconciling.
-</ng-template>
+<ng-template #stringFeatureInitializing> This is shown when the feature flag is initializing. </ng-template>
+<ng-template #stringFeatureReconciling> This is shown when the feature flag is reconciling. </ng-template>
 ```
 
 ###### Object Feature Flag
 
 ```html
 <div
-  *objectFeatureFlag="'userConfig'; value: { theme: 'dark' }; default: { theme: 'light' }; domain: 'userDomain'; else: objectFeatureElse; initializing: objectFeatureInitializing; reconciling: objectFeatureReconciling">
+  *objectFeatureFlag="'userConfig'; value: { theme: 'dark' }; default: { theme: 'light' }; domain: 'userDomain'; else: objectFeatureElse; initializing: objectFeatureInitializing; reconciling: objectFeatureReconciling"
+>
   This is shown when the feature flag matches the specified user configuration.
 </div>
 <ng-template #objectFeatureElse>
   This is shown when the feature flag does not match the specified user configuration.
 </ng-template>
-<ng-template #objectFeatureInitializing>
-  This is shown when the feature flag is initializing.
-</ng-template>
-<ng-template #objectFeatureReconciling>
-  This is shown when the feature flag is reconciling.
-</ng-template>
+<ng-template #objectFeatureInitializing> This is shown when the feature flag is initializing. </ng-template>
+<ng-template #objectFeatureReconciling> This is shown when the feature flag is reconciling. </ng-template>
 ```
 
 ###### Opting-out of automatic re-rendering
@@ -253,7 +244,9 @@ By default, the directive re-renders when the flag value changes or the context 
 In cases, this is not desired, re-rendering can be disabled for both events:
 
 ```html
-<div *booleanFeatureFlag="'isFeatureEnabled'; default: true; updateOnContextChanged: false; updateOnConfigurationChanged: false;">
+<div
+  *booleanFeatureFlag="'isFeatureEnabled'; default: true; updateOnContextChanged: false; updateOnConfigurationChanged: false;"
+>
   This is shown when the feature flag is enabled.
 </div>
 ```
@@ -270,13 +263,12 @@ The following example shows `value` being implicitly bound and `details` being b
 
 ```html
 <div
-  *stringFeatureFlag="'themeColor'; value: 'dark'; default: 'light'; else: stringFeatureElse; let value; let details = evaluationDetails">
-  It was a match!
-  The theme color is {{ value }} because of {{ details.reason }}
+  *stringFeatureFlag="'themeColor'; value: 'dark'; default: 'light'; else: stringFeatureElse; let value; let details = evaluationDetails"
+>
+  It was a match! The theme color is {{ value }} because of {{ details.reason }}
 </div>
-<ng-template #stringFeatureElse let-value let-details='evaluationDetails'>
-  It was no match!
-  The theme color is {{ value }} because of {{ details.reason }}
+<ng-template #stringFeatureElse let-value let-details="evaluationDetails">
+  It was no match! The theme color is {{ value }} because of {{ details.reason }}
 </ng-template>
 ```
 
@@ -284,9 +276,7 @@ When the expected flag value is omitted, the template will always be rendered.
 This can be used to just render the flag value or details without conditional rendering.
 
 ```html
-<div *stringFeatureFlag="'themeColor'; default: 'light'; let value;">
-  The theme color is {{ value }}.
-</div>
+<div *stringFeatureFlag="'themeColor'; default: 'light'; let value;">The theme color is {{ value }}.</div>
 ```
 
 ##### FeatureFlagService
@@ -311,7 +301,7 @@ import { FeatureFlagService } from '@openfeature/angular-sdk';
     </div>
     <div>Theme: {{ (currentTheme$ | async)?.value }}</div>
     <div>Max items: {{ (maxItems$ | async)?.value }}</div>
-  `
+  `,
 })
 export class MyComponent {
   private flagService = inject(FeatureFlagService);
@@ -343,11 +333,9 @@ import { FeatureFlagService } from '@openfeature/angular-sdk';
   selector: 'my-component',
   standalone: true,
   template: `
-    <div *ngIf="isFeatureEnabled()?.value">
-      Feature is enabled! Reason: {{ isFeatureEnabled()?.reason }}
-    </div>
+    <div *ngIf="isFeatureEnabled()?.value">Feature is enabled! Reason: {{ isFeatureEnabled()?.reason }}</div>
     <div>Theme: {{ currentTheme()?.value }}</div>
-  `
+  `,
 })
 export class MyComponent {
   private flagService = inject(FeatureFlagService);
@@ -364,8 +352,8 @@ The service methods accept the [same options as the directives](#opting-out-of-a
 
 ```typescript
 const flag$ = this.flagService.getBooleanDetails('my-flag', false, 'my-domain', {
-  updateOnConfigurationChanged: false,  // default: true
-  updateOnContextChanged: false,        // default: true
+  updateOnConfigurationChanged: false, // default: true
+  updateOnContextChanged: false, // default: true
 });
 ```
 
@@ -390,7 +378,7 @@ const initialContext = {
   user: {
     id: 'user123',
     role: 'admin',
-  }
+  },
 };
 
 @NgModule({
@@ -398,8 +386,8 @@ const initialContext = {
     CommonModule,
     OpenFeatureModule.forRoot({
       provider: yourFeatureProvider,
-      context: initialContext
-    })
+      context: initialContext,
+    }),
   ],
 })
 export class AppModule {}
@@ -419,12 +407,18 @@ const contextFactory = (): EvaluationContext => loadContextFromLocalStorage();
     CommonModule,
     OpenFeatureModule.forRoot({
       provider: yourFeatureProvider,
-      context: contextFactory
-    })
+      context: contextFactory,
+    }),
   ],
 })
 export class AppModule {}
 ```
+
+##### Observability considerations
+
+Angular's lifecycle can result in flags being evaluated multiple times as a user interacts with a page.
+If you are using an OpenFeature hook for telemetry, this can result in inflated evaluation metrics.
+The [OpenFeature debounce hook](https://github.com/open-feature/js-sdk-contrib/tree/main/libs/hooks/debounce) can help to reduce the amount of redundant evaluations reported to your observability platform by limiting the frequency at which evaluation metrics are reported.
 
 ## FAQ and troubleshooting
 

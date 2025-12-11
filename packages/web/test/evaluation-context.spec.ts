@@ -12,13 +12,11 @@ class MockProvider implements Provider {
 
   initialize = initializeMock;
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onContextChange(oldContext: EvaluationContext, newContext: EvaluationContext): Promise<void> {
+  onContextChange(_oldContext: EvaluationContext, _newContext: EvaluationContext): Promise<void> {
     return Promise.resolve();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  resolveBooleanEvaluation = jest.fn((flagKey: string, defaultValue: boolean, context: EvaluationContext) => {
+  resolveBooleanEvaluation = jest.fn((_flagKey: string, _defaultValue: boolean, _context: EvaluationContext) => {
     return {
       value: true,
     };
