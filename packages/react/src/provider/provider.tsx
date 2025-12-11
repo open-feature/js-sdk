@@ -11,6 +11,11 @@ type ClientOrDomain =
        * @see OpenFeature.setProvider() and overloads.
        */
       domain?: string;
+      /**
+       * If the package-local isolated OpenFeature singleton should be used
+       * @see OpenFeature.isolated for more details.
+       */
+      isolated?: boolean;
       client?: never;
     }
   | {
@@ -19,6 +24,7 @@ type ClientOrDomain =
        */
       client?: Client;
       domain?: never;
+      isolated?: never;
     };
 
 type ProviderProps = {
@@ -31,8 +37,11 @@ type ProviderProps = {
  * @param {ProviderProps} properties props for the context provider
  * @returns {OpenFeatureProvider} context provider
  */
-export function OpenFeatureProvider({ client, domain, children, ...options }: ProviderProps) {
-  const stableClient = React.useMemo(() => client || OpenFeature.getClient(domain), [client, domain]);
+export function OpenFeatureProvider({ client, domain, isolated, children, ...options }: ProviderProps) {
+  const stableClient = React.useMemo(
+    () => client || (isolated ? OpenFeature.isolated : OpenFeature).getClient(domain),
+    [client, domain],
+  );
 
   return <Context.Provider value={{ client: stableClient, options }}>{children}</Context.Provider>;
 }
