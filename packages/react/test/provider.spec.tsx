@@ -230,6 +230,43 @@ describe('OpenFeatureProvider', () => {
       expect(screen.getByText('Will says aloha')).toBeInTheDocument();
     });
 
+    it('should update context when a client is set', async () => {
+      const DOMAIN = 'mutate-context-client';
+      OpenFeature.setProvider(DOMAIN, suspendingProvider(), {});
+
+      const client = OpenFeature.getClient(DOMAIN);
+
+      const changed = jest.fn();
+      client.addHandler(ProviderEvents.ContextChanged, changed);
+
+      render(
+        <OpenFeatureProvider client={client}>
+          <React.Suspense fallback={<div>{FALLBACK}</div>}>
+            <TestComponent name="Will" />
+          </React.Suspense>
+        </OpenFeatureProvider>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('Will says hi')).toBeInTheDocument();
+      });
+
+      act(() => {
+        fireEvent.click(screen.getByText('Update Context'));
+      });
+      expect(screen.getByText('Updating context...')).toBeInTheDocument();
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('Update Context')).toBeInTheDocument();
+        },
+        { timeout: DELAY * 2 },
+      );
+      expect(changed).toHaveBeenCalledTimes(1);
+
+      expect(screen.getByText('Will says aloha')).toBeInTheDocument();
+    });
+
     it('should update nested contexts', async () => {
       const DOMAIN1 = 'mutate-contexts-nested-will';
       const DOMAIN2 = 'mutate-contexts-nested-todd';
