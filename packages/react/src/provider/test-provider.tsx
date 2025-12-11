@@ -87,6 +87,7 @@ export function OpenFeatureTestProvider(testProviderOptions: TestProviderProps) 
   const effectiveProvider = (
     flagValueMap ? new TestProvider(flagValueMap, testProviderOptions.delayMs) : mixInNoop(provider) || NOOP_PROVIDER
   ) as Provider;
+  // TODO: Needs to handle `isolated` option like OpenFeatureProvider
   testProviderOptions.domain
     ? OpenFeature.setProvider(testProviderOptions.domain, effectiveProvider)
     : OpenFeature.setProvider(effectiveProvider);
