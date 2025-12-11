@@ -46,7 +46,7 @@
     "@types/jest": "^29.5.12",
     "@types/node": "^22.0.0",
     "@types/react": "^18.2.55",
-    "@types/uuid": "^10.0.0",
+    "@types/uuid": "^11.0.0",
     "esbuild": "^0.25.0",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
