@@ -79,7 +79,8 @@ export function FeatureFlag<T extends FlagValue = FlagValue>({
 
   // If the flag evaluation failed, we render the fallback
   if (details.reason === 'ERROR') {
-    const fallbackNode: React.ReactNode = typeof fallback === 'function' ? fallback(details.details as EvaluationDetails<T>) : fallback;
+    const fallbackNode: React.ReactNode =
+      typeof fallback === 'function' ? fallback(details.details as EvaluationDetails<T>) : fallback;
     return <>{fallbackNode}</>;
   }
 
@@ -102,6 +103,7 @@ export function FeatureFlag<T extends FlagValue = FlagValue>({
     return <>{childNode}</>;
   }
 
-  const fallbackNode: React.ReactNode = typeof fallback === 'function' ? fallback(details.details as EvaluationDetails<T>) : fallback;
+  const fallbackNode: React.ReactNode =
+    typeof fallback === 'function' ? fallback(details.details as EvaluationDetails<T>) : fallback;
   return <>{fallbackNode}</>;
 }

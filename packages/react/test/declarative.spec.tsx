@@ -40,7 +40,7 @@ describe('Feature Component', () => {
         parting: 'bye',
       },
       defaultVariant: STRING_FLAG_VARIANT,
-    }
+    },
   };
 
   const makeProvider = () => {
@@ -160,15 +160,21 @@ describe('Feature Component', () => {
       );
 
       expect(fallbackFunction).toHaveBeenCalled();
-      expect(fallbackFunction).toHaveBeenCalledWith(expect.objectContaining({
-        flagKey: MISSING_FLAG_KEY
-      }));
+      expect(fallbackFunction).toHaveBeenCalledWith(
+        expect.objectContaining({
+          flagKey: MISSING_FLAG_KEY,
+        }),
+      );
       expect(screen.queryByText(`Fallback: ${MISSING_FLAG_KEY}`)).toBeInTheDocument();
     });
 
     it('should pass correct EvaluationDetails to function-based fallback', () => {
       const fallbackFunction = jest.fn((details: EvaluationDetails<boolean>) => {
-        return <div>Flag: {details.flagKey}, Value: {String(details.value)}, Reason: {details.reason}</div>;
+        return (
+          <div>
+            Flag: {details.flagKey}, Value: {String(details.value)}, Reason: {details.reason}
+          </div>
+        );
       });
 
       render(
@@ -179,11 +185,13 @@ describe('Feature Component', () => {
         </OpenFeatureProvider>,
       );
 
-      expect(fallbackFunction).toHaveBeenCalledWith(expect.objectContaining({
-        flagKey: MISSING_FLAG_KEY,
-        value: false,
-        reason: expect.any(String)
-      }));
+      expect(fallbackFunction).toHaveBeenCalledWith(
+        expect.objectContaining({
+          flagKey: MISSING_FLAG_KEY,
+          value: false,
+          reason: expect.any(String),
+        }),
+      );
     });
 
     it('should support function-based fallback for error conditions', () => {
@@ -191,7 +199,9 @@ describe('Feature Component', () => {
       const errorProvider = new InMemoryProvider({});
       OpenFeature.setProvider('error-test', errorProvider);
 
-      const fallbackFunction = jest.fn((details: EvaluationDetails<boolean>) => <div>Error fallback: {details.reason}</div>);
+      const fallbackFunction = jest.fn((details: EvaluationDetails<boolean>) => (
+        <div>Error fallback: {details.reason}</div>
+      ));
 
       render(
         <OpenFeatureProvider domain="error-test">
