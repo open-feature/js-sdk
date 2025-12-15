@@ -253,6 +253,7 @@ describe('FeatureFlagDirective', () => {
       await expectRenderedText(fixture, 'case-2', 'Flag On');
 
       await updateFlagValue(provider, false);
+      fixture.detectChanges(); // Ensure change detection after flag update
       await expectRenderedText(fixture, 'case-2', 'Flag Off');
     });
   });
@@ -393,7 +394,9 @@ describe('FeatureFlagDirective', () => {
       await waitForClientReady(client);
       await expectRenderedText(fixture, 'case-6', 'Flag On');
 
-      fixture.componentInstance.specialFlagKey = 'new-test-flag';
+      fixture.componentRef.setInput('specialFlagKey', 'new-test-flag');
+      await fixture.whenStable();
+
       await expectRenderedText(fixture, 'case-6', 'Flag Off');
     });
 
@@ -445,7 +448,9 @@ describe('FeatureFlagDirective', () => {
       );
       await OpenFeature.setProviderAndWait(newDomain, newProvider);
 
-      fixture.componentInstance.domain = newDomain;
+      fixture.componentRef.setInput('domain', newDomain);
+      await fixture.whenStable();
+
       await expectRenderedText(fixture, 'case-6', 'Flag Off');
     });
   });
@@ -560,8 +565,7 @@ async function createTestingModule(config?: {
     ],
   }).createComponent(TestComponent);
 
-  fixture.componentInstance.domain = domain;
-  fixture.detectChanges();
+  fixture.componentRef.setInput('domain', domain);
   await fixture.whenStable();
 
   const client = OpenFeature.getClient(domain);

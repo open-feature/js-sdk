@@ -8,12 +8,8 @@
     "inlineSources": true,
     "types": [],
     "paths": {
-      "angular": [
-        "./dist/angular"
-      ],
+      "angular": ["./dist/angular"]
     }
   },
-  "exclude": [
-    "**/*.spec.ts"
-  ]
+  "exclude": ["**/*.spec.ts"]
 }

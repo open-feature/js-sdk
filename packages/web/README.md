@@ -16,8 +16,8 @@
     <img alt="Specification" src="https://img.shields.io/static/v1?label=specification&message=v0.8.0&color=yellow&style=for-the-badge" />
   </a>
   <!-- x-release-please-start-version -->
-  <a href="https://github.com/open-feature/js-sdk/releases/tag/web-sdk-v1.5.0">
-    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v1.5.0&color=blue&style=for-the-badge" />
+  <a href="https://github.com/open-feature/js-sdk/releases/tag/web-sdk-v1.7.2">
+    <img alt="Release" src="https://img.shields.io/static/v1?label=release&message=v1.7.2&color=blue&style=for-the-badge" />
   </a>
   <!-- x-release-please-end -->
   <br/>
@@ -88,7 +88,7 @@ const client = OpenFeature.getClient();
 const v2Enabled = client.getBooleanValue('v2_enabled', false);
 
 if (v2Enabled) {
-  console.log("v2 is enabled");
+  console.log('v2 is enabled');
 }
 ```
 
@@ -100,15 +100,16 @@ See [here](https://open-feature.github.io/js-sdk/modules/_openfeature_web_sdk.ht
 
 | Status | Features                            | Description                                                                                                                        |
 | ------ | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| ✅      | [Providers](#providers)             | Integrate with a commercial, open source, or in-house feature management tool.                                                     |
-| ✅      | [Targeting](#targeting-and-context) | Contextually-aware flag evaluation using [evaluation context](https://openfeature.dev/docs/reference/concepts/evaluation-context). |
-| ✅      | [Hooks](#hooks)                     | Add functionality to various stages of the flag evaluation life-cycle.                                                             |
-| ✅      | [Logging](#logging)                 | Integrate with popular logging packages.                                                                                           |
-| ✅      | [Domains](#domains)                 | Logically bind clients with providers.                                                                                             |
-| ✅      | [Eventing](#eventing)               | React to state changes in the provider or flag management system.                                                                  |
-| ✅      | [Tracking](#tracking)               | Associate user actions with feature flag evaluations, particularly for A/B testing.                                                |
-| ✅      | [Shutdown](#shutdown)               | Gracefully clean up a provider during application shutdown.                                                                        |
-| ✅      | [Extending](#extending)             | Extend OpenFeature with custom providers and hooks.                                                                                |
+| ✅     | [Providers](#providers)             | Integrate with a commercial, open source, or in-house feature management tool.                                                     |
+| ✅     | [Targeting](#targeting-and-context) | Contextually-aware flag evaluation using [evaluation context](https://openfeature.dev/docs/reference/concepts/evaluation-context). |
+| ✅     | [Hooks](#hooks)                     | Add functionality to various stages of the flag evaluation life-cycle.                                                             |
+| ✅     | [Logging](#logging)                 | Integrate with popular logging packages.                                                                                           |
+| ✅     | [Domains](#domains)                 | Logically bind clients with providers.                                                                                             |
+| ✅     | [Eventing](#eventing)               | React to state changes in the provider or flag management system.                                                                  |
+| ✅     | [Tracking](#tracking)               | Associate user actions with feature flag evaluations, particularly for A/B testing.                                                |
+| ✅     | [Shutdown](#shutdown)               | Gracefully clean up a provider during application shutdown.                                                                        |
+| ✅     | [Extending](#extending)             | Extend OpenFeature with custom providers and hooks.                                                                                |
+| ✅     | [Multi-Provider](#multi-provider)   | Combine multiple providers with configurable evaluation strategies.                                                                |
 
 <sub>Implemented: ✅ | In-progress: ⚠️ | Not implemented yet: ❌</sub>
 
@@ -145,6 +146,57 @@ Once the provider has been registered, the status can be tracked using [events](
 In some situations, it may be beneficial to register multiple providers in the same application.
 This is possible using [domains](#domains), which is covered in more detail below.
 
+#### Multi-Provider
+
+The Multi-Provider allows you to use multiple underlying providers as sources of flag data for the OpenFeature web SDK. When a flag is being evaluated, the Multi-Provider will consult each underlying provider it is managing in order to determine the final result. Different evaluation strategies can be defined to control which providers get evaluated and which result is used.
+
+The Multi-Provider is a powerful tool for performing migrations between flag providers, or combining multiple providers into a single feature flagging interface. For example:
+
+- **Migration**: When migrating between two providers, you can run both in parallel under a unified flagging interface. As flags are added to the new provider, the Multi-Provider will automatically find and return them, falling back to the old provider if the new provider does not have the flag.
+- **Multiple Data Sources**: The Multi-Provider allows you to seamlessly combine many sources of flagging data, such as environment variables, local files, database values and SaaS hosted feature management systems.
+
+```ts
+import { MultiProvider } from '@openfeature/web-sdk';
+
+const multiProvider = new MultiProvider([{ provider: new ProviderA() }, { provider: new ProviderB() }]);
+
+await OpenFeature.setProviderAndWait(multiProvider);
+
+const client = OpenFeature.getClient();
+console.log(client.getBooleanDetails('my-flag', false));
+```
+
+By default, the Multi-Provider will evaluate all underlying providers in order and return the first successful result. If a provider indicates it does not have a flag (FLAG_NOT_FOUND error code), then it will be skipped and the next provider will be evaluated.
+
+##### Evaluation Strategies
+
+The Multi-Provider comes with three strategies out of the box:
+
+- **FirstMatchStrategy** (default): Evaluates all providers in order and returns the first successful result. Providers that indicate FLAG_NOT_FOUND error will be skipped and the next provider will be evaluated.
+- **FirstSuccessfulStrategy**: Evaluates all providers in order and returns the first successful result. Any error will cause that provider to be skipped.
+- **ComparisonStrategy**: Evaluates all providers sequentially. If every provider returns a successful result with the same value, then that result is returned. Otherwise, the result returned by the configured "fallback provider" will be used.
+
+```ts
+import { MultiProvider, FirstSuccessfulStrategy } from '@openfeature/web-sdk';
+
+const multiProvider = new MultiProvider(
+  [{ provider: new ProviderA() }, { provider: new ProviderB() }],
+  new FirstSuccessfulStrategy(),
+);
+```
+
+##### Tracking Support
+
+The Multi-Provider supports tracking events across multiple providers, allowing you to send analytics events to all configured providers simultaneously:
+
+```ts
+// Tracked events will be sent to all providers by default
+client.track('user-conversion', {
+  value: 99.99,
+  currency: 'USD',
+});
+```
+
 ### Flag evaluation flow
 
 When a new provider is added to OpenFeature client the following process happens:
@@ -176,7 +228,7 @@ Change context after the provider has been registered using `setContext`.
 
 ```ts
 // Set a value to the global context
-await OpenFeature.setContext({ targetingKey: localStorage.getItem("targetingKey") });
+await OpenFeature.setContext({ targetingKey: localStorage.getItem('targetingKey') });
 ```
 
 Context is global and setting it is `async`.
@@ -193,7 +245,7 @@ If the hook you're looking for hasn't been created yet, see the [develop a hook]
 Once you've added a hook as a dependency, it can be registered at the global, client, or flag invocation level.
 
 ```ts
-import { OpenFeature } from "@openfeature/web-sdk";
+import { OpenFeature } from '@openfeature/web-sdk';
 
 // add a hook globally, to run on all evaluations
 OpenFeature.addHooks(new ExampleGlobalHook());
@@ -203,7 +255,7 @@ const client = OpenFeature.getClient();
 client.addHooks(new ExampleClientHook());
 
 // add a hook for this evaluation only
-const boolValue = client.getBooleanValue("bool-flag", false, { hooks: [new ExampleHook()]});
+const boolValue = client.getBooleanValue('bool-flag', false, { hooks: [new ExampleHook()] });
 ```
 
 ### Logging
@@ -213,7 +265,7 @@ This behavior can be overridden by passing a custom logger either globally or pe
 A custom logger must implement the [Logger interface](../shared/src/logger/logger.ts).
 
 ```ts
-import type { Logger } from "@openfeature/web-sdk";
+import type { Logger } from '@openfeature/web-sdk';
 
 // The logger can be anything that conforms with the Logger interface
 const logger: Logger = console;
@@ -233,17 +285,17 @@ A domain is a logical identifier which can be used to associate clients with a p
 If a domain has no associated provider, the default provider is used.
 
 ```ts
-import { OpenFeature, InMemoryProvider } from "@openfeature/web-sdk";
+import { OpenFeature, InMemoryProvider } from '@openfeature/web-sdk';
 
 // Registering the default provider
 OpenFeature.setProvider(InMemoryProvider(myFlags));
 // Registering a provider to a domain
-OpenFeature.setProvider("my-domain", new InMemoryProvider(someOtherFlags));
+OpenFeature.setProvider('my-domain', new InMemoryProvider(someOtherFlags));
 
 // A Client bound to the default provider
 const clientWithDefault = OpenFeature.getClient();
 // A Client bound to the InMemoryProvider provider
-const domainScopedClient = OpenFeature.getClient("my-domain");
+const domainScopedClient = OpenFeature.getClient('my-domain');
 ```
 
 Domains can be defined on a provider during registration.
@@ -255,13 +307,13 @@ By default, domain-scoped clients use the global context.
 This can be overridden by explicitly setting context when registering the provider or by referencing the domain when updating context:
 
 ```ts
-OpenFeature.setProvider("my-domain", new NewCachedProvider(), { targetingKey: localStorage.getItem("targetingKey") });
+OpenFeature.setProvider('my-domain', new NewCachedProvider(), { targetingKey: localStorage.getItem('targetingKey') });
 ```
 
 To change context after the provider has been registered, use `setContext` with a domain:
 
 ```ts
-await OpenFeature.setContext("my-domain", { targetingKey: localStorage.getItem("targetingKey") })
+await OpenFeature.setContext('my-domain', { targetingKey: localStorage.getItem('targetingKey') });
 ```
 
 Once a domain's context has been defined, it will override the global context for all clients bound to the domain.
@@ -313,7 +365,7 @@ This should only be called when your application is in the process of shutting d
 ```ts
 import { OpenFeature } from '@openfeature/web-sdk';
 
-await OpenFeature.close()
+await OpenFeature.close();
 ```
 
 ## Extending
@@ -333,7 +385,7 @@ import {
   Logger,
   Provider,
   ProviderEventEmitter,
-  ResolutionDetails
+  ResolutionDetails,
 } from '@openfeature/web-sdk';
 
 // implement the provider interface
@@ -345,16 +397,36 @@ class MyProvider implements Provider {
   } as const;
   // Optional provider managed hooks
   hooks?: Hook[];
-  resolveBooleanEvaluation(flagKey: string, defaultValue: boolean, context: EvaluationContext, logger: Logger): ResolutionDetails<boolean> {
+  resolveBooleanEvaluation(
+    flagKey: string,
+    defaultValue: boolean,
+    context: EvaluationContext,
+    logger: Logger,
+  ): ResolutionDetails<boolean> {
     // code to evaluate a boolean
   }
-  resolveStringEvaluation(flagKey: string, defaultValue: string, context: EvaluationContext, logger: Logger): ResolutionDetails<string> {
+  resolveStringEvaluation(
+    flagKey: string,
+    defaultValue: string,
+    context: EvaluationContext,
+    logger: Logger,
+  ): ResolutionDetails<string> {
     // code to evaluate a string
   }
-  resolveNumberEvaluation(flagKey: string, defaultValue: number, context: EvaluationContext, logger: Logger): ResolutionDetails<number> {
+  resolveNumberEvaluation(
+    flagKey: string,
+    defaultValue: number,
+    context: EvaluationContext,
+    logger: Logger,
+  ): ResolutionDetails<number> {
     // code to evaluate a number
   }
-  resolveObjectEvaluation<T extends JsonValue>(flagKey: string, defaultValue: T, context: EvaluationContext, logger: Logger): ResolutionDetails<T> {
+  resolveObjectEvaluation<T extends JsonValue>(
+    flagKey: string,
+    defaultValue: T,
+    context: EvaluationContext,
+    logger: Logger,
+  ): ResolutionDetails<T> {
     // code to evaluate an object
   }
 
@@ -383,7 +455,7 @@ This can be a new repository or included in [the existing contrib repository](ht
 Implement your own hook by conforming to the [Hook interface](../shared/src/hooks/hook.ts).
 
 ```ts
-import type { Hook, HookContext, EvaluationDetails, FlagValue } from "@openfeature/web-sdk";
+import type { Hook, HookContext, EvaluationDetails, FlagValue } from '@openfeature/web-sdk';
 
 export class MyHook implements Hook {
   after(hookContext: HookContext, evaluationDetails: EvaluationDetails<FlagValue>) {

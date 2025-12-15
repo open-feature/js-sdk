@@ -1,26 +1,17 @@
-import type {
-  EvaluationContext,
-  ManageContext,
-  ServerProviderStatus} from '@openfeature/core';
-import {
-  OpenFeatureCommonAPI,
-  ProviderWrapper,
-  objectOrUndefined,
-  stringOrUndefined,
-} from '@openfeature/core';
+import type { EvaluationContext, ManageContext, ServerProviderStatus } from '@openfeature/core';
+import { OpenFeatureCommonAPI, ProviderWrapper, objectOrUndefined, stringOrUndefined } from '@openfeature/core';
 import type { Client } from './client';
 import { OpenFeatureClient } from './client/internal/open-feature-client';
 import { OpenFeatureEventEmitter } from './events';
 import type { Hook } from './hooks';
-import type { Provider} from './provider';
+import type { Provider } from './provider';
 import { NOOP_PROVIDER, ProviderStatus } from './provider';
 import type {
   ManageTransactionContextPropagator,
   TransactionContext,
-  TransactionContextPropagator} from './transaction-context';
-import {
-  NOOP_TRANSACTION_CONTEXT_PROPAGATOR
+  TransactionContextPropagator,
 } from './transaction-context';
+import { NOOP_TRANSACTION_CONTEXT_PROPAGATOR } from './transaction-context';
 
 // use a symbol as a key for the global singleton
 const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/js-sdk/api');

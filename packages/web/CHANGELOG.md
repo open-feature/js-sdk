@@ -1,6 +1,59 @@
 # Changelog
 
 
+## [1.7.2](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.7.1...web-sdk-v1.7.2) (2025-12-09)
+
+
+### 🧹 Chore
+
+* update copyright to OpenFeature Maintainers ([#1283](https://github.com/open-feature/js-sdk/issues/1283)) ([d751b8b](https://github.com/open-feature/js-sdk/commit/d751b8beac4fe25df7917e12752b003defcd3536))
+
+## [1.7.1](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.7.0...web-sdk-v1.7.1) (2025-10-31)
+
+
+### 📚 Documentation
+
+* add Multi-Provider to features list in README's ([#1269](https://github.com/open-feature/js-sdk/issues/1269)) ([752fa0d](https://github.com/open-feature/js-sdk/commit/752fa0d4a199342d6956e625e8aa9e757e1830e3))
+
+## [1.7.0](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.6.2...web-sdk-v1.7.0) (2025-10-21)
+
+
+### ✨ New Features
+
+* Migrate MultiProvider from js-sdk-contrib ([#1234](https://github.com/open-feature/js-sdk/issues/1234)) ([8686dbf](https://github.com/open-feature/js-sdk/commit/8686dbfbe2b95b20706718bf23287244eda36f60))
+
+
+### 🐛 Bug Fixes
+
+* correct MultiProvider class name in docs and remove duplicate error logging ([#1267](https://github.com/open-feature/js-sdk/issues/1267)) ([18c2719](https://github.com/open-feature/js-sdk/commit/18c2719391fbf755dce692c82b402823374b79aa))
+
+## [1.6.2](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.6.1...web-sdk-v1.6.2) (2025-09-30)
+
+
+### 🐛 Bug Fixes
+
+* angular tests in main ([#1251](https://github.com/open-feature/js-sdk/issues/1251)) ([f42011d](https://github.com/open-feature/js-sdk/commit/f42011d1f8f6949022ceefbd6491fca2baa65dce))
+
+## [1.6.1](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.6.0...web-sdk-v1.6.1) (2025-08-14)
+
+
+### 🐛 Bug Fixes
+
+* update core dep ([#1228](https://github.com/open-feature/js-sdk/issues/1228)) ([845d24c](https://github.com/open-feature/js-sdk/commit/845d24c5fecc80de3080e49fde839f08ecac6b33))
+
+## [1.6.0](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.5.0...web-sdk-v1.6.0) (2025-08-12)
+
+
+### ✨ New Features
+
+* add evaluation-scoped hook data ([#1216](https://github.com/open-feature/js-sdk/issues/1216)) ([07af3a9](https://github.com/open-feature/js-sdk/commit/07af3a9eda895e9edb24c7ee1e3c1c4f16e17431))
+* **web-global-build:** impl ([#1225](https://github.com/open-feature/js-sdk/issues/1225)) ([40a512e](https://github.com/open-feature/js-sdk/commit/40a512e21204eb92dc3ef4161b383f9c1fd74da7))
+
+
+### 📚 Documentation
+
+* Clarify the behavior of setProviderAndWait ([#1180](https://github.com/open-feature/js-sdk/issues/1180)) ([4fe8d87](https://github.com/open-feature/js-sdk/commit/4fe8d87a2e5df2cbd4086cc4f4a380e8857ed8ba))
+
 ## [1.5.0](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.4.1...web-sdk-v1.5.0) (2025-04-11)
 
 

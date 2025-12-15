@@ -1,4 +1,10 @@
-import type { ErrorCode, EvaluationDetails, FlagMetadata, FlagValue, StandardResolutionReasons } from '@openfeature/core';
+import type {
+  ErrorCode,
+  EvaluationDetails,
+  FlagMetadata,
+  FlagValue,
+  StandardResolutionReasons,
+} from '@openfeature/core';
 
 export interface FlagQuery<T extends FlagValue = FlagValue> {
   /**

@@ -1,5 +1,51 @@
 # Changelog
 
+## [1.20.1](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.20.0...server-sdk-v1.20.1) (2025-12-09)
+
+
+### 🐛 Bug Fixes
+
+* multi-provider hook context management ([#1282](https://github.com/open-feature/js-sdk/issues/1282)) ([2f9e0d3](https://github.com/open-feature/js-sdk/commit/2f9e0d34c7fd9632c2f1ded7f89cb81013091ad8))
+
+
+### 🧹 Chore
+
+* update copyright to OpenFeature Maintainers ([#1283](https://github.com/open-feature/js-sdk/issues/1283)) ([d751b8b](https://github.com/open-feature/js-sdk/commit/d751b8beac4fe25df7917e12752b003defcd3536))
+
+
+### 📚 Documentation
+
+* add Multi-Provider to features list in README's ([#1269](https://github.com/open-feature/js-sdk/issues/1269)) ([752fa0d](https://github.com/open-feature/js-sdk/commit/752fa0d4a199342d6956e625e8aa9e757e1830e3))
+
+## [1.20.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.19.0...server-sdk-v1.20.0) (2025-10-21)
+
+
+### ✨ New Features
+
+* Migrate MultiProvider from js-sdk-contrib ([#1234](https://github.com/open-feature/js-sdk/issues/1234)) ([8686dbf](https://github.com/open-feature/js-sdk/commit/8686dbfbe2b95b20706718bf23287244eda36f60))
+
+## [1.19.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.18.0...server-sdk-v1.19.0) (2025-08-14)
+
+
+### ✨ New Features
+
+* add evaluation-scoped hook data ([#1216](https://github.com/open-feature/js-sdk/issues/1216)) ([07af3a9](https://github.com/open-feature/js-sdk/commit/07af3a9eda895e9edb24c7ee1e3c1c4f16e17431))
+
+
+### 🐛 Bug Fixes
+
+* update core dep ([#1228](https://github.com/open-feature/js-sdk/issues/1228)) ([845d24c](https://github.com/open-feature/js-sdk/commit/845d24c5fecc80de3080e49fde839f08ecac6b33))
+
+
+### 🧹 Chore
+
+* update node to v20+ ([#1203](https://github.com/open-feature/js-sdk/issues/1203)) ([1f33453](https://github.com/open-feature/js-sdk/commit/1f33453c23df0763cbf0d0b44db8d91216377009))
+
+
+### 📚 Documentation
+
+* Clarify the behavior of setProviderAndWait ([#1180](https://github.com/open-feature/js-sdk/issues/1180)) ([4fe8d87](https://github.com/open-feature/js-sdk/commit/4fe8d87a2e5df2cbd4086cc4f4a380e8857ed8ba))
+
 ## [1.18.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.17.1...server-sdk-v1.18.0) (2025-04-11)
 
 

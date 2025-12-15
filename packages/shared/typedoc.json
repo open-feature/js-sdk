@@ -1,8 +1,6 @@
 {
-    "$schema": "https://typedoc.org/schema.json",
-    "name": "@openfeature/core",
-    "includeVersion": true,
-    "entryPoints": [
-        "src/index.ts",
-    ]
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "@openfeature/core",
+  "includeVersion": true,
+  "entryPoints": ["src/index.ts"]
 }

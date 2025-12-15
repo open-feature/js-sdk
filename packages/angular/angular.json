@@ -10,7 +10,7 @@
       "prefix": "lib",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "builder": "@angular/build:ng-packagr",
           "options": {
             "project": "projects/angular-sdk/ng-package.json"
           },
@@ -27,19 +27,23 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "projects/angular-sdk/**/*.ts",
-              "projects/angular-sdk/**/*.html"
-            ]
+            "lintFilePatterns": ["projects/angular-sdk/**/*.ts", "projects/angular-sdk/**/*.html"]
+          }
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/angular-sdk/tsconfig.spec.json",
+            "providersFile": "projects/angular-sdk/src/test-provider.ts",
+            "runner": "vitest",
+            "buildTarget": "::development"
           }
         }
       }
     }
   },
   "cli": {
-    "schematicCollections": [
-      "@angular-eslint/schematics"
-    ],
+    "schematicCollections": ["@angular-eslint/schematics"],
     "analytics": false
   }
 }

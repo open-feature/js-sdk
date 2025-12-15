@@ -5,9 +5,7 @@
     "declarationMap": false
   },
   "paths": {
-    "angular": [
-      "./dist/angular"
-    ]
+    "angular": ["./dist/angular"]
   },
   "angularCompilerOptions": {
     "compilationMode": "partial"

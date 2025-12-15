@@ -6,6 +6,10 @@ export class TestingProvider extends InMemoryProvider {
     private delay: number,
   ) {
     super(flagConfiguration);
+    if (!delay) {
+      // If no delay, we remove the optional initialize method to avoid the provider not being ready immediately
+      Object.assign(this, { initialize: undefined });
+    }
   }
 
   // artificially delay our init (delaying PROVIDER_READY event)

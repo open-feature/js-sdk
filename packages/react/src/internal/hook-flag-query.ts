@@ -1,11 +1,6 @@
-import type {
-  EvaluationDetails,
-  FlagValue} from '@openfeature/web-sdk';
-import {
-  StandardResolutionReasons
-} from '@openfeature/web-sdk';
+import type { EvaluationDetails, FlagValue } from '@openfeature/web-sdk';
+import { StandardResolutionReasons } from '@openfeature/web-sdk';
 import type { FlagQuery } from '../query';
-
 
 // FlagQuery implementation, do not export
 export class HookFlagQuery<T extends FlagValue = FlagValue> implements FlagQuery {

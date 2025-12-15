@@ -1,19 +1,10 @@
-import type {
-  ClientProviderStatus,
-  EvaluationContext,
-  GenericEventEmitter,
-  ManageContext} from '@openfeature/core';
-import {
-  OpenFeatureCommonAPI,
-  ProviderWrapper,
-  objectOrUndefined,
-  stringOrUndefined,
-} from '@openfeature/core';
+import type { ClientProviderStatus, EvaluationContext, GenericEventEmitter, ManageContext } from '@openfeature/core';
+import { OpenFeatureCommonAPI, ProviderWrapper, objectOrUndefined, stringOrUndefined } from '@openfeature/core';
 import type { Client } from './client';
 import { OpenFeatureClient } from './client/internal/open-feature-client';
 import { OpenFeatureEventEmitter, ProviderEvents } from './events';
 import type { Hook } from './hooks';
-import type { Provider} from './provider';
+import type { Provider } from './provider';
 import { NOOP_PROVIDER, ProviderStatus } from './provider';
 
 // use a symbol as a key for the global singleton
@@ -393,7 +384,7 @@ export class OpenFeatureAPI
         const maybePromise = wrapper.provider.onContextChange(oldContext, newContext);
 
         // only reconcile if the onContextChange method returns a promise
-        if (typeof maybePromise?.then === 'function') {
+        if (maybePromise && typeof maybePromise?.then === 'function') {
           wrapper.incrementPendingContextChanges();
           wrapper.status = this._statusEnumType.RECONCILING;
           this.getAssociatedEventEmitters(domain).forEach((emitter) => {

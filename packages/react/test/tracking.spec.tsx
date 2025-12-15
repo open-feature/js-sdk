@@ -3,14 +3,9 @@ import '@testing-library/jest-dom'; // see: https://testing-library.com/docs/rea
 import { render } from '@testing-library/react';
 import * as React from 'react';
 import type { Provider, TrackingEventDetails } from '../src';
-import {
-  OpenFeature,
-  OpenFeatureProvider,
-  useTrack
-} from '../src';
+import { OpenFeature, OpenFeatureProvider, useTrack } from '../src';
 
 describe('tracking', () => {
-
   const eventName = 'test-tracking-event';
   const trackingValue = 1234;
   const trackingDetails: TrackingEventDetails = {
@@ -34,7 +29,6 @@ describe('tracking', () => {
 
   describe('no domain', () => {
     it('should call default provider', async () => {
-
       const provider = mockProvider();
       await OpenFeature.setProviderAndWait(provider);
 
@@ -46,8 +40,8 @@ describe('tracking', () => {
       }
 
       render(
-        <OpenFeatureProvider suspend={false} >
-            <Component></Component>
+        <OpenFeatureProvider suspend={false}>
+          <Component></Component>
         </OpenFeatureProvider>,
       );
 
@@ -61,7 +55,6 @@ describe('tracking', () => {
 
   describe('domain set', () => {
     it('should call provider for domain', async () => {
-
       const domainProvider = mockProvider();
       await OpenFeature.setProviderAndWait(domain, domainProvider);
 
@@ -73,8 +66,8 @@ describe('tracking', () => {
       }
 
       render(
-        <OpenFeatureProvider domain={domain} suspend={false} >
-            <Component></Component>
+        <OpenFeatureProvider domain={domain} suspend={false}>
+          <Component></Component>
         </OpenFeatureProvider>,
       );
 

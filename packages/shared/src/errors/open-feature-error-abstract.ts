@@ -5,7 +5,7 @@ import type { ErrorCode } from '../evaluation';
  * earlier target can be used.
  */
 export type ErrorOptions = {
-  cause?: unknown
+  cause?: unknown;
 };
 
 export abstract class OpenFeatureError extends Error {
