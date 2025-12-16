@@ -61,7 +61,7 @@ type FeatureFlagMatchConfig<T extends FlagValue> = {
     /**
      * Optional value to match against the feature flag value.
      */
-    match?: T;
+    match?: T | undefined;
   }
   : {
     /**
@@ -103,7 +103,7 @@ export function FeatureFlag<T extends FlagValue = FlagValue>({
   // Use custom predicate if provided, otherwise use default matching logic
   let shouldRender = false;
   if (predicate) {
-    shouldRender = predicate(match, details.details as EvaluationDetails<T>);
+    shouldRender = predicate(match as T, details.details as EvaluationDetails<T>);
   } else if (match !== undefined) {
     // Default behavior: check if match value equals flag value
     shouldRender = equals(match, details.details as EvaluationDetails<T>);

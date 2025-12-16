@@ -72,7 +72,8 @@ describe('Feature Component', () => {
     it('should not show a non-boolean feature flag without match', () => {
       render(
         <OpenFeatureProvider domain={EVALUATION}>
-          <FeatureFlag flagKey={STRING_FLAG_KEY} defaultValue={'hi'}>
+          {/* @ts-expect-error-next-line /* Intentional to test missing match prop */}
+           <FeatureFlag flagKey={STRING_FLAG_KEY} defaultValue={'hi'}>
             <ChildComponent />
           </FeatureFlag>
         </OpenFeatureProvider>,
