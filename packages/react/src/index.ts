@@ -1,3 +1,4 @@
+export * from './declarative';
 export * from './evaluation';
 export * from './query';
 export * from './provider';
