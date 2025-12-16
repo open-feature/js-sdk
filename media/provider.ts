@@ -1,12 +1,5 @@
-import type {
-  CommonProvider,
-  EvaluationContext,
-  JsonValue,
-  Logger,
-  ResolutionDetails} from '@openfeature/core';
-import {
-  ServerProviderStatus,
-} from '@openfeature/core';
+import type { CommonProvider, EvaluationContext, JsonValue, Logger, ResolutionDetails } from '@openfeature/core';
+import { ServerProviderStatus } from '@openfeature/core';
 import type { Hook } from '../hooks';
 
 export { ServerProviderStatus as ProviderStatus };
