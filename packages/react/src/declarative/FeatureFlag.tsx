@@ -25,15 +25,6 @@ interface FeatureFlagProps<T extends FlagValue = FlagValue> {
   flagKey: string;
 
   /**
-   * Optional value to match against the feature flag value.
-   * If provided, the component will only render children when the flag value matches this value.
-   * By default, strict equality (===) is used for comparison.
-   * If a boolean, it will check if the flag is enabled (true) or disabled (false).
-   * If a string, it will check if the flag variant equals this string.
-   */
-  match?: T;
-
-  /**
    * Optional predicate function for custom matching logic.
    * If provided, this function will be used instead of the default equality check.
    * @param expected The expected value (from match prop)
@@ -41,11 +32,6 @@ interface FeatureFlagProps<T extends FlagValue = FlagValue> {
    * @returns true if the condition is met, false otherwise
    */
   predicate?: (expected: T | undefined, actual: EvaluationDetails<T>) => boolean;
-
-  /**
-   * Default value to use when the feature flag is not found.
-   */
-  defaultValue: T;
 
   /**
    * Content to render when the feature flag condition is met.
@@ -61,6 +47,36 @@ interface FeatureFlagProps<T extends FlagValue = FlagValue> {
 }
 
 /**
+ * Configuration for matching flag values.
+ * For boolean flags, `match` is optional (defaults to checking truthiness).
+ * For non-boolean flags (string, number, object), `match` is required to determine when to render.
+ */
+type FeatureFlagMatchConfig<T extends FlagValue> = T extends boolean
+  ? {
+    /**
+     * Default value to use when the feature flag is not found.
+     */
+    defaultValue: T;
+    /**
+     * Optional value to match against the feature flag value.
+     */
+    match?: T;
+  }
+  : {
+    /**
+     * Default value to use when the feature flag is not found.
+     */
+    defaultValue: T;
+    /**
+     * Value to match against the feature flag value.
+     * Required for non-boolean flags to determine when children should render.
+     * By default, strict equality is used for comparison.
+     */
+    match: T;
+  };
+
+type FeatureFlagComponentProps<T extends FlagValue> = FeatureFlagProps<T> & FeatureFlagMatchConfig<T>;
+
 /**
  * @experimental This API is experimental, and is subject to change.
  *
@@ -75,7 +91,7 @@ export function FeatureFlag<T extends FlagValue = FlagValue>({
   defaultValue,
   children,
   fallback = null,
-}: FeatureFlagProps<T>): React.ReactElement | null {
+}: FeatureFlagComponentProps<T>): React.ReactElement | null {
   const details = useFlag(flagKey, defaultValue, {
     updateOnContextChanged: true,
   });
