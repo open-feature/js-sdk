@@ -51,12 +51,13 @@ interface FeatureFlagProps<T extends FlagValue = FlagValue> {
  * For boolean flags, `match` is optional (defaults to checking truthiness).
  * For non-boolean flags (string, number, object), `match` is required to determine when to render.
  */
-type FeatureFlagMatchConfig<T extends FlagValue> = T extends boolean
+type FeatureFlagMatchConfig<T extends FlagValue> = {
+  /**
+   * Default value to use when the feature flag is not found.
+   */
+  defaultValue: T;
+} & (T extends boolean
   ? {
-    /**
-     * Default value to use when the feature flag is not found.
-     */
-    defaultValue: T;
     /**
      * Optional value to match against the feature flag value.
      */
@@ -64,16 +65,12 @@ type FeatureFlagMatchConfig<T extends FlagValue> = T extends boolean
   }
   : {
     /**
-     * Default value to use when the feature flag is not found.
-     */
-    defaultValue: T;
-    /**
      * Value to match against the feature flag value.
      * Required for non-boolean flags to determine when children should render.
      * By default, strict equality is used for comparison.
      */
     match: T;
-  };
+  });
 
 type FeatureFlagComponentProps<T extends FlagValue> = FeatureFlagProps<T> & FeatureFlagMatchConfig<T>;
 
@@ -81,7 +78,7 @@ type FeatureFlagComponentProps<T extends FlagValue> = FeatureFlagProps<T> & Feat
  * @experimental This API is experimental, and is subject to change.
  *
  * FeatureFlag component that conditionally renders its children based on the evaluation of a feature flag.
- * @param {FeatureFlagProps} props The properties for the FeatureFlag component.
+ * @param {FeatureFlagComponentProps} props The properties for the FeatureFlag component.
  * @returns {React.ReactElement | null} The rendered component or null if the feature is not enabled.
  */
 export function FeatureFlag<T extends FlagValue = FlagValue>({
