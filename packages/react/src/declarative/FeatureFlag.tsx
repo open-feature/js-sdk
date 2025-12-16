@@ -61,6 +61,7 @@ interface FeatureFlagProps<T extends FlagValue = FlagValue> {
 }
 
 /**
+ * @experimental This API is experimental, and is subject to change.
  * FeatureFlag component that conditionally renders its children based on the evaluation of a feature flag.
  * @param {FeatureFlagProps} props The properties for the FeatureFlag component.
  * @returns {React.ReactElement | null} The rendered component or null if the feature is not enabled.
