@@ -311,6 +311,68 @@ describe('Hooks', () => {
         expect.anything(),
       );
     });
+    it('Should share the same context object reference across API, client, and invocation level hooks', (done) => {
+      OpenFeature.clearHooks();
+      client.clearHooks();
+
+      let apiHookContext: EvaluationContext;
+      let clientHookContext: EvaluationContext;
+      let invocation1Context: EvaluationContext;
+      let invocation2Context: EvaluationContext;
+
+      const apiLevelHook: Hook = {
+        before: (hookContext) => {
+          apiHookContext = hookContext.context;
+          return { fromApiHook: 'apiValue' };
+        },
+      };
+
+      const clientLevelHook: Hook = {
+        before: (hookContext) => {
+          clientHookContext = hookContext.context;
+          return { fromClientHook: 'clientValue' };
+        },
+      };
+
+      const invocationHook1: Hook = {
+        before: (hookContext) => {
+          invocation1Context = hookContext.context;
+          return { fromInvocation1: 'invocation1Value' };
+        },
+      };
+
+      const invocationHook2: Hook = {
+        before: (hookContext) => {
+          invocation2Context = hookContext.context;
+          return { fromInvocation2: 'invocation2Value' };
+        },
+        after: (hookContext) => {
+          try {
+            // all hooks should share the same context object reference
+            expect(hookContext.context).toBe(apiHookContext);
+            expect(hookContext.context).toBe(clientHookContext);
+            expect(hookContext.context).toBe(invocation1Context);
+            expect(hookContext.context).toBe(invocation2Context);
+
+            // verify all properties from different hook levels are present
+            expect(hookContext.context.fromApiHook).toBe('apiValue');
+            expect(hookContext.context.fromClientHook).toBe('clientValue');
+            expect(hookContext.context.fromInvocation1).toBe('invocation1Value');
+            expect(hookContext.context.fromInvocation2).toBe('invocation2Value');
+
+            done();
+          } catch (err) {
+            done(err);
+          }
+        },
+      };
+
+      OpenFeature.addHooks(apiLevelHook);
+      client.addHooks(clientLevelHook);
+      client.getBooleanValue(FLAG_KEY, false, undefined, {
+        hooks: [invocationHook1, invocationHook2],
+      });
+    });
   });
 
   describe('Requirement 4.3.5', () => {
