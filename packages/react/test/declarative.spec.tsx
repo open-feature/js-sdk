@@ -99,7 +99,7 @@ describe('Feature Component', () => {
     it('should handle showing multivariate flags with string match', () => {
       render(
         <OpenFeatureProvider domain={EVALUATION}>
-          <FeatureFlag flagKey={STRING_FLAG_KEY} match={'hi'} defaultValue={'default'}>
+          <FeatureFlag flagKey={STRING_FLAG_KEY} matchValue={'hi'} defaultValue={'default'}>
             <ChildComponent />
           </FeatureFlag>
         </OpenFeatureProvider>,
@@ -116,7 +116,12 @@ describe('Feature Component', () => {
 
       render(
         <OpenFeatureProvider domain={EVALUATION}>
-          <FeatureFlag flagKey={BOOL_FLAG_NEGATE_KEY} match={true} predicate={customPredicate} defaultValue={false}>
+          <FeatureFlag
+            flagKey={BOOL_FLAG_NEGATE_KEY}
+            matchValue={true}
+            predicate={customPredicate}
+            defaultValue={false}
+          >
             <ChildComponent />
           </FeatureFlag>
         </OpenFeatureProvider>,

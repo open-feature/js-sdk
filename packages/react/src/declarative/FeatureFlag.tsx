@@ -27,11 +27,11 @@ interface FeatureFlagProps<T extends FlagValue = FlagValue> {
   /**
    * Optional predicate function for custom matching logic.
    * If provided, this function will be used instead of the default equality check.
-   * @param expected The expected value (from match prop)
-   * @param actual The evaluation details
+   * @param matchValue The value to match (matchValue prop)
+   * @param details The evaluation details
    * @returns true if the condition is met, false otherwise
    */
-  predicate?: (expected: T | undefined, actual: EvaluationDetails<T>) => boolean;
+  predicate?: (matchValue: T | undefined, details: EvaluationDetails<T>) => boolean;
 
   /**
    * Content to render when the feature flag condition is met.
@@ -61,7 +61,7 @@ type FeatureFlagMatchConfig<T extends FlagValue> = {
       /**
        * Optional value to match against the feature flag value.
        */
-      match?: T | undefined;
+      matchValue?: T | undefined;
     }
   : {
       /**
@@ -69,7 +69,7 @@ type FeatureFlagMatchConfig<T extends FlagValue> = {
        * Required for non-boolean flags to determine when children should render.
        * By default, strict equality is used for comparison.
        */
-      match: T;
+      matchValue: T;
     });
 
 type FeatureFlagComponentProps<T extends FlagValue> = FeatureFlagProps<T> & FeatureFlagMatchConfig<T>;
@@ -82,7 +82,7 @@ type FeatureFlagComponentProps<T extends FlagValue> = FeatureFlagProps<T> & Feat
  */
 export function FeatureFlag<T extends FlagValue = FlagValue>({
   flagKey,
-  match,
+  matchValue,
   predicate,
   defaultValue,
   children,
@@ -102,10 +102,10 @@ export function FeatureFlag<T extends FlagValue = FlagValue>({
   // Use custom predicate if provided, otherwise use default matching logic
   let shouldRender = false;
   if (predicate) {
-    shouldRender = predicate(match as T, details.details as EvaluationDetails<T>);
-  } else if (match !== undefined) {
+    shouldRender = predicate(matchValue as T, details.details as EvaluationDetails<T>);
+  } else if (matchValue !== undefined) {
     // Default behavior: check if match value equals flag value
-    shouldRender = equals(match, details.details as EvaluationDetails<T>);
+    shouldRender = equals(matchValue, details.details as EvaluationDetails<T>);
   } else if (details.type === 'boolean') {
     // If no match value is provided, render if flag is truthy
     shouldRender = Boolean(details.value);

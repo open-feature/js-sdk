@@ -188,12 +188,12 @@ function App() {
       </FeatureFlag>
 
       {/* Match specific values */}
-      <FeatureFlag flagKey="theme" match="dark" defaultValue="light">
+      <FeatureFlag flagKey="theme" matchValue="dark" defaultValue="light">
         <DarkThemeStyles />
       </FeatureFlag>
 
       {/* Boolean flag with fallback */}
-      <FeatureFlag flagKey="premium-feature" match={true} defaultValue={false} fallback={<UpgradePrompt />}>
+      <FeatureFlag flagKey="premium-feature" matchValue={true} defaultValue={false} fallback={<UpgradePrompt />}>
         <PremiumContent />
       </FeatureFlag>
 
@@ -201,7 +201,7 @@ function App() {
       <FeatureFlag
         flagKey="user-segment"
         defaultValue=""
-        match="beta"
+        matchValue="beta"
         // check if the actual flag value includes the match ('beta')
         predicate={(expected, actual) => !!expected && actual.value.includes(expected)}
       >
@@ -209,7 +209,7 @@ function App() {
       </FeatureFlag>
 
       {/* Function as children for accessing flag details */}
-      <FeatureFlag flagKey="experiment" defaultValue="control" match="beta">
+      <FeatureFlag flagKey="experiment" defaultValue="control" matchValue="beta">
         {({ value, reason }) => (
           <span>
             value is {value}, reason is {reason?.toString()}
@@ -225,7 +225,7 @@ The `FeatureFlag` component supports the following props:
 
 - **`flagKey`** (required): The feature flag key to evaluate
 - **`defaultValue`** (required): Default value when the flag is not available
-- **`match`** (optional): Value to match against the flag value. By default, strict equality (===) is used for comparison
+- **`matchValue`** (required, except for boolean flags): Value to match against the flag value. By default, an optimized deep-comparison function is used.
 - **`predicate`** (optional): Custom function for matching logic that receives the expected value and evaluation details
 - **`children`**: Content to render when condition is met (can be JSX or a function receiving flag details)
 - **`fallback`** (optional): Content to render when condition is not met
