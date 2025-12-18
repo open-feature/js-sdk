@@ -17,6 +17,6 @@ export function useOpenFeatureProvider(): Provider {
     throw new MissingContextError('No OpenFeature context available');
   }
 
-  // TODO: Needs to handle `isolated` option like OpenFeatureProvider
+  // TODO: Needs to handle `openfeature` option like OpenFeatureProvider
   return OpenFeature.getProvider(openFeatureContext.client.metadata.domain);
 }

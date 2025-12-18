@@ -51,16 +51,34 @@ describe('OpenFeature', () => {
     expect(_globalThis[GLOBAL_OPENFEATURE_API_KEY]).toBe(firstInstance);
   });
 
-  describe('OpenFeature.isolated', () => {
+  it('can also be accessed via OpenFeatureAPI.getInstance', async () => {
+    const { OpenFeature, OpenFeatureAPI } = await import('../src');
+
+    expect(OpenFeature).toBe(OpenFeatureAPI.getInstance());
+  });
+
+  describe('OpenFeature.getIsolated', () => {
     it('should not be the same instance as the global singleton', async () => {
       const { OpenFeature } = await import('../src');
 
-      expect(OpenFeature.isolated).not.toBe(OpenFeature);
+      expect(OpenFeature.getIsolated()).not.toBe(OpenFeature);
+    });
+
+    it('should not be the same instance as another isolated instance', async () => {
+      const { OpenFeature } = await import('../src');
+
+      expect(OpenFeature.getIsolated()).not.toBe(OpenFeature.getIsolated());
+    });
+
+    it('can also be created via OpenFeatureAPI.getInstance', async () => {
+      const { OpenFeature, OpenFeatureAPI } = await import('../src');
+
+      expect(OpenFeatureAPI.getInstance(false)).not.toBe(OpenFeature);
     });
 
     it('should not share state between global and isolated instances', async () => {
       const { OpenFeature, NOOP_PROVIDER } = await import('../src');
-      const isolatedInstance = OpenFeature.isolated;
+      const isolatedInstance = OpenFeature.getIsolated();
 
       const globalProvider = new MockProvider({ name: 'global-provider' });
       OpenFeature.setProvider(globalProvider);
@@ -75,20 +93,22 @@ describe('OpenFeature', () => {
       expect(isolatedInstance.getProvider()).toBe(isolatedProvider);
     });
 
-    it('should persist when imported multiple times', async () => {
-      const firstIsolatedInstance = (await import('../src')).OpenFeature.isolated;
-      const secondIsolatedInstance = (await import('../src')).OpenFeature.isolated;
+    it('should not share state between two isolated instances', async () => {
+      const { OpenFeature, NOOP_PROVIDER } = await import('../src');
+      const isolatedInstanceOne = OpenFeature.getIsolated();
+      const isolatedInstanceTwo = OpenFeature.getIsolated();
 
-      expect(firstIsolatedInstance).toBe(secondIsolatedInstance);
-    });
+      const isolatedProviderOne = new MockProvider({ name: 'isolated-provider-one' });
+      isolatedInstanceOne.setProvider(isolatedProviderOne);
 
-    it('should not persist via globalThis (window in browsers)', async () => {
-      const firstIsolatedInstance = (await import('../src')).OpenFeature.isolated;
+      expect(isolatedInstanceOne.getProvider()).toBe(isolatedProviderOne);
+      expect(isolatedInstanceTwo.getProvider()).toBe(NOOP_PROVIDER);
 
-      jest.resetModules();
-      const secondIsolatedInstance = (await import('../src')).OpenFeature.isolated;
+      const isolatedProviderTwo = new MockProvider({ name: 'isolated-provider-two' });
+      isolatedInstanceTwo.setProvider(isolatedProviderTwo);
 
-      expect(firstIsolatedInstance).not.toBe(secondIsolatedInstance);
+      expect(isolatedInstanceOne.getProvider()).toBe(isolatedProviderOne);
+      expect(isolatedInstanceTwo.getProvider()).toBe(isolatedProviderTwo);
     });
   });
 });

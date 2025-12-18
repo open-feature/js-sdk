@@ -60,7 +60,7 @@ export function useContextMutator(options: ContextMutationOptions = { defaultCon
     async (
       updatedContext: EvaluationContext | ((currentContext: EvaluationContext) => EvaluationContext),
     ): Promise<void> => {
-      // TODO: Needs to handle `isolated` option like OpenFeatureProvider
+      // TODO: Needs to handle `openfeature` option like OpenFeatureProvider
       const previousContext = OpenFeature.getContext(options?.defaultContext ? undefined : domain);
       const resolvedContext = typeof updatedContext === 'function' ? updatedContext(previousContext) : updatedContext;
 
