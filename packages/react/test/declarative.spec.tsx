@@ -55,20 +55,18 @@ describe('Feature Component', () => {
       };
       status = ProviderStatus.NOT_READY;
 
-      constructor() {}
       async initialize(): Promise<void> {}
     }
 
     return new MockAsyncProvider() as Provider;
   };
 
-  OpenFeature.setProvider(EVALUATION, makeProvider());
-
   const childText = 'Feature is active';
   const ChildComponent = () => <div>{childText}</div>;
 
   beforeEach(() => {
     jest.clearAllMocks();
+    OpenFeature.setProvider(EVALUATION, makeProvider());
   });
 
   describe('<FeatureFlag />', () => {
@@ -141,9 +139,6 @@ describe('Feature Component', () => {
       );
 
       expect(screen.queryByText('Suspense')).toBeInTheDocument();
-
-      // restore the original provider for other tests
-      OpenFeature.setProvider(EVALUATION, makeProvider());
     });
 
     it('should render child if provider is ready', () => {
