@@ -4,7 +4,7 @@ import { render, screen } from '@testing-library/react';
 import { FeatureFlag } from '../src/declarative/FeatureFlag'; // Assuming Feature.tsx is in the same directory or adjust path
 import type { Provider} from '../src';
 import { InMemoryProvider, OpenFeature, OpenFeatureProvider, ProviderStatus } from '../src';
-import type { EvaluationDetails, JsonValue, ResolutionDetails } from '@openfeature/core';
+import type { EvaluationDetails } from '@openfeature/core';
 
 describe('Feature Component', () => {
   const EVALUATION = 'evaluation';
@@ -49,36 +49,17 @@ describe('Feature Component', () => {
   };
 
   const makeAsyncProvider = () => {
-    class MockAsyncProvider implements Provider {
+    class MockAsyncProvider {
       metadata = {
         name: 'mock-async',
       };
-
       status = ProviderStatus.NOT_READY;
 
       constructor() {}
-
       async initialize(): Promise<void> {}
-
-      async setReady(): Promise<void> {
-        this.status = ProviderStatus.READY;
-      }
-
-      resolveBooleanEvaluation(): ResolutionDetails<boolean> {
-        throw new Error('Method not implemented.');
-      }
-      resolveStringEvaluation(): ResolutionDetails<string> {
-        throw new Error('Method not implemented.');
-      }
-      resolveNumberEvaluation(): ResolutionDetails<number> {
-        throw new Error('Method not implemented.');
-      }
-      resolveObjectEvaluation<T extends JsonValue>(): ResolutionDetails<T> {
-        throw new Error('Method not implemented.');
-      }
     }
 
-    return new MockAsyncProvider();
+    return new MockAsyncProvider() as Provider;
   };
 
   OpenFeature.setProvider(EVALUATION, makeProvider());
