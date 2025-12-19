@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 import '@testing-library/jest-dom'; // see: https://testing-library.com/docs/react-testing-library/setup
 import { render, screen } from '@testing-library/react';
 import { FeatureFlag } from '../src/declarative/FeatureFlag'; // Assuming Feature.tsx is in the same directory or adjust path
-import type { Provider} from '../src';
+import type { Provider } from '../src';
 import { InMemoryProvider, OpenFeature, OpenFeatureProvider, ProviderStatus } from '../src';
 import type { EvaluationDetails } from '@openfeature/core';
 
@@ -127,13 +127,9 @@ describe('Feature Component', () => {
       render(
         <OpenFeatureProvider domain={EVALUATION}>
           <Suspense fallback={<div>Suspense</div>}>
-              <FeatureFlag
-                flagKey={BOOL_FLAG_KEY}
-                defaultValue={false}
-                evaluationOptions={{ suspend: true }}
-              >
-                <ChildComponent />
-              </FeatureFlag>
+            <FeatureFlag flagKey={BOOL_FLAG_KEY} defaultValue={false} evaluationOptions={{ suspend: true }}>
+              <ChildComponent />
+            </FeatureFlag>
           </Suspense>
         </OpenFeatureProvider>,
       );
@@ -145,13 +141,9 @@ describe('Feature Component', () => {
       render(
         <OpenFeatureProvider domain={EVALUATION}>
           <Suspense fallback={<div>Suspense</div>}>
-              <FeatureFlag
-                flagKey={BOOL_FLAG_KEY}
-                defaultValue={false}
-                evaluationOptions={{ suspend: true }}
-              >
-                <ChildComponent />
-              </FeatureFlag>
+            <FeatureFlag flagKey={BOOL_FLAG_KEY} defaultValue={false} evaluationOptions={{ suspend: true }}>
+              <ChildComponent />
+            </FeatureFlag>
           </Suspense>
         </OpenFeatureProvider>,
       );

@@ -97,7 +97,7 @@ export function FeatureFlag<T extends FlagValue = FlagValue>({
 }: FeatureFlagComponentProps<T>): React.ReactElement | null {
   const details = useFlag(flagKey, defaultValue, {
     updateOnContextChanged: true,
-    ...evaluationOptions
+    ...evaluationOptions,
   });
 
   // If the flag evaluation failed, we render the fallback
