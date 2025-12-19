@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import '@testing-library/jest-dom'; // see: https://testing-library.com/docs/react-testing-library/setup
 import { render, screen } from '@testing-library/react';
 import { FeatureFlag } from '../src/declarative/FeatureFlag'; // Assuming Feature.tsx is in the same directory or adjust path
-import { InMemoryProvider, OpenFeature, OpenFeatureProvider } from '../src';
-import type { EvaluationDetails } from '@openfeature/core';
+import type { Provider} from '../src';
+import { InMemoryProvider, OpenFeature, OpenFeatureProvider, ProviderStatus } from '../src';
+import type { EvaluationDetails, JsonValue, ResolutionDetails } from '@openfeature/core';
 
 describe('Feature Component', () => {
   const EVALUATION = 'evaluation';
@@ -45,6 +46,39 @@ describe('Feature Component', () => {
 
   const makeProvider = () => {
     return new InMemoryProvider(FLAG_CONFIG);
+  };
+
+  const makeAsyncProvider = () => {
+    class MockAsyncProvider implements Provider {
+      metadata = {
+        name: 'mock-async',
+      };
+
+      status = ProviderStatus.NOT_READY;
+
+      constructor() {}
+
+      async initialize(): Promise<void> {}
+
+      async setReady(): Promise<void> {
+        this.status = ProviderStatus.READY;
+      }
+
+      resolveBooleanEvaluation(): ResolutionDetails<boolean> {
+        throw new Error('Method not implemented.');
+      }
+      resolveStringEvaluation(): ResolutionDetails<string> {
+        throw new Error('Method not implemented.');
+      }
+      resolveNumberEvaluation(): ResolutionDetails<number> {
+        throw new Error('Method not implemented.');
+      }
+      resolveObjectEvaluation<T extends JsonValue>(): ResolutionDetails<T> {
+        throw new Error('Method not implemented.');
+      }
+    }
+
+    return new MockAsyncProvider();
   };
 
   OpenFeature.setProvider(EVALUATION, makeProvider());
@@ -102,6 +136,47 @@ describe('Feature Component', () => {
           <FeatureFlag flagKey={STRING_FLAG_KEY} matchValue={'hi'} defaultValue={'default'}>
             <ChildComponent />
           </FeatureFlag>
+        </OpenFeatureProvider>,
+      );
+
+      expect(screen.queryByText(childText)).toBeInTheDocument();
+    });
+
+    it('should render the fallback if suspended and flag is unresolved', () => {
+      OpenFeature.setProvider(EVALUATION, makeAsyncProvider());
+
+      render(
+        <OpenFeatureProvider domain={EVALUATION}>
+          <Suspense fallback={<div>Suspense</div>}>
+              <FeatureFlag
+                flagKey={BOOL_FLAG_KEY}
+                defaultValue={false}
+                evaluationOptions={{ suspend: true }}
+              >
+                <ChildComponent />
+              </FeatureFlag>
+          </Suspense>
+        </OpenFeatureProvider>,
+      );
+
+      expect(screen.queryByText('Suspense')).toBeInTheDocument();
+
+      // restore the original provider for other tests
+      OpenFeature.setProvider(EVALUATION, makeProvider());
+    });
+
+    it('should render child if provider is ready', () => {
+      render(
+        <OpenFeatureProvider domain={EVALUATION}>
+          <Suspense fallback={<div>Suspense</div>}>
+              <FeatureFlag
+                flagKey={BOOL_FLAG_KEY}
+                defaultValue={false}
+                evaluationOptions={{ suspend: true }}
+              >
+                <ChildComponent />
+              </FeatureFlag>
+          </Suspense>
         </OpenFeatureProvider>,
       );
 

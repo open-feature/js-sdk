@@ -3,6 +3,7 @@ import { useFlag } from '../evaluation';
 import type { FlagQuery } from '../query';
 import type { FlagValue, EvaluationDetails } from '@openfeature/core';
 import { isEqual } from '../internal';
+import type { ReactFlagEvaluationOptions } from '../options';
 
 /**
  * Default predicate function that checks if the expected value equals the actual flag value.
@@ -44,6 +45,11 @@ interface FeatureFlagProps<T extends FlagValue = FlagValue> {
    * Can be a React node or a function that receives evaluation details and returns a React node.
    */
   fallback?: React.ReactNode | ((details: EvaluationDetails<T>) => React.ReactNode);
+
+  /**
+   * Flag evaluation options that will be passed to useFlag hook.
+   */
+  evaluationOptions?: ReactFlagEvaluationOptions;
 }
 
 /**
@@ -86,10 +92,12 @@ export function FeatureFlag<T extends FlagValue = FlagValue>({
   predicate,
   defaultValue,
   children,
+  evaluationOptions = {},
   fallback = null,
 }: FeatureFlagComponentProps<T>): React.ReactElement | null {
   const details = useFlag(flagKey, defaultValue, {
     updateOnContextChanged: true,
+    ...evaluationOptions
   });
 
   // If the flag evaluation failed, we render the fallback
