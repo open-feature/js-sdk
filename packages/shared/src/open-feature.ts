@@ -52,7 +52,7 @@ export class ProviderWrapper<P extends CommonProvider<AnyProviderStatus>, S exte
       }
     });
 
-    this._initialized = !(typeof _provider.initialize === 'function');
+    this._initialized = typeof _provider.initialize !== 'function';
   }
 
   get provider(): P {
