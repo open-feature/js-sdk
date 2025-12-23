@@ -1,4 +1,5 @@
 dist/
 node_modules/
+test-harness/
 package-lock.json
 CHANGELOG.md
