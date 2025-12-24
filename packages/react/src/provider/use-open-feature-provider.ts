@@ -17,5 +17,5 @@ export function useOpenFeatureProvider(): Provider {
     throw new MissingContextError('No OpenFeature context available');
   }
 
-  return OpenFeature.getProvider(openFeatureContext.domain);
+  return OpenFeature.getProvider(openFeatureContext.client.metadata.domain);
 }

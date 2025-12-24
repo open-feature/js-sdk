@@ -196,8 +196,8 @@ describe('OpenFeatureProvider', () => {
     };
 
     it('should update context when a domain is set', async () => {
-      const DOMAIN = 'mutate-context-tests';
-      OpenFeature.setProvider(DOMAIN, suspendingProvider());
+      const DOMAIN = 'mutate-context-domain';
+      OpenFeature.setProvider(DOMAIN, suspendingProvider(), {});
 
       const changed = jest.fn();
       OpenFeature.getClient(DOMAIN).addHandler(ProviderEvents.ContextChanged, changed);
@@ -230,11 +230,48 @@ describe('OpenFeatureProvider', () => {
       expect(screen.getByText('Will says aloha')).toBeInTheDocument();
     });
 
+    it('should update context when a client is set', async () => {
+      const DOMAIN = 'mutate-context-client';
+      OpenFeature.setProvider(DOMAIN, suspendingProvider(), {});
+
+      const client = OpenFeature.getClient(DOMAIN);
+
+      const changed = jest.fn();
+      client.addHandler(ProviderEvents.ContextChanged, changed);
+
+      render(
+        <OpenFeatureProvider client={client}>
+          <React.Suspense fallback={<div>{FALLBACK}</div>}>
+            <TestComponent name="Will" />
+          </React.Suspense>
+        </OpenFeatureProvider>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('Will says hi')).toBeInTheDocument();
+      });
+
+      act(() => {
+        fireEvent.click(screen.getByText('Update Context'));
+      });
+      expect(screen.getByText('Updating context...')).toBeInTheDocument();
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('Update Context')).toBeInTheDocument();
+        },
+        { timeout: DELAY * 2 },
+      );
+      expect(changed).toHaveBeenCalledTimes(1);
+
+      expect(screen.getByText('Will says aloha')).toBeInTheDocument();
+    });
+
     it('should update nested contexts', async () => {
-      const DOMAIN1 = 'Wills Domain';
-      const DOMAIN2 = 'Todds Domain';
-      OpenFeature.setProvider(DOMAIN1, suspendingProvider());
-      OpenFeature.setProvider(DOMAIN2, suspendingProvider());
+      const DOMAIN1 = 'mutate-contexts-nested-will';
+      const DOMAIN2 = 'mutate-contexts-nested-todd';
+      OpenFeature.setProvider(DOMAIN1, suspendingProvider(), {});
+      OpenFeature.setProvider(DOMAIN2, suspendingProvider(), {});
       render(
         <OpenFeatureProvider domain={DOMAIN1}>
           <React.Suspense fallback={<div>{FALLBACK}</div>}>
@@ -270,8 +307,8 @@ describe('OpenFeatureProvider', () => {
     });
 
     it('should update nested global contexts', async () => {
-      const DOMAIN1 = 'Wills Domain';
-      OpenFeature.setProvider(DOMAIN1, suspendingProvider());
+      const DOMAIN1 = 'mutate-contexts-global-nested';
+      OpenFeature.setProvider(DOMAIN1, suspendingProvider(), {});
       OpenFeature.setProvider(
         new InMemoryProvider({
           globalFlagsHere: {
@@ -290,6 +327,7 @@ describe('OpenFeatureProvider', () => {
             },
           },
         }),
+        {},
       );
       const GlobalComponent = ({ name }: { name: string }) => {
         const flagValue = useStringFlagValue<'b' | 'a'>('globalFlagsHere', 'a');
@@ -332,7 +370,7 @@ describe('OpenFeatureProvider', () => {
       );
 
       expect(screen.getByText('Todd likes to Frown')).toBeInTheDocument();
-      expect(screen.getByText('Will says aloha')).toBeInTheDocument();
+      expect(screen.getByText('Will says hi')).toBeInTheDocument();
     });
 
     it('should accept a method taking the previous context', () => {
