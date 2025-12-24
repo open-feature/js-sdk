@@ -400,7 +400,7 @@ If you'd like to control the values returned by the evaluation hooks, you can pa
   <FeatureFlag flagKey="new-feature" defaultValue={false}>
     <NewFeature />
   </FeatureFlag>
-  <FeatureFlag flagKey="theme" match="dark" defaultValue="light">
+  <FeatureFlag flagKey="theme" matchValue="dark" defaultValue="light">
     <DarkMode />
   </FeatureFlag>
 </OpenFeatureTestProvider>
