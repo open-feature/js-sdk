@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.2.0](https://github.com/open-feature/js-sdk/compare/react-sdk-v1.1.0...react-sdk-v1.2.0) (2025-12-24)
+
+
+### ✨ New Features
+
+* Add evaluation options to FeatureFlag component ([#1322](https://github.com/open-feature/js-sdk/issues/1322)) ([f3f3685](https://github.com/open-feature/js-sdk/commit/f3f368586e3cb282e84f98a066d975a2c22d3b4c))
+* **react:** add FeatureFlag component ([#1164](https://github.com/open-feature/js-sdk/issues/1164)) ([e7a5fb5](https://github.com/open-feature/js-sdk/commit/e7a5fb57402760b6dd4c530d70db206111d365a7))
+
+
+### 🐛 Bug Fixes
+
+* remove explicit return type for React `OpenFeatureProvider` ([#1313](https://github.com/open-feature/js-sdk/issues/1313)) ([fb6cdc9](https://github.com/open-feature/js-sdk/commit/fb6cdc96b284ebcdf2e425425990a9c6255b84ee))
+
+
+### 📚 Documentation
+
+* **react:** fix type in declarative testing example ([#1323](https://github.com/open-feature/js-sdk/issues/1323)) ([aebc2aa](https://github.com/open-feature/js-sdk/commit/aebc2aac9264d7e1db2af819c40a57a177fece68))
+
 ## [1.1.0](https://github.com/open-feature/js-sdk/compare/react-sdk-v1.0.2...react-sdk-v1.1.0) (2025-12-09)
 
 
