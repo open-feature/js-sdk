@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import '@testing-library/jest-dom'; // see: https://testing-library.com/docs/react-testing-library/setup
 import { render, screen } from '@testing-library/react';
 import { FeatureFlag } from '../src/declarative/FeatureFlag'; // Assuming Feature.tsx is in the same directory or adjust path
-import { InMemoryProvider, OpenFeature, OpenFeatureProvider } from '../src';
+import type { Provider } from '../src';
+import { InMemoryProvider, OpenFeature, OpenFeatureProvider, ProviderStatus } from '../src';
 import type { EvaluationDetails } from '@openfeature/core';
 
 describe('Feature Component', () => {
@@ -47,13 +48,25 @@ describe('Feature Component', () => {
     return new InMemoryProvider(FLAG_CONFIG);
   };
 
-  OpenFeature.setProvider(EVALUATION, makeProvider());
+  const makeAsyncProvider = () => {
+    class MockAsyncProvider {
+      metadata = {
+        name: 'mock-async',
+      };
+      status = ProviderStatus.NOT_READY;
+
+      async initialize(): Promise<void> {}
+    }
+
+    return new MockAsyncProvider() as Provider;
+  };
 
   const childText = 'Feature is active';
   const ChildComponent = () => <div>{childText}</div>;
 
   beforeEach(() => {
     jest.clearAllMocks();
+    OpenFeature.setProvider(EVALUATION, makeProvider());
   });
 
   describe('<FeatureFlag />', () => {
@@ -102,6 +115,36 @@ describe('Feature Component', () => {
           <FeatureFlag flagKey={STRING_FLAG_KEY} matchValue={'hi'} defaultValue={'default'}>
             <ChildComponent />
           </FeatureFlag>
+        </OpenFeatureProvider>,
+      );
+
+      expect(screen.queryByText(childText)).toBeInTheDocument();
+    });
+
+    it('should render the fallback if suspended and flag is unresolved', () => {
+      OpenFeature.setProvider(EVALUATION, makeAsyncProvider());
+
+      render(
+        <OpenFeatureProvider domain={EVALUATION}>
+          <Suspense fallback={<div>Suspense</div>}>
+            <FeatureFlag flagKey={BOOL_FLAG_KEY} defaultValue={false} evaluationOptions={{ suspend: true }}>
+              <ChildComponent />
+            </FeatureFlag>
+          </Suspense>
+        </OpenFeatureProvider>,
+      );
+
+      expect(screen.queryByText('Suspense')).toBeInTheDocument();
+    });
+
+    it('should render child if provider is ready', () => {
+      render(
+        <OpenFeatureProvider domain={EVALUATION}>
+          <Suspense fallback={<div>Suspense</div>}>
+            <FeatureFlag flagKey={BOOL_FLAG_KEY} defaultValue={false} evaluationOptions={{ suspend: true }}>
+              <ChildComponent />
+            </FeatureFlag>
+          </Suspense>
         </OpenFeatureProvider>,
       );
 
