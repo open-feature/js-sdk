@@ -78,14 +78,7 @@ export enum ClientProviderStatus {
  * A type representing any possible ProviderStatus (server or client side).
  * In most cases, you probably want to import `ProviderStatus` from the respective SDK.
  */
-export enum AllProviderStatus {
-  NOT_READY = 'NOT_READY',
-  READY = 'READY',
-  ERROR = 'ERROR',
-  STALE = 'STALE',
-  FATAL = 'FATAL',
-  RECONCILING = 'RECONCILING',
-}
+export { ClientProviderStatus as AllProviderStatus };
 
 /**
  * Static data about the provider.
