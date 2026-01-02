@@ -93,7 +93,36 @@ class MyCustomStrategy extends FirstMatchStrategy {
 }
 ```
 
-The base class provides the following methods that can be overridden:
+The `BaseEvaluationStrategy` abstract class has the following structure:
+
+```typescript
+export abstract class BaseEvaluationStrategy {
+  public runMode: 'parallel' | 'sequential' = 'sequential';
+
+  shouldEvaluateThisProvider(strategyContext: StrategyPerProviderContext, evalContext: EvaluationContext): boolean;
+
+  shouldEvaluateNextProvider<T extends FlagValue>(
+    strategyContext: StrategyPerProviderContext,
+    context: EvaluationContext,
+    result: ProviderResolutionResult<T>,
+  ): boolean;
+
+  shouldTrackWithThisProvider(
+    strategyContext: StrategyPerProviderContext,
+    context: EvaluationContext,
+    trackingEventName: string,
+    trackingEventDetails: TrackingEventDetails,
+  ): boolean;
+
+  abstract determineFinalResult<T extends FlagValue>(
+    strategyContext: StrategyEvaluationContext,
+    context: EvaluationContext,
+    resolutions: ProviderResolutionResult<T>[],
+  ): FinalResult<T>;
+}
+```
+
+The methods serve the following purposes:
 
 - **`runMode`**: Property that determines whether providers are evaluated `'sequential'` (default) or `'parallel'`.
 
@@ -103,7 +132,7 @@ The base class provides the following methods that can be overridden:
 
 - **`shouldTrackWithThisProvider`**: Called before sending a tracking event to each provider. Return `false` to skip tracking. By default, skips providers in `NOT_READY` or `FATAL` status.
 
-- **`determineFinalResult`**: Called after all providers have been evaluated. Takes the list of provider results and returns the final resolution.
+- **`determineFinalResult`**: Called after all providers have been evaluated. Takes the list of provider results and returns the final resolution. This is the only abstract method that must be implemented by subclasses.
 
 ## Tracking Support
 
