@@ -17,6 +17,8 @@ export class AggregateError extends GeneralError {
     public originalErrors: { source: string; error: unknown }[],
   ) {
     super(message);
+    Object.setPrototypeOf(this, AggregateError.prototype);
+    this.name = 'AggregateError';
   }
 }
 
