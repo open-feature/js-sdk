@@ -28,10 +28,12 @@ export const constructAggregateError = (providerErrors: { error: unknown; provid
     .flat();
 
   // log first error in the message for convenience, but include all errors in the error object for completeness
-  return new AggregateError(
-    `Provider errors occurred: ${errorsWithSource[0].source}: ${errorsWithSource[0].error}`,
-    errorsWithSource,
-  );
+  const firstError = errorsWithSource[0];
+  const message = firstError
+    ? `Provider errors occurred: ${firstError.source}: ${firstError.error}`
+    : 'Provider errors occurred';
+
+  return new AggregateError(message, errorsWithSource);
 };
 
 export const throwAggregateErrorFromPromiseResults = <TProvider>(

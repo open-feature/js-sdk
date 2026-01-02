@@ -17,23 +17,20 @@ export type StrategyProviderContext<TProviderStatus, TProvider> = {
 export type StrategyPerProviderContext<TProviderStatus, TProvider> = StrategyEvaluationContext &
   StrategyProviderContext<TProviderStatus, TProvider>;
 
-type ProviderResolutionResultBase<TProviderStatus, TProvider> = {
+type ProviderResolutionResultBase<TProvider> = {
   provider: TProvider;
   providerName: string;
 };
 
 export type ProviderResolutionSuccessResult<
   T extends FlagValue,
-  TProviderStatus,
+  _TProviderStatus,
   TProvider,
-> = ProviderResolutionResultBase<TProviderStatus, TProvider> & {
+> = ProviderResolutionResultBase<TProvider> & {
   details: ResolutionDetails<T>;
 };
 
-export type ProviderResolutionErrorResult<TProviderStatus, TProvider> = ProviderResolutionResultBase<
-  TProviderStatus,
-  TProvider
-> & {
+export type ProviderResolutionErrorResult<_TProviderStatus, TProvider> = ProviderResolutionResultBase<TProvider> & {
   thrownError: unknown;
 };
 
@@ -41,7 +38,7 @@ export type ProviderResolutionResult<T extends FlagValue, TProviderStatus, TProv
   | ProviderResolutionSuccessResult<T, TProviderStatus, TProvider>
   | ProviderResolutionErrorResult<TProviderStatus, TProvider>;
 
-export type FinalResult<T extends FlagValue, TProviderStatus, TProvider> = {
+export type FinalResult<T extends FlagValue, _TProviderStatus, TProvider> = {
   details?: ResolutionDetails<T>;
   provider?: TProvider;
   providerName?: string;
