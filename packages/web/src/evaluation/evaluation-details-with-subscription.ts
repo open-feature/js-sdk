@@ -1,14 +1,32 @@
-import type { EvaluationDetails, ErrorCode, FlagValue, FlagValueType, JsonValue } from '@openfeature/core';
+import type {
+  EvaluationDetails,
+  ErrorCode,
+  FlagValue,
+  FlagValueType,
+  JsonValue,
+  EventHandler,
+} from '@openfeature/core';
 import type { Client } from '../client';
 import { ProviderEvents } from '../events';
-import type { FlagEvaluationOptions } from './evaluation';
+import type { FlagChangeSubscriptionOptions } from './evaluation';
+
+/**
+ * Determines if a flag should be re-evaluated based on a list of changed flags.
+ * If flagsChanged is undefined or empty, we assume all flags may have changed.
+ * @param {string} flagKey - The flag key to check
+ * @param {string[]} [flagsChanged] - List of changed flag keys
+ * @returns {boolean} Whether the flag should be re-evaluated
+ */
+function shouldEvaluateFlag(flagKey: string, flagsChanged?: string[]): boolean {
+  return !flagsChanged || flagsChanged.includes(flagKey);
+}
 
 export class EvaluationDetailsWithSubscription<T extends FlagValue> implements EvaluationDetails<T> {
   private _details: EvaluationDetails<T>;
   private readonly _flagKey: string;
   private readonly _defaultValue: T;
   private readonly _flagType: FlagValueType;
-  private readonly _options?: FlagEvaluationOptions;
+  private readonly _options?: FlagChangeSubscriptionOptions;
 
   constructor(
     private readonly client: Client,
@@ -16,7 +34,7 @@ export class EvaluationDetailsWithSubscription<T extends FlagValue> implements E
     defaultValue: T,
     flagType: FlagValueType,
     initialDetails: EvaluationDetails<T>,
-    options?: FlagEvaluationOptions,
+    options?: FlagChangeSubscriptionOptions,
   ) {
     this._details = initialDetails;
     this._flagKey = flagKey;
@@ -53,8 +71,23 @@ export class EvaluationDetailsWithSubscription<T extends FlagValue> implements E
     return this._details.errorMessage;
   }
 
-  onContextChanged(callback: (newDetails: EvaluationDetails<T>, oldDetails: EvaluationDetails<T>) => void): () => void {
-    const handler = () => {
+  /**
+   * Subscribes to value changes for this flag.
+   * The callback is invoked whenever the flag value changes due to context changes
+   * or provider configuration changes (based on the provided options).
+   * @param {Function} callback - Function called when flag value changes, receives new and old evaluation details
+   * @param {FlagChangeSubscriptionOptions} [options] - Optional settings to control which events trigger the callback.
+   *                Defaults to listening to both context changes and configuration changes.
+   * @returns {Function} Unsubscribe function to remove the listeners
+   */
+  onChanged(
+    callback: (newDetails: EvaluationDetails<T>, oldDetails: EvaluationDetails<T>) => void,
+    options?: FlagChangeSubscriptionOptions,
+  ): () => void {
+    const updateOnContextChanged = options?.updateOnContextChanged ?? true;
+    const updateOnConfigurationChanged = options?.updateOnConfigurationChanged ?? true;
+
+    const evaluateAndCallback = () => {
       const oldDetails = { ...this._details };
       let newDetails: EvaluationDetails<T>;
 
@@ -95,10 +128,32 @@ export class EvaluationDetailsWithSubscription<T extends FlagValue> implements E
       callback(newDetails, oldDetails);
     };
 
-    this.client.addHandler(ProviderEvents.ContextChanged, handler);
+    const contextChangedHandler = () => {
+      evaluateAndCallback();
+    };
+
+    const configurationChangedHandler: EventHandler = (eventDetails) => {
+      const flagsChanged = (eventDetails as { flagsChanged?: string[] } | undefined)?.flagsChanged;
+      if (shouldEvaluateFlag(this._flagKey, flagsChanged)) {
+        evaluateAndCallback();
+      }
+    };
+
+    if (updateOnContextChanged) {
+      this.client.addHandler(ProviderEvents.ContextChanged, contextChangedHandler);
+    }
+
+    if (updateOnConfigurationChanged) {
+      this.client.addHandler(ProviderEvents.ConfigurationChanged, configurationChangedHandler);
+    }
 
     return () => {
-      this.client.removeHandler(ProviderEvents.ContextChanged, handler);
+      if (updateOnContextChanged) {
+        this.client.removeHandler(ProviderEvents.ContextChanged, contextChangedHandler);
+      }
+      if (updateOnConfigurationChanged) {
+        this.client.removeHandler(ProviderEvents.ConfigurationChanged, configurationChangedHandler);
+      }
     };
   }
 }

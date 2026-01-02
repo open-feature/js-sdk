@@ -5,65 +5,95 @@ export interface FlagEvaluationOptions {
   hookHints?: HookHints;
 }
 
-export interface ContextChangeSubscriptions {
+/**
+ * Options for subscribing to flag value changes.
+ */
+export interface FlagChangeSubscriptionOptions extends FlagEvaluationOptions {
   /**
-   * Subscribes to context changes for a boolean flag.
+   * Whether to fire the callback when the evaluation context changes.
+   * @default true
+   */
+  updateOnContextChanged?: boolean;
+
+  /**
+   * Whether to fire the callback when the provider configuration changes
+   * (e.g., when an admin flips a flag or a scheduled feature activation is due).
+   * @default true
+   */
+  updateOnConfigurationChanged?: boolean;
+}
+
+export interface FlagValueChangeSubscriptions {
+  /**
+   * Subscribes to value changes for a boolean flag.
+   * The callback is invoked immediately upon subscription with the current flag value,
+   * and subsequently whenever the flag value changes due to context changes or
+   * provider configuration changes (based on the provided options).
    * @param flagKey The flag key uniquely identifies a particular flag
    * @param defaultValue The value returned if an error occurs
-   * @param callback Function called when context changes, receives new and old evaluation details
-   * @param options Additional flag evaluation options
+   * @param callback Function called immediately and when flag value changes, receives new and old evaluation details
+   * @param options Additional subscription options including which events to listen for
    * @returns Unsubscribe function to remove the listener
    */
-  onBooleanContextChanged(
+  onBooleanChanged(
     flagKey: string,
     defaultValue: boolean,
     callback: (newDetails: EvaluationDetails<boolean>, oldDetails: EvaluationDetails<boolean>) => void,
-    options?: FlagEvaluationOptions,
+    options?: FlagChangeSubscriptionOptions,
   ): () => void;
 
   /**
-   * Subscribes to context changes for a string flag.
+   * Subscribes to value changes for a string flag.
+   * The callback is invoked immediately upon subscription with the current flag value,
+   * and subsequently whenever the flag value changes due to context changes or
+   * provider configuration changes (based on the provided options).
    * @param flagKey The flag key uniquely identifies a particular flag
    * @param defaultValue The value returned if an error occurs
-   * @param callback Function called when context changes, receives new and old evaluation details
-   * @param options Additional flag evaluation options
+   * @param callback Function called immediately and when flag value changes, receives new and old evaluation details
+   * @param options Additional subscription options including which events to listen for
    * @returns Unsubscribe function to remove the listener
    */
-  onStringContextChanged(
+  onStringChanged(
     flagKey: string,
     defaultValue: string,
     callback: (newDetails: EvaluationDetails<string>, oldDetails: EvaluationDetails<string>) => void,
-    options?: FlagEvaluationOptions,
+    options?: FlagChangeSubscriptionOptions,
   ): () => void;
 
   /**
-   * Subscribes to context changes for a number flag.
+   * Subscribes to value changes for a number flag.
+   * The callback is invoked immediately upon subscription with the current flag value,
+   * and subsequently whenever the flag value changes due to context changes or
+   * provider configuration changes (based on the provided options).
    * @param flagKey The flag key uniquely identifies a particular flag
    * @param defaultValue The value returned if an error occurs
-   * @param callback Function called when context changes, receives new and old evaluation details
-   * @param options Additional flag evaluation options
+   * @param callback Function called immediately and when flag value changes, receives new and old evaluation details
+   * @param options Additional subscription options including which events to listen for
    * @returns Unsubscribe function to remove the listener
    */
-  onNumberContextChanged(
+  onNumberChanged(
     flagKey: string,
     defaultValue: number,
     callback: (newDetails: EvaluationDetails<number>, oldDetails: EvaluationDetails<number>) => void,
-    options?: FlagEvaluationOptions,
+    options?: FlagChangeSubscriptionOptions,
   ): () => void;
 
   /**
-   * Subscribes to context changes for an object flag.
+   * Subscribes to value changes for an object flag.
+   * The callback is invoked immediately upon subscription with the current flag value,
+   * and subsequently whenever the flag value changes due to context changes or
+   * provider configuration changes (based on the provided options).
    * @param flagKey The flag key uniquely identifies a particular flag
    * @param defaultValue The value returned if an error occurs
-   * @param callback Function called when context changes, receives new and old evaluation details
-   * @param options Additional flag evaluation options
+   * @param callback Function called immediately and when flag value changes, receives new and old evaluation details
+   * @param options Additional subscription options including which events to listen for
    * @returns Unsubscribe function to remove the listener
    */
-  onObjectContextChanged<T extends JsonValue = JsonValue>(
+  onObjectChanged<T extends JsonValue = JsonValue>(
     flagKey: string,
     defaultValue: T,
     callback: (newDetails: EvaluationDetails<T>, oldDetails: EvaluationDetails<T>) => void,
-    options?: FlagEvaluationOptions,
+    options?: FlagChangeSubscriptionOptions,
   ): () => void;
 }
 

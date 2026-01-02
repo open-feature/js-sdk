@@ -24,7 +24,7 @@ import {
   statusMatchesEvent,
   MapHookData,
 } from '@openfeature/core';
-import type { FlagEvaluationOptions } from '../../evaluation';
+import type { FlagEvaluationOptions, FlagChangeSubscriptionOptions } from '../../evaluation';
 import { EvaluationDetailsWithSubscription } from '../../evaluation';
 import { ProviderEvents } from '../../events';
 import type { InternalEventEmitter } from '../../events/internal/internal-event-emitter';
@@ -206,49 +206,52 @@ export class OpenFeatureClient implements Client {
     );
   }
 
-  onBooleanContextChanged(
+  onBooleanChanged(
     flagKey: string,
     defaultValue: boolean,
     callback: (newDetails: EvaluationDetails<boolean>, oldDetails: EvaluationDetails<boolean>) => void,
-    options?: FlagEvaluationOptions,
+    options?: FlagChangeSubscriptionOptions,
   ): () => void {
-    return this.subscribeToContextChanges(flagKey, defaultValue, 'boolean', callback, options);
+    return this.subscribeToFlagChanges(flagKey, defaultValue, 'boolean', callback, options);
   }
 
-  onStringContextChanged(
+  onStringChanged(
     flagKey: string,
     defaultValue: string,
     callback: (newDetails: EvaluationDetails<string>, oldDetails: EvaluationDetails<string>) => void,
-    options?: FlagEvaluationOptions,
+    options?: FlagChangeSubscriptionOptions,
   ): () => void {
-    return this.subscribeToContextChanges(flagKey, defaultValue, 'string', callback, options);
+    return this.subscribeToFlagChanges(flagKey, defaultValue, 'string', callback, options);
   }
 
-  onNumberContextChanged(
+  onNumberChanged(
     flagKey: string,
     defaultValue: number,
     callback: (newDetails: EvaluationDetails<number>, oldDetails: EvaluationDetails<number>) => void,
-    options?: FlagEvaluationOptions,
+    options?: FlagChangeSubscriptionOptions,
   ): () => void {
-    return this.subscribeToContextChanges(flagKey, defaultValue, 'number', callback, options);
+    return this.subscribeToFlagChanges(flagKey, defaultValue, 'number', callback, options);
   }
 
-  onObjectContextChanged<T extends JsonValue = JsonValue>(
+  onObjectChanged<T extends JsonValue = JsonValue>(
     flagKey: string,
     defaultValue: T,
     callback: (newDetails: EvaluationDetails<T>, oldDetails: EvaluationDetails<T>) => void,
-    options?: FlagEvaluationOptions,
+    options?: FlagChangeSubscriptionOptions,
   ): () => void {
-    return this.subscribeToContextChanges(flagKey, defaultValue, 'object', callback, options);
+    return this.subscribeToFlagChanges(flagKey, defaultValue, 'object', callback, options);
   }
 
-  private subscribeToContextChanges<T extends FlagValue>(
+  private subscribeToFlagChanges<T extends FlagValue>(
     flagKey: string,
     defaultValue: T,
     flagType: FlagValueType,
     callback: (newDetails: EvaluationDetails<T>, oldDetails: EvaluationDetails<T>) => void,
-    options?: FlagEvaluationOptions,
+    options?: FlagChangeSubscriptionOptions,
   ): () => void {
+    const updateOnContextChanged = options?.updateOnContextChanged ?? true;
+    const updateOnConfigurationChanged = options?.updateOnConfigurationChanged ?? true;
+
     let currentDetails: EvaluationDetails<T>;
 
     switch (flagType) {
@@ -268,10 +271,30 @@ export class OpenFeatureClient implements Client {
         throw new Error(`Unsupported flag type: ${flagType}`);
     }
 
-    callback(currentDetails, { ...currentDetails });
+    // Fire callback immediately with initial value
+    // Create a plain object copy since currentDetails may have getters
+    const initialOldDetails: EvaluationDetails<T> = {
+      flagKey: currentDetails.flagKey,
+      value: currentDetails.value,
+      variant: currentDetails.variant,
+      flagMetadata: currentDetails.flagMetadata,
+      reason: currentDetails.reason,
+      errorCode: currentDetails.errorCode,
+      errorMessage: currentDetails.errorMessage,
+    };
+    callback(currentDetails, initialOldDetails);
 
-    const handler = () => {
-      const oldDetails = { ...currentDetails };
+    const evaluateAndCallback = () => {
+      // Create a plain object copy since currentDetails may be a class with getters
+      const oldDetails: EvaluationDetails<T> = {
+        flagKey: currentDetails.flagKey,
+        value: currentDetails.value,
+        variant: currentDetails.variant,
+        flagMetadata: currentDetails.flagMetadata,
+        reason: currentDetails.reason,
+        errorCode: currentDetails.errorCode,
+        errorMessage: currentDetails.errorMessage,
+      };
       let newDetails: EvaluationDetails<T>;
 
       switch (flagType) {
@@ -295,10 +318,33 @@ export class OpenFeatureClient implements Client {
       callback(newDetails, oldDetails);
     };
 
-    this.addHandler(ProviderEvents.ContextChanged, handler, {});
+    const contextChangedHandler = () => {
+      evaluateAndCallback();
+    };
+
+    const configurationChangedHandler: EventHandler = (eventDetails) => {
+      // If flagsChanged is undefined, assume all flags may have changed
+      const flagsChanged = (eventDetails as { flagsChanged?: string[] } | undefined)?.flagsChanged;
+      if (!flagsChanged || flagsChanged.includes(flagKey)) {
+        evaluateAndCallback();
+      }
+    };
+
+    if (updateOnContextChanged) {
+      this.addHandler(ProviderEvents.ContextChanged, contextChangedHandler, {});
+    }
+
+    if (updateOnConfigurationChanged) {
+      this.addHandler(ProviderEvents.ConfigurationChanged, configurationChangedHandler, {});
+    }
 
     return () => {
-      this.removeHandler(ProviderEvents.ContextChanged, handler);
+      if (updateOnContextChanged) {
+        this.removeHandler(ProviderEvents.ContextChanged, contextChangedHandler);
+      }
+      if (updateOnConfigurationChanged) {
+        this.removeHandler(ProviderEvents.ConfigurationChanged, configurationChangedHandler);
+      }
     };
   }
 
