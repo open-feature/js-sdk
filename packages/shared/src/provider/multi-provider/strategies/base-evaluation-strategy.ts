@@ -48,6 +48,18 @@ export type FinalResult<T extends FlagValue, _TProviderStatus, TProvider> = {
   }[];
 };
 
+/**
+ * Base evaluation strategy for multi-provider flag resolution.
+ *
+ * This class is intended to be extended by concrete strategies and is not
+ * directly usable on its own. Implementations must provide a
+ * `determineFinalResult` method that takes the per-provider results and
+ * determines the final flag resolution outcome.
+ *
+ * The base class also provides default implementations for
+ * `shouldEvaluateThisProvider` and `shouldEvaluateNextProvider` that can be
+ * used as-is or overridden by subclasses as needed.
+ */
 export abstract class BaseEvaluationStrategy<TProviderStatus, TProvider> {
   public runMode: 'parallel' | 'sequential' = 'sequential';
 
