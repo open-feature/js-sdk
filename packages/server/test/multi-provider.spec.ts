@@ -18,7 +18,6 @@ import {
   InMemoryProvider,
   OpenFeatureEventEmitter,
   ServerProviderEvents,
-  ProviderStatus,
   FirstMatchStrategy,
   FirstSuccessfulStrategy,
   ComparisonStrategy,
@@ -331,7 +330,7 @@ describe('MultiProvider', () => {
               provider: provider2,
             },
           ],
-          new ComparisonStrategy(ProviderStatus, provider1),
+          new ComparisonStrategy(provider1),
         );
 
         await multiProvider.hooks[0].before!(hookContext);
@@ -525,7 +524,7 @@ describe('MultiProvider', () => {
                 provider: provider2,
               },
             ],
-            new FirstMatchStrategy(ProviderStatus),
+            new FirstMatchStrategy(),
           );
 
           await expect(() => callEvaluation(multiProvider, {}, logger)).rejects.toThrow('test error');
@@ -548,7 +547,7 @@ describe('MultiProvider', () => {
                 provider: provider2,
               },
             ],
-            new FirstMatchStrategy(ProviderStatus),
+            new FirstMatchStrategy(),
           );
 
           await expect(() => callEvaluation(multiProvider, {}, logger)).rejects.toThrow('test error');
@@ -578,7 +577,7 @@ describe('MultiProvider', () => {
                 provider: provider3,
               },
             ],
-            new FirstMatchStrategy(ProviderStatus),
+            new FirstMatchStrategy(),
           );
           const result = await callEvaluation(multiProvider, {}, logger);
           expect(result).toEqual({ value: true, flagKey: 'flag', flagMetadata: {} });
@@ -606,7 +605,7 @@ describe('MultiProvider', () => {
                 provider: provider3,
               },
             ],
-            new FirstMatchStrategy(ProviderStatus),
+            new FirstMatchStrategy(),
           );
           const result = await callEvaluation(multiProvider, {}, logger);
           expect(result).toEqual({ value: true, flagKey: 'flag', flagMetadata: {} });
@@ -639,7 +638,7 @@ describe('MultiProvider', () => {
                 provider: provider3,
               },
             ],
-            new FirstSuccessfulStrategy(ProviderStatus),
+            new FirstSuccessfulStrategy(),
           );
           const result = await callEvaluation(multiProvider, {}, logger);
           expect(result).toEqual({ value: true, flagKey: 'flag', flagMetadata: {} });
@@ -678,7 +677,7 @@ describe('MultiProvider', () => {
                 provider: provider3,
               },
             ],
-            new ComparisonStrategy(ProviderStatus, provider1),
+            new ComparisonStrategy(provider1),
           );
           const resultPromise = callEvaluation(multiProvider, {}, logger);
           await new Promise((resolve) => process.nextTick(resolve));
@@ -717,7 +716,7 @@ describe('MultiProvider', () => {
                 provider: provider3,
               },
             ],
-            new ComparisonStrategy(ProviderStatus, provider1, onMismatch),
+            new ComparisonStrategy(provider1, onMismatch),
           );
           const result = await callEvaluation(multiProvider, {}, logger);
           expect(provider1.resolveBooleanEvaluation).toHaveBeenCalled();
@@ -768,7 +767,7 @@ describe('MultiProvider', () => {
                 provider: provider3,
               },
             ],
-            new ComparisonStrategy(ProviderStatus, provider1),
+            new ComparisonStrategy(provider1),
           );
           await expect(callEvaluation(multiProvider, {}, logger)).rejects.toThrow('test error');
           expect(provider1.resolveBooleanEvaluation).toHaveBeenCalled();
@@ -849,7 +848,7 @@ describe('MultiProvider', () => {
       const provider2 = new TestProvider();
       const provider3 = new TestProvider();
 
-      const mockStrategy = new FirstMatchStrategy<ProviderStatus, Provider>(ProviderStatus);
+      const mockStrategy = new FirstMatchStrategy();
       mockStrategy.shouldTrackWithThisProvider = jest
         .fn()
         .mockReturnValueOnce(true) // provider1: should track
@@ -910,7 +909,7 @@ describe('MultiProvider', () => {
     it('passes correct strategy context to shouldTrackWithThisProvider', () => {
       const provider1 = new TestProvider();
 
-      const mockStrategy = new FirstMatchStrategy<ProviderStatus, Provider>(ProviderStatus);
+      const mockStrategy = new FirstMatchStrategy();
       mockStrategy.shouldTrackWithThisProvider = jest.fn().mockReturnValue(true);
 
       const multiProvider = new MultiProvider([{ provider: provider1, name: 'custom-name' }], mockStrategy);

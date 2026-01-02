@@ -103,10 +103,10 @@ client.track('purchase', { targetingKey: 'user123' }, { value: 99.99, currency: 
 You can customize which providers receive tracking calls by overriding the `shouldTrackWithThisProvider` method in your custom strategy:
 
 ```typescript
-import { BaseEvaluationStrategy, StrategyPerProviderContext } from '@openfeature/server-sdk';
+import { FirstMatchStrategy, StrategyPerProviderContext } from '@openfeature/server-sdk';
 
-class CustomTrackingStrategy extends BaseEvaluationStrategy {
-  shouldTrackWithThisProvider(
+class CustomTrackingStrategy extends FirstMatchStrategy {
+  override shouldTrackWithThisProvider(
     strategyContext: StrategyPerProviderContext,
     context: EvaluationContext,
     trackingEventName: string,
@@ -129,48 +129,31 @@ class CustomTrackingStrategy extends BaseEvaluationStrategy {
 
 ## Custom Strategies
 
-It is also possible to implement your own strategy if the above options do not fit your use case. To do so, create a class which implements the "BaseEvaluationStrategy":
+It is also possible to implement your own strategy if the above options do not fit your use case. To do so, create a class which extends one of the built-in strategies or extends `BaseEvaluationStrategy` from `@openfeature/core`:
 
 ```typescript
-export abstract class BaseEvaluationStrategy {
-  public runMode: 'parallel' | 'sequential' = 'sequential';
+import { FirstMatchStrategy } from '@openfeature/server-sdk';
 
-  abstract shouldEvaluateThisProvider(
+class MyCustomStrategy extends FirstMatchStrategy {
+  // Override methods as needed
+  override shouldEvaluateThisProvider(
     strategyContext: StrategyPerProviderContext,
     evalContext: EvaluationContext,
-  ): boolean;
-
-  abstract shouldEvaluateNextProvider<T extends FlagValue>(
-    strategyContext: StrategyPerProviderContext,
-    context: EvaluationContext,
-    result: ProviderResolutionResult<T>,
-  ): boolean;
-
-  abstract shouldTrackWithThisProvider(
-    strategyContext: StrategyPerProviderContext,
-    context: EvaluationContext,
-    trackingEventName: string,
-    trackingEventDetails: TrackingEventDetails,
-  ): boolean;
-
-  abstract determineFinalResult<T extends FlagValue>(
-    strategyContext: StrategyEvaluationContext,
-    context: EvaluationContext,
-    resolutions: ProviderResolutionResult<T>[],
-  ): FinalResult<T>;
+  ): boolean {
+    // Custom logic here
+    return super.shouldEvaluateThisProvider(strategyContext, evalContext);
+  }
 }
 ```
 
-The `runMode` property determines whether the list of providers will be evaluated sequentially or in parallel.
+The base class provides the following methods that can be overridden:
 
-The `shouldEvaluateThisProvider` method is called just before a provider is evaluated by the Multi-Provider. If the function returns `false`, then
-the provider will be skipped instead of being evaluated. The function is called with details about the evaluation including the flag key and type.
-Check the type definitions for the full list.
+- **`runMode`**: Property that determines whether providers are evaluated `'sequential'` (default) or `'parallel'`.
 
-The `shouldEvaluateNextProvider` function is called after a provider is evaluated. If it returns `true`, the next provider in the sequence will be called,
-otherwise no more providers will be evaluated. It is called with the same data as `shouldEvaluateThisProvider` as well as the details about the evaluation result. This function is not called when the `runMode` is `parallel`.
+- **`shouldEvaluateThisProvider`**: Called before evaluating each provider. Return `false` to skip the provider. By default, skips providers in `NOT_READY` or `FATAL` status.
 
-The `shouldTrackWithThisProvider` method is called before sending a tracking event to each provider. Return `false` to skip tracking with that provider. By default, it only tracks with providers that are in a ready state (not `NOT_READY` or `FATAL`). Override this method to implement custom tracking logic based on the tracking event name, details, or provider characteristics.
+- **`shouldEvaluateNextProvider`**: Called after evaluating a provider (sequential mode only). Return `true` to continue to the next provider, `false` to stop.
 
-The `determineFinalResult` function is called after all providers have been called, or the `shouldEvaluateNextProvider` function returned false. It is called
-with a list of results from all the individual providers' evaluations. It returns the final decision for evaluation result, or throws an error if needed.
+- **`shouldTrackWithThisProvider`**: Called before sending a tracking event to each provider. Return `false` to skip tracking. By default, skips providers in `NOT_READY` or `FATAL` status.
+
+- **`determineFinalResult`**: Called after all providers have been evaluated. Takes the list of provider results and returns the final resolution.

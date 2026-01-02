@@ -28,10 +28,10 @@ import {
   ErrorCode,
   StandardResolutionReasons,
   constructAggregateError,
-  FirstMatchStrategy,
   StatusTracker,
   throwAggregateErrorFromPromiseResults,
 } from '@openfeature/core';
+import { FirstMatchStrategy } from './strategies';
 import { HookExecutor } from './hook-executor';
 
 export class MultiProvider implements Provider {
@@ -56,9 +56,7 @@ export class MultiProvider implements Provider {
 
   constructor(
     readonly constructorProviders: ProviderEntryInput<Provider>[],
-    private readonly evaluationStrategy: BaseEvaluationStrategy<ProviderStatus, Provider> = new FirstMatchStrategy(
-      ProviderStatus,
-    ),
+    private readonly evaluationStrategy: BaseEvaluationStrategy<ProviderStatus, Provider> = new FirstMatchStrategy(),
     private readonly logger: Logger = new DefaultLogger(),
   ) {
     this.hookExecutor = new HookExecutor(this.logger);
