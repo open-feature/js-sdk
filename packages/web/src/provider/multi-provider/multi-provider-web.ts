@@ -162,7 +162,7 @@ export class MultiProvider implements Provider {
       }
 
       const strategyContext = {
-        provider: providerEntry.provider as Provider,
+        provider: providerEntry.provider,
         providerName: providerEntry.name,
         providerStatus: this.statusTracker.providerStatus(providerEntry.name),
       };
@@ -248,7 +248,7 @@ export class MultiProvider implements Provider {
     const strategyContext = {
       flagKey,
       flagType,
-      provider: provider as Provider,
+      provider,
       providerName: providerEntry.name,
       providerStatus: this.statusTracker.providerStatus(providerEntry.name),
     };
@@ -263,13 +263,13 @@ export class MultiProvider implements Provider {
       evaluationResult = this.evaluateProviderAndHooks(flagKey, defaultValue, provider, hookContext, hookHints);
       resolution = {
         details: evaluationResult,
-        provider: provider as Provider,
+        provider,
         providerName: providerEntry.name,
       };
     } catch (error: unknown) {
       resolution = {
         thrownError: error,
-        provider: provider as Provider,
+        provider,
         providerName: providerEntry.name,
       };
     }
