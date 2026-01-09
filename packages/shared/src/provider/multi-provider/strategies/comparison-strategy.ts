@@ -1,8 +1,8 @@
 import type {
-  FinalResult,
-  ProviderResolutionResult,
-  ProviderResolutionSuccessResult,
-  StrategyPerProviderContext,
+  BaseFinalResult,
+  BaseProviderResolutionResult,
+  BaseProviderResolutionSuccessResult,
+  BaseStrategyPerProviderContext,
 } from './base-evaluation-strategy';
 import { BaseEvaluationStrategy } from './base-evaluation-strategy';
 import type { EvaluationContext, FlagValue } from '../../../evaluation';
@@ -14,19 +14,19 @@ export class ComparisonStrategy<TProviderStatus, TProvider> extends BaseEvaluati
   constructor(
     statusEnum: Record<string, TProviderStatus>,
     private fallbackProvider: TProvider,
-    private onMismatch?: (resolutions: ProviderResolutionResult<FlagValue, TProviderStatus, TProvider>[]) => void,
+    private onMismatch?: (resolutions: BaseProviderResolutionResult<FlagValue, TProviderStatus, TProvider>[]) => void,
   ) {
     super(statusEnum);
   }
 
   override determineFinalResult<T extends FlagValue>(
-    strategyContext: StrategyPerProviderContext<TProviderStatus, TProvider>,
+    strategyContext: BaseStrategyPerProviderContext<TProviderStatus, TProvider>,
     context: EvaluationContext,
-    resolutions: ProviderResolutionResult<T, TProviderStatus, TProvider>[],
-  ): FinalResult<T, TProviderStatus, TProvider> {
+    resolutions: BaseProviderResolutionResult<T, TProviderStatus, TProvider>[],
+  ): BaseFinalResult<T, TProviderStatus, TProvider> {
     let value: T | undefined;
-    let fallbackResolution: ProviderResolutionSuccessResult<T, TProviderStatus, TProvider> | undefined;
-    let finalResolution: ProviderResolutionSuccessResult<T, TProviderStatus, TProvider> | undefined;
+    let fallbackResolution: BaseProviderResolutionSuccessResult<T, TProviderStatus, TProvider> | undefined;
+    let finalResolution: BaseProviderResolutionSuccessResult<T, TProviderStatus, TProvider> | undefined;
     let mismatch = false;
     for (const [i, resolution] of resolutions.entries()) {
       if (this.hasError(resolution)) {
