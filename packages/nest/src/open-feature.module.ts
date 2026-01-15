@@ -1,13 +1,6 @@
+import type { DynamicModule } from '@nestjs/common';
+import { Module, ConfigurableModuleBuilder } from '@nestjs/common';
 import type {
-  DynamicModule,
-  FactoryProvider as NestFactoryProvider,
-  ValueProvider,
-  ClassProvider,
-  Provider as NestProvider,
-} from '@nestjs/common';
-import { Module, ExecutionContext } from '@nestjs/common';
-import type {
-  Client,
   Hook,
   Provider,
   EvaluationContext,
@@ -22,72 +15,104 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { EvaluationContextInterceptor } from './evaluation-context-interceptor';
 import { ShutdownService } from './shutdown.service';
 
+export const OPEN_FEATURE_INIT_TOKEN = Symbol('OPEN_FEATURE_INIT');
+
+/**
+ * Initialize OpenFeature with the provided options.
+ */
+async function initializeOpenFeature(options: OpenFeatureModuleOptions): Promise<OpenFeatureModuleOptions> {
+  OpenFeature.setTransactionContextPropagator(new AsyncLocalStorageTransactionContextPropagator());
+
+  if (options.logger) {
+    OpenFeature.setLogger(options.logger);
+  }
+
+  if (options.hooks) {
+    OpenFeature.addHooks(...options.hooks);
+  }
+
+  options.handlers?.forEach(([event, handler]) => {
+    OpenFeature.addHandler(event, handler);
+  });
+
+  if (options.defaultProvider) {
+    await OpenFeature.setProviderAndWait(options.defaultProvider);
+  }
+
+  if (options.providers) {
+    await Promise.all(
+      Object.entries(options.providers).map(([domain, provider]) => OpenFeature.setProviderAndWait(domain, provider)),
+    );
+  }
+
+  return options;
+}
+
+export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN, OPTIONS_TYPE, ASYNC_OPTIONS_TYPE } =
+  new ConfigurableModuleBuilder<OpenFeatureModuleOptions>()
+    .setClassMethodName('forRoot')
+    .setExtras<OpenFeatureModuleExtras>(
+      { isGlobal: true, useGlobalInterceptor: true, domains: [] },
+      (definition, extras) => {
+        const moduleProviders: DynamicModule['providers'] = [
+          ...(definition.providers || []),
+          ShutdownService,
+          {
+            provide: OPEN_FEATURE_INIT_TOKEN,
+            inject: [MODULE_OPTIONS_TOKEN],
+            useFactory: initializeOpenFeature,
+          },
+          // Default client
+          {
+            provide: getOpenFeatureClientToken(),
+            inject: [OPEN_FEATURE_INIT_TOKEN],
+            useFactory: () => OpenFeature.getClient(),
+          },
+          // Context factory
+          {
+            provide: ContextFactoryToken,
+            inject: [OPEN_FEATURE_INIT_TOKEN],
+            useFactory: (options: OpenFeatureModuleOptions) => options.contextFactory,
+          },
+        ];
+
+        const moduleExports: DynamicModule['exports'] = [
+          ...(definition.exports || []),
+          ContextFactoryToken,
+          getOpenFeatureClientToken(),
+        ];
+
+        if (extras.useGlobalInterceptor) {
+          moduleProviders.push({
+            provide: APP_INTERCEPTOR,
+            useClass: EvaluationContextInterceptor,
+          });
+        }
+
+        for (const domain of extras.domains || []) {
+          moduleProviders.push({
+            provide: getOpenFeatureClientToken(domain),
+            useFactory: () => OpenFeature.getClient(domain),
+            inject: [OPEN_FEATURE_INIT_TOKEN],
+          });
+          moduleExports.push(getOpenFeatureClientToken(domain));
+        }
+
+        return {
+          ...definition,
+          global: extras.isGlobal,
+          providers: moduleProviders,
+          exports: moduleExports,
+        };
+      },
+    )
+    .build();
+
 /**
  * OpenFeatureModule is a NestJS wrapper for OpenFeature Server-SDK.
  */
 @Module({})
-export class OpenFeatureModule {
-  static forRoot({ useGlobalInterceptor = true, ...options }: OpenFeatureModuleOptions): DynamicModule {
-    OpenFeature.setTransactionContextPropagator(new AsyncLocalStorageTransactionContextPropagator());
-
-    if (options.logger) {
-      OpenFeature.setLogger(options.logger);
-    }
-
-    if (options.hooks) {
-      OpenFeature.addHooks(...options.hooks);
-    }
-
-    options.handlers?.forEach(([event, handler]) => {
-      OpenFeature.addHandler(event, handler);
-    });
-
-    const clientValueProviders: NestFactoryProvider<Client>[] = [
-      {
-        provide: getOpenFeatureClientToken(),
-        useFactory: () => OpenFeature.getClient(),
-      },
-    ];
-
-    if (options?.defaultProvider) {
-      OpenFeature.setProvider(options.defaultProvider);
-    }
-
-    if (options?.providers) {
-      Object.entries(options.providers).forEach(([domain, provider]) => {
-        OpenFeature.setProvider(domain, provider);
-        clientValueProviders.push({
-          provide: getOpenFeatureClientToken(domain),
-          useFactory: () => OpenFeature.getClient(domain),
-        });
-      });
-    }
-
-    const nestProviders: NestProvider[] = [ShutdownService];
-    nestProviders.push(...clientValueProviders);
-
-    const contextFactoryProvider: ValueProvider = {
-      provide: ContextFactoryToken,
-      useValue: options?.contextFactory,
-    };
-    nestProviders.push(contextFactoryProvider);
-
-    if (useGlobalInterceptor) {
-      const interceptorProvider: ClassProvider = {
-        provide: APP_INTERCEPTOR,
-        useClass: EvaluationContextInterceptor,
-      };
-      nestProviders.push(interceptorProvider);
-    }
-
-    return {
-      global: true,
-      module: OpenFeatureModule,
-      providers: nestProviders,
-      exports: [...clientValueProviders, ContextFactoryToken],
-    };
-  }
-}
+export class OpenFeatureModule extends ConfigurableModuleClass {}
 
 /**
  * Options for the {@link OpenFeatureModule}.
@@ -132,6 +157,12 @@ export interface OpenFeatureModuleOptions {
    * @see {@link AsyncLocalStorageTransactionContextPropagator}
    */
   contextFactory?: ContextFactory;
+}
+
+/**
+ * Extra options available at module definition time
+ */
+export interface OpenFeatureModuleExtras {
   /**
    * If set to false, the global {@link EvaluationContextInterceptor} is disabled.
    * This means that automatic propagation of the  {@link EvaluationContext} created by the {@link this#contextFactory} is not working.
@@ -145,6 +176,16 @@ export interface OpenFeatureModuleOptions {
    * @default true
    */
   useGlobalInterceptor?: boolean;
+  /**
+   * Whether the module should be global.
+   * @default true
+   */
+  isGlobal?: boolean;
+  /**
+   * Domains for which to create domain-scoped OpenFeature clients.
+   * Each domain will get its own injectable client token via {@link getOpenFeatureClientToken}.
+   */
+  domains?: string[];
 }
 
 /**
