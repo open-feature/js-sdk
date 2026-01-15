@@ -1,4 +1,4 @@
-import { useCallback, useContext } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import type { EvaluationContext } from '@openfeature/web-sdk';
 import { OpenFeature } from '@openfeature/web-sdk';
 import { Context } from '../internal';
@@ -36,8 +36,25 @@ export function useContextMutator(options: ContextMutationOptions = { defaultCon
   const { client } = useContext(Context) || {};
   const domain = client?.metadata.domain;
 
-  // TODO: If `defaultContext` is `false`, and we don't have a `client`,
-  //       should we throw an error (that we're not inside `<OpenFeatureProvider/>`)?
+  // TODO: Replace this warning with a thrown error in a future major release,
+  //       to match the behavior of `useOpenFeatureProvider` + `useOpenFeatureClient`,
+  //       when `defaultContext` isn't explicitly set to true.
+  const [warned, setWarned] = useState(false);
+  useEffect(() => {
+    if (options.defaultContext || domain) {
+      if (warned) {
+        setWarned(false);
+      }
+      return;
+    }
+
+    if (!warned) {
+      console.warn(
+        '[useContextMutator] No domain available from OpenFeature context; are you using <OpenFeatureProvider/>? setContext will mutate the default context, as if `defaultContext: true` were set. This may result in a thrown error in the future.',
+      );
+      setWarned(true);
+    }
+  }, [warned]);
 
   const setContext = useCallback(
     async (
