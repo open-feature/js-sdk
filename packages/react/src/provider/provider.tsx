@@ -15,7 +15,7 @@ type ClientOrDomain =
        * An instance of the OpenFeature API to use.
        * @see OpenFeature.getIsolated for more details.
        */
-      openfeature?: OpenFeatureAPI;
+      sdk?: OpenFeatureAPI;
       client?: never;
     }
   | {
@@ -24,7 +24,7 @@ type ClientOrDomain =
        */
       client?: Client;
       domain?: never;
-      openfeature?: never;
+      sdk?: never;
     };
 
 type ProviderProps = {
@@ -37,8 +37,8 @@ type ProviderProps = {
  * @param {ProviderProps} properties props for the context provider
  * @returns {OpenFeatureProvider} context provider
  */
-export function OpenFeatureProvider({ client, domain, openfeature, children, ...options }: ProviderProps) {
-  const stableClient = React.useMemo(() => client || (openfeature ?? OpenFeature).getClient(domain), [client, domain]);
+export function OpenFeatureProvider({ client, domain, sdk, children, ...options }: ProviderProps) {
+  const stableClient = React.useMemo(() => client || (sdk ?? OpenFeature).getClient(domain), [client, domain]);
 
   return <Context.Provider value={{ client: stableClient, options }}>{children}</Context.Provider>;
 }

@@ -362,7 +362,7 @@ export class OpenFeatureAPI
       (domain?: string) => this.getContext(domain),
       () => this.getHooks(),
       () => this._logger,
-      { domain, version },
+      { domain, version, sdk: this },
     );
   }
 
