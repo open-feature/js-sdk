@@ -13,7 +13,7 @@ import type {
   ProviderMetadata,
   ResolutionDetails,
   TrackingEventDetails,
-  ProviderResolutionResult,
+  BaseProviderResolutionResult,
   ProviderEntryInput,
   RegisteredProvider,
   BaseEvaluationStrategy,
@@ -161,7 +161,7 @@ export class MultiProvider implements Provider {
       throw new GeneralError('Hook context not available for evaluation');
     }
 
-    const tasks: Promise<[boolean, ProviderResolutionResult<T, ProviderStatus, Provider> | null]>[] = [];
+    const tasks: Promise<[boolean, BaseProviderResolutionResult<T, ProviderStatus, Provider> | null]>[] = [];
 
     for (const providerEntry of this.providerEntries) {
       const task = this.evaluateProviderEntry(
@@ -187,7 +187,7 @@ export class MultiProvider implements Provider {
     const results = await Promise.all(tasks);
     const resolutions = results
       .map(([, resolution]) => resolution)
-      .filter((r): r is ProviderResolutionResult<T, ProviderStatus, Provider> => Boolean(r));
+      .filter((r): r is BaseProviderResolutionResult<T, ProviderStatus, Provider> => Boolean(r));
 
     const finalResult = this.evaluationStrategy.determineFinalResult({ flagKey, flagType }, context, resolutions);
 
@@ -210,7 +210,7 @@ export class MultiProvider implements Provider {
     hookContext: HookContext,
     hookHints: HookHints,
     context: EvaluationContext,
-  ): Promise<[boolean, ProviderResolutionResult<T, ProviderStatus, Provider> | null]> {
+  ): Promise<[boolean, BaseProviderResolutionResult<T, ProviderStatus, Provider> | null]> {
     let evaluationResult: ResolutionDetails<T> | undefined = undefined;
     const provider = providerEntry.provider;
     const strategyContext = {
@@ -225,7 +225,7 @@ export class MultiProvider implements Provider {
       return [true, null];
     }
 
-    let resolution: ProviderResolutionResult<T, ProviderStatus, Provider>;
+    let resolution: BaseProviderResolutionResult<T, ProviderStatus, Provider>;
 
     try {
       evaluationResult = await this.evaluateProviderAndHooks(flagKey, defaultValue, provider, hookContext, hookHints);

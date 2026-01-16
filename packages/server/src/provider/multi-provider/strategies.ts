@@ -7,11 +7,34 @@ import {
   BaseFirstMatchStrategy,
   BaseFirstSuccessfulStrategy,
   BaseComparisonStrategy,
-  type ProviderResolutionResult,
+  type BaseStrategyProviderContext,
+  type BaseStrategyPerProviderContext,
+  type BaseProviderResolutionResult,
+  type BaseProviderResolutionSuccessResult,
+  type BaseProviderResolutionErrorResult,
+  type BaseFinalResult,
+  type StrategyEvaluationContext,
   type FlagValue,
 } from '@openfeature/core';
 import type { Provider } from '../provider';
 import { ProviderStatus } from '../provider';
+
+/**
+ * Pre-bound type aliases for server SDK.
+ * These types have the server-specific ProviderStatus and Provider types already applied,
+ * providing backward compatibility for existing consumers.
+ */
+export type StrategyProviderContext = BaseStrategyProviderContext<ProviderStatus, Provider>;
+export type StrategyPerProviderContext = BaseStrategyPerProviderContext<ProviderStatus, Provider>;
+export type ProviderResolutionResult<T extends FlagValue> = BaseProviderResolutionResult<T, ProviderStatus, Provider>;
+export type ProviderResolutionSuccessResult<T extends FlagValue> = BaseProviderResolutionSuccessResult<
+  T,
+  ProviderStatus,
+  Provider
+>;
+export type ProviderResolutionErrorResult = BaseProviderResolutionErrorResult<ProviderStatus, Provider>;
+export type FinalResult<T extends FlagValue> = BaseFinalResult<T, ProviderStatus, Provider>;
+export type { StrategyEvaluationContext };
 
 /**
  * Evaluates providers in order and returns the first successful result.
@@ -38,10 +61,7 @@ export class FirstSuccessfulStrategy extends BaseFirstSuccessfulStrategy<Provide
  * If all providers agree, returns that result. Otherwise, returns the fallback provider's result.
  */
 export class ComparisonStrategy extends BaseComparisonStrategy<ProviderStatus, Provider> {
-  constructor(
-    fallbackProvider: Provider,
-    onMismatch?: (resolutions: ProviderResolutionResult<FlagValue, ProviderStatus, Provider>[]) => void,
-  ) {
+  constructor(fallbackProvider: Provider, onMismatch?: (resolutions: ProviderResolutionResult<FlagValue>[]) => void) {
     super(ProviderStatus, fallbackProvider, onMismatch);
   }
 }

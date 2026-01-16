@@ -14,7 +14,7 @@ import type {
   OpenFeatureError,
   TrackingEventDetails,
   ProviderEntryInput,
-  ProviderResolutionResult,
+  BaseProviderResolutionResult,
   RegisteredProvider,
   BaseEvaluationStrategy,
 } from '@openfeature/core';
@@ -198,7 +198,7 @@ export class MultiProvider implements Provider {
       throw new GeneralError('Hook context not available for evaluation');
     }
 
-    const results = [] as (ProviderResolutionResult<T, ProviderStatus, Provider> | null)[];
+    const results = [] as (BaseProviderResolutionResult<T, ProviderStatus, Provider> | null)[];
 
     for (const providerEntry of this.providerEntries) {
       const [shouldEvaluateNext, result] = this.evaluateProviderEntry(
@@ -218,7 +218,9 @@ export class MultiProvider implements Provider {
       }
     }
 
-    const resolutions = results.filter((r): r is ProviderResolutionResult<T, ProviderStatus, Provider> => Boolean(r));
+    const resolutions = results.filter((r): r is BaseProviderResolutionResult<T, ProviderStatus, Provider> =>
+      Boolean(r),
+    );
     const finalResult = this.evaluationStrategy.determineFinalResult({ flagKey, flagType }, context, resolutions);
 
     if (finalResult.errors?.length) {
@@ -240,7 +242,7 @@ export class MultiProvider implements Provider {
     hookContext: HookContext,
     hookHints: HookHints,
     context: EvaluationContext,
-  ): [boolean, ProviderResolutionResult<T, ProviderStatus, Provider> | null] {
+  ): [boolean, BaseProviderResolutionResult<T, ProviderStatus, Provider> | null] {
     let evaluationResult: ResolutionDetails<T> | undefined = undefined;
     const provider = providerEntry.provider;
     const strategyContext = {
@@ -255,7 +257,7 @@ export class MultiProvider implements Provider {
       return [true, null];
     }
 
-    let resolution: ProviderResolutionResult<T, ProviderStatus, Provider>;
+    let resolution: BaseProviderResolutionResult<T, ProviderStatus, Provider>;
 
     try {
       evaluationResult = this.evaluateProviderAndHooks(flagKey, defaultValue, provider, hookContext, hookHints);

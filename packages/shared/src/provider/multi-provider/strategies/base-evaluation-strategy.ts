@@ -8,37 +8,38 @@ export type StrategyEvaluationContext = {
   flagType: FlagValueType;
 };
 
-export type StrategyProviderContext<TProviderStatus, TProvider> = {
+export type BaseStrategyProviderContext<TProviderStatus, TProvider> = {
   provider: TProvider;
   providerName: string;
   providerStatus: TProviderStatus;
 };
 
-export type StrategyPerProviderContext<TProviderStatus, TProvider> = StrategyEvaluationContext &
-  StrategyProviderContext<TProviderStatus, TProvider>;
+export type BaseStrategyPerProviderContext<TProviderStatus, TProvider> = StrategyEvaluationContext &
+  BaseStrategyProviderContext<TProviderStatus, TProvider>;
 
-type ProviderResolutionResultBase<TProvider> = {
+type BaseProviderResolutionResultBase<TProvider> = {
   provider: TProvider;
   providerName: string;
 };
 
-export type ProviderResolutionSuccessResult<
+export type BaseProviderResolutionSuccessResult<
   T extends FlagValue,
   _TProviderStatus,
   TProvider,
-> = ProviderResolutionResultBase<TProvider> & {
+> = BaseProviderResolutionResultBase<TProvider> & {
   details: ResolutionDetails<T>;
 };
 
-export type ProviderResolutionErrorResult<_TProviderStatus, TProvider> = ProviderResolutionResultBase<TProvider> & {
-  thrownError: unknown;
-};
+export type BaseProviderResolutionErrorResult<_TProviderStatus, TProvider> =
+  BaseProviderResolutionResultBase<TProvider> & {
+    thrownError: unknown;
+  };
 
-export type ProviderResolutionResult<T extends FlagValue, TProviderStatus, TProvider> =
-  | ProviderResolutionSuccessResult<T, TProviderStatus, TProvider>
-  | ProviderResolutionErrorResult<TProviderStatus, TProvider>;
+export type BaseProviderResolutionResult<T extends FlagValue, TProviderStatus, TProvider> =
+  | BaseProviderResolutionSuccessResult<T, TProviderStatus, TProvider>
+  | BaseProviderResolutionErrorResult<TProviderStatus, TProvider>;
 
-export type FinalResult<T extends FlagValue, _TProviderStatus, TProvider> = {
+export type BaseFinalResult<T extends FlagValue, _TProviderStatus, TProvider> = {
   details?: ResolutionDetails<T>;
   provider?: TProvider;
   providerName?: string;
@@ -66,7 +67,7 @@ export abstract class BaseEvaluationStrategy<TProviderStatus, TProvider> {
   constructor(protected statusEnum: Record<string, TProviderStatus>) {}
 
   shouldEvaluateThisProvider(
-    strategyContext: StrategyPerProviderContext<TProviderStatus, TProvider>,
+    strategyContext: BaseStrategyPerProviderContext<TProviderStatus, TProvider>,
     _evalContext?: EvaluationContext,
   ): boolean {
     if (
@@ -79,15 +80,15 @@ export abstract class BaseEvaluationStrategy<TProviderStatus, TProvider> {
   }
 
   shouldEvaluateNextProvider<T extends FlagValue>(
-    _strategyContext?: StrategyPerProviderContext<TProviderStatus, TProvider>,
+    _strategyContext?: BaseStrategyPerProviderContext<TProviderStatus, TProvider>,
     _context?: EvaluationContext,
-    _result?: ProviderResolutionResult<T, TProviderStatus, TProvider>,
+    _result?: BaseProviderResolutionResult<T, TProviderStatus, TProvider>,
   ): boolean {
     return true;
   }
 
   shouldTrackWithThisProvider(
-    strategyContext: StrategyProviderContext<TProviderStatus, TProvider>,
+    strategyContext: BaseStrategyProviderContext<TProviderStatus, TProvider>,
     _context?: EvaluationContext,
     _trackingEventName?: string,
     _trackingEventDetails?: TrackingEventDetails,
@@ -104,21 +105,21 @@ export abstract class BaseEvaluationStrategy<TProviderStatus, TProvider> {
   abstract determineFinalResult<T extends FlagValue>(
     strategyContext: StrategyEvaluationContext,
     context: EvaluationContext,
-    resolutions: ProviderResolutionResult<T, TProviderStatus, TProvider>[],
-  ): FinalResult<T, TProviderStatus, TProvider>;
+    resolutions: BaseProviderResolutionResult<T, TProviderStatus, TProvider>[],
+  ): BaseFinalResult<T, TProviderStatus, TProvider>;
 
   protected hasError<T extends FlagValue>(
-    resolution: ProviderResolutionResult<T, TProviderStatus, TProvider>,
+    resolution: BaseProviderResolutionResult<T, TProviderStatus, TProvider>,
   ): resolution is
-    | ProviderResolutionErrorResult<TProviderStatus, TProvider>
-    | (ProviderResolutionSuccessResult<T, TProviderStatus, TProvider> & {
+    | BaseProviderResolutionErrorResult<TProviderStatus, TProvider>
+    | (BaseProviderResolutionSuccessResult<T, TProviderStatus, TProvider> & {
         details: ResolutionDetails<T> & { errorCode: ErrorCode };
       }) {
     return 'thrownError' in resolution || !!resolution.details.errorCode;
   }
 
   protected hasErrorWithCode<T extends FlagValue>(
-    resolution: ProviderResolutionResult<T, TProviderStatus, TProvider>,
+    resolution: BaseProviderResolutionResult<T, TProviderStatus, TProvider>,
     code: ErrorCode,
   ): boolean {
     return 'thrownError' in resolution
@@ -127,9 +128,9 @@ export abstract class BaseEvaluationStrategy<TProviderStatus, TProvider> {
   }
 
   protected collectProviderErrors<T extends FlagValue>(
-    resolutions: ProviderResolutionResult<T, TProviderStatus, TProvider>[],
-  ): FinalResult<T, TProviderStatus, TProvider> {
-    const errors: FinalResult<FlagValue, TProviderStatus, TProvider>['errors'] = [];
+    resolutions: BaseProviderResolutionResult<T, TProviderStatus, TProvider>[],
+  ): BaseFinalResult<T, TProviderStatus, TProvider> {
+    const errors: BaseFinalResult<FlagValue, TProviderStatus, TProvider>['errors'] = [];
     for (const resolution of resolutions) {
       if ('thrownError' in resolution) {
         errors.push({ providerName: resolution.providerName, error: resolution.thrownError });
@@ -144,7 +145,7 @@ export abstract class BaseEvaluationStrategy<TProviderStatus, TProvider> {
   }
 
   protected resolutionToFinalResult<T extends FlagValue>(
-    resolution: ProviderResolutionSuccessResult<T, TProviderStatus, TProvider>,
+    resolution: BaseProviderResolutionSuccessResult<T, TProviderStatus, TProvider>,
   ) {
     return { details: resolution.details, provider: resolution.provider, providerName: resolution.providerName };
   }
