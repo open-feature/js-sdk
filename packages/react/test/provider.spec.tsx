@@ -54,6 +54,7 @@ describe('OpenFeatureProvider', () => {
 
   beforeEach(async () => {
     await OpenFeature.clearContexts();
+    await OpenFeature.clearProviders();
   });
 
   describe('useOpenFeatureClient', () => {

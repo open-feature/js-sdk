@@ -83,17 +83,16 @@ class TestProvider extends InMemoryProvider {
  * @returns {OpenFeatureProvider} OpenFeatureTestProvider
  */
 export function OpenFeatureTestProvider(testProviderOptions: TestProviderProps) {
-  const { flagValueMap, provider } = testProviderOptions;
+  const { flagValueMap, provider, sdk } = testProviderOptions;
   const effectiveProvider = (
     flagValueMap ? new TestProvider(flagValueMap, testProviderOptions.delayMs) : mixInNoop(provider) || NOOP_PROVIDER
   ) as Provider;
-  // TODO: Should this handle the `sdk` option like OpenFeatureProvider
   testProviderOptions.domain
-    ? OpenFeature.setProvider(testProviderOptions.domain, effectiveProvider)
-    : OpenFeature.setProvider(effectiveProvider);
+    ? (sdk ?? OpenFeature).setProvider(testProviderOptions.domain, effectiveProvider)
+    : (sdk ?? OpenFeature).setProvider(effectiveProvider);
 
   return (
-    <OpenFeatureProvider {...(testProviderOptions as NormalizedOptions)} domain={testProviderOptions.domain}>
+    <OpenFeatureProvider {...(testProviderOptions as NormalizedOptions)} sdk={sdk} domain={testProviderOptions.domain}>
       {testProviderOptions.children}
     </OpenFeatureProvider>
   );
