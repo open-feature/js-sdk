@@ -1119,6 +1119,85 @@ describe('evaluation', () => {
         });
       });
     });
+
+    it('should update flag value when provider changes in parallel', async () => {
+      // Test for race condition bug: when setContext is called before setProvider,
+      // the provider's resolve methods should still be called after provider initialization.
+      // https://github.com/open-feature/js-sdk/issues/1331
+
+      class CustomProvider {
+        readonly runsOn = 'client';
+        readonly metadata = { name: 'custom-provider' };
+
+        async initialize() {
+          /* async noop */
+        }
+        async onContextChange() {
+          /* async noop */
+        }
+
+        resolveStringEvaluation() {
+          return { value: 'Resolved string value' };
+        }
+
+        resolveBooleanEvaluation() {
+          return { value: false };
+        }
+        resolveNumberEvaluation() {
+          return { value: 42 };
+        }
+        resolveObjectEvaluation<T>(_: string, __: T) {
+          return { value: {} as T };
+        }
+      }
+
+      // Simulate async provider initialization.
+      const providerPromise = (async () => {
+        // Async logic that CustomProvider depends upon for initialization.
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        await OpenFeature.setProviderAndWait(EVALUATION, new CustomProvider());
+      })();
+
+      const TestComponent = () => {
+        const { value } = useFlag('flag-a', 'default');
+        return <div data-testid="flag-value">{value}</div>;
+      };
+
+      const TestComponentWithProviders = () => {
+        React.useEffect(() => {
+          // This setContext call happens before the provider is set, creating the race condition.
+          OpenFeature.setContext(EVALUATION, { targetingKey: '123' });
+        }, []);
+
+        return (
+          <OpenFeatureProvider client={OpenFeature.getClient(EVALUATION)}>
+            <TestComponent />
+          </OpenFeatureProvider>
+        );
+      };
+
+      render(<TestComponentWithProviders />);
+
+      // Initially shows default value (No-Op provider).
+      await waitFor(() => {
+        expect(screen.getByTestId('flag-value')).toHaveTextContent('default');
+      });
+
+      // Don't leave the async init function hanging.
+      await act(async () => {
+        await providerPromise;
+      });
+
+      // Should update to provider's value once provider is ready.
+      // This verifies the Ready handler is registered on a new provider even when initial status is READY.
+      await waitFor(
+        () => {
+          expect(screen.getByTestId('flag-value')).toHaveTextContent('Resolved string value');
+        },
+        { timeout: 3000 },
+      );
+    });
   });
 
   describe('context, hooks and options', () => {
