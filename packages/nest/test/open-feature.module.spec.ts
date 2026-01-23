@@ -2,7 +2,7 @@ import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
 import { getOpenFeatureClientToken, OpenFeatureModule, ServerProviderEvents } from '../src';
 import type { Client } from '@openfeature/server-sdk';
-import { OpenFeature } from '@openfeature/server-sdk';
+import { OpenFeature, InMemoryProvider } from '@openfeature/server-sdk';
 import { getOpenFeatureDefaultTestModule } from './fixtures';
 
 describe('OpenFeatureModule', () => {
@@ -100,7 +100,7 @@ describe('OpenFeatureModule', () => {
         imports: [
           OpenFeatureModule.forRootAsync({
             useFactory: () => ({
-              defaultProvider: new (require('@openfeature/server-sdk').InMemoryProvider)({
+              defaultProvider: new InMemoryProvider({
                 testAsyncFlag: {
                   defaultVariant: 'default',
                   variants: { default: 'async-value' },
