@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.0.0](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.20...angular-sdk-v1.0.0) (2026-01-23)
+
+
+### 🧹 Chore
+
+* format README ([#1335](https://github.com/open-feature/js-sdk/issues/1335)) ([26d0325](https://github.com/open-feature/js-sdk/commit/26d0325f6f382f4b57e5152bf55dbd2725a9ff39))
+
 ## [0.0.20](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.19...angular-sdk-v0.0.20) (2025-12-16)
 
 
