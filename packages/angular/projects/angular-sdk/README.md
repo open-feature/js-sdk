@@ -418,13 +418,16 @@ export class AppModule {}
 
 Angular's lifecycle can result in flags being evaluated multiple times as a user interacts with a page.
 If you are using an OpenFeature hook for telemetry, this can result in inflated evaluation metrics.
-The [OpenFeature debounce hook](https://github.com/open-feature/js-sdk-contrib/tree/main/libs/hooks/debounce) can help to reduce the amount of redundant evaluations reported to your observability platform by limiting the frequency at which evaluation metrics are reported.
+The [OpenFeature debounce hook](https://github.com/open-feature/js-sdk-contrib/tree/main/libs/hooks/debounce) can help
+to reduce the amount of redundant evaluations reported to your observability platform by limiting the frequency at which
+evaluation metrics are reported.
 
 ## FAQ and troubleshooting
 
 > I can import things form the `@openfeature/angular-sdk`, `@openfeature/web-sdk`, and `@openfeature/core`; which should I use?
 
-The `@openfeature/angular-sdk` re-exports everything from its peers (`@openfeature/web-sdk` and `@openfeature/core`), and adds the Angular-specific features.
+The `@openfeature/angular-sdk` re-exports everything from its peers (`@openfeature/web-sdk` and `@openfeature/core`),
+and adds the Angular-specific features.
 You can import everything from the `@openfeature/angular-sdk` directly.
 Avoid importing anything from `@openfeature/web-sdk` or `@openfeature/core`.
 
