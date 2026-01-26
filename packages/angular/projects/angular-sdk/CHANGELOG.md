@@ -1,6 +1,21 @@
 # Changelog
 
 
+## [1.0.0](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.20...angular-sdk-v1.0.0) (2026-01-23)
+
+
+🎉 This is the first stable release of the Angular SDK 🎉
+
+With this release, we are stabilizing the API.
+Any further changes in features not marked as experimental will be regarded as breaking.
+Many thanks to all those who have adopted thus far, and provided their valuable feedback!
+
+See our [stability guide](https://openfeature.dev/specification/#document-statuses) for more information.
+
+### 🧹 Chore
+
+* format README ([#1335](https://github.com/open-feature/js-sdk/issues/1335)) ([26d0325](https://github.com/open-feature/js-sdk/commit/26d0325f6f382f4b57e5152bf55dbd2725a9ff39))
+
 ## [0.0.20](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.19...angular-sdk-v0.0.20) (2025-12-16)
 
 
