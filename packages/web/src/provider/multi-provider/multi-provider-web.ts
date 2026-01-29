@@ -13,17 +13,26 @@ import type {
   FlagValue,
   OpenFeatureError,
   TrackingEventDetails,
+  ProviderEntryInput,
+  BaseProviderResolutionResult,
+  RegisteredProvider,
+  BaseEvaluationStrategy,
 } from '@openfeature/core';
 import type { Provider } from '../../provider';
+import { ProviderStatus } from '../../provider';
 import type { Hook } from '../../hooks';
-import { OpenFeatureEventEmitter } from '../../events';
-import { DefaultLogger, GeneralError, ErrorCode, StandardResolutionReasons } from '@openfeature/core';
-import { HookExecutor } from './hook-executor';
-import { constructAggregateError, throwAggregateErrorFromPromiseResults } from './errors';
-import type { BaseEvaluationStrategy, ProviderResolutionResult } from './strategies';
+import { OpenFeatureEventEmitter, ProviderEvents } from '../../events';
+import {
+  DefaultLogger,
+  GeneralError,
+  ErrorCode,
+  StandardResolutionReasons,
+  constructAggregateError,
+  StatusTracker,
+  throwAggregateErrorFromPromiseResults,
+} from '@openfeature/core';
 import { FirstMatchStrategy } from './strategies';
-import { StatusTracker } from './status-tracker';
-import type { ProviderEntryInput, RegisteredProvider } from './types';
+import { HookExecutor } from './hook-executor';
 
 export class MultiProvider implements Provider {
   readonly runsOn = 'client';
@@ -35,15 +44,19 @@ export class MultiProvider implements Provider {
 
   metadata: ProviderMetadata;
 
-  providerEntries: RegisteredProvider[] = [];
-  private providerEntriesByName: Record<string, RegisteredProvider> = {};
+  providerEntries: RegisteredProvider<Provider>[] = [];
+  private providerEntriesByName: Record<string, RegisteredProvider<Provider>> = {};
 
   private hookExecutor: HookExecutor;
-  private statusTracker = new StatusTracker(this.events);
+  private statusTracker = new StatusTracker<
+    (typeof ProviderEvents)[keyof typeof ProviderEvents],
+    ProviderStatus,
+    Provider
+  >(this.events, ProviderStatus, ProviderEvents);
 
   constructor(
-    readonly constructorProviders: ProviderEntryInput[],
-    private readonly evaluationStrategy: BaseEvaluationStrategy = new FirstMatchStrategy(),
+    readonly constructorProviders: ProviderEntryInput<Provider>[],
+    private readonly evaluationStrategy: BaseEvaluationStrategy<ProviderStatus, Provider> = new FirstMatchStrategy(),
     private readonly logger: Logger = new DefaultLogger(),
   ) {
     this.hookExecutor = new HookExecutor(this.logger);
@@ -60,7 +73,7 @@ export class MultiProvider implements Provider {
     };
   }
 
-  private registerProviders(constructorProviders: ProviderEntryInput[]) {
+  private registerProviders(constructorProviders: ProviderEntryInput<Provider>[]) {
     const providersByName: Record<string, Provider[]> = {};
 
     for (const constructorProvider of constructorProviders) {
@@ -185,7 +198,7 @@ export class MultiProvider implements Provider {
       throw new GeneralError('Hook context not available for evaluation');
     }
 
-    const results = [] as (ProviderResolutionResult<T> | null)[];
+    const results = [] as (BaseProviderResolutionResult<T, ProviderStatus, Provider> | null)[];
 
     for (const providerEntry of this.providerEntries) {
       const [shouldEvaluateNext, result] = this.evaluateProviderEntry(
@@ -205,7 +218,9 @@ export class MultiProvider implements Provider {
       }
     }
 
-    const resolutions = results.filter((r): r is ProviderResolutionResult<T> => Boolean(r));
+    const resolutions = results.filter((r): r is BaseProviderResolutionResult<T, ProviderStatus, Provider> =>
+      Boolean(r),
+    );
     const finalResult = this.evaluationStrategy.determineFinalResult({ flagKey, flagType }, context, resolutions);
 
     if (finalResult.errors?.length) {
@@ -223,11 +238,11 @@ export class MultiProvider implements Provider {
     flagKey: string,
     flagType: FlagValueType,
     defaultValue: T,
-    providerEntry: RegisteredProvider,
+    providerEntry: RegisteredProvider<Provider>,
     hookContext: HookContext,
     hookHints: HookHints,
     context: EvaluationContext,
-  ): [boolean, ProviderResolutionResult<T> | null] {
+  ): [boolean, BaseProviderResolutionResult<T, ProviderStatus, Provider> | null] {
     let evaluationResult: ResolutionDetails<T> | undefined = undefined;
     const provider = providerEntry.provider;
     const strategyContext = {
@@ -242,19 +257,19 @@ export class MultiProvider implements Provider {
       return [true, null];
     }
 
-    let resolution: ProviderResolutionResult<T>;
+    let resolution: BaseProviderResolutionResult<T, ProviderStatus, Provider>;
 
     try {
       evaluationResult = this.evaluateProviderAndHooks(flagKey, defaultValue, provider, hookContext, hookHints);
       resolution = {
         details: evaluationResult,
-        provider: provider,
+        provider,
         providerName: providerEntry.name,
       };
     } catch (error: unknown) {
       resolution = {
         thrownError: error,
-        provider: provider,
+        provider,
         providerName: providerEntry.name,
       };
     }
