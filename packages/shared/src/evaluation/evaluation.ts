@@ -17,7 +17,7 @@ export type ResolutionReason = keyof typeof StandardResolutionReasons | (string 
 export type FlagMetadata = Record<string, string | number | boolean>;
 
 export type ResolutionDetails<U> = {
-  value: U;
+  value?: U;
   variant?: string;
   flagMetadata?: FlagMetadata;
   reason?: ResolutionReason;
