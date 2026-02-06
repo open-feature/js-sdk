@@ -342,10 +342,9 @@ function attachHandlersAndResolve<T extends FlagValue>(
 
   useEffect(() => {
     const controller = new AbortController();
-    if (status === ProviderStatus.NOT_READY) {
-      // update when the provider is ready
-      client.addHandler(ProviderEvents.Ready, updateEvaluationDetailsCallback, { signal: controller.signal });
-    }
+    // Always register the Ready handler to catch provider initialization
+    // even if current status is already READY (e.g., from a NoOp provider)
+    client.addHandler(ProviderEvents.Ready, updateEvaluationDetailsCallback, { signal: controller.signal });
 
     if (defaultedOptions.updateOnContextChanged) {
       // update when the context changes
@@ -364,7 +363,6 @@ function attachHandlersAndResolve<T extends FlagValue>(
     };
   }, [
     client,
-    status,
     defaultedOptions.updateOnContextChanged,
     defaultedOptions.updateOnConfigurationChanged,
     updateEvaluationDetailsCallback,
