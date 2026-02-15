@@ -34,7 +34,7 @@ export class OpenFeatureAPI
   protected _domainScopedProviders: Map<string, ProviderWrapper<Provider, ClientProviderStatus>> = new Map();
   protected _createEventEmitter = () => new OpenFeatureEventEmitter();
 
-  private constructor() {
+  protected constructor() {
     super('client');
   }
 

@@ -1,7 +1,18 @@
 import type { Paradigm } from '@openfeature/core';
+import { BOUND_API_KEY } from '@openfeature/core';
 import type { Provider } from '../src';
 import { OpenFeature, OpenFeatureAPI, ProviderStatus } from '../src';
 import { OpenFeatureClient } from '../src/client/internal/open-feature-client';
+
+class TestOpenFeatureAPI extends OpenFeatureAPI {
+  constructor() {
+    super();
+  }
+}
+
+function getBoundApi(provider: object): unknown {
+  return BOUND_API_KEY in provider ? provider[BOUND_API_KEY] : undefined;
+}
 
 const mockProvider = (config?: { initialStatus?: ProviderStatus; runsOn?: Paradigm }) => {
   return {
@@ -254,6 +265,107 @@ describe('OpenFeature', () => {
 
         expect(spy).toHaveBeenCalledWith({ name: 'todd' });
       });
+    });
+  });
+
+  describe('Requirement 1.x.x', () => {
+    it('should throw if a provider instance is already bound to a different API instance', () => {
+      const otherApi = new TestOpenFeatureAPI();
+      const provider = mockProvider();
+
+      otherApi.setProvider(provider);
+
+      expect(() => OpenFeature.setProvider(provider)).toThrow(/already bound to a different OpenFeature API instance/);
+    });
+
+    it('should throw if a provider instance bound to another API is set via setProviderAndWait', async () => {
+      const otherApi = new TestOpenFeatureAPI();
+      const provider = mockProvider();
+
+      await otherApi.setProviderAndWait(provider);
+
+      await expect(OpenFeature.setProviderAndWait(provider)).rejects.toThrow(
+        /already bound to a different OpenFeature API instance/,
+      );
+    });
+
+    it('should not throw if the provider is already bound to the same API instance', () => {
+      const provider = mockProvider();
+      OpenFeature.setProvider(provider);
+
+      expect(() => OpenFeature.setProvider('another-domain', provider)).not.toThrow();
+    });
+
+    it('should unbind a provider when it is replaced and no longer used by any domain', () => {
+      const provider = mockProvider();
+      OpenFeature.setProvider(provider);
+
+      expect(getBoundApi(provider)).toBe(OpenFeature);
+
+      // Replace the provider with a new one.
+      const newProvider = mockProvider();
+      OpenFeature.setProvider(newProvider);
+
+      // The old provider should be unbound.
+      expect(getBoundApi(provider)).toBeUndefined();
+      expect(getBoundApi(newProvider)).toBe(OpenFeature);
+    });
+
+    it('should not unbind a provider that is still used by another domain', async () => {
+      const provider = { ...mockProvider(), onClose: jest.fn() };
+
+      await OpenFeature.setProviderAndWait('domain1', provider);
+      await OpenFeature.setProviderAndWait('domain2', provider);
+
+      const newProvider = mockProvider();
+      await OpenFeature.setProviderAndWait('domain1', newProvider);
+
+      expect(getBoundApi(provider)).toBe(OpenFeature);
+      expect(provider.onClose).not.toHaveBeenCalled();
+    });
+
+    it('should unbind all providers on clearProviders', async () => {
+      const provider1 = mockProvider();
+      const provider2 = mockProvider();
+
+      OpenFeature.setProvider(provider1);
+      OpenFeature.setProvider('domain1', provider2);
+
+      expect(getBoundApi(provider1)).toBe(OpenFeature);
+      expect(getBoundApi(provider2)).toBe(OpenFeature);
+
+      await OpenFeature.clearProviders();
+
+      expect(getBoundApi(provider1)).toBeUndefined();
+      expect(getBoundApi(provider2)).toBeUndefined();
+    });
+
+    it('should unbind all providers on close', async () => {
+      const provider1 = mockProvider();
+      const provider2 = mockProvider();
+
+      OpenFeature.setProvider(provider1);
+      OpenFeature.setProvider('domain1', provider2);
+
+      expect(getBoundApi(provider1)).toBe(OpenFeature);
+      expect(getBoundApi(provider2)).toBe(OpenFeature);
+
+      await OpenFeature.close();
+
+      expect(getBoundApi(provider1)).toBeUndefined();
+      expect(getBoundApi(provider2)).toBeUndefined();
+    });
+
+    it('should allow re-registering a provider after it has been unbound', async () => {
+      const provider = mockProvider();
+      OpenFeature.setProvider(provider);
+      expect(getBoundApi(provider)).toBe(OpenFeature);
+
+      await OpenFeature.clearProviders();
+      expect(getBoundApi(provider)).toBeUndefined();
+
+      expect(() => OpenFeature.setProvider(provider)).not.toThrow();
+      expect(getBoundApi(provider)).toBe(OpenFeature);
     });
   });
 });
