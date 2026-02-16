@@ -205,17 +205,11 @@ export abstract class OpenFeatureCommonAPI<
     return this._apiEmitter.getHandlers(eventType);
   }
 
-  abstract setProviderAndWait(
-    clientOrProvider?: string | P,
-    providerContextOrUndefined?: P | EvaluationContext,
-    contextOrUndefined?: EvaluationContext,
-  ): Promise<void>;
-
   abstract setProvider(
     clientOrProvider?: string | P,
     providerContextOrUndefined?: P | EvaluationContext,
     contextOrUndefined?: EvaluationContext,
-  ): this;
+  ): Promise<void>;
 
   protected setAwaitableProvider(domainOrProvider?: string | P, providerOrUndefined?: P): Promise<void> | void {
     const domain = stringOrUndefined(domainOrProvider);

@@ -446,7 +446,7 @@ describe('FeatureFlagDirective', () => {
         },
         0,
       );
-      await OpenFeature.setProviderAndWait(newDomain, newProvider);
+      await OpenFeature.setProvider(newDomain, newProvider);
 
       fixture.componentRef.setInput('domain', newDomain);
       await fixture.whenStable();

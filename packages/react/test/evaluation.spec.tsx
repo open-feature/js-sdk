@@ -1030,7 +1030,7 @@ describe('evaluation', () => {
         }
 
         const provider = new SilentUpdateProvider({});
-        await OpenFeature.setProviderAndWait('test', provider);
+        await OpenFeature.setProvider('test', provider);
 
         // The triggerRender prop forces a re-render
         const TestComponent = ({ triggerRender }: { triggerRender: number }) => {
@@ -1090,7 +1090,7 @@ describe('evaluation', () => {
           },
         });
 
-        await OpenFeature.setProviderAndWait(EVALUATION, provider);
+        await OpenFeature.setProvider(EVALUATION, provider);
 
         const TestComponent = ({ flagKey }: { flagKey: string }) => {
           const { value } = useFlag(flagKey, 'default');
@@ -1156,7 +1156,7 @@ describe('evaluation', () => {
         // Async logic that CustomProvider depends upon for initialization.
         await new Promise((resolve) => setTimeout(resolve, 100));
 
-        await OpenFeature.setProviderAndWait(EVALUATION, new CustomProvider());
+        await OpenFeature.setProvider(EVALUATION, new CustomProvider());
       })();
 
       const TestComponent = () => {
@@ -1218,7 +1218,7 @@ describe('evaluation', () => {
     );
 
     beforeAll(async () => {
-      await OpenFeature.setProviderAndWait(DOMAIN, makeProvider());
+      await OpenFeature.setProvider(DOMAIN, makeProvider());
     });
 
     afterEach(() => {

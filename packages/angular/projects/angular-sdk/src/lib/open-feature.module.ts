@@ -8,14 +8,12 @@ export interface OpenFeatureConfig {
   /**
    * The default provider to be used by OpenFeature.
    * If not provided, the provider can be set later using {@link OpenFeature.setProvider}
-   * or {@link OpenFeature.setProviderAndWait}.
    */
   provider?: Provider;
   /**
    * A map of domain-bound providers to be registered with OpenFeature.
    * The key is the domain name, and the value is the provider instance.
    * Providers can also be registered later using {@link OpenFeature.setProvider}
-   * or {@link OpenFeature.setProviderAndWait}.
    */
   domainBoundProviders?: Record<string, Provider>;
 

@@ -76,7 +76,7 @@ import { OpenFeature } from '@openfeature/web-sdk';
 
 // Register your feature flag provider
 try {
-  await OpenFeature.setProviderAndWait(new YourProviderOfChoice());
+  await OpenFeature.setProvider(new YourProviderOfChoice());
 } catch (error) {
   console.error('Failed to initialize provider:', error);
 }
@@ -123,11 +123,11 @@ Once you've added a provider as a dependency, it can be registered with OpenFeat
 
 #### Awaitable
 
-To register a provider and ensure it is ready before further actions are taken, you can use the `setProviderAndWait` method as shown below:
+To register a provider and ensure it is ready before further actions are taken, you can use the `setProvider` method as shown below:
 
 ```ts
 try {
-  await OpenFeature.setProviderAndWait(new MyProvider());
+  await OpenFeature.setProvider(new MyProvider());
 } catch (error) {
   console.error('Failed to initialize provider:', error);
 }
@@ -160,7 +160,7 @@ import { MultiProvider } from '@openfeature/web-sdk';
 
 const multiProvider = new MultiProvider([{ provider: new ProviderA() }, { provider: new ProviderB() }]);
 
-await OpenFeature.setProviderAndWait(multiProvider);
+await OpenFeature.setProvider(multiProvider);
 
 const client = OpenFeature.getClient();
 console.log(client.getBooleanDetails('my-flag', false));
@@ -211,7 +211,7 @@ sequenceDiagram
 In (1) the Client sends a request to the provider backend in order to get all values from all feature flags that it has.
 Once the provider backend replies (2) the client holds all flag values and therefore the flag evaluation process is synchronous.
 
-In order to prevent flag evaluations from defaulting while the provider is initializing, it is highly recommended to evaluate flags only after the provider is ready. This can be done using the `setProviderAndWait` method or using the `setProvider` method and listening for the `READY` [event](#eventing).
+In order to prevent flag evaluations from defaulting while the provider is initializing, it is highly recommended to evaluate flags only after the provider is ready. This can be done using the `setProvider` method or using the `setProvider` method and listening for the `READY` [event](#eventing).
 
 ### Targeting and Context
 

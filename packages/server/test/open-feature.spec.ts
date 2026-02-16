@@ -117,13 +117,13 @@ describe('OpenFeature', () => {
     it('should not close provider if it is used by another client', async () => {
       const provider1 = { ...mockProvider(), onClose: jest.fn() };
 
-      await OpenFeature.setProviderAndWait('domain1', provider1);
-      await OpenFeature.setProviderAndWait('domain2', provider1);
+      await OpenFeature.setProvider('domain1', provider1);
+      await OpenFeature.setProvider('domain2', provider1);
 
-      await OpenFeature.setProviderAndWait('domain1', { ...provider1 });
+      await OpenFeature.setProvider('domain1', { ...provider1 });
       expect(provider1.onClose).not.toHaveBeenCalled();
 
-      await OpenFeature.setProviderAndWait('domain2', { ...provider1 });
+      await OpenFeature.setProvider('domain2', { ...provider1 });
       expect(provider1.onClose).toHaveBeenCalledTimes(1);
     });
 

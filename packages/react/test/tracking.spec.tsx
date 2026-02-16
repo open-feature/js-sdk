@@ -30,7 +30,7 @@ describe('tracking', () => {
   describe('no domain', () => {
     it('should call default provider', async () => {
       const provider = mockProvider();
-      await OpenFeature.setProviderAndWait(provider);
+      await OpenFeature.setProvider(provider);
 
       function Component() {
         const { track } = useTrack();
@@ -56,7 +56,7 @@ describe('tracking', () => {
   describe('domain set', () => {
     it('should call provider for domain', async () => {
       const domainProvider = mockProvider();
-      await OpenFeature.setProviderAndWait(domain, domainProvider);
+      await OpenFeature.setProvider(domain, domainProvider);
 
       function Component() {
         const { track } = useTrack();

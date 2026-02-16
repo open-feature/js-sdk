@@ -200,7 +200,7 @@ describe('Hook Data', () => {
 
   beforeEach(async () => {
     OpenFeature.clearHooks();
-    await OpenFeature.setProviderAndWait(MOCK_PROVIDER);
+    await OpenFeature.setProvider(MOCK_PROVIDER);
     client = OpenFeature.getClient();
   });
 
@@ -261,7 +261,7 @@ describe('Hook Data', () => {
     });
 
     it('should handle hook data in error scenarios', async () => {
-      await OpenFeature.setProviderAndWait(ERROR_PROVIDER);
+      await OpenFeature.setProvider(ERROR_PROVIDER);
       const hook = new TestHookWithData();
       client.addHooks(hook);
 
