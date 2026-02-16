@@ -211,7 +211,7 @@ sequenceDiagram
 In (1) the Client sends a request to the provider backend in order to get all values from all feature flags that it has.
 Once the provider backend replies (2) the client holds all flag values and therefore the flag evaluation process is synchronous.
 
-In order to prevent flag evaluations from defaulting while the provider is initializing, it is highly recommended to evaluate flags only after the provider is ready. This can be done using the `setProvider` method or using the `setProvider` method and listening for the `READY` [event](#eventing).
+In order to prevent flag evaluations from defaulting while the provider is initializing, it is highly recommended to evaluate flags only after the provider is ready. This can be done using the `setProvider` method and listening for the `READY` [event](#eventing).
 
 ### Targeting and Context
 

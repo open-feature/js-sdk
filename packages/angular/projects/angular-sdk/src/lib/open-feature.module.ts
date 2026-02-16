@@ -36,11 +36,17 @@ export const OPEN_FEATURE_CONFIG_TOKEN = new InjectionToken<OpenFeatureConfig>('
 export class OpenFeatureModule {
   static forRoot(config: OpenFeatureConfig): ModuleWithProviders<OpenFeatureModule> {
     const context = typeof config.context === 'function' ? config.context() : config.context;
-    OpenFeature.setProvider(config.provider, context);
+    if (config.provider) {
+      OpenFeature.setProvider(config.provider, context).catch((err) => {
+        console.error('Error setting default provider in OpenFeatureModule:', err);
+      });
+    }
 
     if (config.domainBoundProviders) {
-      Object.entries(config.domainBoundProviders).map(([domain, provider]) =>
-        OpenFeature.setProvider(domain, provider, context),
+      Object.entries(config.domainBoundProviders).forEach(([domain, provider]) =>
+        OpenFeature.setProvider(domain, provider, context).catch((err) => {
+          console.error(`Error setting provider for domain "${domain}" in OpenFeatureModule:`, err);
+        }),
       );
     }
 
