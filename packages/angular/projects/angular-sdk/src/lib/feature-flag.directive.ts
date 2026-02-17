@@ -21,7 +21,7 @@ import {
   OpenFeature,
 } from '@openfeature/web-sdk';
 
-class FeatureFlagDirectiveContext<T extends FlagValue> {
+export class FeatureFlagDirectiveContext<T extends FlagValue> {
   $implicit!: T;
   evaluationDetails: EvaluationDetails<T>;
 
