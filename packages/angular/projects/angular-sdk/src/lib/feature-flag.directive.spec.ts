@@ -7,6 +7,7 @@ import { TestingProvider } from '../test/test.utils';
 import { v4 } from 'uuid';
 import {
   BooleanFeatureFlagDirective,
+  FeatureFlagDirectiveContext,
   NumberFeatureFlagDirective,
   ObjectFeatureFlagDirective,
   StringFeatureFlagDirective,
@@ -180,6 +181,22 @@ class TestComponent {
   @Input() specialFlagKey: string = 'test-flag';
   protected readonly JSON = JSON;
 }
+
+describe('FeatureFlagDirectiveContext', () => {
+  it('should initialize $implicit and evaluationDetails from EvaluationDetails', () => {
+    const mockDetails = {
+      value: true,
+      reason: 'STATIC',
+      flagKey: 'test-flag',
+      flagMetadata: {},
+    };
+
+    const context = new FeatureFlagDirectiveContext(mockDetails);
+
+    expect(context.$implicit).toBe(true);
+    expect(context.evaluationDetails).toEqual(mockDetails);
+  });
+});
 
 describe('FeatureFlagDirective', () => {
   describe('thenTemplate', () => {
