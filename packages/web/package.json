@@ -50,9 +50,9 @@
   },
   "homepage": "https://github.com/open-feature/js-sdk#readme",
   "peerDependencies": {
-    "@openfeature/core": "^1.9.0"
+    "@openfeature/core": "^1.9.2"
   },
   "devDependencies": {
-    "@openfeature/core": "^1.9.0"
+    "@openfeature/core": "^1.9.2"
   }
 }
