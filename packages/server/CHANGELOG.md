@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.20.2](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.20.1...server-sdk-v1.20.2) (2026-02-18)
+
+
+### 🔄 Refactoring
+
+* move Multi-Provider shared code to core package ([#1324](https://github.com/open-feature/js-sdk/issues/1324)) ([baf33f0](https://github.com/open-feature/js-sdk/commit/baf33f0af159d43888bc405791107223ff30133b))
+* simplify evaluation context updates for before hooks ([#1257](https://github.com/open-feature/js-sdk/issues/1257)) ([e3c9d79](https://github.com/open-feature/js-sdk/commit/e3c9d79474bf6d6e4a7ef122e6617d25a65f6ade))
+
 ## [1.20.1](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.20.0...server-sdk-v1.20.1) (2025-12-09)
 
 
