@@ -1,6 +1,6 @@
 {
   "name": "@openfeature/server-sdk",
-  "version": "1.20.1",
+  "version": "1.20.2",
   "description": "OpenFeature SDK for JavaScript",
   "main": "./dist/cjs/index.js",
   "files": [
@@ -48,9 +48,9 @@
     "node": ">=20"
   },
   "peerDependencies": {
-    "@openfeature/core": "^1.9.0"
+    "@openfeature/core": "^1.9.2"
   },
   "devDependencies": {
-    "@openfeature/core": "^1.9.0"
+    "@openfeature/core": "^1.9.2"
   }
 }
