@@ -369,6 +369,10 @@ React's lifecycle can result in flags being evaluated multiple times as a user i
 If you are using an OpenFeature hook for telemetry, this can result in inflated evaluation metrics.
 The [OpenFeature debounce hook](https://github.com/open-feature/js-sdk-contrib/tree/main/libs/hooks/debounce) can help to reduce the amount of redundant evaluations reported to your observability platform by limiting the frequency at which evaluation metrics are reported.
 
+#### Type-Safe Flag Keys
+
+For enhanced type safety and autocompletion, you can override flag key types using TypeScript module augmentation. See the [`@openfeature/core` README](../shared/README.md#type-safe-flag-keys) for details.
+
 ### Testing
 
 The React SDK includes a built-in context provider for testing.

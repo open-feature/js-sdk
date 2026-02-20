@@ -170,6 +170,10 @@ export class OpenFeatureController {
 }
 ```
 
+#### Type-Safe Flag Keys
+
+For enhanced type safety and autocompletion, you can override flag key types using TypeScript module augmentation. See the [`@openfeature/core` README](../shared/README.md#type-safe-flag-keys) for details.
+
 ## Module additional information
 
 ### Flag evaluation context injection
