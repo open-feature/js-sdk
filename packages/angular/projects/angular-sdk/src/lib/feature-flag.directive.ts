@@ -11,6 +11,7 @@ import {
   inject,
 } from '@angular/core';
 import {
+  BooleanFlagKey,
   Client,
   ClientProviderEvents,
   ClientProviderStatus,
@@ -18,7 +19,10 @@ import {
   EventHandler,
   FlagValue,
   JsonValue,
+  NumberFlagKey,
+  ObjectFlagKey,
   OpenFeature,
+  StringFlagKey,
 } from '@openfeature/web-sdk';
 
 /**
@@ -267,7 +271,7 @@ export class BooleanFeatureFlagDirective extends FeatureFlagDirective<boolean> i
   /**
    * The key of the boolean feature flag.
    */
-  @Input({ required: true }) booleanFeatureFlag: string;
+  @Input({ required: true }) booleanFeatureFlag: BooleanFlagKey;
 
   /**
    * The default value for the boolean feature flag.
@@ -382,7 +386,7 @@ export class NumberFeatureFlagDirective extends FeatureFlagDirective<number> imp
   /**
    * The key of the number feature flag.
    */
-  @Input({ required: true }) numberFeatureFlag: string;
+  @Input({ required: true }) numberFeatureFlag: NumberFlagKey;
 
   /**
    * The default value for the number feature flag.
@@ -502,7 +506,7 @@ export class StringFeatureFlagDirective extends FeatureFlagDirective<string> imp
   /**
    * The key of the string feature flag.
    */
-  @Input({ required: true }) stringFeatureFlag: string;
+  @Input({ required: true }) stringFeatureFlag: StringFlagKey;
 
   /**
    * The default value for the string feature flag.
@@ -622,7 +626,7 @@ export class ObjectFeatureFlagDirective<T extends JsonValue> extends FeatureFlag
   /**
    * The key of the object feature flag.
    */
-  @Input({ required: true }) objectFeatureFlag: string;
+  @Input({ required: true }) objectFeatureFlag: ObjectFlagKey;
 
   /**
    * The default value for the object feature flag.

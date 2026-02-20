@@ -1,11 +1,16 @@
 import type {
+  BooleanFlagKey,
   Client,
   ClientProviderEvents,
+  ConstrainedFlagKey,
   EvaluationDetails,
   EventHandler,
   FlagEvaluationOptions,
   FlagValue,
   JsonValue,
+  NumberFlagKey,
+  ObjectFlagKey,
+  StringFlagKey,
 } from '@openfeature/web-sdk';
 import { ProviderEvents, ProviderStatus } from '@openfeature/web-sdk';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -44,14 +49,14 @@ type ConstrainedFlagQuery<T> = FlagQuery<
  * The resolver method to use is based on the type of the defaultValue.
  * For type-specific hooks, use {@link useBooleanFlagValue}, {@link useBooleanFlagDetails} and equivalents.
  * By default, components will re-render when the flag value changes.
- * @param {string} flagKey the flag identifier
+ * @param {ConstrainedFlagKey<T>} flagKey the flag identifier
  * @template {FlagValue} T A optional generic argument constraining the default.
  * @param {T} defaultValue the default value; used to determine what resolved type should be used.
  * @param {ReactFlagEvaluationOptions} options for this evaluation
  * @returns { FlagQuery } a queryable object containing useful information about the flag.
  */
 export function useFlag<T extends FlagValue = FlagValue>(
-  flagKey: string,
+  flagKey: ConstrainedFlagKey<T>,
   defaultValue: T,
   options?: ReactFlagEvaluationOptions,
 ): FlagQuery<
@@ -84,14 +89,14 @@ type UseFlagReturn<T extends FlagValue> = ReturnType<typeof useFlag<T>>;
 /**
  * Equivalent to {@link useFlag} with `options: { suspend: true }`
  * @experimental Suspense is an experimental feature subject to change in future versions.
- * @param {string} flagKey the flag identifier
+ * @param {ConstrainedFlagKey<T>} flagKey the flag identifier
  * @template {FlagValue} T A optional generic argument constraining the default.
  * @param {T} defaultValue the default value; used to determine what resolved type should be used.
  * @param {ReactFlagEvaluationNoSuspenseOptions} options for this evaluation
  * @returns { UseFlagReturn<T> } a queryable object containing useful information about the flag.
  */
 export function useSuspenseFlag<T extends FlagValue = FlagValue>(
-  flagKey: string,
+  flagKey: ConstrainedFlagKey<T>,
   defaultValue: T,
   options?: ReactFlagEvaluationNoSuspenseOptions,
 ): UseFlagReturn<T> {
@@ -102,13 +107,13 @@ export function useSuspenseFlag<T extends FlagValue = FlagValue>(
  * Evaluates a feature flag, returning a boolean.
  * By default, components will re-render when the flag value changes.
  * For a generic hook returning a queryable interface, see {@link useFlag}.
- * @param {string} flagKey the flag identifier
+ * @param {BooleanFlagKey} flagKey the flag identifier
  * @param {boolean} defaultValue the default value
  * @param {ReactFlagEvaluationOptions} options options for this evaluation
  * @returns { boolean} a EvaluationDetails object for this evaluation
  */
 export function useBooleanFlagValue(
-  flagKey: string,
+  flagKey: BooleanFlagKey,
   defaultValue: boolean,
   options?: ReactFlagEvaluationOptions,
 ): boolean {
@@ -119,13 +124,13 @@ export function useBooleanFlagValue(
  * Evaluates a feature flag, returning evaluation details.
  * By default, components will re-render when the flag value changes.
  * For a generic hook returning a queryable interface, see {@link useFlag}.
- * @param {string} flagKey the flag identifier
+ * @param {BooleanFlagKey} flagKey the flag identifier
  * @param {boolean} defaultValue the default value
  * @param {ReactFlagEvaluationOptions} options options for this evaluation
  * @returns { EvaluationDetails<boolean>} a EvaluationDetails object for this evaluation
  */
 export function useBooleanFlagDetails(
-  flagKey: string,
+  flagKey: BooleanFlagKey,
   defaultValue: boolean,
   options?: ReactFlagEvaluationOptions,
 ): EvaluationDetails<boolean> {
@@ -143,14 +148,14 @@ export function useBooleanFlagDetails(
  * Evaluates a feature flag, returning a string.
  * By default, components will re-render when the flag value changes.
  * For a generic hook returning a queryable interface, see {@link useFlag}.
- * @param {string} flagKey the flag identifier
+ * @param {StringFlagKey} flagKey the flag identifier
  * @template {string} [T=string] A optional generic argument constraining the string
  * @param {T} defaultValue the default value
  * @param {ReactFlagEvaluationOptions} options options for this evaluation
  * @returns { boolean} a EvaluationDetails object for this evaluation
  */
 export function useStringFlagValue<T extends string = string>(
-  flagKey: string,
+  flagKey: StringFlagKey,
   defaultValue: T,
   options?: ReactFlagEvaluationOptions,
 ): string {
@@ -161,14 +166,14 @@ export function useStringFlagValue<T extends string = string>(
  * Evaluates a feature flag, returning evaluation details.
  * By default, components will re-render when the flag value changes.
  * For a generic hook returning a queryable interface, see {@link useFlag}.
- * @param {string} flagKey the flag identifier
+ * @param {StringFlagKey} flagKey the flag identifier
  * @template {string} [T=string] A optional generic argument constraining the string
  * @param {T} defaultValue the default value
  * @param {ReactFlagEvaluationOptions} options options for this evaluation
  * @returns { EvaluationDetails<string>} a EvaluationDetails object for this evaluation
  */
 export function useStringFlagDetails<T extends string = string>(
-  flagKey: string,
+  flagKey: StringFlagKey,
   defaultValue: T,
   options?: ReactFlagEvaluationOptions,
 ): EvaluationDetails<string> {
@@ -186,14 +191,14 @@ export function useStringFlagDetails<T extends string = string>(
  * Evaluates a feature flag, returning a number.
  * By default, components will re-render when the flag value changes.
  * For a generic hook returning a queryable interface, see {@link useFlag}.
- * @param {string} flagKey the flag identifier
+ * @param {NumberFlagKey} flagKey the flag identifier
  * @template {number} [T=number] A optional generic argument constraining the number
  * @param {T} defaultValue the default value
  * @param {ReactFlagEvaluationOptions} options options for this evaluation
  * @returns { boolean} a EvaluationDetails object for this evaluation
  */
 export function useNumberFlagValue<T extends number = number>(
-  flagKey: string,
+  flagKey: NumberFlagKey,
   defaultValue: T,
   options?: ReactFlagEvaluationOptions,
 ): number {
@@ -204,14 +209,14 @@ export function useNumberFlagValue<T extends number = number>(
  * Evaluates a feature flag, returning evaluation details.
  * By default, components will re-render when the flag value changes.
  * For a generic hook returning a queryable interface, see {@link useFlag}.
- * @param {string} flagKey the flag identifier
+ * @param {NumberFlagKey} flagKey the flag identifier
  * @template {number} [T=number] A optional generic argument constraining the number
  * @param {T} defaultValue the default value
  * @param {ReactFlagEvaluationOptions} options options for this evaluation
  * @returns { EvaluationDetails<number>} a EvaluationDetails object for this evaluation
  */
 export function useNumberFlagDetails<T extends number = number>(
-  flagKey: string,
+  flagKey: NumberFlagKey,
   defaultValue: T,
   options?: ReactFlagEvaluationOptions,
 ): EvaluationDetails<number> {
@@ -229,14 +234,14 @@ export function useNumberFlagDetails<T extends number = number>(
  * Evaluates a feature flag, returning an object.
  * By default, components will re-render when the flag value changes.
  * For a generic hook returning a queryable interface, see {@link useFlag}.
- * @param {string} flagKey the flag identifier
+ * @param {ObjectFlagKey} flagKey the flag identifier
  * @template {JsonValue} [T=JsonValue] A optional generic argument describing the structure
  * @param {T} defaultValue the default value
  * @param {ReactFlagEvaluationOptions} options options for this evaluation
  * @returns { boolean} a EvaluationDetails object for this evaluation
  */
 export function useObjectFlagValue<T extends JsonValue = JsonValue>(
-  flagKey: string,
+  flagKey: ObjectFlagKey,
   defaultValue: T,
   options?: ReactFlagEvaluationOptions,
 ): T {
@@ -247,14 +252,14 @@ export function useObjectFlagValue<T extends JsonValue = JsonValue>(
  * Evaluates a feature flag, returning evaluation details.
  * By default, components will re-render when the flag value changes.
  * For a generic hook returning a queryable interface, see {@link useFlag}.
- * @param {string} flagKey the flag identifier
+ * @param {ObjectFlagKey} flagKey the flag identifier
  * @param {T} defaultValue the default value
  * @template {JsonValue} [T=JsonValue] A optional generic argument describing the structure
  * @param {ReactFlagEvaluationOptions} options options for this evaluation
  * @returns { EvaluationDetails<T>} a EvaluationDetails object for this evaluation
  */
 export function useObjectFlagDetails<T extends JsonValue = JsonValue>(
-  flagKey: string,
+  flagKey: ObjectFlagKey,
   defaultValue: T,
   options?: ReactFlagEvaluationOptions,
 ): EvaluationDetails<T> {

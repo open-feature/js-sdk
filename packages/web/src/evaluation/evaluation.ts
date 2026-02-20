@@ -9,6 +9,17 @@ import type {
   ObjectFlagKey,
 } from '@openfeature/core';
 
+// Must be defined outside @openfeature/core to allow module augmentation of the key types
+export type ConstrainedFlagKey<T> = T extends boolean
+  ? BooleanFlagKey
+  : T extends number
+    ? NumberFlagKey
+    : T extends string
+      ? StringFlagKey
+      : T extends JsonValue
+        ? ObjectFlagKey
+        : never;
+
 export interface FlagEvaluationOptions {
   hooks?: BaseHook[];
   hookHints?: HookHints;
