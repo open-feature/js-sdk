@@ -2,7 +2,7 @@ import type { Provider, ResolutionDetails } from '@openfeature/web-sdk';
 import '@testing-library/jest-dom'; // see: https://testing-library.com/docs/react-testing-library/setup
 import { render, screen } from '@testing-library/react';
 import * as React from 'react';
-import { OpenFeatureTestProvider, useFlag } from '../src';
+import { OpenFeature, OpenFeatureTestProvider, useFlag } from '../src';
 
 const FLAG_KEY = 'thumbs';
 
@@ -17,6 +17,11 @@ function TestComponent(props: { suspend: boolean }) {
 }
 
 describe('OpenFeatureTestProvider', () => {
+  beforeEach(async () => {
+    await OpenFeature.clearContexts();
+    await OpenFeature.clearProviders();
+  });
+
   describe('no args', () => {
     it('renders default', async () => {
       render(
@@ -125,6 +130,27 @@ describe('OpenFeatureTestProvider', () => {
 
         // should resolve immediately since delay is falsy
         expect(screen.getByText('👍')).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('sdk and flagValueMap set', () => {
+    it('uses the sdk provided', async () => {
+      const sdk = OpenFeature.getIsolated();
+
+      render(
+        <OpenFeatureTestProvider sdk={sdk} flagValueMap={{ [FLAG_KEY]: true }}>
+          <TestComponent suspend={false} />
+        </OpenFeatureTestProvider>,
+      );
+
+      expect(sdk.getClient().getBooleanDetails(FLAG_KEY, false)).toMatchObject({
+        value: true,
+        reason: 'STATIC',
+      });
+      expect(OpenFeature.getClient().getBooleanDetails(FLAG_KEY, false)).toMatchObject({
+        value: false,
+        reason: 'ERROR',
       });
     });
   });

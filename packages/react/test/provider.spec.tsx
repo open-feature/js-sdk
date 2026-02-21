@@ -11,6 +11,7 @@ import {
   useStringFlagValue,
 } from '../src';
 import { TestingProvider } from './test.utils';
+import { useOpenFeatureProvider } from '../src/provider/use-open-feature-provider';
 
 describe('OpenFeatureProvider', () => {
   /**
@@ -53,6 +54,7 @@ describe('OpenFeatureProvider', () => {
 
   beforeEach(async () => {
     await OpenFeature.clearContexts();
+    await OpenFeature.clearProviders();
   });
 
   describe('useOpenFeatureClient', () => {
@@ -96,6 +98,43 @@ describe('OpenFeatureProvider', () => {
 
         expect(firstClient).toBe(secondClient);
       });
+    });
+  });
+
+  describe('useOpenFeatureProvider', () => {
+    const DOMAIN = 'useOpenFeatureProvider';
+
+    it('should return provider from the global singleton when no SDK is specified', () => {
+      const provider = new InMemoryProvider();
+      OpenFeature.setProvider(DOMAIN, provider);
+
+      const wrapper = ({ children }: Parameters<typeof OpenFeatureProvider>[0]) => (
+        <OpenFeatureProvider domain={DOMAIN}>{children}</OpenFeatureProvider>
+      );
+
+      const { result } = renderHook(() => useOpenFeatureProvider(), { wrapper });
+
+      expect(result.current).toEqual(provider);
+    });
+
+    it('should return provider from the specified SDK when one is provided', () => {
+      const provider = new InMemoryProvider();
+      OpenFeature.setProvider(DOMAIN, provider);
+
+      const isolatedInstance = OpenFeature.getIsolated();
+      const isolatedProvider = new InMemoryProvider();
+      isolatedInstance.setProvider(DOMAIN, isolatedProvider);
+
+      const wrapper = ({ children }: Parameters<typeof OpenFeatureProvider>[0]) => (
+        <OpenFeatureProvider sdk={isolatedInstance} domain={DOMAIN}>
+          {children}
+        </OpenFeatureProvider>
+      );
+
+      const { result } = renderHook(() => useOpenFeatureProvider(), { wrapper });
+
+      expect(result.current).toEqual(isolatedProvider);
+      expect(result.current).not.toEqual(provider);
     });
   });
 
@@ -165,6 +204,7 @@ describe('OpenFeatureProvider', () => {
       });
     });
   });
+
   describe('useMutateContext', () => {
     const MutateButton = ({ setter }: { setter?: (prevContext: EvaluationContext) => EvaluationContext }) => {
       const { setContext } = useContextMutator();
