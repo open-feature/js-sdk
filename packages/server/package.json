@@ -7,10 +7,18 @@
     "dist/"
   ],
   "exports": {
-    "types": "./dist/types.d.ts",
-    "import": "./dist/esm/index.js",
-    "require": "./dist/cjs/index.js",
-    "default": "./dist/cjs/index.js"
+    ".": {
+      "types": "./dist/types.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "default": "./dist/cjs/index.js"
+    },
+    "./isolated": {
+      "types": "./dist/isolated.d.ts",
+      "import": "./dist/esm/isolated.js",
+      "require": "./dist/cjs/isolated.js",
+      "default": "./dist/cjs/isolated.js"
+    }
   },
   "types": "./dist/types.d.ts",
   "scripts": {
@@ -19,9 +27,12 @@
     "lint:fix": "eslint ./ --fix",
     "clean": "shx rm -rf ./dist",
     "build:esm": "esbuild src/index.ts --bundle --external:@openfeature/core --sourcemap --target=es2015 --platform=node --format=esm --outfile=./dist/esm/index.js --analyze",
+    "build:esm-isolated": "esbuild src/isolated.ts --bundle --external:@openfeature/core --sourcemap --target=es2015 --platform=node --format=esm --outfile=./dist/esm/isolated.js --analyze",
     "build:cjs": "esbuild src/index.ts --bundle --external:@openfeature/core --sourcemap --target=es2015 --platform=node --format=cjs --outfile=./dist/cjs/index.js --analyze",
+    "build:cjs-isolated": "esbuild src/isolated.ts --bundle --external:@openfeature/core --sourcemap --target=es2015 --platform=node --format=cjs --outfile=./dist/cjs/isolated.js --analyze",
     "build:rollup-types": "rollup -c ../../rollup.config.mjs",
-    "build": "npm run clean && npm run build:esm && npm run build:cjs && npm run build:rollup-types",
+    "build:rollup-types-isolated": "rollup -c ./rollup.isolated.config.mjs",
+    "build": "npm run clean && npm run build:esm && npm run build:esm-isolated && npm run build:cjs && npm run build:cjs-isolated && npm run build:rollup-types && npm run build:rollup-types-isolated",
     "postbuild": "shx cp ./../../package.esm.json ./dist/esm/package.json",
     "current-version": "echo $npm_package_version",
     "prepack": "shx cp ./../../LICENSE ./LICENSE",
