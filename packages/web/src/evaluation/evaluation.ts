@@ -5,6 +5,98 @@ export interface FlagEvaluationOptions {
   hookHints?: HookHints;
 }
 
+/**
+ * Options for subscribing to flag value changes.
+ */
+export interface FlagChangeSubscriptionOptions extends FlagEvaluationOptions {
+  /**
+   * Whether to fire the callback when the evaluation context changes.
+   * @default true
+   */
+  updateOnContextChanged?: boolean;
+
+  /**
+   * Whether to fire the callback when the provider configuration changes
+   * (e.g., when an admin flips a flag or a scheduled feature activation is due).
+   * @default true
+   */
+  updateOnConfigurationChanged?: boolean;
+}
+
+export interface FlagValueChangeSubscriptions {
+  /**
+   * Subscribes to value changes for a boolean flag.
+   * The callback is invoked immediately upon subscription with the current flag value,
+   * and subsequently whenever the flag value changes due to context changes or
+   * provider configuration changes (based on the provided options).
+   * @param flagKey The flag key uniquely identifies a particular flag
+   * @param defaultValue The value returned if an error occurs
+   * @param callback Function called immediately and when flag value changes, receives new and old evaluation details
+   * @param options Additional subscription options including which events to listen for
+   * @returns Unsubscribe function to remove the listener
+   */
+  onBooleanChanged(
+    flagKey: string,
+    defaultValue: boolean,
+    callback: (newDetails: EvaluationDetails<boolean>, oldDetails: EvaluationDetails<boolean>) => void,
+    options?: FlagChangeSubscriptionOptions,
+  ): () => void;
+
+  /**
+   * Subscribes to value changes for a string flag.
+   * The callback is invoked immediately upon subscription with the current flag value,
+   * and subsequently whenever the flag value changes due to context changes or
+   * provider configuration changes (based on the provided options).
+   * @param flagKey The flag key uniquely identifies a particular flag
+   * @param defaultValue The value returned if an error occurs
+   * @param callback Function called immediately and when flag value changes, receives new and old evaluation details
+   * @param options Additional subscription options including which events to listen for
+   * @returns Unsubscribe function to remove the listener
+   */
+  onStringChanged(
+    flagKey: string,
+    defaultValue: string,
+    callback: (newDetails: EvaluationDetails<string>, oldDetails: EvaluationDetails<string>) => void,
+    options?: FlagChangeSubscriptionOptions,
+  ): () => void;
+
+  /**
+   * Subscribes to value changes for a number flag.
+   * The callback is invoked immediately upon subscription with the current flag value,
+   * and subsequently whenever the flag value changes due to context changes or
+   * provider configuration changes (based on the provided options).
+   * @param flagKey The flag key uniquely identifies a particular flag
+   * @param defaultValue The value returned if an error occurs
+   * @param callback Function called immediately and when flag value changes, receives new and old evaluation details
+   * @param options Additional subscription options including which events to listen for
+   * @returns Unsubscribe function to remove the listener
+   */
+  onNumberChanged(
+    flagKey: string,
+    defaultValue: number,
+    callback: (newDetails: EvaluationDetails<number>, oldDetails: EvaluationDetails<number>) => void,
+    options?: FlagChangeSubscriptionOptions,
+  ): () => void;
+
+  /**
+   * Subscribes to value changes for an object flag.
+   * The callback is invoked immediately upon subscription with the current flag value,
+   * and subsequently whenever the flag value changes due to context changes or
+   * provider configuration changes (based on the provided options).
+   * @param flagKey The flag key uniquely identifies a particular flag
+   * @param defaultValue The value returned if an error occurs
+   * @param callback Function called immediately and when flag value changes, receives new and old evaluation details
+   * @param options Additional subscription options including which events to listen for
+   * @returns Unsubscribe function to remove the listener
+   */
+  onObjectChanged<T extends JsonValue = JsonValue>(
+    flagKey: string,
+    defaultValue: T,
+    callback: (newDetails: EvaluationDetails<T>, oldDetails: EvaluationDetails<T>) => void,
+    options?: FlagChangeSubscriptionOptions,
+  ): () => void;
+}
+
 export interface Features {
   /**
    * Performs a flag evaluation that returns a boolean.

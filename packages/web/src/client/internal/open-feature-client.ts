@@ -24,8 +24,9 @@ import {
   statusMatchesEvent,
   MapHookData,
 } from '@openfeature/core';
-import type { FlagEvaluationOptions } from '../../evaluation';
-import type { ProviderEvents } from '../../events';
+import type { FlagEvaluationOptions, FlagChangeSubscriptionOptions } from '../../evaluation';
+import { EvaluationDetailsWithSubscription } from '../../evaluation';
+import { ProviderEvents } from '../../events';
 import type { InternalEventEmitter } from '../../events/internal/internal-event-emitter';
 import type { Hook } from '../../hooks';
 import type { Provider } from '../../provider';
@@ -136,7 +137,13 @@ export class OpenFeatureClient implements Client {
     defaultValue: boolean,
     options?: FlagEvaluationOptions,
   ): EvaluationDetails<boolean> {
-    return this.evaluate<boolean>(flagKey, this._provider.resolveBooleanEvaluation, defaultValue, 'boolean', options);
+    return this.evaluateWithSubscription<boolean>(
+      flagKey,
+      this._provider.resolveBooleanEvaluation,
+      defaultValue,
+      'boolean',
+      options,
+    );
   }
 
   getStringValue<T extends string = string>(flagKey: string, defaultValue: T, options?: FlagEvaluationOptions): T {
@@ -148,7 +155,7 @@ export class OpenFeatureClient implements Client {
     defaultValue: T,
     options?: FlagEvaluationOptions,
   ): EvaluationDetails<T> {
-    return this.evaluate<T>(
+    return this.evaluateWithSubscription<T>(
       flagKey,
       // this isolates providers from our restricted string generic argument.
       this._provider.resolveStringEvaluation as () => EvaluationDetails<T>,
@@ -167,7 +174,7 @@ export class OpenFeatureClient implements Client {
     defaultValue: T,
     options?: FlagEvaluationOptions,
   ): EvaluationDetails<T> {
-    return this.evaluate<T>(
+    return this.evaluateWithSubscription<T>(
       flagKey,
       // this isolates providers from our restricted number generic argument.
       this._provider.resolveNumberEvaluation as () => EvaluationDetails<T>,
@@ -190,7 +197,155 @@ export class OpenFeatureClient implements Client {
     defaultValue: T,
     options?: FlagEvaluationOptions,
   ): EvaluationDetails<T> {
-    return this.evaluate<T>(flagKey, this._provider.resolveObjectEvaluation, defaultValue, 'object', options);
+    return this.evaluateWithSubscription<T>(
+      flagKey,
+      this._provider.resolveObjectEvaluation,
+      defaultValue,
+      'object',
+      options,
+    );
+  }
+
+  onBooleanChanged(
+    flagKey: string,
+    defaultValue: boolean,
+    callback: (newDetails: EvaluationDetails<boolean>, oldDetails: EvaluationDetails<boolean>) => void,
+    options?: FlagChangeSubscriptionOptions,
+  ): () => void {
+    return this.subscribeToFlagChanges(flagKey, defaultValue, 'boolean', callback, options);
+  }
+
+  onStringChanged(
+    flagKey: string,
+    defaultValue: string,
+    callback: (newDetails: EvaluationDetails<string>, oldDetails: EvaluationDetails<string>) => void,
+    options?: FlagChangeSubscriptionOptions,
+  ): () => void {
+    return this.subscribeToFlagChanges(flagKey, defaultValue, 'string', callback, options);
+  }
+
+  onNumberChanged(
+    flagKey: string,
+    defaultValue: number,
+    callback: (newDetails: EvaluationDetails<number>, oldDetails: EvaluationDetails<number>) => void,
+    options?: FlagChangeSubscriptionOptions,
+  ): () => void {
+    return this.subscribeToFlagChanges(flagKey, defaultValue, 'number', callback, options);
+  }
+
+  onObjectChanged<T extends JsonValue = JsonValue>(
+    flagKey: string,
+    defaultValue: T,
+    callback: (newDetails: EvaluationDetails<T>, oldDetails: EvaluationDetails<T>) => void,
+    options?: FlagChangeSubscriptionOptions,
+  ): () => void {
+    return this.subscribeToFlagChanges(flagKey, defaultValue, 'object', callback, options);
+  }
+
+  private subscribeToFlagChanges<T extends FlagValue>(
+    flagKey: string,
+    defaultValue: T,
+    flagType: FlagValueType,
+    callback: (newDetails: EvaluationDetails<T>, oldDetails: EvaluationDetails<T>) => void,
+    options?: FlagChangeSubscriptionOptions,
+  ): () => void {
+    const updateOnContextChanged = options?.updateOnContextChanged ?? true;
+    const updateOnConfigurationChanged = options?.updateOnConfigurationChanged ?? true;
+
+    let currentDetails: EvaluationDetails<T>;
+
+    switch (flagType) {
+      case 'boolean':
+        currentDetails = this.getBooleanDetails(flagKey, defaultValue as boolean, options) as EvaluationDetails<T>;
+        break;
+      case 'string':
+        currentDetails = this.getStringDetails(flagKey, defaultValue as string, options) as EvaluationDetails<T>;
+        break;
+      case 'number':
+        currentDetails = this.getNumberDetails(flagKey, defaultValue as number, options) as EvaluationDetails<T>;
+        break;
+      case 'object':
+        currentDetails = this.getObjectDetails(flagKey, defaultValue as JsonValue, options) as EvaluationDetails<T>;
+        break;
+      default:
+        throw new Error(`Unsupported flag type: ${flagType}`);
+    }
+
+    // Fire callback immediately with initial value
+    // Create a plain object copy since currentDetails may have getters
+    const initialOldDetails: EvaluationDetails<T> = {
+      flagKey: currentDetails.flagKey,
+      value: currentDetails.value,
+      variant: currentDetails.variant,
+      flagMetadata: currentDetails.flagMetadata,
+      reason: currentDetails.reason,
+      errorCode: currentDetails.errorCode,
+      errorMessage: currentDetails.errorMessage,
+    };
+    callback(currentDetails, initialOldDetails);
+
+    const evaluateAndCallback = () => {
+      // Create a plain object copy since currentDetails may be a class with getters
+      const oldDetails: EvaluationDetails<T> = {
+        flagKey: currentDetails.flagKey,
+        value: currentDetails.value,
+        variant: currentDetails.variant,
+        flagMetadata: currentDetails.flagMetadata,
+        reason: currentDetails.reason,
+        errorCode: currentDetails.errorCode,
+        errorMessage: currentDetails.errorMessage,
+      };
+      let newDetails: EvaluationDetails<T>;
+
+      switch (flagType) {
+        case 'boolean':
+          newDetails = this.getBooleanDetails(flagKey, defaultValue as boolean, options) as EvaluationDetails<T>;
+          break;
+        case 'string':
+          newDetails = this.getStringDetails(flagKey, defaultValue as string, options) as EvaluationDetails<T>;
+          break;
+        case 'number':
+          newDetails = this.getNumberDetails(flagKey, defaultValue as number, options) as EvaluationDetails<T>;
+          break;
+        case 'object':
+          newDetails = this.getObjectDetails(flagKey, defaultValue as JsonValue, options) as EvaluationDetails<T>;
+          break;
+        default:
+          return;
+      }
+
+      currentDetails = newDetails;
+      callback(newDetails, oldDetails);
+    };
+
+    const contextChangedHandler = () => {
+      evaluateAndCallback();
+    };
+
+    const configurationChangedHandler: EventHandler = (eventDetails) => {
+      // If flagsChanged is undefined, assume all flags may have changed
+      const flagsChanged = (eventDetails as { flagsChanged?: string[] } | undefined)?.flagsChanged;
+      if (!flagsChanged || flagsChanged.includes(flagKey)) {
+        evaluateAndCallback();
+      }
+    };
+
+    if (updateOnContextChanged) {
+      this.addHandler(ProviderEvents.ContextChanged, contextChangedHandler, {});
+    }
+
+    if (updateOnConfigurationChanged) {
+      this.addHandler(ProviderEvents.ConfigurationChanged, configurationChangedHandler, {});
+    }
+
+    return () => {
+      if (updateOnContextChanged) {
+        this.removeHandler(ProviderEvents.ContextChanged, contextChangedHandler);
+      }
+      if (updateOnConfigurationChanged) {
+        this.removeHandler(ProviderEvents.ConfigurationChanged, configurationChangedHandler);
+      }
+    };
   }
 
   track(occurrenceKey: string, occurrenceDetails: TrackingEventDetails = {}): void {
@@ -209,6 +364,17 @@ export class OpenFeatureClient implements Client {
     } catch (err) {
       this._logger.debug('Error recording tracking event.', err);
     }
+  }
+
+  private evaluateWithSubscription<T extends FlagValue>(
+    flagKey: string,
+    resolver: (flagKey: string, defaultValue: T, context: EvaluationContext, logger: Logger) => ResolutionDetails<T>,
+    defaultValue: T,
+    flagType: FlagValueType,
+    options: FlagEvaluationOptions = {},
+  ): EvaluationDetails<T> {
+    const details = this.evaluate<T>(flagKey, resolver, defaultValue, flagType, options);
+    return new EvaluationDetailsWithSubscription(this, flagKey, defaultValue, flagType, details, options);
   }
 
   private evaluate<T extends FlagValue>(
