@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [1.8.0](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.7.3...web-sdk-v1.8.0) (2026-02-21)
+
+
+### ✨ New Features
+
+* add "sideEffects": false to package.json files for all packages ([#1343](https://github.com/open-feature/js-sdk/issues/1343)) ([d8e968e](https://github.com/open-feature/js-sdk/commit/d8e968ed2513fe986a6500895f3399303a2f0b96))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/core bumped from ^1.9.2 to ^1.10.0
+
 ## [1.7.3](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.7.2...web-sdk-v1.7.3) (2026-02-18)
 
 
