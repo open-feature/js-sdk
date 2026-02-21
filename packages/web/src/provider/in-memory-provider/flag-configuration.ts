@@ -40,7 +40,9 @@ export type Flag<T extends string = string> = {
   contextEvaluator?: (ctx: EvaluationContext) => NoInfer<T>;
 };
 
-export type FlagConfiguration = Record<string, Flag>;
+export type FlagConfiguration<T extends Record<string, FlagVariants<string>> = Record<string, FlagVariants<string>>> = {
+  [K in keyof T]: Omit<Flag<keyof T[K] & string>, 'variants'> & { variants: T[K] };
+};
 
 const defineFlag = <T extends string>(flag: Flag<T>): Flag<T> => flag;
 
@@ -64,4 +66,31 @@ defineFlag({
   disabled: false,
   // @ts-expect-error contextEvaluator returns a non-valid variant key
   contextEvaluator: (_ctx) => 'f',
+});
+
+const defineConfig = <T extends Record<string, FlagVariants<string>>>(
+  config: FlagConfiguration<T>,
+): FlagConfiguration<T> => config;
+
+defineConfig({
+  'valid-flag': {
+    variants: {
+      a: true,
+      b: false,
+    },
+    defaultVariant: 'a',
+    disabled: false,
+    contextEvaluator: (_ctx) => 'b',
+  },
+  'invalid-flag': {
+    variants: {
+      c: true,
+      d: false,
+    },
+    // @ts-expect-error defaultVariant is not a valid variant key
+    defaultVariant: 'e',
+    disabled: false,
+    // @ts-expect-error contextEvaluator returns a non-valid variant key
+    contextEvaluator: (_ctx) => 'f',
+  },
 });
