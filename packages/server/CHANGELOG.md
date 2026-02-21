@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.21.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.20.2...server-sdk-v1.21.0) (2026-02-21)
+
+
+### ✨ New Features
+
+* add "sideEffects": false to package.json files for all packages ([#1343](https://github.com/open-feature/js-sdk/issues/1343)) ([d8e968e](https://github.com/open-feature/js-sdk/commit/d8e968ed2513fe986a6500895f3399303a2f0b96))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/core bumped from ^1.9.2 to ^1.10.0
+
 ## [1.20.2](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.20.1...server-sdk-v1.20.2) (2026-02-18)
 
 
