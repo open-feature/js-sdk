@@ -7,14 +7,16 @@ import {
   TypeMismatchError,
 } from '@openfeature/core';
 import type { Provider } from '../provider';
-import type { Flag, FlagConfiguration } from './flag-configuration';
+import type { Flag, FlagConfiguration, FlagVariants } from './flag-configuration';
 import { VariantFoundError } from './variant-not-found-error';
 import { OpenFeatureEventEmitter, ProviderEvents } from '../..';
 
 /**
  * A simple OpenFeature provider intended for demos and as a test stub.
  */
-export class InMemoryProvider implements Provider {
+export class InMemoryProvider<
+  T extends Record<string, FlagVariants<string>> = Record<string, FlagVariants<string>>,
+> implements Provider {
   public readonly events = new OpenFeatureEventEmitter();
   public readonly runsOn = 'server';
   readonly metadata = {
@@ -22,7 +24,7 @@ export class InMemoryProvider implements Provider {
   } as const;
   private _flagConfiguration: FlagConfiguration;
 
-  constructor(flagConfiguration: FlagConfiguration = {}) {
+  constructor(flagConfiguration: FlagConfiguration<T> = {} as FlagConfiguration<T>) {
     this._flagConfiguration = { ...flagConfiguration };
   }
 
@@ -30,7 +32,9 @@ export class InMemoryProvider implements Provider {
    * Overwrites the configured flags.
    * @param { FlagConfiguration } flagConfiguration new flag configuration
    */
-  putConfiguration(flagConfiguration: FlagConfiguration) {
+  putConfiguration<U extends Record<string, FlagVariants<string>> = Record<string, FlagVariants<string>>>(
+    flagConfiguration: FlagConfiguration<U>,
+  ) {
     const flagsChanged = Object.entries(flagConfiguration)
       .filter(([key, value]) => this._flagConfiguration[key] !== value)
       .map(([key]) => key);

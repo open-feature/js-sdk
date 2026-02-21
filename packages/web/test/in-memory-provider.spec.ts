@@ -20,7 +20,7 @@ describe('in-memory provider', () => {
           disabled: false,
           defaultVariant: 'on',
         },
-      };
+      } as const;
       await provider.putConfiguration(booleanFlagSpec);
 
       const resolution = provider.resolveBooleanEvaluation('a-boolean-flag', true);
@@ -38,7 +38,7 @@ describe('in-memory provider', () => {
           disabled: false,
           defaultVariant: 'on',
         },
-      };
+      } as const;
       await provider.putConfiguration(booleanFlagSpec);
 
       expect(() => provider.resolveBooleanEvaluation('another-boolean-flag', false)).toThrow();
@@ -54,7 +54,7 @@ describe('in-memory provider', () => {
           disabled: true,
           defaultVariant: 'on',
         },
-      };
+      } as const;
       await provider.putConfiguration(booleanFlagDisabledSpec);
 
       const resolution = provider.resolveBooleanEvaluation('a-boolean-flag', false);
@@ -72,7 +72,8 @@ describe('in-memory provider', () => {
           disabled: false,
           defaultVariant: 'dummy',
         },
-      };
+      } as const;
+      // @ts-expect-error defaultVariant is not a valid variant key
       await provider.putConfiguration(booleanFlagSpec);
 
       expect(() => provider.resolveBooleanEvaluation('a-boolean-flag', false)).toThrow(VariantNotFoundError);
@@ -88,7 +89,7 @@ describe('in-memory provider', () => {
           disabled: false,
           defaultVariant: 'on',
         },
-      };
+      } as const;
       await provider.putConfiguration(booleanFlagSpec);
 
       expect(() => provider.resolveBooleanEvaluation('a-boolean-flag', false)).toThrow(TypeMismatchError);
@@ -103,9 +104,9 @@ describe('in-memory provider', () => {
           },
           disabled: false,
           defaultVariant: 'on',
-          contextEvaluator: () => 'off',
+          contextEvaluator: () => 'off' as const,
         },
-      };
+      } as const;
       const dummyContext = {};
       await provider.putConfiguration(booleanFlagCtxSpec);
 
@@ -130,7 +131,7 @@ describe('in-memory provider', () => {
           disabled: false,
           defaultVariant: 'on',
         },
-      };
+      } as const;
       await provider.putConfiguration(stringFlagSpec);
 
       const resolution = provider.resolveStringEvaluation('a-string-flag', itsDefault);
@@ -139,7 +140,7 @@ describe('in-memory provider', () => {
     });
 
     it('throws FlagNotFound if flag does not exist', async () => {
-      const StringFlagSpec = {
+      const stringFlagSpec = {
         'a-string-flag': {
           variants: {
             on: true,
@@ -148,15 +149,14 @@ describe('in-memory provider', () => {
           disabled: false,
           defaultVariant: 'on',
         },
-      };
-
-      await provider.putConfiguration(StringFlagSpec);
+      } as const;
+      await provider.putConfiguration(stringFlagSpec);
 
       expect(() => provider.resolveStringEvaluation('another-string-flag', itsDefault)).toThrow(FlagNotFoundError);
     });
 
     it('resolves to default value with reason disabled if flag is disabled', async () => {
-      const StringFlagDisabledSpec = {
+      const stringFlagDisabledSpec = {
         'a-string-flag': {
           variants: {
             on: itsOn,
@@ -165,8 +165,8 @@ describe('in-memory provider', () => {
           disabled: true,
           defaultVariant: 'on',
         },
-      };
-      await provider.putConfiguration(StringFlagDisabledSpec);
+      } as const;
+      await provider.putConfiguration(stringFlagDisabledSpec);
 
       const resolution = provider.resolveStringEvaluation('a-string-flag', itsDefault);
 
@@ -174,7 +174,7 @@ describe('in-memory provider', () => {
     });
 
     it('throws VariantNotFoundError if variant does not exist', async () => {
-      const StringFlagSpec = {
+      const stringFlagSpec = {
         'a-string-flag': {
           variants: {
             on: itsOn,
@@ -183,14 +183,15 @@ describe('in-memory provider', () => {
           disabled: false,
           defaultVariant: 'dummy',
         },
-      };
-      await provider.putConfiguration(StringFlagSpec);
+      } as const;
+      // @ts-expect-error defaultVariant is not a valid variant key
+      await provider.putConfiguration(stringFlagSpec);
 
       expect(() => provider.resolveStringEvaluation('a-string-flag', itsDefault)).toThrow(VariantNotFoundError);
     });
 
     it('throws TypeMismatchError if variant does not match with accessor method type', async () => {
-      const StringFlagSpec = {
+      const stringFlagSpec = {
         'a-string-flag': {
           variants: {
             on: true,
@@ -199,15 +200,14 @@ describe('in-memory provider', () => {
           disabled: false,
           defaultVariant: 'on',
         },
-      };
-
-      await provider.putConfiguration(StringFlagSpec);
+      } as const;
+      await provider.putConfiguration(stringFlagSpec);
 
       expect(() => provider.resolveStringEvaluation('a-string-flag', itsDefault)).toThrow(TypeMismatchError);
     });
 
     it('resolves to variant value with reason target match if context is provided and flag spec has context evaluator', async () => {
-      const StringFlagCtxSpec = {
+      const stringFlagCtxSpec = {
         'a-string-flag': {
           variants: {
             on: itsOn,
@@ -215,11 +215,11 @@ describe('in-memory provider', () => {
           },
           disabled: false,
           defaultVariant: 'on',
-          contextEvaluator: () => 'off',
+          contextEvaluator: () => 'off' as const,
         },
-      };
+      } as const;
       const dummyContext = {};
-      await provider.putConfiguration(StringFlagCtxSpec);
+      await provider.putConfiguration(stringFlagCtxSpec);
 
       const resolution = provider.resolveStringEvaluation('a-string-flag', itsDefault, dummyContext);
 
@@ -242,7 +242,7 @@ describe('in-memory provider', () => {
           disabled: false,
           defaultVariant: 'on',
         },
-      };
+      } as const;
       await provider.putConfiguration(numberFlagSpec);
 
       const resolution = provider.resolveNumberEvaluation('a-number-flag', defaultNumber);
@@ -260,7 +260,8 @@ describe('in-memory provider', () => {
           disabled: false,
           defaultVariant: 'dummy',
         },
-      };
+      } as const;
+      // @ts-expect-error defaultVariant is not a valid variant key
       await provider.putConfiguration(numberFlagSpec);
 
       expect(() => provider.resolveNumberEvaluation('another-number-flag', defaultNumber)).toThrow(FlagNotFoundError);
@@ -276,7 +277,7 @@ describe('in-memory provider', () => {
           disabled: true,
           defaultVariant: 'on',
         },
-      };
+      } as const;
       await provider.putConfiguration(numberFlagDisabledSpec);
 
       const resolution = provider.resolveNumberEvaluation('a-number-flag', defaultNumber);
@@ -294,7 +295,8 @@ describe('in-memory provider', () => {
           disabled: false,
           defaultVariant: 'dummy',
         },
-      };
+      } as const;
+      // @ts-expect-error defaultVariant is not a valid variant key
       await provider.putConfiguration(numberFlagSpec);
 
       expect(() => provider.resolveNumberEvaluation('a-number-flag', defaultNumber)).toThrow(VariantNotFoundError);
@@ -310,8 +312,7 @@ describe('in-memory provider', () => {
           disabled: false,
           defaultVariant: 'on',
         },
-      };
-
+      } as const;
       await provider.putConfiguration(numberFlagSpec);
 
       expect(() => provider.resolveNumberEvaluation('a-number-flag', defaultNumber)).toThrow(TypeMismatchError);
@@ -326,9 +327,9 @@ describe('in-memory provider', () => {
           },
           disabled: false,
           defaultVariant: 'on',
-          contextEvaluator: () => 'off',
+          contextEvaluator: () => 'off' as const,
         },
-      };
+      } as const;
       const dummyContext = {};
       await provider.putConfiguration(numberFlagCtxSpec);
 
@@ -348,7 +349,7 @@ describe('in-memory provider', () => {
     const onObject = { someKey: 'on' };
     const offObject = { someKey: 'off' };
     it('resolves to default variant with reason static', async () => {
-      const ObjectFlagSpec = {
+      const objectFlagSpec = {
         'a-object-flag': {
           variants: {
             on: onObject,
@@ -357,8 +358,8 @@ describe('in-memory provider', () => {
           disabled: false,
           defaultVariant: 'on',
         },
-      };
-      await provider.putConfiguration(ObjectFlagSpec);
+      } as const;
+      await provider.putConfiguration(objectFlagSpec);
 
       const resolution = provider.resolveObjectEvaluation('a-object-flag', defaultObject);
 
@@ -366,8 +367,8 @@ describe('in-memory provider', () => {
     });
 
     it('throws FlagNotFound if flag does not exist', async () => {
-      const ObjectFlagSpec = {
-        'a-Object-flag': {
+      const objectFlagSpec = {
+        'a-object-flag': {
           variants: {
             on: onObject,
             off: offObject,
@@ -375,14 +376,15 @@ describe('in-memory provider', () => {
           disabled: false,
           defaultVariant: 'dummy',
         },
-      };
-      await provider.putConfiguration(ObjectFlagSpec);
+      } as const;
+      // @ts-expect-error defaultVariant is not a valid variant key
+      await provider.putConfiguration(objectFlagSpec);
 
       expect(() => provider.resolveObjectEvaluation('another-number-flag', defaultObject)).toThrow(FlagNotFoundError);
     });
 
     it('resolves to default value with reason disabled if flag is disabled', async () => {
-      const ObjectFlagDisabledSpec = {
+      const objectFlagDisabledSpec = {
         'a-object-flag': {
           variants: {
             on: onObject,
@@ -391,8 +393,8 @@ describe('in-memory provider', () => {
           disabled: true,
           defaultVariant: 'on',
         },
-      };
-      await provider.putConfiguration(ObjectFlagDisabledSpec);
+      } as const;
+      await provider.putConfiguration(objectFlagDisabledSpec);
 
       const resolution = provider.resolveObjectEvaluation('a-object-flag', defaultObject);
 
@@ -400,8 +402,8 @@ describe('in-memory provider', () => {
     });
 
     it('throws VariantNotFoundError if variant does not exist', async () => {
-      const ObjectFlagSpec = {
-        'a-Object-flag': {
+      const objectFlagSpec = {
+        'a-object-flag': {
           variants: {
             on: onObject,
             off: offObject,
@@ -409,14 +411,15 @@ describe('in-memory provider', () => {
           disabled: false,
           defaultVariant: 'dummy',
         },
-      };
-      await provider.putConfiguration(ObjectFlagSpec);
+      } as const;
+      // @ts-expect-error defaultVariant is not a valid variant key
+      await provider.putConfiguration(objectFlagSpec);
 
-      expect(() => provider.resolveObjectEvaluation('a-Object-flag', defaultObject)).toThrow(VariantNotFoundError);
+      expect(() => provider.resolveObjectEvaluation('a-object-flag', defaultObject)).toThrow(VariantNotFoundError);
     });
 
     it('throws TypeMismatchError if variant does not match with accessor method type', async () => {
-      const ObjectFlagSpec = {
+      const objectFlagSpec = {
         'a-object-flag': {
           variants: {
             on: true,
@@ -425,15 +428,14 @@ describe('in-memory provider', () => {
           disabled: false,
           defaultVariant: 'on',
         },
-      };
-
-      await provider.putConfiguration(ObjectFlagSpec);
+      } as const;
+      await provider.putConfiguration(objectFlagSpec);
 
       expect(() => provider.resolveObjectEvaluation('a-object-flag', defaultObject)).toThrow(TypeMismatchError);
     });
 
     it('resolves to variant value with reason target match if context is provided and flag spec has context evaluator', async () => {
-      const ObjectFlagCtxSpec = {
+      const objectFlagCtxSpec = {
         'a-object-flag': {
           variants: {
             on: onObject,
@@ -441,11 +443,11 @@ describe('in-memory provider', () => {
           },
           disabled: false,
           defaultVariant: 'on',
-          contextEvaluator: () => 'off',
+          contextEvaluator: () => 'off' as const,
         },
-      };
+      } as const;
       const dummyContext = {};
-      await provider.putConfiguration(ObjectFlagCtxSpec);
+      await provider.putConfiguration(objectFlagCtxSpec);
 
       const resolution = provider.resolveObjectEvaluation('a-object-flag', defaultObject, dummyContext);
 
@@ -467,7 +469,7 @@ describe('in-memory provider', () => {
           defaultVariant: 'on',
           disabled: false,
         },
-      };
+      } as const;
       const provider = new InMemoryProvider(flagsSpec);
 
       const configChangedSpy = jest.fn();
@@ -481,7 +483,7 @@ describe('in-memory provider', () => {
           defaultVariant: 'off',
           disabled: false,
         },
-      };
+      } as const;
       await provider.putConfiguration(newFlagSpec);
 
       expect(configChangedSpy).toHaveBeenCalledWith({ flagsChanged: ['some-flag'] });
@@ -532,7 +534,7 @@ describe('in-memory provider', () => {
           defaultVariant: 'on',
           disabled: false,
         },
-      };
+      } as const;
 
       const substituteSpec = {
         variants: {
@@ -546,6 +548,7 @@ describe('in-memory provider', () => {
 
       // I passed configuration by reference, so maybe I can mess
       // with it behind the providers back!
+      // @ts-expect-error flagsSpec is seen as readonly due to the `as const` assertion
       flagsSpec['some-flag'] = substituteSpec;
 
       const resolution = provider.resolveStringEvaluation('some-flag', 'default value');
