@@ -51,7 +51,7 @@
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-alias": "^1.1.2",
-    "eslint-plugin-check-file": "^2.6.2",
+    "eslint-plugin-check-file": "^3.0.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jest": "^28.0.0",
     "eslint-plugin-jsdoc": "^50.0.0",
