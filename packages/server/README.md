@@ -76,7 +76,7 @@ import { OpenFeature } from '@openfeature/server-sdk';
 
 // Register your feature flag provider
 try {
-  await OpenFeature.setProviderAndWait(new YourProviderOfChoice());
+  await OpenFeature.setProvider(new YourProviderOfChoice());
 } catch (error) {
   console.error('Failed to initialize provider:', error);
 }
@@ -124,18 +124,10 @@ Once you've added a provider as a dependency, it can be registered with OpenFeat
 
 #### Awaitable
 
-To register a provider and ensure it is ready before further actions are taken, you can use the `setProviderAndWait` method as shown below:
+To register a provider and ensure it is ready before further actions are taken, you can use the `setProvider` method as shown below:
 
 ```ts
-await OpenFeature.setProviderAndWait(new MyProvider());
-```
-
-#### Synchronous
-
-To register a provider in a synchronous manner, you can use the `setProvider` method as shown below:
-
-```ts
-OpenFeature.setProvider(new MyProvider());
+await OpenFeature.setProvider(new MyProvider());
 ```
 
 Once the provider has been registered, the status can be tracked using [events](#eventing).
@@ -165,7 +157,7 @@ const backupProvider = new YourBackupProvider();
 const multiProvider = new MultiProvider([primaryProvider, backupProvider], new FirstMatchStrategy());
 
 // Register the multi-provider
-await OpenFeature.setProviderAndWait(multiProvider);
+await OpenFeature.setProvider(multiProvider);
 
 // Use as normal
 const client = OpenFeature.getClient();
@@ -191,7 +183,7 @@ const multiProvider = new MultiProvider(
   new FirstMatchStrategy(),
 );
 
-await OpenFeature.setProviderAndWait(multiProvider);
+await OpenFeature.setProvider(multiProvider);
 ```
 
 **Comparison Example:**
@@ -210,7 +202,7 @@ const multiProvider = new MultiProvider(
   }),
 );
 
-await OpenFeature.setProviderAndWait(multiProvider);
+await OpenFeature.setProvider(multiProvider);
 ```
 
 ### Targeting

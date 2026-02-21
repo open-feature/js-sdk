@@ -563,7 +563,7 @@ describe('Events', () => {
         it('Ready', (done) => {
           const provider = new MockProvider({ hasInitialize: false });
 
-          OpenFeature.setProviderAndWait(domain, provider).then(() => {
+          OpenFeature.setProvider(domain, provider).then(() => {
             OpenFeature.addHandler(ProviderEvents.Ready, () => {
               done();
             });
@@ -573,7 +573,7 @@ describe('Events', () => {
         it('Error', (done) => {
           const provider = new MockProvider({ failOnInit: true });
 
-          OpenFeature.setProviderAndWait(domain, provider).catch(() => {
+          OpenFeature.setProvider(domain, provider).catch(() => {
             OpenFeature.addHandler(ProviderEvents.Error, () => {
               done();
             });
@@ -588,7 +588,7 @@ describe('Events', () => {
           const provider = new MockProvider({ hasInitialize: false });
           const client = OpenFeature.getClient(domain);
 
-          OpenFeature.setProviderAndWait(domain, provider).then(() => {
+          OpenFeature.setProvider(domain, provider).then(() => {
             client.addHandler(ProviderEvents.Ready, () => {
               done();
             });
@@ -599,7 +599,7 @@ describe('Events', () => {
           const provider = new MockProvider({ failOnInit: true });
           const client = OpenFeature.getClient(domain);
 
-          OpenFeature.setProviderAndWait(domain, provider).catch(() => {
+          OpenFeature.setProvider(domain, provider).catch(() => {
             client.addHandler(ProviderEvents.Error, () => {
               done();
             });
@@ -617,7 +617,7 @@ describe('Events', () => {
 
           const handler = jest.fn(() => {});
 
-          await OpenFeature.setProviderAndWait(domain, provider);
+          await OpenFeature.setProvider(domain, provider);
           OpenFeature.addHandler(ProviderEvents.Reconciling, handler);
           OpenFeature.addHandler(ProviderEvents.ContextChanged, handler);
           await OpenFeature.setContext(domain, {});
@@ -635,7 +635,7 @@ describe('Events', () => {
           const reconcileHandler = jest.fn(() => {});
           const changedEventHandler = jest.fn(() => {});
 
-          await OpenFeature.setProviderAndWait(domain, provider);
+          await OpenFeature.setProvider(domain, provider);
           OpenFeature.addHandler(ProviderEvents.Reconciling, reconcileHandler);
           OpenFeature.addHandler(ProviderEvents.ContextChanged, changedEventHandler);
           await OpenFeature.setContext(domain, {});
@@ -651,7 +651,7 @@ describe('Events', () => {
 
           const handler = jest.fn(() => {});
 
-          await OpenFeature.setProviderAndWait(domain, provider);
+          await OpenFeature.setProvider(domain, provider);
           OpenFeature.addHandler(ProviderEvents.Reconciling, handler); // this should not be called
           OpenFeature.addHandler(ProviderEvents.ContextChanged, handler);
           await OpenFeature.setContext(domain, {});
@@ -669,7 +669,7 @@ describe('Events', () => {
           const handler = jest.fn(() => {});
           const client = OpenFeature.getClient(domain);
 
-          await OpenFeature.setProviderAndWait(domain, provider);
+          await OpenFeature.setProvider(domain, provider);
           client.addHandler(ProviderEvents.Reconciling, handler);
           client.addHandler(ProviderEvents.ContextChanged, handler);
           await OpenFeature.setContext(domain, {});
@@ -685,7 +685,7 @@ describe('Events', () => {
           const handler = jest.fn(() => {});
           const client = OpenFeature.getClient(domain);
 
-          await OpenFeature.setProviderAndWait(domain, provider);
+          await OpenFeature.setProvider(domain, provider);
           client.addHandler(ProviderEvents.Reconciling, handler); // this should not be called
           client.addHandler(ProviderEvents.ContextChanged, handler);
           await OpenFeature.setContext(domain, {});
@@ -869,7 +869,7 @@ describe('Events', () => {
     it('provider events update status', async () => {
       // provider context change will take 100ms
       const provider = new MockProvider({ hasInitialize: false });
-      OpenFeature.setProviderAndWait(domain, provider);
+      OpenFeature.setProvider(domain, provider);
       const client = OpenFeature.getClient(domain);
       provider.events?.emit(ProviderEvents.Stale);
       expect(client.providerStatus).toEqual(ProviderStatus.STALE);
