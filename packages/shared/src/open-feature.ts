@@ -22,6 +22,13 @@ import type { Paradigm } from './types';
 type AnyProviderStatus = ClientProviderStatus | ServerProviderStatus;
 
 /**
+ * Well-known Symbol used to track which {@link OpenFeatureCommonAPI} instance a provider is currently bound to.
+ * The symbol is shared across module boundaries and globally unique in the runtime.
+ * @internal
+ */
+export const BOUND_API_KEY = Symbol.for('@openfeature/js-sdk/provider/bound-api');
+
+/**
  * A provider and its current status.
  * For internal use only.
  */
@@ -217,6 +224,21 @@ export abstract class OpenFeatureCommonAPI<
     contextOrUndefined?: EvaluationContext,
   ): this;
 
+  private bindProvider(provider: P): void {
+    Object.defineProperty(provider, BOUND_API_KEY, {
+      value: this,
+      configurable: true,
+      enumerable: false,
+      writable: false,
+    });
+  }
+
+  private unbindProvider(provider: P): void {
+    if (BOUND_API_KEY in provider) {
+      delete provider[BOUND_API_KEY];
+    }
+  }
+
   protected setAwaitableProvider(domainOrProvider?: string | P, providerOrUndefined?: P): Promise<void> | void {
     const domain = stringOrUndefined(domainOrProvider);
     const provider = objectOrUndefined<P>(domainOrProvider) ?? objectOrUndefined<P>(providerOrUndefined);
@@ -239,6 +261,12 @@ export abstract class OpenFeatureCommonAPI<
       this._logger.debug(`Provider '${provider.metadata.name}' has not defined its intended use.`);
     } else if (provider.runsOn !== this._runsOn) {
       throw new GeneralError(`Provider '${provider.metadata.name}' is intended for use on the ${provider.runsOn}.`);
+    }
+
+    if (BOUND_API_KEY in provider && provider[BOUND_API_KEY] !== this) {
+      throw new GeneralError(
+        `Provider '${provider.metadata.name}' is already bound to a different OpenFeature API instance. A provider instance must not be registered with multiple API instances simultaneously.`,
+      );
     }
 
     const emitters = this.getAssociatedEventEmitters(domain);
@@ -300,10 +328,13 @@ export abstract class OpenFeatureCommonAPI<
       this._defaultProvider = wrappedProvider;
     }
 
+    this.bindProvider(provider);
+
     this.transferListeners(oldProvider, provider, domain, emitters);
 
     // Do not close a provider that is bound to any client
     if (!this.allProviders.includes(oldProvider)) {
+      this.unbindProvider(oldProvider);
       oldProvider?.onClose?.()?.catch((err: Error | undefined) => {
         this._logger.error(`error closing provider: ${err?.message}, ${err?.stack}`);
       });
@@ -399,6 +430,8 @@ export abstract class OpenFeatureCommonAPI<
       await this?._defaultProvider.provider?.onClose?.();
     } catch (err) {
       this.handleShutdownError(this._defaultProvider.provider, err);
+    } finally {
+      this.unbindProvider(this._defaultProvider.provider);
     }
 
     const wrappers = Array.from(this._domainScopedProviders);
@@ -409,6 +442,8 @@ export abstract class OpenFeatureCommonAPI<
           await wrapper?.provider.onClose?.();
         } catch (err) {
           this.handleShutdownError(wrapper?.provider, err);
+        } finally {
+          this.unbindProvider(wrapper?.provider);
         }
       }),
     );
