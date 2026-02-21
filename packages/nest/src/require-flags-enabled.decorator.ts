@@ -1,11 +1,11 @@
 import type { CallHandler, ExecutionContext, HttpException, NestInterceptor } from '@nestjs/common';
 import { applyDecorators, mixin, NotFoundException, UseInterceptors } from '@nestjs/common';
 import { getClientForEvaluation } from './utils';
-import type { EvaluationContext } from '@openfeature/server-sdk';
+import type { BooleanFlagKey, EvaluationContext } from '@openfeature/server-sdk';
 import type { ContextFactory } from './context-factory';
 
 type RequiredFlag = {
-  flagKey: string;
+  flagKey: BooleanFlagKey;
   defaultValue?: boolean;
 };
 

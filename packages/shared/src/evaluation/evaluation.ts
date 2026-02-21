@@ -7,6 +7,46 @@ export type FlagValueType = 'boolean' | 'string' | 'number' | 'object';
  */
 export type FlagValue = boolean | string | number | JsonValue;
 
+/**
+ * Represents the possible keys for flag evaluation of boolean flags.
+ * Can be overridden by the package consumer via TypeScript module augmentation to provide type-safe flag keys.
+ * @example
+ * declare module '@openfeature/core' {
+ *   export type BooleanFlagKey = 'my-boolean-flag';
+ * }
+ */
+export type BooleanFlagKey = string;
+
+/**
+ * Represents the possible keys for flag evaluation of string flags.
+ * Can be overridden by the package consumer via TypeScript module augmentation to provide type-safe flag keys.
+ * @example
+ * declare module '@openfeature/core' {
+ *   export type StringFlagKey = 'my-string-flag';
+ * }
+ */
+export type StringFlagKey = string;
+
+/**
+ * Represents the possible keys for flag evaluation of number flags.
+ * Can be overridden by the package consumer via TypeScript module augmentation to provide type-safe flag keys.
+ * @example
+ * declare module '@openfeature/core' {
+ *   export type NumberFlagKey = 'my-number-flag';
+ * }
+ */
+export type NumberFlagKey = string;
+
+/**
+ * Represents the possible keys for flag evaluation of object flags.
+ * Can be overridden by the package consumer via TypeScript module augmentation to provide type-safe flag keys.
+ * @example
+ * declare module '@openfeature/core' {
+ *   export type ObjectFlagKey = 'my-object-flag';
+ * }
+ */
+export type ObjectFlagKey = string;
+
 export type ResolutionReason = keyof typeof StandardResolutionReasons | (string & Record<never, never>);
 
 /**

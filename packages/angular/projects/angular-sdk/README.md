@@ -422,6 +422,10 @@ The [OpenFeature debounce hook](https://github.com/open-feature/js-sdk-contrib/t
 to reduce the amount of redundant evaluations reported to your observability platform by limiting the frequency at which
 evaluation metrics are reported.
 
+#### Type-Safe Flag Keys
+
+For enhanced type safety and autocompletion, you can override flag key types using TypeScript module augmentation. See the [`@openfeature/core` README](../../../shared/README.md#type-safe-flag-keys) for details.
+
 ## FAQ and troubleshooting
 
 > I can import things form the `@openfeature/angular-sdk`, `@openfeature/web-sdk`, and `@openfeature/core`; which should I use?
