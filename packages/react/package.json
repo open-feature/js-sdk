@@ -53,5 +53,6 @@
   "devDependencies": {
     "@openfeature/core": "*",
     "@openfeature/web-sdk": "*"
-  }
+  },
+  "sideEffects": false
 }

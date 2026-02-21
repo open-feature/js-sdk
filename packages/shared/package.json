@@ -45,5 +45,6 @@
     "feature",
     "flags",
     "toggles"
-  ]
+  ],
+  "sideEffects": false
 }

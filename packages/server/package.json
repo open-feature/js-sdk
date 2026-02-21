@@ -52,5 +52,6 @@
   },
   "devDependencies": {
     "@openfeature/core": "^1.9.2"
-  }
+  },
+  "sideEffects": false
 }
