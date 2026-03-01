@@ -21,7 +21,37 @@ import {
   OpenFeature,
 } from '@openfeature/web-sdk';
 
-class FeatureFlagDirectiveContext<T extends FlagValue> {
+/**
+ * Represents the template context provided by feature flag structural directives
+ * (`*booleanFeatureFlag`, `*numberFeatureFlag`, `*stringFeatureFlag`, `*objectFeatureFlag`).
+ *
+ * This class defines the shape of the data available in your templates when using
+ * feature flag directives. It exposes:
+ * - **`$implicit`** — The evaluated flag value, bound via `let value` in templates.
+ * - **`evaluationDetails`** — The full {@link EvaluationDetails} object containing
+ *   metadata such as `flagKey`, `reason`, `variant`, `flagMetadata`, and potential error info.
+ *
+ * @usageNotes
+ *
+ * If you need to reference a feature flag template programmatically (e.g. with `@ViewChild`),
+ * use this class as the generic parameter:
+ *
+ * ```typescript
+ * @ViewChild('flagTpl')
+ * flagTpl!: TemplateRef<FeatureFlagDirectiveContext<boolean>>;
+ * ```
+ *
+ * This is also useful when building custom components or wrappers that accept
+ * feature flag templates as inputs:
+ *
+ * ```typescript
+ * @Input() customTemplate: TemplateRef<FeatureFlagDirectiveContext<string>>;
+ * ```
+ *
+ * @template T The type of the flag value (`boolean`, `number`, `string`, or `JsonValue`).
+ *
+ */
+export class FeatureFlagDirectiveContext<T extends FlagValue> {
   $implicit!: T;
   evaluationDetails: EvaluationDetails<T>;
 

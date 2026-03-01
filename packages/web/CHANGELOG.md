@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.7.3](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.7.2...web-sdk-v1.7.3) (2026-02-18)
+
+
+### 🔄 Refactoring
+
+* move Multi-Provider shared code to core package ([#1324](https://github.com/open-feature/js-sdk/issues/1324)) ([baf33f0](https://github.com/open-feature/js-sdk/commit/baf33f0af159d43888bc405791107223ff30133b))
+
 ## [1.7.2](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.7.1...web-sdk-v1.7.2) (2025-12-09)
 
 

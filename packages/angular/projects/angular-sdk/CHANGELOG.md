@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.1.0](https://github.com/open-feature/js-sdk/compare/angular-sdk-v1.0.0...angular-sdk-v1.1.0) (2026-02-18)
+
+
+### ✨ New Features
+
+* **angular/directive:** export FeatureFlagDirectiveContext ([#1346](https://github.com/open-feature/js-sdk/issues/1346)) ([4b7de27](https://github.com/open-feature/js-sdk/commit/4b7de278d0433f4b7e184ecbe3d9e71aa3c2a5a4))
+
 ## [1.0.0](https://github.com/open-feature/js-sdk/compare/angular-sdk-v0.0.20...angular-sdk-v1.0.0) (2026-01-23)
 
 

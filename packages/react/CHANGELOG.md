@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/open-feature/js-sdk/compare/react-sdk-v1.2.0...react-sdk-v1.2.1) (2026-02-18)
+
+
+### 🐛 Bug Fixes
+
+* attach Ready listener independent of current client status in `attachHandlersAndResolve` (closes [#1331](https://github.com/open-feature/js-sdk/issues/1331)) ([#1332](https://github.com/open-feature/js-sdk/issues/1332)) ([e79c06a](https://github.com/open-feature/js-sdk/commit/e79c06a9e4eacb69209f63ace5b1171f36001f8b))
+
 ## [1.2.0](https://github.com/open-feature/js-sdk/compare/react-sdk-v1.1.0...react-sdk-v1.2.0) (2026-01-16)
 
 

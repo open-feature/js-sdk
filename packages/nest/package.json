@@ -60,5 +60,6 @@
     "@openfeature/server-sdk": "1.18.0",
     "@types/supertest": "^6.0.0",
     "supertest": "^7.0.0"
-  }
+  },
+  "sideEffects": false
 }
