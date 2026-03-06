@@ -54,8 +54,8 @@ export interface Provider extends CommonProvider<ServerProviderStatus> {
    */
   resolveObjectEvaluation<T extends JsonValue>(
     flagKey: string,
-    defaultValue: T,
+    defaultValue: JsonValue,
     context: EvaluationContext,
     logger: Logger,
-  ): Promise<ResolutionDetails<T>>;
+  ): Promise<ResolutionDetails<JsonValue>>;
 }
