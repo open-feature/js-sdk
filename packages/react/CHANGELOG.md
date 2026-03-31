@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.3.0](https://github.com/open-feature/js-sdk/compare/react-sdk-v1.2.1...react-sdk-v1.3.0) (2026-03-31)
+
+
+### ✨ New Features
+
+* add "sideEffects": false to package.json files for all packages ([#1343](https://github.com/open-feature/js-sdk/issues/1343)) ([d8e968e](https://github.com/open-feature/js-sdk/commit/d8e968ed2513fe986a6500895f3399303a2f0b96))
+* support type-safe flag keys via module augmentation ([#1349](https://github.com/open-feature/js-sdk/issues/1349)) ([fb2ed4a](https://github.com/open-feature/js-sdk/commit/fb2ed4a7d64d9b8437975a0ef6cb4fe6a12dd671))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/core bumped from * to 1.10.0
+    * @openfeature/web-sdk bumped from * to 1.8.0
+
 ## [1.2.1](https://github.com/open-feature/js-sdk/compare/react-sdk-v1.2.0...react-sdk-v1.2.1) (2026-02-18)
 
 
