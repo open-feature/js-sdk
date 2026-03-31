@@ -1,6 +1,21 @@
 # Changelog
 
 
+## [1.2.0](https://github.com/open-feature/js-sdk/compare/angular-sdk-v1.1.0...angular-sdk-v1.2.0) (2026-03-31)
+
+
+### ✨ New Features
+
+* support type-safe flag keys via module augmentation ([#1349](https://github.com/open-feature/js-sdk/issues/1349)) ([fb2ed4a](https://github.com/open-feature/js-sdk/commit/fb2ed4a7d64d9b8437975a0ef6cb4fe6a12dd671))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/core bumped from ^1.8.1 to ^1.10.0
+    * @openfeature/web-sdk bumped from ^1.6.2 to ^1.8.0
+
 ## [1.1.0](https://github.com/open-feature/js-sdk/compare/angular-sdk-v1.0.0...angular-sdk-v1.1.0) (2026-02-18)
 
 
