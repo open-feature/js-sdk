@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.2.6](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.2.5...nestjs-sdk-v0.2.6) (2026-03-31)
+
+
+### ✨ New Features
+
+* add "sideEffects": false to package.json files for all packages ([#1343](https://github.com/open-feature/js-sdk/issues/1343)) ([d8e968e](https://github.com/open-feature/js-sdk/commit/d8e968ed2513fe986a6500895f3399303a2f0b96))
+* support type-safe flag keys via module augmentation ([#1349](https://github.com/open-feature/js-sdk/issues/1349)) ([fb2ed4a](https://github.com/open-feature/js-sdk/commit/fb2ed4a7d64d9b8437975a0ef6cb4fe6a12dd671))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/core bumped from * to 1.10.0
+    * @openfeature/server-sdk bumped from 1.18.0 to 1.21.0
+
 ## [0.2.5](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.2.4...nestjs-sdk-v0.2.5) (2025-05-27)
 
 
