@@ -1,14 +1,18 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
+  BooleanFlagKey,
   Client,
   EvaluationDetails,
   type FlagEvaluationOptions,
   FlagValue,
   type JsonValue,
+  NumberFlagKey,
+  ObjectFlagKey,
   OpenFeature,
   ProviderEvents,
   ProviderStatus,
+  StringFlagKey,
 } from '@openfeature/web-sdk';
 import { isEqual } from './internal/is-equal';
 
@@ -88,7 +92,7 @@ export class FeatureFlagService {
    * ```
    */
   public getBooleanDetails(
-    flagKey: string,
+    flagKey: BooleanFlagKey,
     defaultValue: boolean,
     domain?: string,
     options?: AngularFlagEvaluationOptions,
@@ -120,7 +124,7 @@ export class FeatureFlagService {
    * ```
    */
   public getStringDetails(
-    flagKey: string,
+    flagKey: StringFlagKey,
     defaultValue: string,
     domain?: string,
     options?: AngularFlagEvaluationOptions,
@@ -149,7 +153,7 @@ export class FeatureFlagService {
    * ```
    */
   public getNumberDetails(
-    flagKey: string,
+    flagKey: NumberFlagKey,
     defaultValue: number,
     domain?: string,
     options?: AngularFlagEvaluationOptions,
@@ -191,7 +195,7 @@ export class FeatureFlagService {
    * ```
    */
   public getObjectDetails<T extends JsonValue = JsonValue>(
-    flagKey: string,
+    flagKey: ObjectFlagKey,
     defaultValue: T,
     domain?: string,
     options?: AngularFlagEvaluationOptions,

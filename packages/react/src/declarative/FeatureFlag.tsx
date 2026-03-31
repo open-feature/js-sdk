@@ -1,7 +1,7 @@
 import React from 'react';
 import { useFlag } from '../evaluation';
 import type { FlagQuery } from '../query';
-import type { FlagValue, EvaluationDetails } from '@openfeature/core';
+import type { FlagValue, EvaluationDetails, ConstrainedFlagKey } from '@openfeature/web-sdk';
 import { isEqual } from '../internal';
 import type { ReactFlagEvaluationOptions } from '../options';
 
@@ -23,7 +23,7 @@ interface FeatureFlagProps<T extends FlagValue = FlagValue> {
   /**
    * The key of the feature flag to evaluate.
    */
-  flagKey: string;
+  flagKey: ConstrainedFlagKey<T>;
 
   /**
    * Optional predicate function for custom matching logic.

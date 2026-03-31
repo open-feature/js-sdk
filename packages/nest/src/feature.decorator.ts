@@ -1,5 +1,11 @@
 import { createParamDecorator, Inject } from '@nestjs/common';
-import type { EvaluationContext, EvaluationDetails, FlagValue, JsonValue } from '@openfeature/server-sdk';
+import type {
+  ConstrainedFlagKey,
+  EvaluationContext,
+  EvaluationDetails,
+  FlagValue,
+  JsonValue,
+} from '@openfeature/server-sdk';
 import { Client } from '@openfeature/server-sdk';
 import { getOpenFeatureClientToken } from './open-feature.module';
 import type { Observable } from 'rxjs';
@@ -37,7 +43,7 @@ interface FeatureProps<T extends FlagValue> {
    * The key of the feature flag.
    * @see {@link Client#getBooleanDetails}
    */
-  flagKey: string;
+  flagKey: ConstrainedFlagKey<T>;
   /**
    * The default value for the feature flag.
    * @see {@link Client#getBooleanDetails}

@@ -391,6 +391,10 @@ import { OpenFeature } from '@openfeature/server-sdk';
 await OpenFeature.close();
 ```
 
+### Type-Safe Flag Keys
+
+For enhanced type safety and autocompletion, you can override flag key types using TypeScript module augmentation. See the [`@openfeature/core` README](../shared/README.md#type-safe-flag-keys) for details.
+
 ## Extending
 
 ### Develop a provider
