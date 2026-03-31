@@ -135,3 +135,37 @@ export interface CommonProvider<S extends ClientProviderStatus | ServerProviderS
    */
   track?(trackingEventName: string, context: EvaluationContext, trackingEventDetails: TrackingEventDetails): void;
 }
+
+/**
+ * A provider that manages its own state. The SDK reads state from the provider
+ * rather than maintaining shadow state. Implementations MUST ensure that `status`
+ * is safe for concurrent access and that state transitions and associated event
+ * emissions are atomic from the perspective of external observers.
+ *
+ * Legacy providers that do not implement this interface continue to have their state
+ * managed by the SDK (deprecated behavior, to be removed in the next major version).
+ */
+export interface StateManagingProvider<
+  S extends ClientProviderStatus | ServerProviderStatus,
+> extends CommonProvider<S> {
+  /**
+   * The current state of this provider. Must reflect NOT_READY before initialize()
+   * is called and after onClose() completes. Must reflect READY if initialize()
+   * resolves successfully.
+   */
+  readonly status: S;
+
+  /**
+   * Discriminant indicating that this provider manages its own state.
+   */
+  readonly managesState: true;
+}
+
+/**
+ * Type guard for providers that manage their own state.
+ */
+export function isStateManagingProvider<S extends ClientProviderStatus | ServerProviderStatus>(
+  provider: CommonProvider<S>,
+): provider is StateManagingProvider<S> {
+  return 'managesState' in provider && (provider as StateManagingProvider<S>).managesState === true;
+}
