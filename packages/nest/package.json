@@ -58,8 +58,8 @@
     "@nestjs/testing": "^11.0.20",
     "@openfeature/core": "*",
     "@openfeature/server-sdk": "1.18.0",
-    "@types/supertest": "^6.0.0",
-    "supertest": "^7.0.0"
+    "@types/supertest": "^7.2.0",
+    "supertest": "^7.2.0"
   },
   "sideEffects": false
 }
