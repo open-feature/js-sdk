@@ -8,13 +8,15 @@ import {
 } from '@openfeature/core';
 import type { Provider } from '../provider';
 import { OpenFeatureEventEmitter, ProviderEvents } from '../../events';
-import type { FlagConfiguration, Flag } from './flag-configuration';
+import type { FlagConfiguration, Flag, FlagVariants } from './flag-configuration';
 import { VariantNotFoundError } from './variant-not-found-error';
 
 /**
  * A simple OpenFeature provider intended for demos and as a test stub.
  */
-export class InMemoryProvider implements Provider {
+export class InMemoryProvider<
+  T extends Record<string, FlagVariants<string>> = Record<string, FlagVariants<string>>,
+> implements Provider {
   public readonly events = new OpenFeatureEventEmitter();
   public readonly runsOn = 'client';
   readonly metadata = {
@@ -23,7 +25,7 @@ export class InMemoryProvider implements Provider {
   private _flagConfiguration: FlagConfiguration;
   private _context: EvaluationContext | undefined;
 
-  constructor(flagConfiguration: FlagConfiguration = {}) {
+  constructor(flagConfiguration: FlagConfiguration<T> = {} as FlagConfiguration<T>) {
     this._flagConfiguration = { ...flagConfiguration };
   }
 
@@ -31,7 +33,9 @@ export class InMemoryProvider implements Provider {
    * Overwrites the configured flags.
    * @param { FlagConfiguration } flagConfiguration new flag configuration
    */
-  async putConfiguration(flagConfiguration: FlagConfiguration) {
+  async putConfiguration<U extends Record<string, FlagVariants<string>> = Record<string, FlagVariants<string>>>(
+    flagConfiguration: FlagConfiguration<U>,
+  ) {
     try {
       const flagsChanged = Object.entries({ ...flagConfiguration, ...this._flagConfiguration }).map(([key]) => key);
 
