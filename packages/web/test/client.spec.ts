@@ -148,7 +148,7 @@ describe('OpenFeatureClient', () => {
 
       const provider = new mockAsyncProvider(false);
       expect(provider.status).toBe(ProviderStatus.NOT_READY);
-      await OpenFeature.setProviderAndWait(provider);
+      await OpenFeature.setProvider(provider);
       expect(provider.status).toBe(ProviderStatus.READY);
       expect(spy).toHaveBeenCalled();
     });
@@ -158,7 +158,7 @@ describe('OpenFeatureClient', () => {
 
       const provider = new mockAsyncProvider(true);
       expect(provider.status).toBe(ProviderStatus.NOT_READY);
-      await expect(OpenFeature.setProviderAndWait(provider)).rejects.toThrow();
+      await expect(OpenFeature.setProvider(provider)).rejects.toThrow();
       expect(provider.status).toBe(ProviderStatus.ERROR);
       expect(spy).toHaveBeenCalled();
     });
@@ -400,7 +400,7 @@ describe('OpenFeatureClient', () => {
       },
     } as unknown as Provider;
     it('status must be READY if init resolves', async () => {
-      await OpenFeature.setProviderAndWait('1.7.1, 1.7.3', initProvider);
+      await OpenFeature.setProvider('1.7.1, 1.7.3', initProvider);
       const client = OpenFeature.getClient('1.7.1, 1.7.3');
       expect(client.providerStatus).toEqual(ProviderStatus.READY);
     });
@@ -416,7 +416,7 @@ describe('OpenFeatureClient', () => {
       },
     } as unknown as Provider;
     it('status must be ERROR if init rejects', async () => {
-      await expect(OpenFeature.setProviderAndWait('1.7.4', errorProvider)).rejects.toThrow();
+      await expect(OpenFeature.setProvider('1.7.4', errorProvider)).rejects.toThrow();
       const client = OpenFeature.getClient('1.7.4');
       expect(client.providerStatus).toEqual(ProviderStatus.ERROR);
     });
@@ -432,7 +432,7 @@ describe('OpenFeatureClient', () => {
       },
     } as unknown as Provider;
     it('must short circuit and return PROVIDER_FATAL code if provider FATAL', async () => {
-      await expect(OpenFeature.setProviderAndWait('1.7.5, 1.7.6, 1.7.8', fatalProvider)).rejects.toThrow();
+      await expect(OpenFeature.setProvider('1.7.5, 1.7.6, 1.7.8', fatalProvider)).rejects.toThrow();
       const client = OpenFeature.getClient('1.7.5, 1.7.6, 1.7.8');
       expect(client.providerStatus).toEqual(ProviderStatus.FATAL);
 
@@ -455,7 +455,7 @@ describe('OpenFeatureClient', () => {
       },
     } as unknown as Provider;
     it('must short circuit and return PROVIDER_NOT_READY code if provider NOT_READY', async () => {
-      OpenFeature.setProviderAndWait('1.7.7', neverReadyProvider).catch(() => {
+      OpenFeature.setProvider('1.7.7', neverReadyProvider).catch(() => {
         // do nothing
       });
       const defaultVal = 'default';
@@ -617,7 +617,7 @@ describe('OpenFeatureClient', () => {
 
   describe('providerStatus', () => {
     it('should return current provider status', (done) => {
-      OpenFeature.setProviderAndWait({
+      OpenFeature.setProvider({
         ...MOCK_PROVIDER,
         initialize: () => {
           return new Promise<void>((resolve) => setTimeout(resolve, 1000));
@@ -631,7 +631,7 @@ describe('OpenFeatureClient', () => {
     });
 
     it('should return READY if initialize not defined', async () => {
-      await OpenFeature.setProviderAndWait({ ...MOCK_PROVIDER, initialize: undefined });
+      await OpenFeature.setProvider({ ...MOCK_PROVIDER, initialize: undefined });
       expect(OpenFeature.getClient().providerStatus).toEqual(ProviderStatus.READY);
     });
   });
@@ -647,7 +647,7 @@ describe('OpenFeatureClient', () => {
       const contextValue = 'val';
 
       it('should no-op and not throw if tracking not defined on provider', async () => {
-        await OpenFeature.setProviderAndWait({ ...MOCK_PROVIDER, track: undefined });
+        await OpenFeature.setProvider({ ...MOCK_PROVIDER, track: undefined });
         const client = OpenFeature.getClient();
 
         expect(() => {
@@ -656,7 +656,7 @@ describe('OpenFeatureClient', () => {
       });
 
       it('provide empty tracking details to provider if not supplied in call', async () => {
-        await OpenFeature.setProviderAndWait({ ...MOCK_PROVIDER });
+        await OpenFeature.setProvider({ ...MOCK_PROVIDER });
         const client = OpenFeature.getClient();
         client.track(eventName);
 
@@ -664,7 +664,7 @@ describe('OpenFeatureClient', () => {
       });
 
       it('should no-op and not throw if provider throws', async () => {
-        await OpenFeature.setProviderAndWait({
+        await OpenFeature.setProvider({
           ...MOCK_PROVIDER,
           track: () => {
             throw new Error('fake error');
@@ -678,7 +678,7 @@ describe('OpenFeatureClient', () => {
       });
 
       it('should call provider with correct context', async () => {
-        await OpenFeature.setProviderAndWait({ ...MOCK_PROVIDER });
+        await OpenFeature.setProvider({ ...MOCK_PROVIDER });
         await OpenFeature.setContext({ [contextKey]: contextValue });
         const client = OpenFeature.getClient();
         client.track(eventName, trackingDetails);

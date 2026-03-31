@@ -8,14 +8,12 @@ export interface OpenFeatureConfig {
   /**
    * The default provider to be used by OpenFeature.
    * If not provided, the provider can be set later using {@link OpenFeature.setProvider}
-   * or {@link OpenFeature.setProviderAndWait}.
    */
   provider?: Provider;
   /**
    * A map of domain-bound providers to be registered with OpenFeature.
    * The key is the domain name, and the value is the provider instance.
    * Providers can also be registered later using {@link OpenFeature.setProvider}
-   * or {@link OpenFeature.setProviderAndWait}.
    */
   domainBoundProviders?: Record<string, Provider>;
 
@@ -38,11 +36,17 @@ export const OPEN_FEATURE_CONFIG_TOKEN = new InjectionToken<OpenFeatureConfig>('
 export class OpenFeatureModule {
   static forRoot(config: OpenFeatureConfig): ModuleWithProviders<OpenFeatureModule> {
     const context = typeof config.context === 'function' ? config.context() : config.context;
-    OpenFeature.setProvider(config.provider, context);
+    if (config.provider) {
+      OpenFeature.setProvider(config.provider, context).catch((err) => {
+        console.error('Error setting default provider in OpenFeatureModule:', err);
+      });
+    }
 
     if (config.domainBoundProviders) {
-      Object.entries(config.domainBoundProviders).map(([domain, provider]) =>
-        OpenFeature.setProvider(domain, provider, context),
+      Object.entries(config.domainBoundProviders).forEach(([domain, provider]) =>
+        OpenFeature.setProvider(domain, provider, context).catch((err) => {
+          console.error(`Error setting provider for domain "${domain}" in OpenFeatureModule:`, err);
+        }),
       );
     }
 

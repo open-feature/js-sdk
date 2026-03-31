@@ -22,7 +22,7 @@ import { OpenFeature } from '@openfeature/server-sdk';
 
 const multiProvider = new MultiProvider([{ provider: new ProviderA() }, { provider: new ProviderB() }]);
 
-await OpenFeature.setProviderAndWait(multiProvider);
+await OpenFeature.setProvider(multiProvider);
 
 const client = OpenFeature.getClient();
 
@@ -84,7 +84,7 @@ import { MultiProvider } from '@openfeature/server-sdk';
 
 const multiProvider = new MultiProvider([{ provider: new ProviderA() }, { provider: new ProviderB() }]);
 
-await OpenFeature.setProviderAndWait(multiProvider);
+await OpenFeature.setProvider(multiProvider);
 const client = OpenFeature.getClient();
 
 // Tracked events will be sent to all providers by default
