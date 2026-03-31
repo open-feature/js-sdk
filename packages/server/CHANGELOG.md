@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.21.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.20.2...server-sdk-v1.21.0) (2026-03-31)
+
+
+### ✨ New Features
+
+* add "sideEffects": false to package.json files for all packages ([#1343](https://github.com/open-feature/js-sdk/issues/1343)) ([d8e968e](https://github.com/open-feature/js-sdk/commit/d8e968ed2513fe986a6500895f3399303a2f0b96))
+* support type-safe flag keys via module augmentation ([#1349](https://github.com/open-feature/js-sdk/issues/1349)) ([fb2ed4a](https://github.com/open-feature/js-sdk/commit/fb2ed4a7d64d9b8437975a0ef6cb4fe6a12dd671))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/core bumped from ^1.9.2 to ^1.10.0
+
 ## [1.20.2](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.20.1...server-sdk-v1.20.2) (2026-02-18)
 
 
