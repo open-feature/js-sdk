@@ -2,7 +2,7 @@ import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
 import { getOpenFeatureClientToken, OpenFeatureModule, ServerProviderEvents } from '../src';
 import type { Client } from '@openfeature/server-sdk';
-import { OpenFeature } from '@openfeature/server-sdk';
+import { OpenFeature, InMemoryProvider } from '@openfeature/server-sdk';
 import { getOpenFeatureDefaultTestModule } from './fixtures';
 
 describe('OpenFeatureModule', () => {
@@ -89,6 +89,65 @@ describe('OpenFeatureModule', () => {
 
     afterAll(async () => {
       await moduleWithoutProvidersRef.close();
+    });
+  });
+
+  describe('forRootAsync', () => {
+    let moduleRef: TestingModule;
+
+    beforeAll(async () => {
+      moduleRef = await Test.createTestingModule({
+        imports: [
+          OpenFeatureModule.forRootAsync({
+            useFactory: () => ({
+              defaultProvider: new InMemoryProvider({
+                testAsyncFlag: {
+                  defaultVariant: 'default',
+                  variants: { default: 'async-value' },
+                  disabled: false,
+                },
+              }),
+            }),
+          }),
+        ],
+      }).compile();
+    });
+
+    afterAll(async () => {
+      await moduleRef.close();
+    });
+
+    it('should configure module with async options', async () => {
+      const client = moduleRef.get<Client>(getOpenFeatureClientToken());
+      expect(client).toBeDefined();
+      expect(await client.getStringValue('testAsyncFlag', '')).toEqual('async-value');
+    });
+  });
+
+  describe('logger', () => {
+    const mockLogger = {
+      error: jest.fn(),
+      warn: jest.fn(),
+      info: jest.fn(),
+      debug: jest.fn(),
+    };
+    const setLoggerSpy = jest.spyOn(OpenFeature, 'setLogger');
+
+    afterEach(() => {
+      setLoggerSpy.mockClear();
+    });
+
+    afterAll(() => {
+      setLoggerSpy.mockRestore();
+    });
+
+    it('should set the logger on OpenFeature during module initialization', async () => {
+      const moduleRef = await Test.createTestingModule({
+        imports: [OpenFeatureModule.forRoot({ logger: mockLogger })],
+      }).compile();
+
+      expect(setLoggerSpy).toHaveBeenCalledWith(mockLogger);
+      await moduleRef.close();
     });
   });
 });

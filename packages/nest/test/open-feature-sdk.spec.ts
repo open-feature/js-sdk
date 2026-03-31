@@ -192,6 +192,7 @@ describe('OpenFeature SDK', () => {
             defaultProvider,
             providers,
             useGlobalInterceptor: false,
+            domains: ['domainScopedClient'],
           }),
         ],
         providers: [OpenFeatureTestService],

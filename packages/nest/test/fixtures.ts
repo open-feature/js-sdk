@@ -81,5 +81,6 @@ export const getOpenFeatureDefaultTestModule = () => {
     contextFactory: exampleContextFactory,
     defaultProvider,
     providers,
+    domains: ['domainScopedClient'],
   });
 };
