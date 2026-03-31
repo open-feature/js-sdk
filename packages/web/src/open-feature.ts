@@ -39,11 +39,16 @@ export class OpenFeatureAPI
   }
 
   /**
-   * Gets a singleton instance of the OpenFeature API.
+   * Gets a instance of the OpenFeature API.
    * @ignore
+   * @param {boolean} singleton Whether to get the global (window) singleton instance or an isolated non-singleton instance.
    * @returns {OpenFeatureAPI} OpenFeature API
    */
-  static getInstance(): OpenFeatureAPI {
+  static getInstance(singleton = true): OpenFeatureAPI {
+    if (!singleton) {
+      return new OpenFeatureAPI();
+    }
+
     const globalApi = _globalThis[GLOBAL_OPENFEATURE_API_KEY];
     if (globalApi) {
       return globalApi;
@@ -357,7 +362,7 @@ export class OpenFeatureAPI
       (domain?: string) => this.getContext(domain),
       () => this.getHooks(),
       () => this._logger,
-      { domain, version },
+      { domain, version, sdk: this },
     );
   }
 
@@ -421,8 +426,58 @@ export class OpenFeatureAPI
   }
 }
 
+interface OpenFeatureAPIWithIsolated extends OpenFeatureAPI {
+  /**
+   * Create a new isolated, non-singleton instance of the OpenFeature API.
+   *
+   * By default, the OpenFeature API is exposed as a global singleton instance (stored on `window` in browsers).
+   * While this can be very convenient as domains, providers, etc., are shared across an entire application,
+   * this can mean that in multi-frontend architectures (e.g. micro-frontends) different parts of an application
+   * can think they're loading different versions of OpenFeature, when they're actually all sharing the same instance.
+   *
+   * The `getIsolated` method allows different parts of a multi-frontend application to have their own isolated
+   * OpenFeature API instances, avoiding potential conflicts and ensuring they're using the expected version of the SDK,
+   * and don't risk colliding with any other usages of OpenFeature on the same page.
+   * @example
+   * import { OpenFeature } from '@openfeature/web-sdk';
+   *
+   * OpenFeature.setProvider(new MyGlobalProvider()); // Sets the provider for the default domain on the global instance
+   * const globalClient = OpenFeature.getClient(); // Uses MyGlobalProvider, the provider for the default domain on the global instance
+   *
+   * export const OpenFeatureIsolated = OpenFeature.getIsolated(); // Create a new isolated instance of the OpenFeature API and export it
+   * OpenFeatureIsolated.setProvider(new MyIsolatedProvider()); // Sets the provider for the default domain on the isolated instance
+   * const isolatedClient = OpenFeatureIsolated.getClient(); // Uses MyIsolatedProvider, the provider for the default domain on the isolated instance
+   *
+   * // In the same micro-frontend, in a different file ...
+   * import { OpenFeature } from '@openfeature/web-sdk';
+   * import { OpenFeatureIsolated } from './other-file';
+   *
+   * const globalClient = OpenFeature.getClient(); // Uses MyGlobalProvider, the provider for the default domain on the global instance
+   * const isolatedClient = OpenFeatureIsolated.getClient(); // Uses MyIsolatedProvider, the provider for the default domain on the isolated instance
+   *
+   * const OpenFeatureIsolatedOther = OpenFeature.getIsolated(); // Create another new isolated instance of the OpenFeature API
+   * const isolatedOtherClient = OpenFeatureIsolatedOther.getClient(); // Uses the NOOP provider, as this is a different isolated instance
+   *
+   * // In another micro-frontend, after the above has executed ...
+   * import { OpenFeature } from '@openfeature/web-sdk';
+   *
+   * const globalClient = OpenFeature.getClient(); // Uses MyGlobalProvider, the provider for the default domain on the global instance
+   *
+   * const OpenFeatureIsolated = OpenFeature.getIsolated(); // Create a new isolated instance of the OpenFeature API
+   * const isolatedClient = OpenFeatureIsolated.getClient(); // Uses the NOOP provider, as this is a different isolated instance
+   */
+  getIsolated: () => OpenFeatureAPI;
+}
+
+const createOpenFeatureAPI = (): OpenFeatureAPIWithIsolated =>
+  Object.assign(OpenFeatureAPI.getInstance(), {
+    getIsolated() {
+      return OpenFeatureAPI.getInstance(false);
+    },
+  });
+
 /**
  * A singleton instance of the OpenFeature API.
- * @returns {OpenFeatureAPI} OpenFeature API
+ * @returns {OpenFeatureAPIWithIsolated} OpenFeature API
  */
-export const OpenFeature = OpenFeatureAPI.getInstance();
+export const OpenFeature = createOpenFeatureAPI();

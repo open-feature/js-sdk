@@ -35,6 +35,7 @@ export type ContextMutation = {
 export function useContextMutator(options: ContextMutationOptions = { defaultContext: false }): ContextMutation {
   const { client } = useContext(Context) || {};
   const domain = client?.metadata.domain;
+  const sdk = client?.metadata.sdk || OpenFeature;
 
   // TODO: Replace this warning with a thrown error in a future major release,
   //       to match the behavior of `useOpenFeatureProvider` + `useOpenFeatureClient`,
@@ -60,14 +61,14 @@ export function useContextMutator(options: ContextMutationOptions = { defaultCon
     async (
       updatedContext: EvaluationContext | ((currentContext: EvaluationContext) => EvaluationContext),
     ): Promise<void> => {
-      const previousContext = OpenFeature.getContext(options?.defaultContext ? undefined : domain);
+      const previousContext = sdk.getContext(options?.defaultContext ? undefined : domain);
       const resolvedContext = typeof updatedContext === 'function' ? updatedContext(previousContext) : updatedContext;
 
       if (previousContext !== resolvedContext) {
         if (!domain || options?.defaultContext) {
-          await OpenFeature.setContext(resolvedContext);
+          await sdk.setContext(resolvedContext);
         } else {
-          await OpenFeature.setContext(domain, resolvedContext);
+          await sdk.setContext(domain, resolvedContext);
         }
       }
     },

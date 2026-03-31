@@ -1,5 +1,4 @@
 import type {
-  ClientMetadata,
   EvaluationContext,
   EvaluationDetails,
   EventHandler,
@@ -30,7 +29,8 @@ import type { InternalEventEmitter } from '../../events/internal/internal-event-
 import type { Hook } from '../../hooks';
 import type { Provider } from '../../provider';
 import { ProviderStatus } from '../../provider';
-import type { Client } from './../client';
+import type { Client, ClientMetadataWithSDK } from './../client';
+import type { OpenFeatureAPI } from '../../open-feature';
 
 type OpenFeatureClientOptions = {
   /**
@@ -39,6 +39,7 @@ type OpenFeatureClientOptions = {
   name?: string;
   domain?: string;
   version?: string;
+  sdk?: OpenFeatureAPI;
 };
 
 /**
@@ -62,12 +63,13 @@ export class OpenFeatureClient implements Client {
     private readonly options: OpenFeatureClientOptions,
   ) {}
 
-  get metadata(): ClientMetadata {
+  get metadata(): ClientMetadataWithSDK {
     return {
       // Use domain if name is not provided
       name: this.options.domain ?? this.options.name,
       domain: this.options.domain ?? this.options.name,
       version: this.options.version,
+      sdk: this.options.sdk,
       providerMetadata: this.providerAccessor().metadata,
     };
   }
