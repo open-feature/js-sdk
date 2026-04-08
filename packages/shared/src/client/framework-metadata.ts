@@ -1,18 +1,22 @@
-import type { Client } from '@openfeature/web-sdk';
+import type { ClientMetadata } from './client';
 
 /**
- * Wraps a web client so React evaluations surface framework metadata.
- * @template {Client} T
+ * Wraps a client so framework metadata is visible through `metadata` and `this.metadata`.
+ * @template T
  * @param {T} client client to wrap
+ * @param {NonNullable<ClientMetadata['framework']>} framework framework metadata to expose
  * @returns {T} framework-aware client proxy
  */
-export function withReactFrameworkMetadata<T extends Client>(client: T): T {
+export function withFrameworkMetadata<T extends object>(
+  client: T,
+  framework: NonNullable<ClientMetadata['framework']>,
+): T {
   return new Proxy(client, {
     get(target, property, receiver) {
       if (property === 'metadata') {
         return {
-          ...Reflect.get(target, property, receiver),
-          framework: 'react',
+          ...(Reflect.get(target, property, receiver) ?? {}),
+          framework,
         };
       }
 

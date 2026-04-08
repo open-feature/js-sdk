@@ -15,13 +15,13 @@ import type {
   EventHandler,
   Logger,
 } from '@openfeature/server-sdk';
+import { withFrameworkMetadata } from '@openfeature/core';
 import { OpenFeature, AsyncLocalStorageTransactionContextPropagator } from '@openfeature/server-sdk';
 import type { ContextFactory } from './context-factory';
 import { ContextFactoryToken } from './context-factory';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { EvaluationContextInterceptor } from './evaluation-context-interceptor';
 import { ShutdownService } from './shutdown.service';
-import { withNestFrameworkMetadata } from './framework-client';
 
 /**
  * OpenFeatureModule is a NestJS wrapper for OpenFeature Server-SDK.
@@ -46,7 +46,7 @@ export class OpenFeatureModule {
     const clientValueProviders: NestFactoryProvider<Client>[] = [
       {
         provide: getOpenFeatureClientToken(),
-        useFactory: () => withNestFrameworkMetadata(OpenFeature.getClient()),
+        useFactory: () => withFrameworkMetadata(OpenFeature.getClient(), 'nest'),
       },
     ];
 
@@ -59,7 +59,7 @@ export class OpenFeatureModule {
         OpenFeature.setProvider(domain, provider);
         clientValueProviders.push({
           provide: getOpenFeatureClientToken(domain),
-          useFactory: () => withNestFrameworkMetadata(OpenFeature.getClient(domain)),
+          useFactory: () => withFrameworkMetadata(OpenFeature.getClient(domain), 'nest'),
         });
       });
     }

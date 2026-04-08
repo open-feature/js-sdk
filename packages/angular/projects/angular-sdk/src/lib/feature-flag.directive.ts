@@ -10,6 +10,7 @@ import {
   ViewContainerRef,
   inject,
 } from '@angular/core';
+import { withFrameworkMetadata } from '@openfeature/core';
 import {
   BooleanFlagKey,
   Client,
@@ -24,7 +25,6 @@ import {
   OpenFeature,
   StringFlagKey,
 } from '@openfeature/web-sdk';
-import { withAngularFrameworkMetadata } from './internal/framework-client';
 
 /**
  * Represents the template context provided by feature flag structural directives
@@ -133,7 +133,7 @@ export abstract class FeatureFlagDirective<T extends FlagValue> implements OnIni
     if (this._client) {
       this.disposeClient(this._client);
     }
-    this._client = withAngularFrameworkMetadata(OpenFeature.getClient(this._featureFlagDomain));
+    this._client = withFrameworkMetadata(OpenFeature.getClient(this._featureFlagDomain), 'angular');
 
     const baseHandler = () => {
       const result = this.getFlagDetails(this._featureFlagKey, this._featureFlagDefault);

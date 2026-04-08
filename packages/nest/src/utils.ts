@@ -1,6 +1,6 @@
+import { withFrameworkMetadata } from '@openfeature/core';
 import type { Client, EvaluationContext } from '@openfeature/server-sdk';
 import { OpenFeature } from '@openfeature/server-sdk';
-import { withNestFrameworkMetadata } from './framework-client';
 
 /**
  * Returns a domain scoped or the default OpenFeature client with the given context.
@@ -9,5 +9,8 @@ import { withNestFrameworkMetadata } from './framework-client';
  * @returns {Client} The OpenFeature client.
  */
 export function getClientForEvaluation(domain?: string, context?: EvaluationContext) {
-  return withNestFrameworkMetadata(domain ? OpenFeature.getClient(domain, context) : OpenFeature.getClient(context));
+  return withFrameworkMetadata(
+    domain ? OpenFeature.getClient(domain, context) : OpenFeature.getClient(context),
+    'nest',
+  );
 }
