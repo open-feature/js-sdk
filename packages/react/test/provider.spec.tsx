@@ -53,13 +53,14 @@ describe('OpenFeatureProvider', () => {
 
   beforeEach(async () => {
     await OpenFeature.clearContexts();
+    OpenFeature.clearHooks();
   });
 
   describe('useOpenFeatureClient', () => {
     const DOMAIN = 'useOpenFeatureClient';
 
     describe('client specified', () => {
-      it('should return client from provider', () => {
+      it('should return a react-aware client from provider', () => {
         const client = OpenFeature.getClient(DOMAIN);
 
         const wrapper = ({ children }: Parameters<typeof OpenFeatureProvider>[0]) => (
@@ -68,7 +69,12 @@ describe('OpenFeatureProvider', () => {
 
         const { result } = renderHook(() => useOpenFeatureClient(), { wrapper });
 
-        expect(result.current).toEqual(client);
+        expect(result.current).not.toBe(client);
+        expect(result.current.metadata).toMatchObject({
+          domain: DOMAIN,
+          sdk: 'web',
+          framework: 'react',
+        });
       });
     });
 
@@ -81,6 +87,8 @@ describe('OpenFeatureProvider', () => {
         const { result } = renderHook(() => useOpenFeatureClient(), { wrapper });
 
         expect(result.current.metadata.domain).toEqual(DOMAIN);
+        expect(result.current.metadata.sdk).toEqual('web');
+        expect(result.current.metadata.framework).toEqual('react');
       });
 
       it('should return a stable client across renders', () => {
@@ -95,6 +103,45 @@ describe('OpenFeatureProvider', () => {
         const secondClient = result.current;
 
         expect(firstClient).toBe(secondClient);
+      });
+
+      it('should surface react metadata in hook contexts', async () => {
+        const hook = { before: jest.fn() };
+
+        OpenFeature.setProvider(
+          DOMAIN,
+          new InMemoryProvider({
+            greeting: {
+              disabled: false,
+              variants: { default: 'hello' },
+              defaultVariant: 'default',
+            },
+          }),
+        );
+
+        const wrapper = ({ children }: Parameters<typeof OpenFeatureProvider>[0]) => (
+          <OpenFeatureProvider domain={DOMAIN}>{children}</OpenFeatureProvider>
+        );
+
+        const { result } = renderHook(
+          () =>
+            useStringFlagValue('greeting', 'fallback', {
+              hooks: [hook],
+            }),
+          { wrapper },
+        );
+
+        await waitFor(() => expect(result.current).toEqual('hello'));
+        expect(hook.before).toHaveBeenCalledWith(
+          expect.objectContaining({
+            clientMetadata: expect.objectContaining({
+              domain: DOMAIN,
+              sdk: 'web',
+              framework: 'react',
+            }),
+          }),
+          undefined,
+        );
       });
     });
   });

@@ -14,6 +14,7 @@ import {
   ProviderStatus,
   StringFlagKey,
 } from '@openfeature/web-sdk';
+import { withAngularFrameworkMetadata } from './internal/framework-client';
 import { isEqual } from './internal/is-equal';
 
 export type AngularFlagEvaluationOptions = {
@@ -217,7 +218,7 @@ export class FeatureFlagService {
     domain: string | undefined,
     options?: AngularFlagEvaluationOptions,
   ): Observable<EvaluationDetails<T>> {
-    const client = domain ? OpenFeature.getClient(domain) : OpenFeature.getClient();
+    const client = withAngularFrameworkMetadata(domain ? OpenFeature.getClient(domain) : OpenFeature.getClient());
 
     return new Observable<EvaluationDetails<T>>((subscriber) => {
       let currentResult: EvaluationDetails<T> | undefined = undefined;

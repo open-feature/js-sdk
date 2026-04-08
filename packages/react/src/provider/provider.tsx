@@ -1,6 +1,7 @@
 import type { Client } from '@openfeature/web-sdk';
 import { OpenFeature } from '@openfeature/web-sdk';
 import * as React from 'react';
+import { withReactFrameworkMetadata } from '../internal/framework-client';
 import type { ReactFlagEvaluationOptions } from '../options';
 import { Context } from '../internal';
 
@@ -32,7 +33,10 @@ type ProviderProps = {
  * @returns {OpenFeatureProvider} context provider
  */
 export function OpenFeatureProvider({ client, domain, children, ...options }: ProviderProps) {
-  const stableClient = React.useMemo(() => client || OpenFeature.getClient(domain), [client, domain]);
+  const stableClient = React.useMemo(
+    () => withReactFrameworkMetadata(client || OpenFeature.getClient(domain)),
+    [client, domain],
+  );
 
   return <Context.Provider value={{ client: stableClient, options }}>{children}</Context.Provider>;
 }

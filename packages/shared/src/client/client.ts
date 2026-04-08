@@ -7,5 +7,7 @@ export interface ClientMetadata {
   readonly name?: string;
   readonly domain?: string;
   readonly version?: string;
+  readonly sdk?: 'web' | 'server';
+  readonly framework?: 'react' | 'angular' | 'nest';
   readonly providerMetadata: ProviderMetadata;
 }
