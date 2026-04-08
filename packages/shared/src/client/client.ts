@@ -11,3 +11,7 @@ export interface ClientMetadata {
   readonly framework?: 'react' | 'angular' | 'nest';
   readonly providerMetadata: ProviderMetadata;
 }
+
+export interface MetadataClient {
+  readonly metadata: ClientMetadata;
+}

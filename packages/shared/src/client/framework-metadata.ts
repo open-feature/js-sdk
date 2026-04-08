@@ -1,4 +1,4 @@
-import type { ClientMetadata } from './client';
+import type { ClientMetadata, MetadataClient } from './client';
 
 /**
  * Wraps a client so framework metadata is visible through `metadata` and `this.metadata`.
@@ -7,7 +7,7 @@ import type { ClientMetadata } from './client';
  * @param {NonNullable<ClientMetadata['framework']>} framework framework metadata to expose
  * @returns {T} framework-aware client proxy
  */
-export function withFrameworkMetadata<T extends object>(
+export function withFrameworkMetadata<T extends MetadataClient>(
   client: T,
   framework: NonNullable<ClientMetadata['framework']>,
 ): T {
