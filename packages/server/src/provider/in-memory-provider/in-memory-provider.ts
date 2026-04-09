@@ -13,10 +13,9 @@ import { OpenFeatureEventEmitter, ProviderEvents } from '../..';
 
 /**
  * A simple OpenFeature provider intended for demos and as a test stub.
+ * @deprecated Use {@link TypedInMemoryProvider} for type-safe flag configuration.
  */
-export class InMemoryProvider<
-  T extends Record<string, FlagVariants<string>> = Record<string, FlagVariants<string>>,
-> implements Provider {
+export class InMemoryProvider implements Provider {
   public readonly events = new OpenFeatureEventEmitter();
   public readonly runsOn = 'server';
   readonly metadata = {
@@ -24,7 +23,7 @@ export class InMemoryProvider<
   } as const;
   private _flagConfiguration: FlagConfiguration;
 
-  constructor(flagConfiguration: FlagConfiguration<T> = {} as FlagConfiguration<T>) {
+  constructor(flagConfiguration: FlagConfiguration = {}) {
     this._flagConfiguration = { ...flagConfiguration };
   }
 
@@ -32,9 +31,7 @@ export class InMemoryProvider<
    * Overwrites the configured flags.
    * @param { FlagConfiguration } flagConfiguration new flag configuration
    */
-  putConfiguration<U extends Record<string, FlagVariants<string>> = Record<string, FlagVariants<string>>>(
-    flagConfiguration: FlagConfiguration<U>,
-  ) {
+  putConfiguration(flagConfiguration: FlagConfiguration) {
     const flagsChanged = Object.entries(flagConfiguration)
       .filter(([key, value]) => this._flagConfiguration[key] !== value)
       .map(([key]) => key);
@@ -134,5 +131,68 @@ export class InMemoryProvider<
       ...(variant && { variant }),
       reason: isContextEval ? StandardResolutionReasons.TARGETING_MATCH : StandardResolutionReasons.STATIC,
     };
+  }
+}
+
+/**
+ * A simple OpenFeature provider intended for demos and as a test stub.
+ * @example
+ * ```
+ * const provider = new TypedInMemoryProvider({
+ *   'my-flag': {
+ *     variants: { on: true, off: false },
+ *     defaultVariant: 'on',
+ *     contextEvaluator: (ctx) => ctx?.user?.id === '123' ? 'on' : 'off',
+ *     disabled: false,
+ *   },
+ * });
+ *
+ * const flags = {
+ *   'my-flag': {
+ *     variants: { on: true, off: false },
+ *     defaultVariant: 'on',
+ *     contextEvaluator: (ctx) => ctx?.user?.id === '123' ? 'on' : 'off',
+ *     disabled: false,
+ *   },
+ * } as const; // 'as const' needed to preserve the `defaultVariant` narrow literal type rather than `string`
+ * const provider = new TypedInMemoryProvider(flags);
+ * ```
+ */
+export class TypedInMemoryProvider<
+  T extends Record<string, FlagVariants<string>> = Record<string, FlagVariants<string>>,
+> extends InMemoryProvider {
+  constructor(flagConfiguration: FlagConfiguration<T> = {} as FlagConfiguration<T>) {
+    super(flagConfiguration);
+  }
+
+  /**
+   * Overwrites the configured flags.
+   * @param { FlagConfiguration } flagConfiguration new flag configuration
+   * @example
+   * ```
+   * provider.putConfiguration({
+   *   'my-flag': {
+   *     variants: { on: true, off: false },
+   *     defaultVariant: 'on',
+   *     contextEvaluator: (ctx) => ctx?.user?.id === '123' ? 'on' : 'off',
+   *     disabled: false,
+   *   },
+   * });
+   *
+   * const flags = {
+   *   'my-flag': {
+   *     variants: { on: true, off: false },
+   *     defaultVariant: 'on',
+   *     contextEvaluator: (ctx) => ctx?.user?.id === '123' ? 'on' : 'off',
+   *     disabled: false,
+   *   },
+   * } as const; // 'as const' needed to preserve the `defaultVariant` narrow literal type rather than `string`
+   * provider.putConfiguration(flags);
+   * ```
+   */
+  override putConfiguration<U extends Record<string, FlagVariants<string>> = Record<string, FlagVariants<string>>>(
+    flagConfiguration: FlagConfiguration<U>,
+  ) {
+    super.putConfiguration(flagConfiguration);
   }
 }

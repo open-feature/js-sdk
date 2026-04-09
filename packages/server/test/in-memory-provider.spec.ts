@@ -1,15 +1,15 @@
 import {
   FlagNotFoundError,
-  InMemoryProvider,
   ProviderEvents,
   StandardResolutionReasons,
+  TypedInMemoryProvider,
   TypeMismatchError,
 } from '../src';
 import { VariantFoundError } from '../src/provider/in-memory-provider/variant-not-found-error';
 
 describe('in-memory provider', () => {
   describe('boolean flags', () => {
-    const provider = new InMemoryProvider({});
+    const provider = new TypedInMemoryProvider({});
     it('resolves to default variant with reason static', async () => {
       const booleanFlagSpec = {
         'a-boolean-flag': {
@@ -117,7 +117,7 @@ describe('in-memory provider', () => {
   });
 
   describe('string flags', () => {
-    const provider = new InMemoryProvider({});
+    const provider = new TypedInMemoryProvider({});
     const itsDefault = "it's deafault";
     const itsOn = "it's on";
     const itsOff = "it's off";
@@ -230,7 +230,7 @@ describe('in-memory provider', () => {
   });
 
   describe('number flags', () => {
-    const provider = new InMemoryProvider({});
+    const provider = new TypedInMemoryProvider({});
     const defaultNumber = 42;
     const onNumber = -528;
     const offNumber = 0;
@@ -348,7 +348,7 @@ describe('in-memory provider', () => {
   });
 
   describe('Object flags', () => {
-    const provider = new InMemoryProvider({});
+    const provider = new TypedInMemoryProvider({});
     const defaultObject = { someKey: 'default' };
     const onObject = { someKey: 'on' };
     const offObject = { someKey: 'off' };
@@ -476,7 +476,7 @@ describe('in-memory provider', () => {
           disabled: false,
         },
       } as const;
-      const provider = new InMemoryProvider(flagsSpec);
+      const provider = new TypedInMemoryProvider(flagsSpec);
 
       provider.events.addHandler(ProviderEvents.ConfigurationChanged, (details) => {
         expect(details?.flagsChanged).toEqual(['some-other-flag']);
@@ -507,7 +507,7 @@ describe('in-memory provider', () => {
           disabled: false,
         },
       } as const;
-      const provider = new InMemoryProvider(flagsSpec);
+      const provider = new TypedInMemoryProvider(flagsSpec);
 
       provider.events.addHandler(ProviderEvents.ConfigurationChanged, (details) => {
         expect(details?.flagsChanged).toEqual(['some-flag']);
@@ -529,7 +529,7 @@ describe('in-memory provider', () => {
 
   describe('Flags configuration', () => {
     it('reflects changes in flag configuration', async () => {
-      const provider = new InMemoryProvider({
+      const provider = new TypedInMemoryProvider({
         'some-flag': {
           variants: {
             on: 'initial-value',
@@ -581,7 +581,7 @@ describe('in-memory provider', () => {
         disabled: false,
       };
 
-      const provider = new InMemoryProvider(flagsSpec);
+      const provider = new TypedInMemoryProvider(flagsSpec);
 
       // I passed configuration by reference, so maybe I can mess
       // with it behind the providers back!

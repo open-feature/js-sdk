@@ -8,6 +8,10 @@ import type { EvaluationContext, JsonValue } from '@openfeature/core';
 // TODO: Remove once TypeScript updated to 5.4+
 type NoInfer<T> = [T][T extends unknown ? 0 : never];
 
+// Flattens intersection types for better IDE display
+// eslint-disable-next-line @typescript-eslint/ban-types
+type Simplify<T> = { [K in keyof T]: T[K] } & {};
+
 export type FlagVariants<T extends string> =
   | Record<T, boolean>
   | Record<T, string>
@@ -40,6 +44,11 @@ export type Flag<T extends string = string> = {
   contextEvaluator?: (ctx: EvaluationContext) => NoInfer<T>;
 };
 
+/**
+ * The configuration object for the InMemoryProvider, containing all flags and their specifications.
+ *
+ * The generic ensures that the keys of the `variants` object in each flag specification are consistent with the `defaultVariant` and the return type of `contextEvaluator`.
+ */
 export type FlagConfiguration<T extends Record<string, FlagVariants<string>> = Record<string, FlagVariants<string>>> = {
-  [K in keyof T]: Omit<Flag<keyof T[K] & string>, 'variants'> & { variants: T[K] };
+  [K in keyof T]: Simplify<{ variants: T[K] } & Omit<Flag<keyof T[K] & string>, 'variants'>>;
 };

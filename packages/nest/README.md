@@ -81,16 +81,16 @@ The minimum required version of `@openfeature/server-sdk` currently is `1.7.5`.
 
 ### Usage
 
-The example below shows how to use the `OpenFeatureModule` with OpenFeature's `InMemoryProvider`.
+The example below shows how to use the `OpenFeatureModule` with OpenFeature's `TypedInMemoryProvider`.
 
 ```ts
 import { Module } from '@nestjs/common';
-import { OpenFeatureModule, InMemoryProvider } from '@openfeature/nestjs-sdk';
+import { OpenFeatureModule, TypedInMemoryProvider } from '@openfeature/nestjs-sdk';
 
 @Module({
   imports: [
     OpenFeatureModule.forRoot({
-      defaultProvider: new InMemoryProvider({
+      defaultProvider: new TypedInMemoryProvider({
         testBooleanFlag: {
           defaultVariant: 'default',
           variants: { default: true },
@@ -98,7 +98,7 @@ import { OpenFeatureModule, InMemoryProvider } from '@openfeature/nestjs-sdk';
         },
       }),
       providers: {
-        differentProvider: new InMemoryProvider(),
+        differentProvider: new TypedInMemoryProvider(),
       },
     }),
   ],
