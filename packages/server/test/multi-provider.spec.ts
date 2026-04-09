@@ -15,7 +15,7 @@ import {
   MapHookData,
   ErrorCode,
   FlagNotFoundError,
-  InMemoryProvider,
+  TypedInMemoryProvider,
   OpenFeatureEventEmitter,
   ServerProviderEvents,
   FirstMatchStrategy,
@@ -77,7 +77,7 @@ describe('MultiProvider', () => {
     it('uses provider names for unique types', () => {
       const multiProvider = new MultiProvider([
         {
-          provider: new InMemoryProvider(),
+          provider: new TypedInMemoryProvider(),
         },
         {
           provider: new TestProvider(),
@@ -99,7 +99,7 @@ describe('MultiProvider', () => {
           provider: new TestProvider(),
         },
         {
-          provider: new InMemoryProvider(),
+          provider: new TypedInMemoryProvider(),
         },
       ]);
       expect(multiProvider.providerEntries[0].name).toEqual('TestProvider-1');
@@ -132,7 +132,7 @@ describe('MultiProvider', () => {
               name: 'provider',
             },
             {
-              provider: new InMemoryProvider(),
+              provider: new TypedInMemoryProvider(),
               name: 'provider',
             },
           ]),
@@ -802,7 +802,7 @@ describe('MultiProvider', () => {
 
     it('skips providers without track method', () => {
       const provider1 = new TestProvider();
-      const provider2 = new InMemoryProvider(); // Doesn't have track method
+      const provider2 = new TypedInMemoryProvider(); // Doesn't have track method
       const provider3 = new TestProvider();
 
       const multiProvider = new MultiProvider([
