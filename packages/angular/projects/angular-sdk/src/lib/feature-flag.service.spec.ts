@@ -2,7 +2,13 @@ import { TestBed } from '@angular/core/testing';
 import { Component, inject } from '@angular/core';
 import { ComponentFixture } from '@angular/core/testing';
 import { firstValueFrom, map } from 'rxjs';
-import { JsonValue, OpenFeature, ResolutionDetails } from '@openfeature/web-sdk';
+import {
+  type InMemoryFlagConfiguration,
+  type InMemoryFlagVariants,
+  JsonValue,
+  OpenFeature,
+  ResolutionDetails,
+} from '@openfeature/web-sdk';
 import { FeatureFlagService } from './feature-flag.service';
 import { AsyncPipe } from '@angular/common';
 import { TestingProvider } from '../test/test.utils';
@@ -74,21 +80,20 @@ describe('FeatureFlagService', () => {
   let currentConfigChangeDisabledComponentFixture: ComponentFixture<ConfigChangeDisabledComponent>;
   let currentContextChangeDisabledComponentFixture: ComponentFixture<ContextChangeDisabledComponent>;
 
-  async function createTestingModule(config?: {
-    flagConfiguration?: ConstructorParameters<typeof TestingProvider>[0];
-    providerInitDelay?: number;
-  }) {
+  async function createTestingModule<
+    T extends Record<string, InMemoryFlagVariants<string>> = Record<string, InMemoryFlagVariants<string>>,
+  >(config?: { flagConfiguration?: InMemoryFlagConfiguration<T>; providerInitDelay?: number }) {
     const defaultFlagConfig = {
       [FLAG_KEY]: {
         variants: { default: true },
-        defaultVariant: 'default',
+        defaultVariant: 'default' as const,
         disabled: false,
       },
     };
-    currentProvider = new TestingProvider(
-      config?.flagConfiguration ?? defaultFlagConfig,
-      config?.providerInitDelay ?? 0,
-    );
+
+    currentProvider = config?.flagConfiguration
+      ? new TestingProvider(config.flagConfiguration, config.providerInitDelay ?? 0)
+      : new TestingProvider(defaultFlagConfig, config?.providerInitDelay ?? 0);
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
       imports: [OpenFeatureModule.forRoot({ provider: currentProvider })],

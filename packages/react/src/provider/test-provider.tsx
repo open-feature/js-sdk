@@ -1,11 +1,10 @@
-import type { JsonValue, Provider } from '@openfeature/web-sdk';
-import { InMemoryProvider, NOOP_PROVIDER, OpenFeature } from '@openfeature/web-sdk';
+import type { InMemoryFlagConfiguration, JsonValue, Provider } from '@openfeature/web-sdk';
+import { TypedInMemoryProvider, NOOP_PROVIDER, OpenFeature } from '@openfeature/web-sdk';
 import React from 'react';
 import type { NormalizedOptions } from '../options';
 import { OpenFeatureProvider } from './provider';
 
 type FlagValueMap = { [flagKey: string]: JsonValue };
-type FlagConfig = ConstructorParameters<typeof InMemoryProvider>[0];
 type TestProviderProps = Omit<React.ComponentProps<typeof OpenFeatureProvider>, 'client'> &
   (
     | {
@@ -36,7 +35,7 @@ const TEST_VARIANT = 'test-variant';
 const TEST_PROVIDER = 'test-provider';
 
 // internal provider which is basically the in-memory provider with a simpler config and some optional fake delays
-class TestProvider extends InMemoryProvider {
+class TestProvider extends TypedInMemoryProvider {
   // initially make this undefined, we still set it if a delay is specified
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore - For maximum compatibility with previous versions, we ignore a possible TS error here,
@@ -54,18 +53,21 @@ class TestProvider extends InMemoryProvider {
     private delay = 0,
   ) {
     // convert the simple flagValueMap into an in-memory config
-    const flagConfig = Object.entries(flagValueMap).reduce((acc: FlagConfig, flag): FlagConfig => {
-      return {
-        ...acc,
-        [flag[0]]: {
-          variants: {
-            [TEST_VARIANT]: flag[1],
+    const flagConfig = Object.entries(flagValueMap).reduce(
+      (acc: InMemoryFlagConfiguration, flag): InMemoryFlagConfiguration => {
+        return {
+          ...acc,
+          [flag[0]]: {
+            variants: {
+              [TEST_VARIANT]: flag[1],
+            },
+            defaultVariant: TEST_VARIANT,
+            disabled: false,
           },
-          defaultVariant: TEST_VARIANT,
-          disabled: false,
-        },
-      };
-    }, {});
+        };
+      },
+      {},
+    );
     super(flagConfig);
     // only define and init if there's a non-zero delay specified
     this.initialize = this.delay ? this.delayedInitialize.bind(this) : undefined;
@@ -77,7 +79,7 @@ class TestProvider extends InMemoryProvider {
 }
 
 /**
- * A React Context provider based on the {@link InMemoryProvider}, specifically built for testing.
+ * A React Context provider based on the {@link TypedInMemoryProvider}, specifically built for testing.
  * Use this for testing components that use flag evaluation hooks.
  * @param {TestProviderProps} testProviderOptions options for the OpenFeatureTestProvider
  * @returns {OpenFeatureProvider} OpenFeatureTestProvider

@@ -2,7 +2,15 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Component, Input } from '@angular/core';
 import { OpenFeatureModule } from './open-feature.module';
 import { By } from '@angular/platform-browser';
-import { Client, ClientProviderEvents, FlagValue, InMemoryProvider, OpenFeature } from '@openfeature/web-sdk';
+import {
+  Client,
+  ClientProviderEvents,
+  FlagValue,
+  type InMemoryFlagConfiguration,
+  type InMemoryFlagVariants,
+  TypedInMemoryProvider,
+  OpenFeature,
+} from '@openfeature/web-sdk';
 import { TestingProvider } from '../test/test.utils';
 import { v4 } from 'uuid';
 import {
@@ -568,16 +576,21 @@ describe('FeatureFlagDirective', () => {
   });
 });
 
-async function createTestingModule(config?: {
-  flagConfiguration?: ConstructorParameters<typeof InMemoryProvider>[0];
+async function createTestingModule<
+  T extends Record<string, InMemoryFlagVariants<string>> = Record<string, InMemoryFlagVariants<string>>,
+>(config?: {
+  flagConfiguration?: InMemoryFlagConfiguration<T>;
   providerInitDelay?: number;
 }): Promise<{ fixture: ComponentFixture<TestComponent>; provider: TestingProvider; domain: string; client: Client }> {
   const domain = v4();
-  const provider = new TestingProvider(config?.flagConfiguration ?? {}, config?.providerInitDelay ?? 0);
+  const provider = new TestingProvider(config?.flagConfiguration, config?.providerInitDelay ?? 0);
 
   const fixture = TestBed.configureTestingModule({
     imports: [
-      OpenFeatureModule.forRoot({ provider: new InMemoryProvider(), domainBoundProviders: { [domain]: provider } }),
+      OpenFeatureModule.forRoot({
+        provider: new TypedInMemoryProvider(),
+        domainBoundProviders: { [domain]: provider },
+      }),
       TestComponent,
     ],
   }).createComponent(TestComponent);

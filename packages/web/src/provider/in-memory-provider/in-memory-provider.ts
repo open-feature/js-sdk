@@ -210,3 +210,57 @@ export class TypedInMemoryProvider<
     await super.putConfiguration(flagConfiguration);
   }
 }
+
+/**
+ * The variants object for a flag in the {@link TypedInMemoryProvider}, containing all possible variants and their associated values.
+ *
+ * Can be used in combination with {@link InMemoryFlagConfiguration} to preserve type-safety when extending the provider class.
+ * @example
+ * ```
+ * export class CustomInMemoryProvider<
+ *   T extends Record<string, InMemoryFlagVariants<string>> = Record<string, InMemoryFlagVariants<string>>,
+ * > extends TypedInMemoryProvider<T> {
+ *   constructor(flagConfiguration: InMemoryFlagConfiguration<T>) {
+ *     super(flagConfiguration);
+ *     // custom logic ...
+ *   }
+ *
+ *   override async putConfiguration<
+ *     U extends Record<string, InMemoryFlagVariants<string>> = Record<string, InMemoryFlagVariants<string>>,
+ *   >(flagConfiguration: InMemoryFlagConfiguration<U>) {
+ *     await super.putConfiguration(flagConfiguration);
+ *     // custom logic ...
+ *   }
+ * }
+ * ```
+ */
+export type InMemoryFlagVariants<T extends string> = FlagVariants<T>;
+
+/**
+ * The configuration object for the {@link TypedInMemoryProvider}, containing all flags and their specifications.
+ *
+ * Can be used in combination with {@link InMemoryFlagVariants} to preserve type-safety when extending the provider class.
+ *
+ * The generic ensures that the keys of the `variants` object in each flag specification are consistent with the `defaultVariant` and the return type of `contextEvaluator`.
+ * @example
+ * ```
+ * export class CustomInMemoryProvider<
+ *   T extends Record<string, InMemoryFlagVariants<string>> = Record<string, InMemoryFlagVariants<string>>,
+ * > extends TypedInMemoryProvider<T> {
+ *   constructor(flagConfiguration: InMemoryFlagConfiguration<T>) {
+ *     super(flagConfiguration);
+ *     // custom logic ...
+ *   }
+ *
+ *   override async putConfiguration<
+ *     U extends Record<string, InMemoryFlagVariants<string>> = Record<string, InMemoryFlagVariants<string>>,
+ *   >(flagConfiguration: InMemoryFlagConfiguration<U>) {
+ *     await super.putConfiguration(flagConfiguration);
+ *     // custom logic ...
+ *   }
+ * }
+ * ```
+ */
+export type InMemoryFlagConfiguration<
+  T extends Record<string, FlagVariants<string>> = Record<string, FlagVariants<string>>,
+> = FlagConfiguration<T>;

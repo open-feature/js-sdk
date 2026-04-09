@@ -1,8 +1,10 @@
-import { InMemoryProvider } from '@openfeature/web-sdk';
+import { type InMemoryFlagConfiguration, type InMemoryFlagVariants, TypedInMemoryProvider } from '@openfeature/web-sdk';
 
-export class TestingProvider extends InMemoryProvider {
+export class TestingProvider<
+  T extends Record<string, InMemoryFlagVariants<string>> = Record<string, InMemoryFlagVariants<string>>,
+> extends TypedInMemoryProvider<T> {
   constructor(
-    flagConfiguration: ConstructorParameters<typeof InMemoryProvider>[0],
+    flagConfiguration: InMemoryFlagConfiguration<T>,
     private delay: number,
   ) {
     super(flagConfiguration);
