@@ -83,7 +83,7 @@ describe('Evaluation Context', () => {
       it('should set the context for the default provider prior to initialization', async () => {
         const context: EvaluationContext = { property1: false };
         const provider = new MockProvider();
-        await OpenFeature.setProviderAndWait(provider, context);
+        await OpenFeature.setProvider(provider, context);
         expect(initializeMock).toHaveBeenCalledWith(context);
         expect(OpenFeature.getContext()).toEqual(context);
       });
@@ -92,7 +92,7 @@ describe('Evaluation Context', () => {
         const context: EvaluationContext = { property1: false };
         const domain = 'test';
         const provider = new MockProvider({ name: domain });
-        await OpenFeature.setProviderAndWait(domain, provider, context);
+        await OpenFeature.setProvider(domain, provider, context);
         expect(OpenFeature.getContext()).toEqual({});
         expect(OpenFeature.getContext(domain)).toEqual(context);
         expect(initializeMock).toHaveBeenCalledWith(context);
@@ -126,8 +126,8 @@ describe('Evaluation Context', () => {
         const defaultProvider = new MockProvider();
         const provider1 = new MockProvider();
 
-        await OpenFeature.setProviderAndWait(defaultProvider);
-        await OpenFeature.setProviderAndWait(domain, provider1);
+        await OpenFeature.setProvider(defaultProvider);
+        await OpenFeature.setProvider(domain, provider1);
 
         // Spy on context changed handlers of both providers
         const defaultProviderSpy = jest.spyOn(defaultProvider, 'onContextChange');
@@ -148,8 +148,8 @@ describe('Evaluation Context', () => {
         const defaultProvider = new MockProvider();
         const provider1 = new MockProvider();
 
-        await OpenFeature.setProviderAndWait(defaultProvider);
-        await OpenFeature.setProviderAndWait(domain, provider1);
+        await OpenFeature.setProvider(defaultProvider);
+        await OpenFeature.setProvider(domain, provider1);
 
         // Spy on boolean resolvers of both providers
         const defaultProviderSpy = jest.spyOn(defaultProvider, 'resolveBooleanEvaluation');
