@@ -218,7 +218,7 @@ export class FeatureFlagService {
     domain: string | undefined,
     options?: AngularFlagEvaluationOptions,
   ): Observable<EvaluationDetails<T>> {
-    const client = setAngularFrameworkMetadata(OpenFeature.getClient(domain));
+    const client = setAngularFrameworkMetadata(OpenFeature.getClient(domain || undefined));
 
     return new Observable<EvaluationDetails<T>>((subscriber) => {
       let currentResult: EvaluationDetails<T> | undefined = undefined;
