@@ -61,8 +61,6 @@ export type AngularFlagEvaluationOptions = {
   providedIn: 'root',
 })
 export class FeatureFlagService {
-  private _clients: Map<string | undefined, Client> = new Map();
-
   constructor() {}
 
   /**
@@ -270,13 +268,6 @@ export class FeatureFlagService {
   }
 
   private getClient(domain?: string): Client {
-    const cachedClient = this._clients.get(domain);
-    if (cachedClient) {
-      return cachedClient;
-    }
-
-    const client = setFrameworkMetadata(domain ? OpenFeature.getClient(domain) : OpenFeature.getClient(), 'angular');
-    this._clients.set(domain, client);
-    return client;
+    return setFrameworkMetadata(domain ? OpenFeature.getClient(domain) : OpenFeature.getClient(), 'angular');
   }
 }
