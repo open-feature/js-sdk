@@ -181,6 +181,10 @@ describe('OpenFeatureClient', () => {
     it('should have metadata accessor with domain', () => {
       expect(client.metadata.domain).toEqual(domain);
     });
+
+    it('should expose the web sdk family in metadata', () => {
+      expect(client.metadata.sdk).toEqual('web');
+    });
   });
 
   describe('Requirement 1.3.1, 1.3.2.1', () => {

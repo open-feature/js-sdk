@@ -1,3 +1,4 @@
+import { setFrameworkMetadata } from '@openfeature/core';
 import type { Client } from '@openfeature/web-sdk';
 import { OpenFeature } from '@openfeature/web-sdk';
 import * as React from 'react';
@@ -32,7 +33,10 @@ type ProviderProps = {
  * @returns {OpenFeatureProvider} context provider
  */
 export function OpenFeatureProvider({ client, domain, children, ...options }: ProviderProps) {
-  const stableClient = React.useMemo(() => client || OpenFeature.getClient(domain), [client, domain]);
+  const stableClient = React.useMemo(
+    () => setFrameworkMetadata(client || OpenFeature.getClient(domain), 'react'),
+    [client, domain],
+  );
 
   return <Context.Provider value={{ client: stableClient, options }}>{children}</Context.Provider>;
 }

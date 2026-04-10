@@ -1,4 +1,5 @@
 import type {
+  ClientFramework,
   ClientMetadata,
   EvaluationContext,
   EvaluationDetails,
@@ -39,6 +40,7 @@ type OpenFeatureClientOptions = {
   name?: string;
   domain?: string;
   version?: string;
+  framework?: ClientFramework;
 };
 
 /**
@@ -49,6 +51,7 @@ type OpenFeatureClientOptions = {
 export class OpenFeatureClient implements Client {
   private _hooks: Hook[] = [];
   private _clientLogger?: Logger;
+  private _framework?: ClientFramework;
 
   constructor(
     // functions are passed here to make sure that these values are always up to date,
@@ -60,7 +63,9 @@ export class OpenFeatureClient implements Client {
     private readonly apiHooksAccessor: () => Hook[],
     private readonly globalLogger: () => Logger,
     private readonly options: OpenFeatureClientOptions,
-  ) {}
+  ) {
+    this._framework = options.framework;
+  }
 
   get metadata(): ClientMetadata {
     return {
@@ -68,8 +73,21 @@ export class OpenFeatureClient implements Client {
       name: this.options.domain ?? this.options.name,
       domain: this.options.domain ?? this.options.name,
       version: this.options.version,
+      sdk: 'web',
+      framework: this._framework,
       providerMetadata: this.providerAccessor().metadata,
     };
+  }
+
+  /**
+   * Sets framework metadata for SDK-owned clients used by framework wrappers.
+   * @param {ClientFramework} framework framework metadata to expose
+   * @returns {this} the updated client
+   * @internal
+   */
+  setFrameworkMetadata(framework: ClientFramework): this {
+    this._framework = framework;
+    return this;
   }
 
   get providerStatus(): ProviderStatus {

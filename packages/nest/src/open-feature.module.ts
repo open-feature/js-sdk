@@ -1,3 +1,4 @@
+import { setFrameworkMetadata } from '@openfeature/core';
 import type {
   DynamicModule,
   FactoryProvider as NestFactoryProvider,
@@ -45,7 +46,7 @@ export class OpenFeatureModule {
     const clientValueProviders: NestFactoryProvider<Client>[] = [
       {
         provide: getOpenFeatureClientToken(),
-        useFactory: () => OpenFeature.getClient(),
+        useFactory: () => setFrameworkMetadata(OpenFeature.getClient(), 'nest'),
       },
     ];
 
@@ -58,7 +59,7 @@ export class OpenFeatureModule {
         OpenFeature.setProvider(domain, provider);
         clientValueProviders.push({
           provide: getOpenFeatureClientToken(domain),
-          useFactory: () => OpenFeature.getClient(domain),
+          useFactory: () => setFrameworkMetadata(OpenFeature.getClient(domain), 'nest'),
         });
       });
     }

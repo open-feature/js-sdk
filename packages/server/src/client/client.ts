@@ -1,4 +1,4 @@
-import type { ClientMetadata, EvaluationLifeCycle, Eventing, ManageContext, ManageLogger } from '@openfeature/core';
+import type { EvaluationLifeCycle, Eventing, ManageContext, ManageLogger, MetadataClient } from '@openfeature/core';
 import type { Features } from '../evaluation';
 import type { ProviderStatus } from '../provider';
 import type { ProviderEvents } from '../events';
@@ -11,8 +11,8 @@ export interface Client
     ManageContext<Client>,
     ManageLogger<Client>,
     Tracking,
-    Eventing<ProviderEvents> {
-  readonly metadata: ClientMetadata;
+    Eventing<ProviderEvents>,
+    MetadataClient {
   /**
    * Returns the status of the associated provider.
    */
