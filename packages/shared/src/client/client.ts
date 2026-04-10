@@ -4,11 +4,6 @@ import type { Paradigm } from '../types/paradigm';
 export type ClientSdk = 'js-web' | 'js-server';
 export type ClientFramework = 'react' | 'angular' | 'nest';
 
-export interface ClientMetadataOptions {
-  readonly version?: string;
-  readonly framework?: ClientFramework;
-}
-
 export interface ClientMetadata {
   /**
    * @deprecated alias of "domain", use domain instead

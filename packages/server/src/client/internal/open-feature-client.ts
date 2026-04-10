@@ -40,7 +40,6 @@ type OpenFeatureClientOptions = {
   name?: string;
   domain?: string;
   version?: string;
-  framework?: ClientFramework;
 };
 
 /**
@@ -68,7 +67,6 @@ export class OpenFeatureClient implements Client {
     context: EvaluationContext = {},
   ) {
     this._context = context;
-    this._framework = options.framework;
   }
 
   get metadata(): ClientMetadata {
@@ -82,6 +80,20 @@ export class OpenFeatureClient implements Client {
       framework: this._framework,
       providerMetadata: this.providerAccessor().metadata,
     };
+  }
+
+  /**
+   * Sets framework metadata on an existing SDK-owned client instance.
+   *
+   * This is used by framework wrappers that must preserve a pre-created client
+   * instance instead of constructing a new framework-aware client.
+   * @param {ClientFramework} framework framework metadata to expose
+   * @returns {this} the updated client
+   * @internal
+   */
+  setFrameworkMetadata(framework: ClientFramework): this {
+    this._framework = framework;
+    return this;
   }
 
   get providerStatus(): ProviderStatus {

@@ -217,7 +217,7 @@ export class FeatureFlagService {
     domain: string | undefined,
     options?: AngularFlagEvaluationOptions,
   ): Observable<EvaluationDetails<T>> {
-    const client = OpenFeature.getClient(domain, { framework: 'angular' });
+    const client = setAngularFrameworkMetadata(OpenFeature.getClient(domain));
 
     return new Observable<EvaluationDetails<T>>((subscriber) => {
       let currentResult: EvaluationDetails<T> | undefined = undefined;
@@ -265,4 +265,13 @@ export class FeatureFlagService {
       };
     });
   }
+}
+
+type FrameworkMetadataClient = Client & {
+  setFrameworkMetadata?: (framework: 'angular') => Client;
+};
+
+function setAngularFrameworkMetadata(client: Client): Client {
+  (client as FrameworkMetadataClient).setFrameworkMetadata?.('angular');
+  return client;
 }

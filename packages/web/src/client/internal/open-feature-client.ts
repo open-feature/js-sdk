@@ -40,7 +40,6 @@ type OpenFeatureClientOptions = {
   name?: string;
   domain?: string;
   version?: string;
-  framework?: ClientFramework;
 };
 
 /**
@@ -63,9 +62,7 @@ export class OpenFeatureClient implements Client {
     private readonly apiHooksAccessor: () => Hook[],
     private readonly globalLogger: () => Logger,
     private readonly options: OpenFeatureClientOptions,
-  ) {
-    this._framework = options.framework;
-  }
+  ) {}
 
   get metadata(): ClientMetadata {
     return {

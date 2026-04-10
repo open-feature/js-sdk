@@ -1,11 +1,4 @@
-import type {
-  ClientFramework,
-  ClientMetadataOptions,
-  ClientProviderStatus,
-  EvaluationContext,
-  GenericEventEmitter,
-  ManageContext,
-} from '@openfeature/core';
+import type { ClientProviderStatus, EvaluationContext, GenericEventEmitter, ManageContext } from '@openfeature/core';
 import { OpenFeatureCommonAPI, ProviderWrapper, objectOrUndefined, stringOrUndefined } from '@openfeature/core';
 import type { Client } from './client';
 import { OpenFeatureClient } from './client/internal/open-feature-client';
@@ -354,22 +347,11 @@ export class OpenFeatureAPI
    * @param {string} version The version of the client (only used for metadata)
    * @returns {Client} OpenFeature Client
    */
-  getClient(domain?: string, version?: string): Client;
-  /**
-   * A factory function for creating new domain-scoped OpenFeature clients.
-   * @param {string} domain An identifier which logically binds clients with providers
-   * @param {ClientMetadataOptions} options Client metadata options
-   * @returns {Client} OpenFeature Client
-   */
-  getClient(domain: string | undefined, options: ClientMetadataOptions): Client;
-  getClient(domain?: string, versionOrOptions?: string | ClientMetadataOptions): Client {
-    const options = clientMetadataOptionsOrUndefined(versionOrOptions);
-    const version = stringOrUndefined(versionOrOptions) ?? options?.version;
-
-    return this._createClient(domain, version, options?.framework);
+  getClient(domain?: string, version?: string): Client {
+    return this._createClient(domain, version);
   }
 
-  private _createClient(domain?: string, version?: string, framework?: ClientFramework): Client {
+  private _createClient(domain?: string, version?: string): Client {
     return new OpenFeatureClient(
       // functions are passed here to make sure that these values are always up to date,
       // and so we don't have to make these public properties on the API class.
@@ -379,7 +361,7 @@ export class OpenFeatureAPI
       (domain?: string) => this.getContext(domain),
       () => this.getHooks(),
       () => this._logger,
-      { domain, version, framework },
+      { domain, version },
     );
   }
 
@@ -448,13 +430,3 @@ export class OpenFeatureAPI
  * @returns {OpenFeatureAPI} OpenFeature API
  */
 export const OpenFeature = OpenFeatureAPI.getInstance();
-
-function clientMetadataOptionsOrUndefined(
-  value: string | ClientMetadataOptions | undefined,
-): ClientMetadataOptions | undefined {
-  if (typeof value === 'object' && value && ('version' in value || 'framework' in value)) {
-    return value as ClientMetadataOptions;
-  }
-
-  return undefined;
-}

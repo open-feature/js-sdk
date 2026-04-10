@@ -132,7 +132,7 @@ export abstract class FeatureFlagDirective<T extends FlagValue> implements OnIni
     if (this._client) {
       this.disposeClient(this._client);
     }
-    this._client = OpenFeature.getClient(this._featureFlagDomain, { framework: 'angular' });
+    this._client = setAngularFrameworkMetadata(OpenFeature.getClient(this._featureFlagDomain));
 
     const baseHandler = () => {
       const result = this.getFlagDetails(this._featureFlagKey, this._featureFlagDefault);
@@ -228,6 +228,15 @@ export abstract class FeatureFlagDirective<T extends FlagValue> implements OnIni
 
     this._changeDetectorRef.markForCheck();
   }
+}
+
+type FrameworkMetadataClient = Client & {
+  setFrameworkMetadata?: (framework: 'angular') => Client;
+};
+
+function setAngularFrameworkMetadata(client: Client): Client {
+  (client as FrameworkMetadataClient).setFrameworkMetadata?.('angular');
+  return client;
 }
 
 /**

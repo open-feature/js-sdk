@@ -41,7 +41,7 @@ export function OpenFeatureProvider({ client, domain, children, ...options }: Pr
       return setReactFrameworkMetadata(client);
     }
 
-    return OpenFeature.getClient(domain, { framework: 'react' });
+    return setReactFrameworkMetadata(OpenFeature.getClient(domain));
   }, [client, domain]);
 
   return <Context.Provider value={{ client: stableClient, options }}>{children}</Context.Provider>;

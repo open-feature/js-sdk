@@ -22,6 +22,10 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { EvaluationContextInterceptor } from './evaluation-context-interceptor';
 import { ShutdownService } from './shutdown.service';
 
+type FrameworkMetadataClient = Client & {
+  setFrameworkMetadata?: (framework: 'nest') => Client;
+};
+
 /**
  * OpenFeatureModule is a NestJS wrapper for OpenFeature Server-SDK.
  */
@@ -45,7 +49,7 @@ export class OpenFeatureModule {
     const clientValueProviders: NestFactoryProvider<Client>[] = [
       {
         provide: getOpenFeatureClientToken(),
-        useFactory: () => OpenFeature.getClient(undefined, { framework: 'nest' }),
+        useFactory: () => setNestFrameworkMetadata(OpenFeature.getClient()),
       },
     ];
 
@@ -58,7 +62,7 @@ export class OpenFeatureModule {
         OpenFeature.setProvider(domain, provider);
         clientValueProviders.push({
           provide: getOpenFeatureClientToken(domain),
-          useFactory: () => OpenFeature.getClient(domain, { framework: 'nest' }),
+          useFactory: () => setNestFrameworkMetadata(OpenFeature.getClient(domain)),
         });
       });
     }
@@ -154,4 +158,9 @@ export interface OpenFeatureModuleOptions {
  */
 export function getOpenFeatureClientToken(domain?: string): string {
   return domain ? `OpenFeatureClient_${domain}` : 'OpenFeatureClient_default';
+}
+
+function setNestFrameworkMetadata(client: Client): Client {
+  (client as FrameworkMetadataClient).setFrameworkMetadata?.('nest');
+  return client;
 }

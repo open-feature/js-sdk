@@ -195,23 +195,12 @@ describe('OpenFeature', () => {
       const contextOnly = { targetingKey: 'context-only' };
       const domainContext = { targetingKey: 'domain-context' };
       const versionContext = { targetingKey: 'version-context' };
-      const metadataContext = { targetingKey: 'metadata-context' };
 
       const defaultClient = OpenFeature.getClient();
       const contextClient = OpenFeature.getClient(contextOnly);
       const domainClient = OpenFeature.getClient('domain-only');
       const domainContextClient = OpenFeature.getClient('domain-context', domainContext);
       const legacyVersionClient = OpenFeature.getClient('legacy-version', '1.2.3', versionContext);
-      const defaultMetadataClient = OpenFeature.getClient(
-        undefined,
-        { version: '2.0.0', framework: 'nest' },
-        metadataContext,
-      );
-      const domainMetadataClient = OpenFeature.getClient(
-        'options-domain',
-        { version: '3.0.0', framework: 'nest' },
-        metadataContext,
-      );
 
       expect(defaultClient.metadata).toMatchObject({
         sdk: 'js-server',
@@ -242,21 +231,6 @@ describe('OpenFeature', () => {
         paradigm: 'server',
       });
       expect(legacyVersionClient.getContext()).toEqual(versionContext);
-      expect(defaultMetadataClient.metadata).toMatchObject({
-        version: '2.0.0',
-        sdk: 'js-server',
-        paradigm: 'server',
-        framework: 'nest',
-      });
-      expect(defaultMetadataClient.getContext()).toEqual(metadataContext);
-      expect(domainMetadataClient.metadata).toMatchObject({
-        domain: 'options-domain',
-        version: '3.0.0',
-        sdk: 'js-server',
-        paradigm: 'server',
-        framework: 'nest',
-      });
-      expect(domainMetadataClient.getContext()).toEqual(metadataContext);
     });
   });
 
