@@ -14,6 +14,7 @@ import {
   ProviderStatus,
   StringFlagKey,
 } from '@openfeature/web-sdk';
+import { setAngularFrameworkMetadata } from './framework-metadata';
 import { isEqual } from './internal/is-equal';
 
 export type AngularFlagEvaluationOptions = {
@@ -265,13 +266,4 @@ export class FeatureFlagService {
       };
     });
   }
-}
-
-type FrameworkMetadataClient = Client & {
-  setFrameworkMetadata?: (framework: 'angular') => Client;
-};
-
-function setAngularFrameworkMetadata(client: Client): Client {
-  (client as FrameworkMetadataClient).setFrameworkMetadata?.('angular');
-  return client;
 }

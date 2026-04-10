@@ -24,6 +24,7 @@ import {
   OpenFeature,
   StringFlagKey,
 } from '@openfeature/web-sdk';
+import { setAngularFrameworkMetadata } from './framework-metadata';
 
 /**
  * Represents the template context provided by feature flag structural directives
@@ -228,15 +229,6 @@ export abstract class FeatureFlagDirective<T extends FlagValue> implements OnIni
 
     this._changeDetectorRef.markForCheck();
   }
-}
-
-type FrameworkMetadataClient = Client & {
-  setFrameworkMetadata?: (framework: 'angular') => Client;
-};
-
-function setAngularFrameworkMetadata(client: Client): Client {
-  (client as FrameworkMetadataClient).setFrameworkMetadata?.('angular');
-  return client;
 }
 
 /**

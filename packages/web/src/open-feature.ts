@@ -348,10 +348,6 @@ export class OpenFeatureAPI
    * @returns {Client} OpenFeature Client
    */
   getClient(domain?: string, version?: string): Client {
-    return this._createClient(domain, version);
-  }
-
-  private _createClient(domain?: string, version?: string): Client {
     return new OpenFeatureClient(
       // functions are passed here to make sure that these values are always up to date,
       // and so we don't have to make these public properties on the API class.

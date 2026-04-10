@@ -206,10 +206,6 @@ export class OpenFeatureAPI
       objectOrUndefined<EvaluationContext>(versionOrContext) ??
       objectOrUndefined<EvaluationContext>(contextOrUndefined);
 
-    return this._createClient(domain, version, context);
-  }
-
-  private _createClient(domain?: string, version?: string, context: EvaluationContext = {}): Client {
     return new OpenFeatureClient(
       () => this.getProviderForClient(domain),
       () => this.getProviderStatus(domain),

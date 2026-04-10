@@ -1,9 +1,6 @@
 import type { Client, EvaluationContext } from '@openfeature/server-sdk';
 import { OpenFeature } from '@openfeature/server-sdk';
-
-type FrameworkMetadataClient = Client & {
-  setFrameworkMetadata?: (framework: 'nest') => Client;
-};
+import { setNestFrameworkMetadata } from './framework-metadata';
 
 /**
  * Returns a domain scoped or the default OpenFeature client with the given context.
@@ -13,9 +10,4 @@ type FrameworkMetadataClient = Client & {
  */
 export function getClientForEvaluation(domain?: string, context?: EvaluationContext) {
   return setNestFrameworkMetadata(domain ? OpenFeature.getClient(domain, context) : OpenFeature.getClient(context));
-}
-
-function setNestFrameworkMetadata(client: Client): Client {
-  (client as FrameworkMetadataClient).setFrameworkMetadata?.('nest');
-  return client;
 }

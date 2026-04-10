@@ -86,7 +86,9 @@ export class OpenFeatureClient implements Client {
    * Sets framework metadata on an existing SDK-owned client instance.
    *
    * This is used by framework wrappers that must preserve a pre-created client
-   * instance instead of constructing a new framework-aware client.
+   * instance instead of constructing a new framework-aware client. Framework
+   * packages cast to this internal method because it is intentionally not part
+   * of the public `Client` interface.
    * @param {ClientFramework} framework framework metadata to expose
    * @returns {this} the updated client
    * @internal
