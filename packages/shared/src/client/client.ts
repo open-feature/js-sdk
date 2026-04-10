@@ -1,4 +1,5 @@
 import type { ProviderMetadata } from '../provider/provider';
+import type { Paradigm } from '../types/paradigm';
 
 export interface ClientMetadata {
   /**
@@ -7,7 +8,8 @@ export interface ClientMetadata {
   readonly name?: string;
   readonly domain?: string;
   readonly version?: string;
-  readonly sdk?: 'web' | 'server';
+  readonly sdk?: 'js-web' | 'js-server';
+  readonly paradigm?: Paradigm;
   readonly framework?: 'react' | 'angular' | 'nest';
   readonly providerMetadata: ProviderMetadata;
 }

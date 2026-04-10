@@ -115,7 +115,9 @@ export abstract class FeatureFlagDirective<T extends FlagValue> implements OnIni
   }
 
   ngOnInit(): void {
-    this.initClient();
+    if (!this._client) {
+      this.initClient();
+    }
   }
 
   ngOnChanges(): void {

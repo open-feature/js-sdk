@@ -72,7 +72,8 @@ describe('OpenFeatureProvider', () => {
         expect(result.current).not.toBe(client);
         expect(result.current.metadata).toMatchObject({
           domain: DOMAIN,
-          sdk: 'web',
+          sdk: 'js-web',
+          paradigm: 'client',
           framework: 'react',
         });
       });
@@ -87,7 +88,8 @@ describe('OpenFeatureProvider', () => {
         const { result } = renderHook(() => useOpenFeatureClient(), { wrapper });
 
         expect(result.current.metadata.domain).toEqual(DOMAIN);
-        expect(result.current.metadata.sdk).toEqual('web');
+        expect(result.current.metadata.sdk).toEqual('js-web');
+        expect(result.current.metadata.paradigm).toEqual('client');
         expect(result.current.metadata.framework).toEqual('react');
       });
 
@@ -136,7 +138,8 @@ describe('OpenFeatureProvider', () => {
           expect.objectContaining({
             clientMetadata: expect.objectContaining({
               domain: DOMAIN,
-              sdk: 'web',
+              sdk: 'js-web',
+              paradigm: 'client',
               framework: 'react',
             }),
           }),

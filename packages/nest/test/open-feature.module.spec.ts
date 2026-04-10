@@ -55,11 +55,13 @@ describe('OpenFeatureModule', () => {
       const scopedClient = moduleRef.get<Client>(getOpenFeatureClientToken('domainScopedClient'));
 
       expect(defaultClient.metadata).toMatchObject({
-        sdk: 'server',
+        sdk: 'js-server',
+        paradigm: 'server',
         framework: 'nest',
       });
       expect(scopedClient.metadata).toMatchObject({
-        sdk: 'server',
+        sdk: 'js-server',
+        paradigm: 'server',
         framework: 'nest',
       });
     });
@@ -77,7 +79,8 @@ describe('OpenFeatureModule', () => {
         expect(hook.before).toHaveBeenCalledWith(
           expect.objectContaining({
             clientMetadata: expect.objectContaining({
-              sdk: 'server',
+              sdk: 'js-server',
+              paradigm: 'server',
               framework: 'nest',
             }),
           }),
