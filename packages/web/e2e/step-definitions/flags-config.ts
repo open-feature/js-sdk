@@ -68,4 +68,4 @@ export default {
     },
     defaultVariant: 'one',
   },
-};
+} as const;

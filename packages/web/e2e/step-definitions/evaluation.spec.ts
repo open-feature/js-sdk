@@ -1,7 +1,7 @@
 import type { EvaluationContext, EvaluationDetails, JsonObject, JsonValue, ResolutionDetails } from '@openfeature/core';
 import { StandardResolutionReasons } from '@openfeature/core';
 import { defineFeature, loadFeature } from 'jest-cucumber';
-import { InMemoryProvider, OpenFeature } from '../../src';
+import { TypedInMemoryProvider, OpenFeature } from '../../src';
 import flagConfiguration from './flags-config';
 // load the feature file.
 const feature = loadFeature('packages/web/e2e/features/evaluation.feature');
@@ -17,7 +17,7 @@ const givenAnOpenfeatureClientIsRegisteredWithCacheDisabled = (
 
 defineFeature(feature, (test) => {
   beforeAll(async () => {
-    await OpenFeature.setProvider(new InMemoryProvider(flagConfiguration));
+    await OpenFeature.setProvider(new TypedInMemoryProvider(flagConfiguration));
   });
 
   afterAll(async () => {

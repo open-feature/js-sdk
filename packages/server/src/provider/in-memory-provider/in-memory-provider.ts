@@ -7,12 +7,13 @@ import {
   TypeMismatchError,
 } from '@openfeature/core';
 import type { Provider } from '../provider';
-import type { Flag, FlagConfiguration } from './flag-configuration';
+import type { Flag, FlagConfiguration, FlagVariants } from './flag-configuration';
 import { VariantFoundError } from './variant-not-found-error';
 import { OpenFeatureEventEmitter, ProviderEvents } from '../..';
 
 /**
  * A simple OpenFeature provider intended for demos and as a test stub.
+ * @deprecated Use {@link TypedInMemoryProvider} for type-safe flag configuration.
  */
 export class InMemoryProvider implements Provider {
   public readonly events = new OpenFeatureEventEmitter();
@@ -132,3 +133,120 @@ export class InMemoryProvider implements Provider {
     };
   }
 }
+
+/**
+ * A simple OpenFeature provider intended for demos and as a test stub.
+ * @example
+ * ```
+ * const provider = new TypedInMemoryProvider({
+ *   'my-flag': {
+ *     variants: { on: true, off: false },
+ *     defaultVariant: 'on',
+ *     contextEvaluator: (ctx) => ctx?.user?.id === '123' ? 'on' : 'off',
+ *     disabled: false,
+ *   },
+ * });
+ *
+ * const flags = {
+ *   'my-flag': {
+ *     variants: { on: true, off: false },
+ *     defaultVariant: 'on',
+ *     contextEvaluator: (ctx) => ctx?.user?.id === '123' ? 'on' : 'off',
+ *     disabled: false,
+ *   },
+ * } as const; // 'as const' needed to preserve the `defaultVariant` narrow literal type rather than `string`
+ * const provider = new TypedInMemoryProvider(flags);
+ * ```
+ */
+export class TypedInMemoryProvider<
+  T extends Record<string, FlagVariants<string>> = Record<string, FlagVariants<string>>,
+> extends InMemoryProvider {
+  constructor(flagConfiguration: FlagConfiguration<T> = {} as FlagConfiguration<T>) {
+    super(flagConfiguration);
+  }
+
+  /**
+   * Overwrites the configured flags.
+   * @param { FlagConfiguration } flagConfiguration new flag configuration
+   * @example
+   * ```
+   * provider.putConfiguration({
+   *   'my-flag': {
+   *     variants: { on: true, off: false },
+   *     defaultVariant: 'on',
+   *     contextEvaluator: (ctx) => ctx?.user?.id === '123' ? 'on' : 'off',
+   *     disabled: false,
+   *   },
+   * });
+   *
+   * const flags = {
+   *   'my-flag': {
+   *     variants: { on: true, off: false },
+   *     defaultVariant: 'on',
+   *     contextEvaluator: (ctx) => ctx?.user?.id === '123' ? 'on' : 'off',
+   *     disabled: false,
+   *   },
+   * } as const; // 'as const' needed to preserve the `defaultVariant` narrow literal type rather than `string`
+   * provider.putConfiguration(flags);
+   * ```
+   */
+  override putConfiguration<U extends Record<string, FlagVariants<string>> = Record<string, FlagVariants<string>>>(
+    flagConfiguration: FlagConfiguration<U>,
+  ) {
+    super.putConfiguration(flagConfiguration);
+  }
+}
+
+/**
+ * The variants object for a flag in the {@link TypedInMemoryProvider}, containing all possible variants and their associated values.
+ *
+ * Can be used in combination with {@link InMemoryFlagConfiguration} to preserve type-safety when extending the provider class.
+ * @example
+ * ```
+ * export class CustomInMemoryProvider<
+ *   T extends Record<string, InMemoryFlagVariants<string>> = Record<string, InMemoryFlagVariants<string>>,
+ * > extends TypedInMemoryProvider<T> {
+ *   constructor(flagConfiguration: InMemoryFlagConfiguration<T>) {
+ *     super(flagConfiguration);
+ *     // custom logic ...
+ *   }
+ *
+ *   override putConfiguration<
+ *     U extends Record<string, InMemoryFlagVariants<string>> = Record<string, InMemoryFlagVariants<string>>,
+ *   >(flagConfiguration: InMemoryFlagConfiguration<U>) {
+ *     super.putConfiguration(flagConfiguration);
+ *     // custom logic ...
+ *   }
+ * }
+ * ```
+ */
+export type InMemoryFlagVariants<T extends string> = FlagVariants<T>;
+
+/**
+ * The configuration object for the {@link TypedInMemoryProvider}, containing all flags and their specifications.
+ *
+ * Can be used in combination with {@link InMemoryFlagVariants} to preserve type-safety when extending the provider class.
+ *
+ * The generic ensures that the keys of the `variants` object in each flag specification are consistent with the `defaultVariant` and the return type of `contextEvaluator`.
+ * @example
+ * ```
+ * export class CustomInMemoryProvider<
+ *   T extends Record<string, InMemoryFlagVariants<string>> = Record<string, InMemoryFlagVariants<string>>,
+ * > extends TypedInMemoryProvider<T> {
+ *   constructor(flagConfiguration: InMemoryFlagConfiguration<T>) {
+ *     super(flagConfiguration);
+ *     // custom logic ...
+ *   }
+ *
+ *   override putConfiguration<
+ *     U extends Record<string, InMemoryFlagVariants<string>> = Record<string, InMemoryFlagVariants<string>>,
+ *   >(flagConfiguration: InMemoryFlagConfiguration<U>) {
+ *     super.putConfiguration(flagConfiguration);
+ *     // custom logic ...
+ *   }
+ * }
+ * ```
+ */
+export type InMemoryFlagConfiguration<
+  T extends Record<string, FlagVariants<string>> = Record<string, FlagVariants<string>>,
+> = FlagConfiguration<T>;

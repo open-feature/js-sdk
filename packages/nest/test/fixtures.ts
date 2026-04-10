@@ -1,9 +1,9 @@
-import { InMemoryProvider } from '@openfeature/server-sdk';
+import { TypedInMemoryProvider } from '@openfeature/server-sdk';
 import type { EvaluationContext } from '@openfeature/server-sdk';
 import type { ExecutionContext } from '@nestjs/common';
 import { OpenFeatureModule } from '../src';
 
-export const defaultProvider = new InMemoryProvider({
+export const defaultProvider = new TypedInMemoryProvider({
   testBooleanFlag: {
     defaultVariant: 'default',
     variants: { default: true },
@@ -38,7 +38,7 @@ export const defaultProvider = new InMemoryProvider({
 });
 
 export const providers = {
-  domainScopedClient: new InMemoryProvider({
+  domainScopedClient: new TypedInMemoryProvider({
     testBooleanFlag: {
       defaultVariant: 'default',
       variants: { default: true },

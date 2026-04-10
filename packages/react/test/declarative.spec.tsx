@@ -3,7 +3,7 @@ import '@testing-library/jest-dom'; // see: https://testing-library.com/docs/rea
 import { render, screen } from '@testing-library/react';
 import { FeatureFlag } from '../src/declarative/FeatureFlag'; // Assuming Feature.tsx is in the same directory or adjust path
 import type { Provider } from '../src';
-import { InMemoryProvider, OpenFeature, OpenFeatureProvider, ProviderStatus } from '../src';
+import { TypedInMemoryProvider, OpenFeature, OpenFeatureProvider, ProviderStatus } from '../src';
 import type { EvaluationDetails } from '@openfeature/core';
 
 describe('Feature Component', () => {
@@ -17,7 +17,7 @@ describe('Feature Component', () => {
   const STRING_FLAG_VARIANT = 'greeting';
   const STRING_FLAG_VALUE = 'hi';
 
-  const FLAG_CONFIG: ConstructorParameters<typeof InMemoryProvider>[0] = {
+  const FLAG_CONFIG = {
     [BOOL_FLAG_KEY]: {
       disabled: false,
       variants: {
@@ -42,10 +42,10 @@ describe('Feature Component', () => {
       },
       defaultVariant: STRING_FLAG_VARIANT,
     },
-  };
+  } as const;
 
   const makeProvider = () => {
-    return new InMemoryProvider(FLAG_CONFIG);
+    return new TypedInMemoryProvider(FLAG_CONFIG);
   };
 
   const makeAsyncProvider = () => {
@@ -245,7 +245,7 @@ describe('Feature Component', () => {
 
     it('should support function-based fallback for error conditions', () => {
       // Create a provider that will cause an error
-      const errorProvider = new InMemoryProvider({});
+      const errorProvider = new TypedInMemoryProvider({});
       OpenFeature.setProvider('error-test', errorProvider);
 
       const fallbackFunction = jest.fn((details: EvaluationDetails<boolean>) => (

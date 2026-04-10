@@ -289,7 +289,7 @@ A domain is a logical identifier which can be used to associate clients with a p
 If a domain has no associated provider, the default provider is used.
 
 ```ts
-import { OpenFeature, InMemoryProvider } from '@openfeature/server-sdk';
+import { OpenFeature, TypedInMemoryProvider } from '@openfeature/server-sdk';
 
 const myFlags = {
   v2_enabled: {
@@ -300,16 +300,16 @@ const myFlags = {
     disabled: false,
     defaultVariant: 'on',
   },
-};
+} as const;
 
 // Registering the default provider
-OpenFeature.setProvider(InMemoryProvider(myFlags));
+OpenFeature.setProvider(new TypedInMemoryProvider(myFlags));
 // Registering a provider to a domain
-OpenFeature.setProvider('my-domain', new InMemoryProvider(someOtherFlags));
+OpenFeature.setProvider('my-domain', new TypedInMemoryProvider(someOtherFlags));
 
 // A Client bound to the default provider
 const clientWithDefault = OpenFeature.getClient();
-// A Client bound to the InMemoryProvider provider
+// A Client bound to the TypedInMemoryProvider provider
 const domainScopedClient = OpenFeature.getClient('my-domain');
 ```
 

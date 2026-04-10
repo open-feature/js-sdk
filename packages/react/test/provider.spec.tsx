@@ -1,5 +1,5 @@
 import type { EvaluationContext } from '@openfeature/web-sdk';
-import { InMemoryProvider, OpenFeature, ProviderEvents } from '@openfeature/web-sdk';
+import { TypedInMemoryProvider, OpenFeature, ProviderEvents } from '@openfeature/web-sdk';
 import '@testing-library/jest-dom'; // see: https://testing-library.com/docs/react-testing-library/setup
 import { render, renderHook, screen, waitFor, fireEvent, act } from '@testing-library/react';
 import * as React from 'react';
@@ -314,7 +314,7 @@ describe('OpenFeatureProvider', () => {
       const DOMAIN1 = 'Wills Domain';
       OpenFeature.setProvider(DOMAIN1, suspendingProvider());
       OpenFeature.setProvider(
-        new InMemoryProvider({
+        new TypedInMemoryProvider({
           globalFlagsHere: {
             defaultVariant: 'a',
             variants: {

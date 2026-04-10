@@ -1,7 +1,6 @@
 import { jest } from '@jest/globals';
-import type { ProviderEmittableEvents } from '@openfeature/web-sdk';
+import type { InMemoryFlagConfiguration, InMemoryFlagVariants, ProviderEmittableEvents } from '@openfeature/web-sdk';
 import { ClientProviderEvents } from '@openfeature/web-sdk';
-import type { FlagConfiguration } from '@openfeature/web-sdk/src/provider/in-memory-provider/flag-configuration';
 import '@testing-library/jest-dom'; // see: https://testing-library.com/docs/react-testing-library/setup
 import { act, render, renderHook, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
@@ -9,7 +8,7 @@ import { startTransition, useState } from 'react';
 import type { EvaluationContext, EvaluationDetails, EventContext, Hook } from '../src/';
 import {
   ErrorCode,
-  InMemoryProvider,
+  TypedInMemoryProvider,
   OpenFeature,
   OpenFeatureProvider,
   StandardResolutionReasons,
@@ -28,12 +27,10 @@ import { HookFlagQuery } from '../src/internal/hook-flag-query';
 import { TestingProvider } from './test.utils';
 
 // custom provider to have better control over the emitted events
-class CustomEventInMemoryProvider extends InMemoryProvider {
-  putConfigurationWithCustomEvent(
-    flagConfiguration: FlagConfiguration,
-    event: ProviderEmittableEvents,
-    eventContext: EventContext,
-  ) {
+class CustomEventInMemoryProvider extends TypedInMemoryProvider {
+  putConfigurationWithCustomEvent<
+    T extends Record<string, InMemoryFlagVariants<string>> = Record<string, InMemoryFlagVariants<string>>,
+  >(flagConfiguration: InMemoryFlagConfiguration<T>, event: ProviderEmittableEvents, eventContext: EventContext) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     this['_flagConfiguration'] = { ...flagConfiguration }; // private access hack
     this.events.emit(event, eventContext);
@@ -60,7 +57,7 @@ describe('evaluation', () => {
   const REASON_ATTR_VALUE = StandardResolutionReasons.STATIC;
   const TYPE_ATTR = 'data-type';
   const BUTTON_TEXT = 'button';
-  const FLAG_CONFIG: ConstructorParameters<typeof InMemoryProvider>[0] = {
+  const FLAG_CONFIG = {
     [BOOL_FLAG_KEY]: {
       disabled: false,
       variants: {
@@ -100,14 +97,14 @@ describe('evaluation', () => {
         off: false,
         on: true,
       },
-      contextEvaluator(ctx) {
+      contextEvaluator(ctx: EvaluationContext) {
         return ctx.change ? 'on' : 'off';
       },
     },
-  };
+  } as const;
 
   const makeProvider = () => {
-    return new InMemoryProvider(FLAG_CONFIG);
+    return new TypedInMemoryProvider(FLAG_CONFIG);
   };
 
   OpenFeature.setProvider(EVALUATION, makeProvider());
@@ -575,7 +572,7 @@ describe('evaluation', () => {
           return FLAG_VARIANT_A;
         },
       },
-    };
+    } as const;
 
     afterEach(() => {
       OpenFeature.clearProviders();
@@ -1011,7 +1008,7 @@ describe('evaluation', () => {
       it('should reflect provider state changes on re-render even without provider events', async () => {
         let providerValue = 'initial-value';
 
-        class SilentUpdateProvider extends InMemoryProvider {
+        class SilentUpdateProvider extends TypedInMemoryProvider {
           resolveBooleanEvaluation() {
             return {
               value: true,
@@ -1077,7 +1074,7 @@ describe('evaluation', () => {
       });
 
       it('should update flag value when flag key prop changes without provider events', async () => {
-        const provider = new InMemoryProvider({
+        const provider = new TypedInMemoryProvider({
           'flag-a': {
             disabled: false,
             variants: { on: 'value-a' },

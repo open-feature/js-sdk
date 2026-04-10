@@ -5,20 +5,31 @@
  */
 import type { EvaluationContext, JsonValue } from '@openfeature/core';
 
-type Variants<T> = Record<string, T>;
+// TODO: Remove once TypeScript updated to 5.4+
+type NoInfer<T> = [T][T extends unknown ? 0 : never];
+
+// Flattens intersection types for better IDE display
+// eslint-disable-next-line @typescript-eslint/ban-types
+type Simplify<T> = { [K in keyof T]: T[K] } & {};
+
+export type FlagVariants<T extends string> =
+  | Record<T, boolean>
+  | Record<T, string>
+  | Record<T, number>
+  | Record<T, JsonValue>;
 
 /**
  * A Feature Flag definition, containing it's specification
  */
-export type Flag = {
+export type Flag<T extends string = string> = {
   /**
    * An object containing all possible flags mappings (variant -> flag value)
    */
-  variants: Variants<boolean> | Variants<string> | Variants<number> | Variants<JsonValue>;
+  variants: FlagVariants<T>;
   /**
    * The variant it will resolve to in STATIC evaluation
    */
-  defaultVariant: string;
+  defaultVariant: NoInfer<T>;
   /**
    * Determines if flag evaluation is enabled or not for this flag.
    * If false, falls back to the default value provided to the client
@@ -30,7 +41,14 @@ export type Flag = {
    * If it does not return a valid variant it falls back to the default value provided to the client
    * @param EvaluationContext
    */
-  contextEvaluator?: (ctx: EvaluationContext) => string;
+  contextEvaluator?: (ctx: EvaluationContext) => NoInfer<T>;
 };
 
-export type FlagConfiguration = Record<string, Flag>;
+/**
+ * The configuration object for the InMemoryProvider, containing all flags and their specifications.
+ *
+ * The generic ensures that the keys of the `variants` object in each flag specification are consistent with the `defaultVariant` and the return type of `contextEvaluator`.
+ */
+export type FlagConfiguration<T extends Record<string, FlagVariants<string>> = Record<string, FlagVariants<string>>> = {
+  [K in keyof T]: Simplify<{ variants: T[K] } & Omit<Flag<keyof T[K] & string>, 'variants'>>;
+};

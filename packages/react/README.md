@@ -98,10 +98,16 @@ See the [package.json](./package.json) for the required versions.
 
 The `OpenFeatureProvider` is a [React context provider](https://react.dev/reference/react/createContext#provider) which represents a scope for feature flag evaluations within a React application.
 It binds an OpenFeature client to all evaluations within child components, and allows the use of evaluation hooks.
-The example below shows how to use the `OpenFeatureProvider` with OpenFeature's `InMemoryProvider`.
+The example below shows how to use the `OpenFeatureProvider` with OpenFeature's `TypedInMemoryProvider`.
 
 ```tsx
-import { EvaluationContext, OpenFeatureProvider, useFlag, OpenFeature, InMemoryProvider } from '@openfeature/react-sdk';
+import {
+  EvaluationContext,
+  OpenFeatureProvider,
+  useFlag,
+  OpenFeature,
+  TypedInMemoryProvider,
+} from '@openfeature/react-sdk';
 
 const flagConfig = {
   'new-message': {
@@ -118,11 +124,11 @@ const flagConfig = {
       return 'off';
     },
   },
-};
+} as const;
 
 // Instantiate and set our provider (be sure this only happens once)!
 // Note: there's no need to await its initialization, the React SDK handles re-rendering and suspense for you!
-OpenFeature.setProvider(new InMemoryProvider(flagConfig));
+OpenFeature.setProvider(new TypedInMemoryProvider(flagConfig));
 
 // Enclose your content in the configured provider
 function App() {
