@@ -80,7 +80,11 @@ export class OpenFeatureClient implements Client {
   }
 
   /**
-   * Sets framework metadata for SDK-owned clients used by framework wrappers.
+   * Sets framework metadata on an existing SDK-owned client instance.
+   *
+   * This is needed when a framework wrapper receives a pre-created client and must
+   * preserve that instance's identity instead of allocating a new framework-aware client.
+   * The React provider uses this for its `client` prop path.
    * @param {ClientFramework} framework framework metadata to expose
    * @returns {this} the updated client
    * @internal

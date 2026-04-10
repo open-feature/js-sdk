@@ -192,18 +192,33 @@ describe('OpenFeature', () => {
       expect(client).toBeDefined();
     });
 
-    it('should allow client metadata options to supply version and framework', () => {
-      const defaultClient = OpenFeature.getClient(undefined, { version: '1.2.3', framework: 'react' });
-      const domainClient = OpenFeature.getClient('my-domain', { version: '2.0.0', framework: 'react' });
+    it('should support all getClient overload forms', () => {
+      const defaultClient = OpenFeature.getClient();
+      const domainClient = OpenFeature.getClient('domain-only');
+      const legacyVersionClient = OpenFeature.getClient('legacy-version', '1.2.3');
+      const defaultMetadataClient = OpenFeature.getClient(undefined, { version: '2.0.0', framework: 'react' });
+      const domainMetadataClient = OpenFeature.getClient('options-domain', { version: '3.0.0', framework: 'react' });
 
       expect(defaultClient.metadata).toMatchObject({
+        sdk: 'web',
+      });
+      expect(domainClient.metadata).toMatchObject({
+        domain: 'domain-only',
+        sdk: 'web',
+      });
+      expect(legacyVersionClient.metadata).toMatchObject({
+        domain: 'legacy-version',
         version: '1.2.3',
+        sdk: 'web',
+      });
+      expect(defaultMetadataClient.metadata).toMatchObject({
+        version: '2.0.0',
         sdk: 'web',
         framework: 'react',
       });
-      expect(domainClient.metadata).toMatchObject({
-        domain: 'my-domain',
-        version: '2.0.0',
+      expect(domainMetadataClient.metadata).toMatchObject({
+        domain: 'options-domain',
+        version: '3.0.0',
         sdk: 'web',
         framework: 'react',
       });

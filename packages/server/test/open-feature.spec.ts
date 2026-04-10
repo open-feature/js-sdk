@@ -191,24 +191,65 @@ describe('OpenFeature', () => {
       expect(client).toBeDefined();
     });
 
-    it('should allow client metadata options to supply version and framework', () => {
-      const context = { targetingKey: 'user-123' };
-      const defaultClient = OpenFeature.getClient(undefined, { version: '1.2.3', framework: 'nest' }, context);
-      const domainClient = OpenFeature.getClient('my-domain', { version: '2.0.0', framework: 'nest' }, context);
+    it('should support all getClient overload forms', () => {
+      const contextOnly = { targetingKey: 'context-only' };
+      const domainContext = { targetingKey: 'domain-context' };
+      const versionContext = { targetingKey: 'version-context' };
+      const metadataContext = { targetingKey: 'metadata-context' };
+
+      const defaultClient = OpenFeature.getClient();
+      const contextClient = OpenFeature.getClient(contextOnly);
+      const domainClient = OpenFeature.getClient('domain-only');
+      const domainContextClient = OpenFeature.getClient('domain-context', domainContext);
+      const legacyVersionClient = OpenFeature.getClient('legacy-version', '1.2.3', versionContext);
+      const defaultMetadataClient = OpenFeature.getClient(
+        undefined,
+        { version: '2.0.0', framework: 'nest' },
+        metadataContext,
+      );
+      const domainMetadataClient = OpenFeature.getClient(
+        'options-domain',
+        { version: '3.0.0', framework: 'nest' },
+        metadataContext,
+      );
 
       expect(defaultClient.metadata).toMatchObject({
+        sdk: 'server',
+      });
+      expect(defaultClient.getContext()).toEqual({});
+      expect(contextClient.metadata).toMatchObject({
+        sdk: 'server',
+      });
+      expect(contextClient.getContext()).toEqual(contextOnly);
+      expect(domainClient.metadata).toMatchObject({
+        domain: 'domain-only',
+        sdk: 'server',
+      });
+      expect(domainClient.getContext()).toEqual({});
+      expect(domainContextClient.metadata).toMatchObject({
+        domain: 'domain-context',
+        sdk: 'server',
+      });
+      expect(domainContextClient.getContext()).toEqual(domainContext);
+      expect(legacyVersionClient.metadata).toMatchObject({
+        domain: 'legacy-version',
         version: '1.2.3',
         sdk: 'server',
-        framework: 'nest',
       });
-      expect(defaultClient.getContext()).toEqual(context);
-      expect(domainClient.metadata).toMatchObject({
-        domain: 'my-domain',
+      expect(legacyVersionClient.getContext()).toEqual(versionContext);
+      expect(defaultMetadataClient.metadata).toMatchObject({
         version: '2.0.0',
         sdk: 'server',
         framework: 'nest',
       });
-      expect(domainClient.getContext()).toEqual(context);
+      expect(defaultMetadataClient.getContext()).toEqual(metadataContext);
+      expect(domainMetadataClient.metadata).toMatchObject({
+        domain: 'options-domain',
+        version: '3.0.0',
+        sdk: 'server',
+        framework: 'nest',
+      });
+      expect(domainMetadataClient.getContext()).toEqual(metadataContext);
     });
   });
 

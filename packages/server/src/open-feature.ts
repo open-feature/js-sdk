@@ -222,7 +222,8 @@ export class OpenFeatureAPI
     const options = clientMetadataOptionsOrUndefined(versionOrOptionsOrContext);
     const version = stringOrUndefined(versionOrOptionsOrContext) ?? options?.version;
     const context = domain
-      ? objectOrUndefined<EvaluationContext>(options ? contextOrUndefined : versionOrOptionsOrContext)
+      ? (objectOrUndefined<EvaluationContext>(options ? contextOrUndefined : versionOrOptionsOrContext) ??
+        objectOrUndefined<EvaluationContext>(contextOrUndefined))
       : objectOrUndefined<EvaluationContext>(
           domainOrContext ?? (options ? contextOrUndefined : versionOrOptionsOrContext),
         );
