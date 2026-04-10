@@ -84,17 +84,6 @@ export class OpenFeatureClient implements Client {
     };
   }
 
-  /**
-   * Sets framework metadata for SDK-owned clients used by framework wrappers.
-   * @param {ClientFramework} framework framework metadata to expose
-   * @returns {this} the updated client
-   * @internal
-   */
-  setFrameworkMetadata(framework: ClientFramework): this {
-    this._framework = framework;
-    return this;
-  }
-
   get providerStatus(): ProviderStatus {
     return this.providerStatusAccessor();
   }

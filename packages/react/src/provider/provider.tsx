@@ -48,6 +48,10 @@ export function OpenFeatureProvider({ client, domain, children, ...options }: Pr
 }
 
 function setReactFrameworkMetadata(client: Client): Client {
+  // When a caller provides an existing client, preserve that instance but mark it
+  // as React-backed so metadata stays aligned with provider-created clients.
+  // The cast is needed because `setFrameworkMetadata` is an internal method on the
+  // SDK-owned client implementation, not part of the public `Client` interface.
   (client as FrameworkMetadataClient).setFrameworkMetadata?.('react');
   return client;
 }
