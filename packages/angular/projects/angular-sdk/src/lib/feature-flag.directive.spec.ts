@@ -396,7 +396,10 @@ describe('FeatureFlagDirective', () => {
       try {
         const fixture = TestBed.configureTestingModule({
           imports: [
-            OpenFeatureModule.forRoot({ provider: new InMemoryProvider(), domainBoundProviders: { [domain]: provider } }),
+            OpenFeatureModule.forRoot({
+              provider: new InMemoryProvider(),
+              domainBoundProviders: { [domain]: provider },
+            }),
             SingleDirectiveTestComponent,
           ],
         }).createComponent(SingleDirectiveTestComponent);
