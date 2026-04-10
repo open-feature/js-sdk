@@ -217,7 +217,7 @@ export class FeatureFlagService {
     domain: string | undefined,
     options?: AngularFlagEvaluationOptions,
   ): Observable<EvaluationDetails<T>> {
-    const client = this.getClient(domain);
+    const client = OpenFeature.getClient(domain, { framework: 'angular' });
 
     return new Observable<EvaluationDetails<T>>((subscriber) => {
       let currentResult: EvaluationDetails<T> | undefined = undefined;
@@ -264,9 +264,5 @@ export class FeatureFlagService {
         controller.abort();
       };
     });
-  }
-
-  private getClient(domain?: string): Client {
-    return OpenFeature.getClient(domain, { framework: 'angular' });
   }
 }

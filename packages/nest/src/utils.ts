@@ -8,7 +8,5 @@ import { OpenFeature } from '@openfeature/server-sdk';
  * @returns {Client} The OpenFeature client.
  */
 export function getClientForEvaluation(domain?: string, context?: EvaluationContext) {
-  return domain
-    ? OpenFeature.getClient(domain, { framework: 'nest' }, context)
-    : OpenFeature.getClient(undefined, { framework: 'nest' }, context);
+  return OpenFeature.getClient(domain, { framework: 'nest' }, context);
 }
