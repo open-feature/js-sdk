@@ -190,6 +190,26 @@ describe('OpenFeature', () => {
       const client = OpenFeature.addHooks().clearHooks().setLogger(console).getClient();
       expect(client).toBeDefined();
     });
+
+    it('should allow client metadata options to supply version and framework', () => {
+      const context = { targetingKey: 'user-123' };
+      const defaultClient = OpenFeature.getClient(undefined, { version: '1.2.3', framework: 'nest' }, context);
+      const domainClient = OpenFeature.getClient('my-domain', { version: '2.0.0', framework: 'nest' }, context);
+
+      expect(defaultClient.metadata).toMatchObject({
+        version: '1.2.3',
+        sdk: 'server',
+        framework: 'nest',
+      });
+      expect(defaultClient.getContext()).toEqual(context);
+      expect(domainClient.metadata).toMatchObject({
+        domain: 'my-domain',
+        version: '2.0.0',
+        sdk: 'server',
+        framework: 'nest',
+      });
+      expect(domainClient.getContext()).toEqual(context);
+    });
   });
 
   describe('Requirement 1.6.1', () => {

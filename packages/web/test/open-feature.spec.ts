@@ -191,6 +191,23 @@ describe('OpenFeature', () => {
       const client = OpenFeature.addHooks().clearHooks().setLogger(console).getClient();
       expect(client).toBeDefined();
     });
+
+    it('should allow client metadata options to supply version and framework', () => {
+      const defaultClient = OpenFeature.getClient(undefined, { version: '1.2.3', framework: 'react' });
+      const domainClient = OpenFeature.getClient('my-domain', { version: '2.0.0', framework: 'react' });
+
+      expect(defaultClient.metadata).toMatchObject({
+        version: '1.2.3',
+        sdk: 'web',
+        framework: 'react',
+      });
+      expect(domainClient.metadata).toMatchObject({
+        domain: 'my-domain',
+        version: '2.0.0',
+        sdk: 'web',
+        framework: 'react',
+      });
+    });
   });
 
   describe('Requirement 1.6.1', () => {

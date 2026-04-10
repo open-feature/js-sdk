@@ -1,4 +1,10 @@
-import type { EvaluationContext, ManageContext, ServerProviderStatus } from '@openfeature/core';
+import type {
+  ClientFramework,
+  ClientMetadataOptions,
+  EvaluationContext,
+  ManageContext,
+  ServerProviderStatus,
+} from '@openfeature/core';
 import { OpenFeatureCommonAPI, ProviderWrapper, objectOrUndefined, stringOrUndefined } from '@openfeature/core';
 import type { Client } from './client';
 import { OpenFeatureClient } from './client/internal/open-feature-client';
@@ -189,6 +195,19 @@ export class OpenFeatureAPI
    * If there is already a provider bound to this domain via {@link this.setProvider setProvider}, this provider will be used.
    * Otherwise, the default provider is used until a provider is assigned to that domain.
    * @param {string} domain An identifier which logically binds clients with providers
+   * @param {ClientMetadataOptions} options Client metadata options
+   * @param {EvaluationContext} context Evaluation context that should be set on the client to used during flag evaluations
+   * @returns {Client} OpenFeature Client
+   */
+  getClient(domain: string | undefined, options: ClientMetadataOptions, context?: EvaluationContext): Client;
+  /**
+   * A factory function for creating new domain scoped OpenFeature clients.
+   * Clients can contain their own state (e.g. logger, hook, context).
+   * Multiple clients can be used to segment feature flag configuration.
+   *
+   * If there is already a provider bound to this domain via {@link this.setProvider setProvider}, this provider will be used.
+   * Otherwise, the default provider is used until a provider is assigned to that domain.
+   * @param {string} domain An identifier which logically binds clients with providers
    * @param {string} version The version of the client (only used for metadata)
    * @param {EvaluationContext} context Evaluation context that should be set on the client to used during flag evaluations
    * @returns {Client} OpenFeature Client
@@ -196,16 +215,27 @@ export class OpenFeatureAPI
   getClient(domain: string, version: string, context?: EvaluationContext): Client;
   getClient(
     domainOrContext?: string | EvaluationContext,
-    versionOrContext?: string | EvaluationContext,
+    versionOrOptionsOrContext?: string | ClientMetadataOptions | EvaluationContext,
     contextOrUndefined?: EvaluationContext,
   ): Client {
     const domain = stringOrUndefined(domainOrContext);
-    const version = stringOrUndefined(versionOrContext);
-    const context =
-      objectOrUndefined<EvaluationContext>(domainOrContext) ??
-      objectOrUndefined<EvaluationContext>(versionOrContext) ??
-      objectOrUndefined<EvaluationContext>(contextOrUndefined);
+    const options = clientMetadataOptionsOrUndefined(versionOrOptionsOrContext);
+    const version = stringOrUndefined(versionOrOptionsOrContext) ?? options?.version;
+    const context = domain
+      ? objectOrUndefined<EvaluationContext>(options ? contextOrUndefined : versionOrOptionsOrContext)
+      : objectOrUndefined<EvaluationContext>(
+          domainOrContext ?? (options ? contextOrUndefined : versionOrOptionsOrContext),
+        );
 
+    return this._createClient(domain, version, context, options?.framework);
+  }
+
+  private _createClient(
+    domain?: string,
+    version?: string,
+    context: EvaluationContext = {},
+    framework?: ClientFramework,
+  ): Client {
     return new OpenFeatureClient(
       () => this.getProviderForClient(domain),
       () => this.getProviderStatus(domain),
@@ -214,7 +244,7 @@ export class OpenFeatureAPI
       () => this.getHooks(),
       () => this.getTransactionContext(),
       () => this._logger,
-      { domain, version },
+      { domain, version, framework },
       context,
     );
   }
@@ -266,3 +296,13 @@ export class OpenFeatureAPI
  * @returns {OpenFeatureAPI} OpenFeature API
  */
 export const OpenFeature = OpenFeatureAPI.getInstance();
+
+function clientMetadataOptionsOrUndefined(
+  value: string | ClientMetadataOptions | EvaluationContext | undefined,
+): ClientMetadataOptions | undefined {
+  if (typeof value === 'object' && value && ('version' in value || 'framework' in value)) {
+    return value as ClientMetadataOptions;
+  }
+
+  return undefined;
+}

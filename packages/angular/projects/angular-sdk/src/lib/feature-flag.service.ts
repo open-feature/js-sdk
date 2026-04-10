@@ -1,4 +1,3 @@
-import { setFrameworkMetadata } from '@openfeature/core';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
@@ -268,6 +267,6 @@ export class FeatureFlagService {
   }
 
   private getClient(domain?: string): Client {
-    return setFrameworkMetadata(domain ? OpenFeature.getClient(domain) : OpenFeature.getClient(), 'angular');
+    return OpenFeature.getClient(domain, { framework: 'angular' });
   }
 }
