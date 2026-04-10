@@ -182,8 +182,9 @@ describe('OpenFeatureClient', () => {
       expect(client.metadata.domain).toEqual(domain);
     });
 
-    it('should expose the web sdk family in metadata', () => {
-      expect(client.metadata.sdk).toEqual('web');
+    it('should expose sdk family and paradigm in metadata', () => {
+      expect(client.metadata.sdk).toEqual('js-web');
+      expect(client.metadata.paradigm).toEqual('client');
     });
   });
 

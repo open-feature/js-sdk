@@ -143,7 +143,8 @@ describe('FeatureFlagService', () => {
     expect(hook.before).toHaveBeenCalledWith(
       expect.objectContaining({
         clientMetadata: expect.objectContaining({
-          sdk: 'web',
+          sdk: 'js-web',
+          paradigm: 'client',
           framework: 'angular',
         }),
       }),

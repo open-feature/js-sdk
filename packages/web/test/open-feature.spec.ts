@@ -200,26 +200,31 @@ describe('OpenFeature', () => {
       const domainMetadataClient = OpenFeature.getClient('options-domain', { version: '3.0.0', framework: 'react' });
 
       expect(defaultClient.metadata).toMatchObject({
-        sdk: 'web',
+        sdk: 'js-web',
+        paradigm: 'client',
       });
       expect(domainClient.metadata).toMatchObject({
         domain: 'domain-only',
-        sdk: 'web',
+        sdk: 'js-web',
+        paradigm: 'client',
       });
       expect(legacyVersionClient.metadata).toMatchObject({
         domain: 'legacy-version',
         version: '1.2.3',
-        sdk: 'web',
+        sdk: 'js-web',
+        paradigm: 'client',
       });
       expect(defaultMetadataClient.metadata).toMatchObject({
         version: '2.0.0',
-        sdk: 'web',
+        sdk: 'js-web',
+        paradigm: 'client',
         framework: 'react',
       });
       expect(domainMetadataClient.metadata).toMatchObject({
         domain: 'options-domain',
         version: '3.0.0',
-        sdk: 'web',
+        sdk: 'js-web',
+        paradigm: 'client',
         framework: 'react',
       });
     });

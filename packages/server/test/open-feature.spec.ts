@@ -214,39 +214,46 @@ describe('OpenFeature', () => {
       );
 
       expect(defaultClient.metadata).toMatchObject({
-        sdk: 'server',
+        sdk: 'js-server',
+        paradigm: 'server',
       });
       expect(defaultClient.getContext()).toEqual({});
       expect(contextClient.metadata).toMatchObject({
-        sdk: 'server',
+        sdk: 'js-server',
+        paradigm: 'server',
       });
       expect(contextClient.getContext()).toEqual(contextOnly);
       expect(domainClient.metadata).toMatchObject({
         domain: 'domain-only',
-        sdk: 'server',
+        sdk: 'js-server',
+        paradigm: 'server',
       });
       expect(domainClient.getContext()).toEqual({});
       expect(domainContextClient.metadata).toMatchObject({
         domain: 'domain-context',
-        sdk: 'server',
+        sdk: 'js-server',
+        paradigm: 'server',
       });
       expect(domainContextClient.getContext()).toEqual(domainContext);
       expect(legacyVersionClient.metadata).toMatchObject({
         domain: 'legacy-version',
         version: '1.2.3',
-        sdk: 'server',
+        sdk: 'js-server',
+        paradigm: 'server',
       });
       expect(legacyVersionClient.getContext()).toEqual(versionContext);
       expect(defaultMetadataClient.metadata).toMatchObject({
         version: '2.0.0',
-        sdk: 'server',
+        sdk: 'js-server',
+        paradigm: 'server',
         framework: 'nest',
       });
       expect(defaultMetadataClient.getContext()).toEqual(metadataContext);
       expect(domainMetadataClient.metadata).toMatchObject({
         domain: 'options-domain',
         version: '3.0.0',
-        sdk: 'server',
+        sdk: 'js-server',
+        paradigm: 'server',
         framework: 'nest',
       });
       expect(domainMetadataClient.getContext()).toEqual(metadataContext);

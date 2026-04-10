@@ -185,8 +185,9 @@ describe('OpenFeatureClient', () => {
       expect(client.metadata.domain).toEqual(domain);
     });
 
-    it('should expose the server sdk family in metadata', () => {
-      expect(client.metadata.sdk).toEqual('server');
+    it('should expose sdk family and paradigm in metadata', () => {
+      expect(client.metadata.sdk).toEqual('js-server');
+      expect(client.metadata.paradigm).toEqual('server');
     });
   });
 
