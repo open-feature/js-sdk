@@ -162,7 +162,10 @@ const primaryProvider = new YourPrimaryProvider();
 const backupProvider = new YourBackupProvider();
 
 // Create multi-provider with a strategy
-const multiProvider = new MultiProvider([primaryProvider, backupProvider], new FirstMatchStrategy());
+const multiProvider = new MultiProvider(
+  [{ provider: primaryProvider }, { provider: backupProvider }],
+  new FirstMatchStrategy(),
+);
 
 // Register the multi-provider
 await OpenFeature.setProviderAndWait(multiProvider);
@@ -174,7 +177,8 @@ const value = await client.getBooleanValue('my-flag', false);
 
 **Available Strategies:**
 
-- `FirstMatchStrategy`: Returns the first successful result from the list of providers
+- `FirstMatchStrategy`: Returns the first successful result from the list of providers (short-circuits on error)
+- `FirstSuccessfulStrategy`: Returns the first successful result, ignoring errors from earlier providers
 - `ComparisonStrategy`: Compares results from multiple providers and can handle discrepancies
 
 **Migration Example:**
@@ -187,7 +191,7 @@ const newProvider = new NewFlagProvider();
 const oldProvider = new OldFlagProvider();
 
 const multiProvider = new MultiProvider(
-  [newProvider, oldProvider], // New provider is consulted first
+  [{ provider: newProvider }, { provider: oldProvider }], // New provider is consulted first
   new FirstMatchStrategy(),
 );
 
@@ -357,7 +361,7 @@ OpenFeature.setTransactionContextPropagator(new AsyncLocalStorageTransactionCont
  */
 const app = express();
 app.use((req: Request, res: Response, next: NextFunction) => {
-  const ip = res.headers.get('X-Forwarded-For');
+  const ip = req.headers['x-forwarded-for'];
   OpenFeature.setTransactionContext({ targetingKey: req.user.id, ipAddress: ip }, () => {
     // The transaction context is used in any flag evaluation throughout the whole call chain of next
     next();

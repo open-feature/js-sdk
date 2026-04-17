@@ -257,6 +257,22 @@ This is analogous to:
 OpenFeature.getClient('my-domain');
 ```
 
+Alternatively, a pre-configured `Client` instance can be passed directly via the `client` prop:
+
+```tsx
+const client = OpenFeature.getClient('my-domain');
+
+function App() {
+  return (
+    <OpenFeatureProvider client={client}>
+      <Page></Page>
+    </OpenFeatureProvider>
+  );
+}
+```
+
+The `domain` and `client` props are mutually exclusive.
+
 For more information about `domains`, refer to the [web SDK](https://github.com/open-feature/js-sdk/blob/main/packages/web/README.md).
 
 #### Re-rendering with Context Changes

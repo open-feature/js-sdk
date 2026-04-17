@@ -72,12 +72,12 @@ yarn add @openfeature/nestjs-sdk @openfeature/server-sdk @openfeature/core
 
 The following list contains the peer dependencies of `@openfeature/nestjs-sdk` with its expected and compatible versions:
 
-- `@openfeature/server-sdk`: >=1.7.5
+- `@openfeature/server-sdk`: ^1.17.1
 - `@nestjs/common`: ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0
 - `@nestjs/core`: ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0
 - `rxjs`: ^6.0.0 || ^7.0.0 || ^8.0.0
 
-The minimum required version of `@openfeature/server-sdk` currently is `1.7.5`.
+The minimum required version of `@openfeature/server-sdk` currently is `1.17.1`.
 
 ### Usage
 
