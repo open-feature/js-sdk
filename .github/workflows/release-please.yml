@@ -74,7 +74,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           cache: 'npm'
       - name: Update npm (for OIDC auth)
-        run: npm install -g npm@^11.5.1
+        run: npm install -g npm@11.5.1
       - name: Build Packages
         run: |
           npm ci
