@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.3.0](https://github.com/open-feature/js-sdk/compare/react-sdk-v1.2.1...react-sdk-v1.3.0) (2026-04-21)
+
+
+### ✨ New Features
+
+* add "sideEffects": false to package.json files for all packages ([#1343](https://github.com/open-feature/js-sdk/issues/1343)) ([d8e968e](https://github.com/open-feature/js-sdk/commit/d8e968ed2513fe986a6500895f3399303a2f0b96))
+* support type-safe flag keys via module augmentation ([#1349](https://github.com/open-feature/js-sdk/issues/1349)) ([fb2ed4a](https://github.com/open-feature/js-sdk/commit/fb2ed4a7d64d9b8437975a0ef6cb4fe6a12dd671))
+* support type-safe variant values for InMemoryProvider ([#1356](https://github.com/open-feature/js-sdk/issues/1356)) ([431f899](https://github.com/open-feature/js-sdk/commit/431f899191a2f7693fea9fab40f7cfb1f22f61f8))
+
+
+### 📚 Documentation
+
+* fix inaccuracies in package READMEs ([#1378](https://github.com/open-feature/js-sdk/issues/1378)) ([ecd3759](https://github.com/open-feature/js-sdk/commit/ecd375979e3188c0f94dfec94a1487c61388965e))
+
 ## [1.2.1](https://github.com/open-feature/js-sdk/compare/react-sdk-v1.2.0...react-sdk-v1.2.1) (2026-02-18)
 
 
