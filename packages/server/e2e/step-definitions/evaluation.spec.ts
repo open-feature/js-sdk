@@ -10,10 +10,8 @@ const feature = loadFeature('packages/server/e2e/features/evaluation.feature');
 // get a client (flagd provider registered in setup)
 const client = OpenFeature.getClient();
 
-const givenAnOpenfeatureClientIsRegisteredWithCacheDisabled = (
-  given: (stepMatcher: string, stepDefinitionCallback: () => void) => void,
-) => {
-  given('a provider is registered with cache disabled', () => undefined);
+const givenAStableProvider = (given: (stepMatcher: string, stepDefinitionCallback: () => void) => void) => {
+  given('a stable provider', () => undefined);
 };
 
 defineFeature(feature, (test) => {
@@ -29,7 +27,7 @@ defineFeature(feature, (test) => {
     let value: boolean;
     let flagKey: string;
 
-    givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
+    givenAStableProvider(given);
 
     when(
       /^a boolean flag with key "(.*)" is evaluated with default value "(.*)"$/,
@@ -48,7 +46,7 @@ defineFeature(feature, (test) => {
     let value: string;
     let flagKey: string;
 
-    givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
+    givenAStableProvider(given);
 
     when(
       /^a string flag with key "(.*)" is evaluated with default value "(.*)"$/,
@@ -67,7 +65,7 @@ defineFeature(feature, (test) => {
     let value: number;
     let flagKey: string;
 
-    givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
+    givenAStableProvider(given);
 
     when(
       /^an integer flag with key "(.*)" is evaluated with default value (\d+)$/,
@@ -86,7 +84,7 @@ defineFeature(feature, (test) => {
     let value: number;
     let flagKey: string;
 
-    givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
+    givenAStableProvider(given);
 
     when(
       /^a float flag with key "(.*)" is evaluated with default value (\d+\.?\d*)$/,
@@ -105,7 +103,7 @@ defineFeature(feature, (test) => {
     let value: JsonValue;
     let flagKey: string;
 
-    givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
+    givenAStableProvider(given);
 
     when(/^an object flag with key "(.*)" is evaluated with a null default value$/, async (key: string) => {
       flagKey = key;
@@ -127,7 +125,7 @@ defineFeature(feature, (test) => {
     let details: EvaluationDetails<boolean>;
     let flagKey: string;
 
-    givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
+    givenAStableProvider(given);
 
     when(
       /^a boolean flag with key "(.*)" is evaluated with details and default value "(.*)"$/,
@@ -151,7 +149,7 @@ defineFeature(feature, (test) => {
     let details: EvaluationDetails<string>;
     let flagKey: string;
 
-    givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
+    givenAStableProvider(given);
 
     when(
       /^a string flag with key "(.*)" is evaluated with details and default value "(.*)"$/,
@@ -175,7 +173,7 @@ defineFeature(feature, (test) => {
     let details: EvaluationDetails<number>;
     let flagKey: string;
 
-    givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
+    givenAStableProvider(given);
 
     when(
       /^an integer flag with key "(.*)" is evaluated with details and default value (\d+)$/,
@@ -199,7 +197,7 @@ defineFeature(feature, (test) => {
     let details: EvaluationDetails<number>;
     let flagKey: string;
 
-    givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
+    givenAStableProvider(given);
 
     when(
       /^a float flag with key "(.*)" is evaluated with details and default value (\d+\.?\d*)$/,
@@ -223,7 +221,7 @@ defineFeature(feature, (test) => {
     let details: EvaluationDetails<JsonValue>; // update this after merge
     let flagKey: string;
 
-    givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
+    givenAStableProvider(given);
 
     when(/^an object flag with key "(.*)" is evaluated with details and a null default value$/, async (key: string) => {
       flagKey = key;
@@ -255,7 +253,7 @@ defineFeature(feature, (test) => {
     let value: string;
     let flagKey: string;
 
-    givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
+    givenAStableProvider(given);
 
     when(
       /^context contains keys "(.*)", "(.*)", "(.*)", "(.*)" with values "(.*)", "(.*)", (\d+), "(.*)"$/,
@@ -299,10 +297,10 @@ defineFeature(feature, (test) => {
     let fallbackValue: string;
     let details: ResolutionDetails<string>;
 
-    givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
+    givenAStableProvider(given);
 
     when(
-      /^a non-existent string flag with key "(.*)" is evaluated with details and a default value "(.*)"$/,
+      /^a non-existent string flag with key "(.*)" is evaluated with details and a fallback value "(.*)"$/,
       async (key: string, defaultValue: string) => {
         flagKey = key;
         fallbackValue = defaultValue;
@@ -328,10 +326,10 @@ defineFeature(feature, (test) => {
     let fallbackValue: number;
     let details: ResolutionDetails<number>;
 
-    givenAnOpenfeatureClientIsRegisteredWithCacheDisabled(given);
+    givenAStableProvider(given);
 
     when(
-      /^a string flag with key "(.*)" is evaluated as an integer, with details and a default value (\d+)$/,
+      /^a string flag with key "(.*)" is evaluated as an integer, with details and a fallback value (\d+)$/,
       async (key: string, defaultValue: string) => {
         flagKey = key;
         fallbackValue = Number.parseInt(defaultValue);
