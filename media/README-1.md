@@ -72,25 +72,25 @@ yarn add @openfeature/nestjs-sdk @openfeature/server-sdk @openfeature/core
 
 The following list contains the peer dependencies of `@openfeature/nestjs-sdk` with its expected and compatible versions:
 
-- `@openfeature/server-sdk`: >=1.7.5
+- `@openfeature/server-sdk`: ^1.17.1
 - `@nestjs/common`: ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0
 - `@nestjs/core`: ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0
-- `rxjs`: ^6.0.0 || ^7.0.0 || ^8.0.0
+- `rxjs`: ^7.0.0 || ^8.0.0
 
-The minimum required version of `@openfeature/server-sdk` currently is `1.7.5`.
+The minimum required version of `@openfeature/server-sdk` currently is `1.17.1`.
 
 ### Usage
 
-The example below shows how to use the `OpenFeatureModule` with OpenFeature's `InMemoryProvider`.
+The example below shows how to use the `OpenFeatureModule` with OpenFeature's `TypedInMemoryProvider`.
 
 ```ts
 import { Module } from '@nestjs/common';
-import { OpenFeatureModule, InMemoryProvider } from '@openfeature/nestjs-sdk';
+import { OpenFeatureModule, TypedInMemoryProvider } from '@openfeature/nestjs-sdk';
 
 @Module({
   imports: [
     OpenFeatureModule.forRoot({
-      defaultProvider: new InMemoryProvider({
+      defaultProvider: new TypedInMemoryProvider({
         testBooleanFlag: {
           defaultVariant: 'default',
           variants: { default: true },
@@ -98,7 +98,7 @@ import { OpenFeatureModule, InMemoryProvider } from '@openfeature/nestjs-sdk';
         },
       }),
       providers: {
-        differentProvider: new InMemoryProvider(),
+        differentProvider: new TypedInMemoryProvider(),
       },
     }),
   ],
@@ -169,6 +169,10 @@ export class OpenFeatureController {
   }
 }
 ```
+
+#### Type-Safe Flag Keys
+
+For enhanced type safety and autocompletion, you can override flag key types using TypeScript module augmentation. See the [`@openfeature/core` README](../shared/README.md#type-safe-flag-keys) for details.
 
 ## Module additional information
 

@@ -98,10 +98,16 @@ See the [package.json](./package.json) for the required versions.
 
 The `OpenFeatureProvider` is a [React context provider](https://react.dev/reference/react/createContext#provider) which represents a scope for feature flag evaluations within a React application.
 It binds an OpenFeature client to all evaluations within child components, and allows the use of evaluation hooks.
-The example below shows how to use the `OpenFeatureProvider` with OpenFeature's `InMemoryProvider`.
+The example below shows how to use the `OpenFeatureProvider` with OpenFeature's `TypedInMemoryProvider`.
 
 ```tsx
-import { EvaluationContext, OpenFeatureProvider, useFlag, OpenFeature, InMemoryProvider } from '@openfeature/react-sdk';
+import {
+  EvaluationContext,
+  OpenFeatureProvider,
+  useFlag,
+  OpenFeature,
+  TypedInMemoryProvider,
+} from '@openfeature/react-sdk';
 
 const flagConfig = {
   'new-message': {
@@ -118,11 +124,11 @@ const flagConfig = {
       return 'off';
     },
   },
-};
+} as const;
 
 // Instantiate and set our provider (be sure this only happens once)!
 // Note: there's no need to await its initialization, the React SDK handles re-rendering and suspense for you!
-OpenFeature.setProvider(new InMemoryProvider(flagConfig));
+OpenFeature.setProvider(new TypedInMemoryProvider(flagConfig));
 
 // Enclose your content in the configured provider
 function App() {
@@ -251,6 +257,22 @@ This is analogous to:
 OpenFeature.getClient('my-domain');
 ```
 
+Alternatively, a pre-configured `Client` instance can be passed directly via the `client` prop:
+
+```tsx
+const client = OpenFeature.getClient('my-domain');
+
+function App() {
+  return (
+    <OpenFeatureProvider client={client}>
+      <Page></Page>
+    </OpenFeatureProvider>
+  );
+}
+```
+
+The `domain` and `client` props are mutually exclusive.
+
 For more information about `domains`, refer to the [web SDK](https://github.com/open-feature/js-sdk/blob/main/packages/web/README.md).
 
 #### Re-rendering with Context Changes
@@ -368,6 +390,10 @@ function MyComponent() {
 React's lifecycle can result in flags being evaluated multiple times as a user interacts with a page.
 If you are using an OpenFeature hook for telemetry, this can result in inflated evaluation metrics.
 The [OpenFeature debounce hook](https://github.com/open-feature/js-sdk-contrib/tree/main/libs/hooks/debounce) can help to reduce the amount of redundant evaluations reported to your observability platform by limiting the frequency at which evaluation metrics are reported.
+
+#### Type-Safe Flag Keys
+
+For enhanced type safety and autocompletion, you can override flag key types using TypeScript module augmentation. See the [`@openfeature/core` README](../shared/README.md#type-safe-flag-keys) for details.
 
 ### Testing
 

@@ -162,7 +162,10 @@ const primaryProvider = new YourPrimaryProvider();
 const backupProvider = new YourBackupProvider();
 
 // Create multi-provider with a strategy
-const multiProvider = new MultiProvider([primaryProvider, backupProvider], new FirstMatchStrategy());
+const multiProvider = new MultiProvider(
+  [{ provider: primaryProvider }, { provider: backupProvider }],
+  new FirstMatchStrategy(),
+);
 
 // Register the multi-provider
 await OpenFeature.setProviderAndWait(multiProvider);
@@ -174,7 +177,8 @@ const value = await client.getBooleanValue('my-flag', false);
 
 **Available Strategies:**
 
-- `FirstMatchStrategy`: Returns the first successful result from the list of providers
+- `FirstMatchStrategy`: Returns the first successful result from the list of providers (short-circuits on error)
+- `FirstSuccessfulStrategy`: Returns the first successful result, ignoring errors from earlier providers
 - `ComparisonStrategy`: Compares results from multiple providers and can handle discrepancies
 
 **Migration Example:**
@@ -187,7 +191,7 @@ const newProvider = new NewFlagProvider();
 const oldProvider = new OldFlagProvider();
 
 const multiProvider = new MultiProvider(
-  [newProvider, oldProvider], // New provider is consulted first
+  [{ provider: newProvider }, { provider: oldProvider }], // New provider is consulted first
   new FirstMatchStrategy(),
 );
 
@@ -289,7 +293,7 @@ A domain is a logical identifier which can be used to associate clients with a p
 If a domain has no associated provider, the default provider is used.
 
 ```ts
-import { OpenFeature, InMemoryProvider } from '@openfeature/server-sdk';
+import { OpenFeature, TypedInMemoryProvider } from '@openfeature/server-sdk';
 
 const myFlags = {
   v2_enabled: {
@@ -300,16 +304,16 @@ const myFlags = {
     disabled: false,
     defaultVariant: 'on',
   },
-};
+} as const;
 
 // Registering the default provider
-OpenFeature.setProvider(InMemoryProvider(myFlags));
+OpenFeature.setProvider(new TypedInMemoryProvider(myFlags));
 // Registering a provider to a domain
-OpenFeature.setProvider('my-domain', new InMemoryProvider(someOtherFlags));
+OpenFeature.setProvider('my-domain', new TypedInMemoryProvider(someOtherFlags));
 
 // A Client bound to the default provider
 const clientWithDefault = OpenFeature.getClient();
-// A Client bound to the InMemoryProvider provider
+// A Client bound to the TypedInMemoryProvider provider
 const domainScopedClient = OpenFeature.getClient('my-domain');
 ```
 
@@ -357,7 +361,7 @@ OpenFeature.setTransactionContextPropagator(new AsyncLocalStorageTransactionCont
  */
 const app = express();
 app.use((req: Request, res: Response, next: NextFunction) => {
-  const ip = res.headers.get('X-Forwarded-For');
+  const ip = req.headers['x-forwarded-for'];
   OpenFeature.setTransactionContext({ targetingKey: req.user.id, ipAddress: ip }, () => {
     // The transaction context is used in any flag evaluation throughout the whole call chain of next
     next();
@@ -390,6 +394,10 @@ import { OpenFeature } from '@openfeature/server-sdk';
 
 await OpenFeature.close();
 ```
+
+### Type-Safe Flag Keys
+
+For enhanced type safety and autocompletion, you can override flag key types using TypeScript module augmentation. See the [`@openfeature/core` README](../shared/README.md#type-safe-flag-keys) for details.
 
 ## Extending
 
