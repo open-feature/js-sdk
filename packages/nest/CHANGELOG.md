@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.2.6](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.2.5...nestjs-sdk-v0.2.6) (2026-04-21)
+
+
+### ✨ New Features
+
+* add "sideEffects": false to package.json files for all packages ([#1343](https://github.com/open-feature/js-sdk/issues/1343)) ([d8e968e](https://github.com/open-feature/js-sdk/commit/d8e968ed2513fe986a6500895f3399303a2f0b96))
+* support type-safe flag keys via module augmentation ([#1349](https://github.com/open-feature/js-sdk/issues/1349)) ([fb2ed4a](https://github.com/open-feature/js-sdk/commit/fb2ed4a7d64d9b8437975a0ef6cb4fe6a12dd671))
+* support type-safe variant values for InMemoryProvider ([#1356](https://github.com/open-feature/js-sdk/issues/1356)) ([431f899](https://github.com/open-feature/js-sdk/commit/431f899191a2f7693fea9fab40f7cfb1f22f61f8))
+
+
+### 🐛 Bug Fixes
+
+* **nest:** correct rxjs 8.0.0 peer, remove rxjs 6 support (EOL) ([#1379](https://github.com/open-feature/js-sdk/issues/1379)) ([959f4f4](https://github.com/open-feature/js-sdk/commit/959f4f4b643e3b119d1a5511c07f093cc3c7a244))
+
+
+### 📚 Documentation
+
+* fix inaccuracies in package READMEs ([#1378](https://github.com/open-feature/js-sdk/issues/1378)) ([ecd3759](https://github.com/open-feature/js-sdk/commit/ecd375979e3188c0f94dfec94a1487c61388965e))
+
 ## [0.2.5](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.2.4...nestjs-sdk-v0.2.5) (2025-05-27)
 
 
