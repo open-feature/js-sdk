@@ -106,8 +106,7 @@ See the [package.json](./package.json) for the required versions.
 
 #### Module
 
-To include the OpenFeature Angular directives in your application, you need to import the `OpenFeatureModule` and
-configure it using the `forRoot` method.
+To configure OpenFeature for your application, import the `OpenFeatureModule` and call `forRoot` to register the provider(s) and optional evaluation context.
 
 ```typescript
 import { NgModule } from '@angular/core';
@@ -132,6 +131,10 @@ import { OpenFeatureModule } from '@openfeature/angular-sdk';
 })
 export class AppModule {}
 ```
+
+> [!NOTE]
+> The feature flag directives (`BooleanFeatureFlagDirective`, `NumberFeatureFlagDirective`, `StringFeatureFlagDirective`, `ObjectFeatureFlagDirective`) and pipes are standalone and are not re-exported by `OpenFeatureModule`.
+> In NgModule-based apps, you must also import the directives/pipes you use into the `imports` array of the component's NgModule (or of the component itself for standalone components).
 
 ##### Minimal Example
 
