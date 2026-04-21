@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [1.8.0](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.7.3...web-sdk-v1.8.0) (2026-04-21)
+
+
+### ✨ New Features
+
+* add "sideEffects": false to package.json files for all packages ([#1343](https://github.com/open-feature/js-sdk/issues/1343)) ([d8e968e](https://github.com/open-feature/js-sdk/commit/d8e968ed2513fe986a6500895f3399303a2f0b96))
+* support type-safe flag keys via module augmentation ([#1349](https://github.com/open-feature/js-sdk/issues/1349)) ([fb2ed4a](https://github.com/open-feature/js-sdk/commit/fb2ed4a7d64d9b8437975a0ef6cb4fe6a12dd671))
+* support type-safe variant values for InMemoryProvider ([#1356](https://github.com/open-feature/js-sdk/issues/1356)) ([431f899](https://github.com/open-feature/js-sdk/commit/431f899191a2f7693fea9fab40f7cfb1f22f61f8))
+
+
+### 🧹 Chore
+
+* replace test-harness submodule with spec submodule ([#1359](https://github.com/open-feature/js-sdk/issues/1359)) ([7924205](https://github.com/open-feature/js-sdk/commit/7924205b8b1ba6f4b25d27d45541c87c14d89737))
+
 ## [1.7.3](https://github.com/open-feature/js-sdk/compare/web-sdk-v1.7.2...web-sdk-v1.7.3) (2026-02-18)
 
 
