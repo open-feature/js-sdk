@@ -15,6 +15,7 @@ import type {
   EventHandler,
   Logger,
 } from '@openfeature/server-sdk';
+import { withFrameworkMetadata } from '@openfeature/core';
 import { OpenFeature, AsyncLocalStorageTransactionContextPropagator } from '@openfeature/server-sdk';
 import type { ContextFactory } from './context-factory';
 import { ContextFactoryToken } from './context-factory';
@@ -45,7 +46,7 @@ export class OpenFeatureModule {
     const clientValueProviders: NestFactoryProvider<Client>[] = [
       {
         provide: getOpenFeatureClientToken(),
-        useFactory: () => OpenFeature.getClient(),
+        useFactory: () => withFrameworkMetadata(OpenFeature.getClient(), 'nest'),
       },
     ];
 
@@ -58,7 +59,7 @@ export class OpenFeatureModule {
         OpenFeature.setProvider(domain, provider);
         clientValueProviders.push({
           provide: getOpenFeatureClientToken(domain),
-          useFactory: () => OpenFeature.getClient(domain),
+          useFactory: () => withFrameworkMetadata(OpenFeature.getClient(domain), 'nest'),
         });
       });
     }

@@ -13,6 +13,7 @@ import {
 } from '@openfeature/web-sdk';
 import { TestingProvider } from '../test/test.utils';
 import { v4 } from 'uuid';
+import { vi } from 'vitest';
 import {
   BooleanFeatureFlagDirective,
   FeatureFlagDirectiveContext,
@@ -188,6 +189,15 @@ class TestComponent {
   @Input() domain: string;
   @Input() specialFlagKey: string = 'test-flag';
   protected readonly JSON = JSON;
+}
+
+@Component({
+  standalone: true,
+  imports: [BooleanFeatureFlagDirective],
+  template: `<div *booleanFeatureFlag="'test-flag'; default: true; domain: domain">Flag On</div>`,
+})
+class SingleDirectiveTestComponent {
+  @Input() domain: string;
 }
 
 describe('FeatureFlagDirectiveContext', () => {
@@ -369,6 +379,42 @@ describe('FeatureFlagDirective', () => {
   });
 
   describe('complex case', () => {
+    it('should only initialize the client once when the domain is set before init', async () => {
+      const domain = v4();
+      const provider = new TestingProvider(
+        {
+          'test-flag': {
+            variants: { default: true },
+            defaultVariant: 'default',
+            disabled: false,
+          },
+        },
+        0,
+      );
+      const getClientSpy = vi.spyOn(OpenFeature, 'getClient');
+
+      try {
+        const fixture = TestBed.configureTestingModule({
+          imports: [
+            OpenFeatureModule.forRoot({
+              provider: new InMemoryProvider(),
+              domainBoundProviders: { [domain]: provider },
+            }),
+            SingleDirectiveTestComponent,
+          ],
+        }).createComponent(SingleDirectiveTestComponent);
+
+        fixture.componentRef.setInput('domain', domain);
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        expect(getClientSpy).toHaveBeenCalledTimes(1);
+        expect(getClientSpy).toHaveBeenCalledWith(domain);
+      } finally {
+        getClientSpy.mockRestore();
+      }
+    });
+
     it('should use initializing, then, else and reconciling in one go', async () => {
       const { fixture, provider, client, domain } = await createTestingModule({
         flagConfiguration: {

@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing';
 import { getOpenFeatureClientToken, OpenFeatureModule, ServerProviderEvents } from '../src';
 import type { Client } from '@openfeature/server-sdk';
 import { OpenFeature } from '@openfeature/server-sdk';
-import { getOpenFeatureDefaultTestModule } from './fixtures';
+import { defaultProvider, getOpenFeatureDefaultTestModule } from './fixtures';
 
 describe('OpenFeatureModule', () => {
   let moduleRef: TestingModule;
@@ -48,6 +48,48 @@ describe('OpenFeatureModule', () => {
       const client = moduleRef.get<Client>(getOpenFeatureClientToken('domainScopedClient'));
       expect(client).toBeDefined();
       expect(await client.getStringValue('testStringFlag', '')).toEqual('expected-string-value-scoped');
+    });
+
+    it('should expose nest framework metadata on injected clients', () => {
+      const defaultClient = moduleRef.get<Client>(getOpenFeatureClientToken());
+      const scopedClient = moduleRef.get<Client>(getOpenFeatureClientToken('domainScopedClient'));
+
+      expect(defaultClient.metadata).toMatchObject({
+        sdk: 'js-server',
+        paradigm: 'server',
+        framework: 'nest',
+      });
+      expect(scopedClient.metadata).toMatchObject({
+        sdk: 'js-server',
+        paradigm: 'server',
+        framework: 'nest',
+      });
+    });
+
+    it('should surface nest metadata in hook contexts', async () => {
+      const hook = { before: jest.fn() };
+      const hookModuleRef = await Test.createTestingModule({
+        imports: [OpenFeatureModule.forRoot({ defaultProvider, hooks: [hook] })],
+      }).compile();
+
+      try {
+        const client = hookModuleRef.get<Client>(getOpenFeatureClientToken());
+        await client.getBooleanValue('testBooleanFlag', false);
+
+        expect(hook.before).toHaveBeenCalledWith(
+          expect.objectContaining({
+            clientMetadata: expect.objectContaining({
+              sdk: 'js-server',
+              paradigm: 'server',
+              framework: 'nest',
+            }),
+          }),
+          undefined,
+        );
+      } finally {
+        await hookModuleRef.close();
+        OpenFeature.clearHooks();
+      }
     });
   });
 

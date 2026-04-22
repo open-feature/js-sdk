@@ -73,6 +73,8 @@ export class OpenFeatureClient implements Client {
       name: this.options.domain ?? this.options.name,
       domain: this.options.domain ?? this.options.name,
       version: this.options.version,
+      sdk: 'js-server',
+      paradigm: 'server',
       providerMetadata: this.providerAccessor().metadata,
     };
   }

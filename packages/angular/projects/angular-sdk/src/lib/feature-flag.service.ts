@@ -1,3 +1,4 @@
+import { withFrameworkMetadata } from '@openfeature/core';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
@@ -217,7 +218,7 @@ export class FeatureFlagService {
     domain: string | undefined,
     options?: AngularFlagEvaluationOptions,
   ): Observable<EvaluationDetails<T>> {
-    const client = domain ? OpenFeature.getClient(domain) : OpenFeature.getClient();
+    const client = withFrameworkMetadata(domain ? OpenFeature.getClient(domain) : OpenFeature.getClient(), 'angular');
 
     return new Observable<EvaluationDetails<T>>((subscriber) => {
       let currentResult: EvaluationDetails<T> | undefined = undefined;

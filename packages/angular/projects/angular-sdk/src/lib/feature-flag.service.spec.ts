@@ -14,6 +14,7 @@ import { AsyncPipe } from '@angular/common';
 import { TestingProvider } from '../test/test.utils';
 import { OpenFeatureModule } from './open-feature.module';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { vi } from 'vitest';
 
 const FLAG_KEY = 'thumbs';
 
@@ -119,6 +120,7 @@ describe('FeatureFlagService', () => {
 
   afterEach(async () => {
     await OpenFeature.close();
+    OpenFeature.clearHooks();
     await OpenFeature.setContext({});
     currentTestComponentFixture?.destroy();
     currentContextChangeDisabledComponentFixture?.destroy();
@@ -132,6 +134,27 @@ describe('FeatureFlagService', () => {
     currentTestComponentFixture.detectChanges();
     const observableValue = currentTestComponentFixture.nativeElement.querySelector('[data-testid="value"]');
     expect(observableValue?.textContent).toBe('👍');
+  });
+
+  it('should surface angular metadata in hook contexts', async () => {
+    const hook = { before: vi.fn() };
+
+    OpenFeature.addHooks(hook);
+    await createTestingModule();
+    service = TestBed.inject(FeatureFlagService);
+
+    await firstValueFrom(service.getBooleanDetails(FLAG_KEY, false));
+
+    expect(hook.before).toHaveBeenCalledWith(
+      expect.objectContaining({
+        clientMetadata: expect.objectContaining({
+          sdk: 'js-web',
+          paradigm: 'client',
+          framework: 'angular',
+        }),
+      }),
+      undefined,
+    );
   });
 
   it('should render updated value after delay', async () => {
