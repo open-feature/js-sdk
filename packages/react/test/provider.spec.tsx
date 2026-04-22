@@ -112,7 +112,7 @@ describe('OpenFeatureProvider', () => {
 
         OpenFeature.setProvider(
           DOMAIN,
-          new InMemoryProvider({
+          new TypedInMemoryProvider({
             greeting: {
               disabled: false,
               variants: { default: 'hello' },

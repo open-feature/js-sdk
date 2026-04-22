@@ -10,6 +10,7 @@ import {
   type InMemoryFlagVariants,
   TypedInMemoryProvider,
   OpenFeature,
+  InMemoryProvider,
 } from '@openfeature/web-sdk';
 import { TestingProvider } from '../test/test.utils';
 import { v4 } from 'uuid';
@@ -397,7 +398,7 @@ describe('FeatureFlagDirective', () => {
         const fixture = TestBed.configureTestingModule({
           imports: [
             OpenFeatureModule.forRoot({
-              provider: new InMemoryProvider(),
+              provider: new TypedInMemoryProvider(),
               domainBoundProviders: { [domain]: provider },
             }),
             SingleDirectiveTestComponent,
