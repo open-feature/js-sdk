@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.4.0](https://github.com/open-feature/js-sdk/compare/react-sdk-v1.3.0...react-sdk-v1.4.0) (2026-04-28)
+
+
+### ✨ New Features
+
+* expose js sdk identity on client metadata ([#1376](https://github.com/open-feature/js-sdk/issues/1376)) ([6c437e7](https://github.com/open-feature/js-sdk/commit/6c437e78662786749cba8bfe5051edbd5e6a85e1))
+
+
+### 🧹 Chore
+
+* fixup test compilation issues ([da8f5d8](https://github.com/open-feature/js-sdk/commit/da8f5d858ccd9ca62cdcdeec37974c81cb0c90c4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/core bumped from * to 1.11.0
+    * @openfeature/web-sdk bumped from * to 1.9.0
+
 ## [1.3.0](https://github.com/open-feature/js-sdk/compare/react-sdk-v1.2.1...react-sdk-v1.3.0) (2026-04-21)
 
 
