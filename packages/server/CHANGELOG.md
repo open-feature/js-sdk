@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.22.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.21.0...server-sdk-v1.22.0) (2026-04-28)
+
+
+### ✨ New Features
+
+* expose js sdk identity on client metadata ([#1376](https://github.com/open-feature/js-sdk/issues/1376)) ([6c437e7](https://github.com/open-feature/js-sdk/commit/6c437e78662786749cba8bfe5051edbd5e6a85e1))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/core bumped from ^1.9.2 to ^1.11.0
+
 ## [1.21.0](https://github.com/open-feature/js-sdk/compare/server-sdk-v1.20.2...server-sdk-v1.21.0) (2026-04-21)
 
 
