@@ -1,6 +1,27 @@
 # Changelog
 
 
+## [1.3.0](https://github.com/open-feature/js-sdk/compare/angular-sdk-v1.2.0...angular-sdk-v1.3.0) (2026-04-28)
+
+
+### ✨ New Features
+
+* expose js sdk identity on client metadata ([#1376](https://github.com/open-feature/js-sdk/issues/1376)) ([6c437e7](https://github.com/open-feature/js-sdk/commit/6c437e78662786749cba8bfe5051edbd5e6a85e1))
+
+
+### 🧹 Chore
+
+* fixup test compilation issues ([da8f5d8](https://github.com/open-feature/js-sdk/commit/da8f5d858ccd9ca62cdcdeec37974c81cb0c90c4))
+* resolve open dependabot security alerts ([#1402](https://github.com/open-feature/js-sdk/issues/1402)) ([8c9669a](https://github.com/open-feature/js-sdk/commit/8c9669adb08ff5281fd23993fd30701ad665b20a))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/core bumped from ^1.8.1 to ^1.11.0
+    * @openfeature/web-sdk bumped from ^1.6.2 to ^1.9.0
+
 ## [1.2.0](https://github.com/open-feature/js-sdk/compare/angular-sdk-v1.1.0...angular-sdk-v1.2.0) (2026-04-21)
 
 
