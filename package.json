@@ -70,7 +70,7 @@
     "rollup-plugin-dts": "^6.1.1",
     "rxjs": "~7.8.0",
     "shx": "^0.4.0",
-    "ts-jest": "^29.1.2",
+    "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
     "tslib": "^2.3.0",
     "typedoc": "^0.26.0",
@@ -108,9 +108,6 @@
     },
     "@humanwhocodes/config-array": {
       "minimatch": "^3.1.5"
-    },
-    "filelist": {
-      "minimatch": "^5.1.9"
     },
     "@typescript-eslint/typescript-estree": {
       "minimatch": "^9.0.9"
