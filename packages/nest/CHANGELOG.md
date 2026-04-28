@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.2.7](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.2.6...nestjs-sdk-v0.2.7) (2026-04-28)
+
+
+### ✨ New Features
+
+* expose js sdk identity on client metadata ([#1376](https://github.com/open-feature/js-sdk/issues/1376)) ([6c437e7](https://github.com/open-feature/js-sdk/commit/6c437e78662786749cba8bfe5051edbd5e6a85e1))
+
+
+### 🧹 Chore
+
+* resolve open dependabot security alerts ([#1402](https://github.com/open-feature/js-sdk/issues/1402)) ([8c9669a](https://github.com/open-feature/js-sdk/commit/8c9669adb08ff5281fd23993fd30701ad665b20a))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @openfeature/core bumped from * to 1.11.0
+    * @openfeature/server-sdk bumped from 1.18.0 to 1.22.0
+
 ## [0.2.6](https://github.com/open-feature/js-sdk/compare/nestjs-sdk-v0.2.5...nestjs-sdk-v0.2.6) (2026-04-21)
 
 
