@@ -41,7 +41,7 @@
   "homepage": "https://github.com/open-feature/js-sdk#readme",
   "devDependencies": {
     "@rollup/plugin-typescript": "^12.0.0",
-    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.0.0",
     "@types/jest": "^29.5.12",
     "@types/node": "^22.0.0",
@@ -70,7 +70,7 @@
     "rollup-plugin-dts": "^6.1.1",
     "rxjs": "~7.8.0",
     "shx": "^0.4.0",
-    "ts-jest": "^29.1.2",
+    "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
     "tslib": "^2.3.0",
     "typedoc": "^0.26.0",

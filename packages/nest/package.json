@@ -52,14 +52,14 @@
     "@openfeature/server-sdk": "^1.21.0"
   },
   "devDependencies": {
-    "@nestjs/common": "^11.0.20",
-    "@nestjs/core": "^11.0.20",
-    "@nestjs/platform-express": "^11.0.20",
-    "@nestjs/testing": "^11.0.20",
+    "@nestjs/common": "^11.1.19",
+    "@nestjs/core": "^11.1.19",
+    "@nestjs/platform-express": "^11.1.19",
+    "@nestjs/testing": "^11.1.19",
     "@openfeature/core": "*",
     "@openfeature/server-sdk": "1.18.0",
     "@types/supertest": "^6.0.0",
-    "supertest": "^7.0.0"
+    "supertest": "^7.2.2"
   },
   "sideEffects": false
 }
