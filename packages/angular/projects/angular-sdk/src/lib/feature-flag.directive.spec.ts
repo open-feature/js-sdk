@@ -10,7 +10,6 @@ import {
   type InMemoryFlagVariants,
   TypedInMemoryProvider,
   OpenFeature,
-  InMemoryProvider,
 } from '@openfeature/web-sdk';
 import { TestingProvider } from '../test/test.utils';
 import { v4 } from 'uuid';
