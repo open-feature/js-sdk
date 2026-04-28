@@ -41,7 +41,7 @@
   "homepage": "https://github.com/open-feature/js-sdk#readme",
   "devDependencies": {
     "@rollup/plugin-typescript": "^12.0.0",
-    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.0.0",
     "@types/jest": "^29.5.12",
     "@types/node": "^22.0.0",
@@ -78,15 +78,9 @@
     "uuid": "^11.0.0"
   },
   "overrides": {
-    "@modelcontextprotocol/sdk": "^1.26.0",
-    "lodash": "^4.18.0",
     "flatted": "^3.4.2",
     "tar": "^7.5.11",
-    "immutable": "^5.1.5",
-    "qs": "^6.14.2",
-    "mdast-util-to-hast": "^13.2.1",
     "form-data": "^4.0.4",
-    "formidable": "^3.5.3",
     "picomatch": "^4.0.4",
     "micromatch": {
       "picomatch": "^2.3.2"
@@ -115,9 +109,7 @@
     "typedoc": {
       "minimatch": "^9.0.9"
     },
-    "@tufjs/models": {
-      "minimatch": "^9.0.9"
-    },
+    "mdast-util-to-hast": "^13.2.1",
     "jest-cucumber": {
       "glob": "^10.5.0",
       "minimatch": "^9.0.9"
