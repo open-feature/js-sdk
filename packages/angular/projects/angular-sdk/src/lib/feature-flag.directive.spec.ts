@@ -10,6 +10,7 @@ import {
   type InMemoryFlagVariants,
   TypedInMemoryProvider,
   OpenFeature,
+  InMemoryProvider, // eslint-disable-line @typescript-eslint/no-unused-vars
 } from '@openfeature/web-sdk';
 import { TestingProvider } from '../test/test.utils';
 import { v4 } from 'uuid';
