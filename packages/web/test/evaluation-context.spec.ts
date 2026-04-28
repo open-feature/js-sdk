@@ -1,7 +1,7 @@
 import type { EvaluationContext, JsonValue, Provider, ProviderMetadata, ResolutionDetails } from '../src';
 import { OpenFeature } from '../src';
 
-const initializeMock = jest.fn();
+const initializeMock = jest.fn().mockResolvedValue(undefined);
 
 class MockProvider implements Provider {
   readonly metadata: ProviderMetadata;

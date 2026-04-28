@@ -27,6 +27,8 @@ type AnyProviderStatus = ClientProviderStatus | ServerProviderStatus;
  */
 export class ProviderWrapper<P extends CommonProvider<AnyProviderStatus>, S extends AnyProviderStatus> {
   private _pendingContextChanges = 0;
+  private _initializing = false;
+  private _initialized = false;
 
   constructor(
     private _provider: P,
@@ -49,6 +51,8 @@ export class ProviderWrapper<P extends CommonProvider<AnyProviderStatus>, S exte
         this._status = _statusEnumType.ERROR as S;
       }
     });
+
+    this._initialized = typeof _provider.initialize !== 'function';
   }
 
   get provider(): P {
@@ -65,6 +69,22 @@ export class ProviderWrapper<P extends CommonProvider<AnyProviderStatus>, S exte
 
   set status(status: S) {
     this._status = status;
+  }
+
+  get initializing() {
+    return this._initializing;
+  }
+
+  set initializing(initializing: boolean) {
+    this._initializing = initializing;
+  }
+
+  get initialized() {
+    return this._initialized;
+  }
+
+  set initialized(initialized: boolean) {
+    this._initialized = initialized;
   }
 
   get allContextChangesSettled() {
@@ -208,16 +228,72 @@ export abstract class OpenFeatureCommonAPI<
   abstract setProviderAndWait(
     clientOrProvider?: string | P,
     providerContextOrUndefined?: P | EvaluationContext,
-    contextOrUndefined?: EvaluationContext,
+    contextOptionsOrUndefined?: EvaluationContext | Record<never, never>,
+    optionsOrUndefined?: Record<never, never>,
   ): Promise<void>;
 
   abstract setProvider(
     clientOrProvider?: string | P,
     providerContextOrUndefined?: P | EvaluationContext,
-    contextOrUndefined?: EvaluationContext,
+    contextOptionsOrUndefined?: EvaluationContext | Record<never, never>,
+    optionsOrUndefined?: Record<never, never>,
   ): this;
 
-  protected setAwaitableProvider(domainOrProvider?: string | P, providerOrUndefined?: P): Promise<void> | void {
+  protected initializeProviderForDomain(
+    wrapper: ProviderWrapper<P, AnyProviderStatus>,
+    domain?: string,
+  ): Promise<void> | void {
+    if (typeof wrapper.provider.initialize !== 'function' || wrapper.initializing || wrapper.initialized) {
+      return;
+    }
+
+    wrapper.initializing = true;
+    return wrapper.provider
+      .initialize(domain ? (this._domainScopedContext.get(domain) ?? this._context) : this._context)
+      .then(() => {
+        wrapper.status = this._statusEnumType.READY;
+        const payload = { clientName: domain, domain, providerName: wrapper.provider.metadata.name };
+
+        // fetch the most recent event emitters, some may have been added during init
+        this.getAssociatedEventEmitters(domain).forEach((emitter) => {
+          emitter?.emit(AllProviderEvents.Ready, { ...payload });
+        });
+        this._apiEmitter?.emit(AllProviderEvents.Ready, { ...payload });
+      })
+      .catch((error) => {
+        // if this is a fatal error, transition to FATAL status
+        if ((error as OpenFeatureError)?.code === ErrorCode.PROVIDER_FATAL) {
+          wrapper.status = this._statusEnumType.FATAL;
+        } else {
+          wrapper.status = this._statusEnumType.ERROR;
+        }
+        const payload = {
+          clientName: domain,
+          domain,
+          providerName: wrapper.provider.metadata.name,
+          message: error?.message,
+        };
+
+        // fetch the most recent event emitters, some may have been added during init
+        this.getAssociatedEventEmitters(domain).forEach((emitter) => {
+          emitter?.emit(AllProviderEvents.Error, { ...payload });
+        });
+        this._apiEmitter?.emit(AllProviderEvents.Error, { ...payload });
+
+        // rethrow after emitting error events, so that public methods can control error handling
+        throw error;
+      })
+      .finally(() => {
+        wrapper.initialized = true;
+        wrapper.initializing = false;
+      });
+  }
+
+  protected setAwaitableProvider(
+    domainOrProvider?: string | P,
+    providerOrUndefined?: P,
+    skipInitialization = false,
+  ): Promise<void> | void {
     const domain = stringOrUndefined(domainOrProvider);
     const provider = objectOrUndefined<P>(domainOrProvider) ?? objectOrUndefined<P>(providerOrUndefined);
 
@@ -250,48 +326,19 @@ export abstract class OpenFeatureCommonAPI<
       this._statusEnumType,
     );
 
-    // initialize the provider if it implements "initialize" and it's not already registered
-    if (typeof provider.initialize === 'function' && !this.allProviders.includes(provider)) {
-      initializationPromise = provider
-        .initialize?.(domain ? (this._domainScopedContext.get(domain) ?? this._context) : this._context)
-        ?.then(() => {
-          wrappedProvider.status = this._statusEnumType.READY;
-          // fetch the most recent event emitters, some may have been added during init
-          this.getAssociatedEventEmitters(domain).forEach((emitter) => {
-            emitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
-          });
-          this._apiEmitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
-        })
-        ?.catch((error) => {
-          // if this is a fatal error, transition to FATAL status
-          if ((error as OpenFeatureError)?.code === ErrorCode.PROVIDER_FATAL) {
-            wrappedProvider.status = this._statusEnumType.FATAL;
-          } else {
-            wrappedProvider.status = this._statusEnumType.ERROR;
-          }
-          this.getAssociatedEventEmitters(domain).forEach((emitter) => {
-            emitter?.emit(AllProviderEvents.Error, {
-              clientName: domain,
-              domain,
-              providerName,
-              message: error?.message,
-            });
-          });
-          this._apiEmitter?.emit(AllProviderEvents.Error, {
-            clientName: domain,
-            domain,
-            providerName,
-            message: error?.message,
-          });
-          // rethrow after emitting error events, so that public methods can control error handling
-          throw error;
+    if (!skipInitialization) {
+      // initialize the provider if it's not already registered and it implements "initialize"
+      if (!this.allProviders.includes(provider)) {
+        initializationPromise = this.initializeProviderForDomain(wrappedProvider, domain);
+      }
+
+      if (!initializationPromise) {
+        wrappedProvider.status = this._statusEnumType.READY;
+        emitters.forEach((emitter) => {
+          emitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
         });
-    } else {
-      wrappedProvider.status = this._statusEnumType.READY;
-      emitters.forEach((emitter) => {
-        emitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
-      });
-      this._apiEmitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
+        this._apiEmitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
+      }
     }
 
     if (domain) {
