@@ -1,6 +1,6 @@
 import type { CallHandler, ExecutionContext, HttpException, NestInterceptor } from '@nestjs/common';
 import { applyDecorators, mixin, NotFoundException, UseInterceptors } from '@nestjs/common';
-import { getClientForEvaluation } from './utils';
+import { getClientForEvaluation, getRequestFromContext } from './utils';
 import type { BooleanFlagKey, EvaluationContext } from '@openfeature/server-sdk';
 import type { ContextFactory } from './context-factory';
 
@@ -84,7 +84,7 @@ const FlagsEnabledInterceptor = (props: RequireFlagsEnabledProps) => {
     constructor() {}
 
     async intercept(context: ExecutionContext, next: CallHandler) {
-      const req = context.switchToHttp().getRequest();
+      const req = getRequestFromContext(context);
       const evaluationContext = props.contextFactory ? await props.contextFactory(context) : props.context;
       const client = getClientForEvaluation(props.domain, evaluationContext);
 
