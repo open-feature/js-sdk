@@ -62,7 +62,7 @@
     "jest-cucumber": "^4.0.0",
     "jest-environment-jsdom": "^29.7.0",
     "jest-environment-node": "^29.7.0",
-    "jest-junit": "^16.0.0",
+    "jest-junit": "^17.0.0",
     "lint-staged": "^16.2.7",
     "prettier": "^3.7.4",
     "react": "^18.2.0",
