@@ -50,8 +50,8 @@ In addition to the features provided by the [web sdk](https://openfeature.dev/do
     - [yarn](#yarn)
     - [Required peer dependencies](#required-peer-dependencies)
   - [Usage](#usage)
-    - [Module](#module)
-      - [Minimal Example](#minimal-example)
+    - [Standalone configuration (recommended)](#standalone-configuration-recommended)
+    - [NgModule configuration (deprecated)](#ngmodule-configuration-deprecated)
     - [How to use](#how-to-use)
       - [Structural Directives](#structural-directives)
         - [Boolean Feature Flag](#boolean-feature-flag)
@@ -104,9 +104,44 @@ See the [package.json](./package.json) for the required versions.
 
 ### Usage
 
-#### Module
+#### Standalone configuration (recommended)
 
-To configure OpenFeature for your application, import the `OpenFeatureModule` and call `forRoot` to register the provider(s) and optional evaluation context.
+For standalone / `bootstrapApplication`-based apps, pass `provideOpenFeature()` in the `providers` array of your `ApplicationConfig`:
+
+```typescript
+import { ApplicationConfig } from '@angular/core';
+import { provideOpenFeature } from '@openfeature/angular-sdk';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideOpenFeature({
+      provider: yourFeatureProvider,
+      // domainBoundProviders are optional, mostly needed if more than one provider is used in the application.
+      domainBoundProviders: {
+        domain1: new YourOpenFeatureProvider(),
+        domain2: new YourOtherOpenFeatureProvider(),
+      },
+    }),
+  ],
+};
+```
+
+Then bootstrap your app with this config:
+
+```typescript
+import { bootstrapApplication } from '@angular/platform-browser';
+import { AppComponent } from './app/app.component';
+import { appConfig } from './app/app.config';
+
+bootstrapApplication(AppComponent, appConfig);
+```
+
+#### NgModule configuration (deprecated)
+
+> [!WARNING]
+> `OpenFeatureModule` and `forRoot()` are deprecated. Use [`provideOpenFeature()`](#standalone-configuration-recommended) instead.
+
+To configure OpenFeature for NgModule-based applications, import the `OpenFeatureModule` and call `forRoot` to register the provider(s) and optional evaluation context.
 
 ```typescript
 import { NgModule } from '@angular/core';
@@ -362,7 +397,7 @@ const flag$ = this.flagService.getBooleanDetails('my-flag', false, 'my-domain', 
 
 ##### Setting evaluation context
 
-To set the initial evaluation context, you can add the `context` parameter to the `OpenFeatureModule` configuration.
+To set the initial evaluation context, you can add the `context` parameter to the `provideOpenFeature()` configuration.
 This context can be either an object or a factory function that returns an `EvaluationContext`.
 
 > [!TIP]
@@ -373,48 +408,42 @@ Here’s how you can define and use the initial client evaluation context:
 ###### Using a static object
 
 ```typescript
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { OpenFeatureModule } from '@openfeature/angular-sdk';
+import { ApplicationConfig } from ‘@angular/core’;
+import { provideOpenFeature } from ‘@openfeature/angular-sdk’;
 
 const initialContext = {
   user: {
-    id: 'user123',
-    role: 'admin',
+    id: ‘user123’,
+    role: ‘admin’,
   },
 };
 
-@NgModule({
-  imports: [
-    CommonModule,
-    OpenFeatureModule.forRoot({
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideOpenFeature({
       provider: yourFeatureProvider,
       context: initialContext,
     }),
   ],
-})
-export class AppModule {}
+};
 ```
 
 ###### Using a factory function
 
 ```typescript
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { OpenFeatureModule, EvaluationContext } from '@openfeature/angular-sdk';
+import { ApplicationConfig } from ‘@angular/core’;
+import { provideOpenFeature, EvaluationContext } from ‘@openfeature/angular-sdk’;
 
 const contextFactory = (): EvaluationContext => loadContextFromLocalStorage();
 
-@NgModule({
-  imports: [
-    CommonModule,
-    OpenFeatureModule.forRoot({
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideOpenFeature({
       provider: yourFeatureProvider,
       context: contextFactory,
     }),
   ],
-})
-export class AppModule {}
+};
 ```
 
 ##### Observability considerations
