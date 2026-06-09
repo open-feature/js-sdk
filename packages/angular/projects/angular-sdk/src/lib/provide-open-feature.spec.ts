@@ -134,12 +134,13 @@ describe('provideOpenFeature', () => {
     expect(spy).toHaveBeenCalledWith(provider, undefined);
   });
 
-  it('works when context is omitted entirely', () => {
+  it('empty domainBoundProviders causes only one setProvider() call', () => {
     const spy = vi.spyOn(OpenFeature, 'setProvider');
-    const config: OpenFeatureConfig = { provider };
+    const config: OpenFeatureConfig = { provider, domainBoundProviders: {} };
     TestBed.configureTestingModule({
       providers: [provideOpenFeature(config)],
     });
+    expect(spy).toHaveBeenCalledTimes(1);
     expect(spy).toHaveBeenCalledWith(provider, undefined);
   });
 

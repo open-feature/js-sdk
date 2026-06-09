@@ -38,17 +38,19 @@ export const OPEN_FEATURE_CONFIG_TOKEN = new InjectionToken<OpenFeatureConfig>('
 
 export function provideOpenFeature(config: OpenFeatureConfig): EnvironmentProviders {
   const context = typeof config.context === 'function' ? config.context() : config.context;
-  OpenFeature.setProvider(config.provider, context);
+  if (config.provider) {
+    OpenFeature.setProvider(config.provider, context);
+  }
   if (config.domainBoundProviders) {
-    Object.entries(config.domainBoundProviders).map(([domain, provider]) =>
-      OpenFeature.setProvider(domain, provider, context),
-    );
+    Object.entries(config.domainBoundProviders).forEach(([domain, provider]) => {
+      OpenFeature.setProvider(domain, provider, context);
+    });
   }
   return makeEnvironmentProviders([{ provide: OPEN_FEATURE_CONFIG_TOKEN, useValue: config }]);
 }
 
 /**
- * @deprecated Use {@link provideOpenFeature} instead. OpenFeatureModule will be removed in a future version.
+ * @deprecated Use {@link provideOpenFeature} instead.
  */
 @NgModule({
   declarations: [],

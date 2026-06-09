@@ -403,18 +403,18 @@ This context can be either an object or a factory function that returns an `Eval
 > [!TIP]
 > Updating the context can be done directly via the global OpenFeature API using `OpenFeature.setContext()`
 
-Here’s how you can define and use the initial client evaluation context:
+Here's how you can define and use the initial client evaluation context:
 
 ###### Using a static object
 
 ```typescript
-import { ApplicationConfig } from ‘@angular/core’;
-import { provideOpenFeature } from ‘@openfeature/angular-sdk’;
+import { ApplicationConfig } from '@angular/core';
+import { provideOpenFeature } from '@openfeature/angular-sdk';
 
 const initialContext = {
   user: {
-    id: ‘user123’,
-    role: ‘admin’,
+    id: 'user123',
+    role: 'admin',
   },
 };
 
@@ -431,8 +431,8 @@ export const appConfig: ApplicationConfig = {
 ###### Using a factory function
 
 ```typescript
-import { ApplicationConfig } from ‘@angular/core’;
-import { provideOpenFeature, EvaluationContext } from ‘@openfeature/angular-sdk’;
+import { ApplicationConfig } from '@angular/core';
+import { provideOpenFeature, EvaluationContext } from '@openfeature/angular-sdk';
 
 const contextFactory = (): EvaluationContext => loadContextFromLocalStorage();
 
