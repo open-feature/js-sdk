@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+
+### ✨ New Features
+
+* **angular:** add provideOpenFeature() standalone provider function (#1365)
+
+### ⚠ Deprecations
+
+* **angular:** OpenFeatureModule and forRoot() deprecated in favour of provideOpenFeature()
 
 ## [1.2.0](https://github.com/open-feature/js-sdk/compare/angular-sdk-v1.1.0...angular-sdk-v1.2.0) (2026-04-21)
 
