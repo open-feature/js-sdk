@@ -7,6 +7,17 @@ import type { Hook } from './hooks';
 import type { Provider } from './provider';
 import { NOOP_PROVIDER, ProviderStatus } from './provider';
 
+interface ProviderOptions {
+  /**
+   * If provided, will be used to check if the current context is valid during initialization and context changes.
+   * When calling `setProvider`, returning `false` will skip provider initialization. Throwing will move the provider to the ERROR state.
+   * When calling `setProviderAndWait`, returning `false` will skip provider initialization. Throwing will reject the promise.
+   * When calling `setContext`, returning `false` will skip provider reconciliation of the context change. Throwing will move the provider to the ERROR state.
+   * @param context The evaluation context to validate.
+   */
+  validateContext?: (context: EvaluationContext) => boolean;
+}
+
 // use a symbol as a key for the global singleton
 const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/web-sdk/api');
 
@@ -33,6 +44,8 @@ export class OpenFeatureAPI
   );
   protected _domainScopedProviders: Map<string, ProviderWrapper<Provider, ClientProviderStatus>> = new Map();
   protected _createEventEmitter = () => new OpenFeatureEventEmitter();
+  protected _defaultOptions: ProviderOptions = {};
+  protected _domainScopedOptions: Map<string, ProviderOptions> = new Map();
 
   private constructor() {
     super('client');
@@ -62,6 +75,14 @@ export class OpenFeatureAPI
     return this._domainScopedProviders.get(domain)?.status ?? this._defaultProvider.status;
   }
 
+  private getProviderOptions(domain?: string): ProviderOptions {
+    if (!domain) {
+      return this._defaultOptions;
+    }
+
+    return this._domainScopedOptions.get(domain) ?? this._defaultOptions;
+  }
+
   /**
    * Sets the default provider for flag evaluations and returns a promise that resolves when the provider is ready.
    * This provider will be used by domainless clients and clients associated with domains to which no provider is bound.
@@ -77,10 +98,11 @@ export class OpenFeatureAPI
    * Setting a provider supersedes the current provider used in new and existing unbound clients.
    * @param {Provider} provider The provider responsible for flag evaluations.
    * @param {EvaluationContext} context The evaluation context to use for flag evaluations.
+   * @param {ProviderOptions} [options] Options for setting the provider.
    * @returns {Promise<void>}
    * @throws {Error} If the provider throws an exception during initialization.
    */
-  setProviderAndWait(provider: Provider, context: EvaluationContext): Promise<void>;
+  setProviderAndWait(provider: Provider, context: EvaluationContext, options?: ProviderOptions): Promise<void>;
   /**
    * Sets the provider that OpenFeature will use for flag evaluations on clients bound to the same domain.
    * A promise is returned that resolves when the provider is ready.
@@ -98,24 +120,52 @@ export class OpenFeatureAPI
    * @param {string} domain The name to identify the client
    * @param {Provider} provider The provider responsible for flag evaluations.
    * @param {EvaluationContext} context The evaluation context to use for flag evaluations.
+   * @param {ProviderOptions} [options] Options for setting the provider.
    * @returns {Promise<void>}
    * @throws {Error} If the provider throws an exception during initialization.
    */
-  setProviderAndWait(domain: string, provider: Provider, context: EvaluationContext): Promise<void>;
+  setProviderAndWait(
+    domain: string,
+    provider: Provider,
+    context: EvaluationContext,
+    options?: ProviderOptions,
+  ): Promise<void>;
   async setProviderAndWait(
     clientOrProvider?: string | Provider,
     providerContextOrUndefined?: Provider | EvaluationContext,
-    contextOrUndefined?: EvaluationContext,
+    contextOptionsOrUndefined?: EvaluationContext | ProviderOptions,
+    optionsOrUndefined?: ProviderOptions,
   ): Promise<void> {
     const domain = stringOrUndefined(clientOrProvider);
     const provider = domain
       ? objectOrUndefined<Provider>(providerContextOrUndefined)
       : objectOrUndefined<Provider>(clientOrProvider);
     const context = domain
-      ? objectOrUndefined<EvaluationContext>(contextOrUndefined)
+      ? objectOrUndefined<EvaluationContext>(contextOptionsOrUndefined)
       : objectOrUndefined<EvaluationContext>(providerContextOrUndefined);
+    const options = domain
+      ? objectOrUndefined<ProviderOptions>(optionsOrUndefined)
+      : objectOrUndefined<ProviderOptions>(contextOptionsOrUndefined);
 
+    if (domain) {
+      this._domainScopedOptions.set(domain, options ?? {});
+    } else {
+      this._defaultOptions = options ?? {};
+    }
+
+    let skipInitialization = false;
     if (context) {
+      // validate the context to decide if we should initialize the provider with it.
+      if (typeof options?.validateContext === 'function') {
+        // allow any error to propagate here to reject the promise.
+        skipInitialization = !options.validateContext(context);
+        if (skipInitialization) {
+          this._logger.debug(
+            `Skipping provider initialization during setProviderAndWait for domain '${domain ?? 'default'}' due to validateContext returning false.`,
+          );
+        }
+      }
+
       // synonymously setting context prior to provider initialization.
       // No context change event will be emitted.
       if (domain) {
@@ -125,7 +175,7 @@ export class OpenFeatureAPI
       }
     }
 
-    await this.setAwaitableProvider(domain, provider);
+    await this.setAwaitableProvider(domain, provider, skipInitialization);
   }
 
   /**
@@ -141,10 +191,11 @@ export class OpenFeatureAPI
    * This provider will be used by domainless clients and clients associated with domains to which no provider is bound.
    * Setting a provider supersedes the current provider used in new and existing unbound clients.
    * @param {Provider} provider The provider responsible for flag evaluations.
-   * @param context {EvaluationContext} The evaluation context to use for flag evaluations.
+   * @param {EvaluationContext} context The evaluation context to use for flag evaluations.
+   * @param {ProviderOptions} [options] Options for setting the provider.
    * @returns {this} OpenFeature API
    */
-  setProvider(provider: Provider, context: EvaluationContext): this;
+  setProvider(provider: Provider, context: EvaluationContext, options?: ProviderOptions): this;
   /**
    * Sets the provider for flag evaluations of providers with the given name.
    * Setting a provider supersedes the current provider used in new and existing clients bound to the same domain.
@@ -158,24 +209,56 @@ export class OpenFeatureAPI
    * Setting a provider supersedes the current provider used in new and existing clients bound to the same domain.
    * @param {string} domain The name to identify the client
    * @param {Provider} provider The provider responsible for flag evaluations.
-   * @param context {EvaluationContext} The evaluation context to use for flag evaluations.
+   * @param {EvaluationContext} context The evaluation context to use for flag evaluations.
+   * @param {ProviderOptions} [options] Options for setting the provider.
    * @returns {this} OpenFeature API
    */
-  setProvider(domain: string, provider: Provider, context: EvaluationContext): this;
+  setProvider(domain: string, provider: Provider, context: EvaluationContext, options?: ProviderOptions): this;
   setProvider(
     domainOrProvider?: string | Provider,
     providerContextOrUndefined?: Provider | EvaluationContext,
-    contextOrUndefined?: EvaluationContext,
+    contextOptionsOrUndefined?: EvaluationContext | ProviderOptions,
+    optionsOrUndefined?: ProviderOptions,
   ): this {
     const domain = stringOrUndefined(domainOrProvider);
     const provider = domain
       ? objectOrUndefined<Provider>(providerContextOrUndefined)
       : objectOrUndefined<Provider>(domainOrProvider);
     const context = domain
-      ? objectOrUndefined<EvaluationContext>(contextOrUndefined)
+      ? objectOrUndefined<EvaluationContext>(contextOptionsOrUndefined)
       : objectOrUndefined<EvaluationContext>(providerContextOrUndefined);
+    const options = domain
+      ? objectOrUndefined<ProviderOptions>(optionsOrUndefined)
+      : objectOrUndefined<ProviderOptions>(contextOptionsOrUndefined);
 
+    if (domain) {
+      this._domainScopedOptions.set(domain, options ?? {});
+    } else {
+      this._defaultOptions = options ?? {};
+    }
+
+    let skipInitialization = false;
+    let validateContextError: unknown;
     if (context) {
+      // validate the context to decide if we should initialize the provider with it.
+      if (typeof options?.validateContext === 'function') {
+        try {
+          skipInitialization = !options.validateContext(context);
+          if (skipInitialization) {
+            this._logger.debug(
+              `Skipping provider initialization during setProvider for domain '${domain ?? 'default'}' due to validateContext returning false.`,
+            );
+          }
+        } catch (err) {
+          // capture the error to move the provider to ERROR state after setting it.
+          validateContextError = err;
+          skipInitialization = true;
+          this._logger.debug(
+            `Skipping provider initialization during setProvider for domain '${domain ?? 'default'}' due to validateContext throwing an error.`,
+          );
+        }
+      }
+
       // synonymously setting context prior to provider initialization.
       // No context change event will be emitted.
       if (domain) {
@@ -185,7 +268,28 @@ export class OpenFeatureAPI
       }
     }
 
-    const maybePromise = this.setAwaitableProvider(domain, provider);
+    const maybePromise = this.setAwaitableProvider(domain, provider, skipInitialization);
+
+    // If there was a validation error with the context, move the newly created provider to ERROR state.
+    // We know we've skipped initialization if this happens, so no need to worry about the promise changing the state later.
+    if (validateContextError) {
+      const wrapper = domain ? this._domainScopedProviders.get(domain) : this._defaultProvider;
+      if (wrapper) {
+        wrapper.status = this._statusEnumType.ERROR;
+        const payload = {
+          clientName: domain,
+          domain,
+          providerName: wrapper.provider?.metadata?.name || 'unnamed-provider',
+          message: `Error validating context during setProvider: ${validateContextError instanceof Error ? validateContextError.message : String(validateContextError)}`,
+        };
+
+        this.getAssociatedEventEmitters(domain).forEach((emitter) => {
+          emitter?.emit(ProviderEvents.Error, { ...payload });
+        });
+        this._apiEmitter?.emit(ProviderEvents.Error, { ...payload });
+        this._logger.error('Error validating context during setProvider:', validateContextError);
+      }
+    }
 
     // The setProvider method doesn't return a promise so we need to catch and
     // log any errors that occur during provider initialization to avoid having
@@ -380,6 +484,26 @@ export class OpenFeatureAPI
     const providerName = wrapper.provider?.metadata?.name || 'unnamed-provider';
 
     try {
+      // validate the context to decide if we should run the context change handler.
+      // notably, the stored context will still be updated by this point, this just skips reconciliation.
+      const options = this.getProviderOptions(domain);
+      if (typeof options.validateContext === 'function') {
+        if (!options.validateContext(newContext)) {
+          this._logger.debug(
+            `Skipping context change for domain '${domain ?? 'default'}' due to validateContext returning false.`,
+          );
+          return;
+        }
+      }
+
+      // if the provider hasn't initialized yet, and isn't actively initializing, initialize instead of running context change handler
+      // the provider will be in this state if validateContext was used during setProvider to skip initialization
+      const initializationPromise = this.initializeProviderForDomain(wrapper, domain);
+      if (initializationPromise) {
+        await initializationPromise;
+        return;
+      }
+
       if (typeof wrapper.provider.onContextChange === 'function') {
         const maybePromise = wrapper.provider.onContextChange(oldContext, newContext);
 
