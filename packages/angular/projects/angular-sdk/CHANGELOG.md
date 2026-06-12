@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.1](https://github.com/open-feature/js-sdk/compare/angular-sdk-v1.3.0...angular-sdk-v1.3.1) (2026-06-12)
+
+
+### 🐛 Bug Fixes
+
+* **angular:** bump @openfeature/web-sdk peer to ^1.9.0 ([#1418](https://github.com/open-feature/js-sdk/issues/1418)) ([33a75fd](https://github.com/open-feature/js-sdk/commit/33a75fdb0f56a33034f70082d0d9229ed51bc417))
+
+
+### 🧹 Chore
+
+* **main:** release core 1.11.0 ([#1397](https://github.com/open-feature/js-sdk/issues/1397)) ([70ea910](https://github.com/open-feature/js-sdk/commit/70ea910c096d9f2fabb00254201e5da34afb43df))
+
 ## [1.3.0](https://github.com/open-feature/js-sdk/compare/angular-sdk-v1.2.0...angular-sdk-v1.3.0) (2026-06-10)
 
 
