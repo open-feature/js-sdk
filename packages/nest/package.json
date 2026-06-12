@@ -1,6 +1,6 @@
 {
   "name": "@openfeature/nestjs-sdk",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "OpenFeature Nest.js SDK",
   "main": "./dist/cjs/index.js",
   "files": [
@@ -57,7 +57,7 @@
     "@nestjs/platform-express": "^11.1.19",
     "@nestjs/testing": "^11.1.19",
     "@openfeature/core": "*",
-    "@openfeature/server-sdk": "1.18.0",
+    "@openfeature/server-sdk": "1.22.0",
     "@types/supertest": "^6.0.0",
     "supertest": "^7.2.2"
   },
