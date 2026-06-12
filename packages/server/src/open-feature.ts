@@ -39,7 +39,7 @@ export class OpenFeatureAPI
 
   private _transactionContextPropagator: TransactionContextPropagator = NOOP_TRANSACTION_CONTEXT_PROPAGATOR;
 
-  private constructor() {
+  protected constructor() {
     super('server');
   }
 
