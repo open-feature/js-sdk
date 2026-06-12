@@ -1,6 +1,6 @@
 {
   "name": "@openfeature/web-sdk",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "OpenFeature SDK for Web",
   "main": "./dist/cjs/index.js",
   "unpkg": "dist/global/index.min.js",
