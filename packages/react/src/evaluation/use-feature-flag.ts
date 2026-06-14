@@ -356,7 +356,7 @@ function attachHandlersAndResolve<T extends FlagValue>(
     }
 
     updateEvaluationDetailsCallback();
-  });
+  }, [client, flagKey, defaultValue, options, resolver, updateEvaluationDetailsCallback]);
 
   useEffect(() => {
     const controller = new AbortController();
