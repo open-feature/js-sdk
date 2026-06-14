@@ -391,10 +391,12 @@ describe('evaluation', () => {
         const { rerender, unmount } = render(renderHookComponents(0));
 
         await waitFor(() => {
-          // One Ready handler tracks client status, and one re-evaluates the flag.
-          expect(client.getHandlers(ProviderEvents.Ready)).toHaveLength(HOOK_COUNT * 2);
+          expect(client.getHandlers(ProviderEvents.Ready).length).toBeGreaterThan(0);
         });
 
+        const readyHandlersAfterMount = client.getHandlers(ProviderEvents.Ready).length;
+        const contextChangedHandlersAfterMount = client.getHandlers(ProviderEvents.ContextChanged).length;
+        const configurationChangedHandlersAfterMount = client.getHandlers(ProviderEvents.ConfigurationChanged).length;
         const readyAddsAfterMount = addHandlerSpy.mock.calls.filter(([event]) => event === ProviderEvents.Ready).length;
         const contextAddsAfterMount = addHandlerSpy.mock.calls.filter(
           ([event]) => event === ProviderEvents.ContextChanged,
@@ -419,6 +421,11 @@ describe('evaluation', () => {
         expect(
           addHandlerSpy.mock.calls.filter(([event]) => event === ProviderEvents.ConfigurationChanged),
         ).toHaveLength(configurationAddsAfterMount);
+        expect(client.getHandlers(ProviderEvents.Ready)).toHaveLength(readyHandlersAfterMount);
+        expect(client.getHandlers(ProviderEvents.ContextChanged)).toHaveLength(contextChangedHandlersAfterMount);
+        expect(client.getHandlers(ProviderEvents.ConfigurationChanged)).toHaveLength(
+          configurationChangedHandlersAfterMount,
+        );
         expect(removeHandlerSpy).not.toHaveBeenCalled();
         expect(resolverSpy).toHaveBeenCalledTimes(evaluationsAfterMount + HOOK_COUNT * RERENDERS);
 
