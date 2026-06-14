@@ -348,7 +348,7 @@ function attachHandlersAndResolve<T extends FlagValue>(
     [updateEvaluationDetailsCallback],
   );
 
-  // Re-evaluate after every re-render to detect silent provider updates, without churning event subscriptions.
+  // Re-evaluate on render input changes to catch silent provider updates
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
