@@ -340,8 +340,8 @@ function attachHandlersAndResolve<T extends FlagValue>(
 
   const configurationChangeCallback = useCallback<EventHandler<ClientProviderEvents.ConfigurationChanged>>(
     (eventDetails) => {
-      const { flagKey } = evaluationInputsRef.current;
-      if (shouldEvaluateFlag(flagKey, eventDetails?.flagsChanged)) {
+      const { flagKey: currentFlagKey } = evaluationInputsRef.current;
+      if (shouldEvaluateFlag(currentFlagKey, eventDetails?.flagsChanged)) {
         updateEvaluationDetailsCallback();
       }
     },
