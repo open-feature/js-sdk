@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/open-feature/js-sdk/compare/react-sdk-v1.4.0...react-sdk-v1.4.1) (2026-06-19)
+
+
+### 🐛 Bug Fixes
+
+* redundant re-renders with unstable inputs ([#1420](https://github.com/open-feature/js-sdk/issues/1420)) ([45cf9bb](https://github.com/open-feature/js-sdk/commit/45cf9bb06a4f74d19ac3726563ef0608365829ef))
+
 ## [1.4.0](https://github.com/open-feature/js-sdk/compare/react-sdk-v1.3.0...react-sdk-v1.4.0) (2026-06-12)
 
 
