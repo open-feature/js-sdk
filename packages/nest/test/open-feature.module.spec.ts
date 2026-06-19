@@ -19,25 +19,6 @@ describe('OpenFeatureModule', () => {
       await moduleRef.close();
     });
 
-    describe('without configured providers', () => {
-      let moduleWithoutProvidersRef: TestingModule;
-      beforeAll(async () => {
-        moduleWithoutProvidersRef = await Test.createTestingModule({
-          imports: [OpenFeatureModule.forRoot({})],
-        }).compile();
-      });
-
-      afterAll(async () => {
-        await moduleWithoutProvidersRef.close();
-      });
-
-      it('should return the SDKs default provider and not throw', async () => {
-        expect(() => {
-          moduleWithoutProvidersRef.get<Client>(getOpenFeatureClientToken());
-        }).not.toThrow();
-      });
-    });
-
     it('should return the default provider', async () => {
       const client = moduleRef.get<Client>(getOpenFeatureClientToken());
       expect(client).toBeDefined();
@@ -90,6 +71,27 @@ describe('OpenFeatureModule', () => {
         await hookModuleRef.close();
         OpenFeature.clearHooks();
       }
+    });
+
+    // Placed after provider-dependent tests: closing this inner module calls OpenFeature.close()
+    // which now fully resets API state per spec requirement 1.6.2.
+    describe('without configured providers', () => {
+      let moduleWithoutProvidersRef: TestingModule;
+      beforeAll(async () => {
+        moduleWithoutProvidersRef = await Test.createTestingModule({
+          imports: [OpenFeatureModule.forRoot({})],
+        }).compile();
+      });
+
+      afterAll(async () => {
+        await moduleWithoutProvidersRef.close();
+      });
+
+      it('should return the SDKs default provider and not throw', async () => {
+        expect(() => {
+          moduleWithoutProvidersRef.get<Client>(getOpenFeatureClientToken());
+        }).not.toThrow();
+      });
     });
   });
 

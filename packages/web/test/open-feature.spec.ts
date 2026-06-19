@@ -1,6 +1,6 @@
 import type { Paradigm } from '@openfeature/core';
-import type { Provider } from '../src';
-import { OpenFeature, OpenFeatureAPI, ProviderStatus } from '../src';
+import type { Hook, Provider } from '../src';
+import { NOOP_PROVIDER, OpenFeature, OpenFeatureAPI, ProviderEvents, ProviderStatus } from '../src';
 import { OpenFeatureClient } from '../src/client/internal/open-feature-client';
 
 const mockProvider = (config?: { initialStatus?: ProviderStatus; runsOn?: Paradigm }) => {
@@ -254,6 +254,82 @@ describe('OpenFeature', () => {
 
         expect(spy).toHaveBeenCalledWith({ name: 'todd' });
       });
+    });
+  });
+
+  describe('Requirement 1.6.2', () => {
+    it('resets the default provider to no-op after close()', async () => {
+      const provider = mockProvider();
+      OpenFeature.setProvider(provider);
+      expect(OpenFeature.providerMetadata.name).toBe('mock-events-success');
+      await OpenFeature.close();
+      expect(OpenFeature.providerMetadata.name).toBe(NOOP_PROVIDER.metadata.name);
+    });
+
+    it('clears domain-scoped providers after close()', async () => {
+      const provider = mockProvider();
+      OpenFeature.setProvider('domain1', provider);
+      expect(OpenFeature.getProvider('domain1')).toBe(provider);
+      await OpenFeature.close();
+      expect(OpenFeature.getProvider('domain1').metadata.name).toBe(NOOP_PROVIDER.metadata.name);
+    });
+
+    it('clears global hooks after close()', async () => {
+      const hook = { before: jest.fn() } as unknown as Hook;
+      OpenFeature.addHooks(hook);
+      expect(OpenFeature.getHooks()).toHaveLength(1);
+      await OpenFeature.close();
+      expect(OpenFeature.getHooks()).toHaveLength(0);
+    });
+
+    it('clears global evaluation context after close()', async () => {
+      await OpenFeature.setContext({ user: 'test' });
+      expect(OpenFeature.getContext()).toEqual({ user: 'test' });
+      await OpenFeature.close();
+      expect(OpenFeature.getContext()).toEqual({});
+    });
+
+    it('clears domain-scoped evaluation context after close()', async () => {
+      await OpenFeature.setContext('domain1', { user: 'test' });
+      expect(OpenFeature.getContext('domain1')).toEqual({ user: 'test' });
+      await OpenFeature.close();
+      expect(OpenFeature.getContext('domain1')).toEqual({});
+    });
+
+    it('removes API-level event handlers after close()', async () => {
+      const handler = jest.fn();
+      OpenFeature.addHandler(ProviderEvents.Ready, handler);
+      expect(OpenFeature.getHandlers(ProviderEvents.Ready)).toHaveLength(1);
+      await OpenFeature.close();
+      expect(OpenFeature.getHandlers(ProviderEvents.Ready)).toHaveLength(0);
+    });
+  });
+
+  describe('clearProviders() remains provider-only', () => {
+    afterEach(async () => {
+      OpenFeature.clearHooks();
+      OpenFeature.clearHandlers();
+      await OpenFeature.setContext({});
+    });
+
+    it('does not clear global hooks', async () => {
+      const hook = { before: jest.fn() } as unknown as Hook;
+      OpenFeature.addHooks(hook);
+      await OpenFeature.clearProviders();
+      expect(OpenFeature.getHooks()).toHaveLength(1);
+    });
+
+    it('does not clear global evaluation context', async () => {
+      await OpenFeature.setContext({ user: 'test' });
+      await OpenFeature.clearProviders();
+      expect(OpenFeature.getContext()).toEqual({ user: 'test' });
+    });
+
+    it('does not remove API-level event handlers', async () => {
+      const handler = jest.fn();
+      OpenFeature.addHandler(ProviderEvents.Ready, handler);
+      await OpenFeature.clearProviders();
+      expect(OpenFeature.getHandlers(ProviderEvents.Ready)).toHaveLength(1);
     });
   });
 });

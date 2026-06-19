@@ -395,6 +395,31 @@ export abstract class OpenFeatureCommonAPI<
   }
 
   async close(): Promise<void> {
+    await this._shutdownAllProviders();
+    this._hooks = [];
+    this._context = {};
+    this._domainScopedContext.clear();
+    this._clientEventHandlers.clear();
+    this._clientEvents.clear();
+    this._apiEmitter.removeAllHandlers();
+  }
+
+  protected async clearProvidersAndSetDefault(defaultProvider: P): Promise<void> {
+    try {
+      await this._shutdownAllProviders();
+    } catch (err) {
+      this._logger.error('Unable to cleanly close providers. Resetting to the default configuration.');
+    } finally {
+      this._domainScopedProviders.clear();
+      this._defaultProvider = new ProviderWrapper<P, AnyProviderStatus>(
+        defaultProvider,
+        this._statusEnumType.NOT_READY,
+        this._statusEnumType,
+      );
+    }
+  }
+
+  private async _shutdownAllProviders(): Promise<void> {
     try {
       await this?._defaultProvider.provider?.onClose?.();
     } catch (err) {
@@ -412,21 +437,6 @@ export abstract class OpenFeatureCommonAPI<
         }
       }),
     );
-  }
-
-  protected async clearProvidersAndSetDefault(defaultProvider: P): Promise<void> {
-    try {
-      await this.close();
-    } catch (err) {
-      this._logger.error('Unable to cleanly close providers. Resetting to the default configuration.');
-    } finally {
-      this._domainScopedProviders.clear();
-      this._defaultProvider = new ProviderWrapper<P, AnyProviderStatus>(
-        defaultProvider,
-        this._statusEnumType.NOT_READY,
-        this._statusEnumType,
-      );
-    }
   }
 
   private get allProviders(): P[] {

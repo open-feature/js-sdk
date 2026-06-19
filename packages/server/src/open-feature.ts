@@ -219,6 +219,13 @@ export class OpenFeatureAPI
     );
   }
 
+  async close(): Promise<void> {
+    await super.close();
+    this._domainScopedProviders.clear();
+    this._defaultProvider = new ProviderWrapper(NOOP_PROVIDER, ProviderStatus.NOT_READY, this._statusEnumType);
+    this._transactionContextPropagator = NOOP_TRANSACTION_CONTEXT_PROPAGATOR;
+  }
+
   /**
    * Clears all registered providers and resets the default provider.
    * @returns {Promise<void>}
