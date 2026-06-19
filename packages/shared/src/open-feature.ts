@@ -420,20 +420,17 @@ export abstract class OpenFeatureCommonAPI<
   }
 
   private async _shutdownAllProviders(): Promise<void> {
-    try {
-      await this?._defaultProvider.provider?.onClose?.();
-    } catch (err) {
-      this.handleShutdownError(this._defaultProvider.provider, err);
-    }
-
-    const wrappers = Array.from(this._domainScopedProviders);
+    const uniqueProviders = new Set<P>([
+      this._defaultProvider.provider,
+      ...Array.from(this._domainScopedProviders.values()).map((wrapper) => wrapper.provider),
+    ]);
 
     await Promise.all(
-      wrappers.map(async ([, wrapper]) => {
+      Array.from(uniqueProviders).map(async (provider) => {
         try {
-          await wrapper?.provider.onClose?.();
+          await provider?.onClose?.();
         } catch (err) {
-          this.handleShutdownError(wrapper?.provider, err);
+          this.handleShutdownError(provider, err);
         }
       }),
     );

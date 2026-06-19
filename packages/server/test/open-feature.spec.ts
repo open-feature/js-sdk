@@ -281,6 +281,14 @@ describe('OpenFeature', () => {
       await OpenFeature.close();
       expect(OpenFeature.getTransactionContext()).toEqual({});
     });
+
+    it('calls provider onClose only once when the same provider instance is registered in multiple scopes', async () => {
+      const provider = mockProvider();
+      OpenFeature.setProvider(provider);
+      OpenFeature.setProvider('domain1', provider);
+      await OpenFeature.close();
+      expect(provider.onClose).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('clearProviders() remains provider-only', () => {

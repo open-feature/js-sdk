@@ -373,7 +373,6 @@ export class OpenFeatureAPI
    */
   async clearProviders(): Promise<void> {
     await super.clearProvidersAndSetDefault(NOOP_PROVIDER);
-    this._domainScopedContext.clear();
   }
 
   private async runProviderContextChangeHandler(
