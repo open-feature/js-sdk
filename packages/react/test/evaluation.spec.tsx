@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 import type { InMemoryFlagConfiguration, InMemoryFlagVariants, ProviderEmittableEvents } from '@openfeature/web-sdk';
-import { ClientProviderEvents } from '@openfeature/web-sdk';
+import { ClientProviderEvents, ProviderEvents } from '@openfeature/web-sdk';
 import '@testing-library/jest-dom'; // see: https://testing-library.com/docs/react-testing-library/setup
 import { act, render, renderHook, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
@@ -344,6 +344,96 @@ describe('evaluation', () => {
 
       afterEach(() => {
         jest.clearAllMocks();
+      });
+
+      it.each([
+        ['default options', undefined],
+        [
+          'inline options',
+          () => ({
+            updateOnConfigurationChanged: true,
+            updateOnContextChanged: true,
+          }),
+        ],
+      ])('should not re-register event handlers on steady-state parent re-renders with %s', async (_, getOptions) => {
+        const HANDLER_DOMAIN = `ready-handler-lifecycle-${getOptions ? 'inline' : 'default'}`;
+        const HOOK_COUNT = 8;
+        const RERENDERS = 4;
+
+        await OpenFeature.setProviderAndWait(HANDLER_DOMAIN, makeProvider());
+        const client = OpenFeature.getClient(HANDLER_DOMAIN);
+        const addHandlerSpy = jest.spyOn(client, 'addHandler');
+        const removeHandlerSpy = jest.spyOn(client, 'removeHandler');
+        const resolverSpy = jest.spyOn(client, 'getBooleanDetails');
+
+        function HookComponent() {
+          useBooleanFlagValue(BOOL_FLAG_KEY, false, getOptions?.());
+          return null;
+        }
+
+        function TestComponent({ tick }: { tick: number }) {
+          return (
+            <>
+              <div data-testid="tick">{tick}</div>
+              {Array.from({ length: HOOK_COUNT }, (_, index) => (
+                <HookComponent key={index} />
+              ))}
+            </>
+          );
+        }
+
+        const renderHookComponents = (tick: number) => (
+          <OpenFeatureProvider client={client}>
+            <TestComponent tick={tick} />
+          </OpenFeatureProvider>
+        );
+
+        const { rerender, unmount } = render(renderHookComponents(0));
+
+        await waitFor(() => {
+          expect(client.getHandlers(ProviderEvents.Ready).length).toBeGreaterThan(0);
+        });
+
+        const readyHandlersAfterMount = client.getHandlers(ProviderEvents.Ready).length;
+        const contextChangedHandlersAfterMount = client.getHandlers(ProviderEvents.ContextChanged).length;
+        const configurationChangedHandlersAfterMount = client.getHandlers(ProviderEvents.ConfigurationChanged).length;
+        const readyAddsAfterMount = addHandlerSpy.mock.calls.filter(([event]) => event === ProviderEvents.Ready).length;
+        const contextAddsAfterMount = addHandlerSpy.mock.calls.filter(
+          ([event]) => event === ProviderEvents.ContextChanged,
+        ).length;
+        const configurationAddsAfterMount = addHandlerSpy.mock.calls.filter(
+          ([event]) => event === ProviderEvents.ConfigurationChanged,
+        ).length;
+        const evaluationsAfterMount = resolverSpy.mock.calls.length;
+
+        for (let tick = 1; tick <= RERENDERS; tick++) {
+          act(() => {
+            rerender(renderHookComponents(tick));
+          });
+        }
+
+        expect(addHandlerSpy.mock.calls.filter(([event]) => event === ProviderEvents.Ready)).toHaveLength(
+          readyAddsAfterMount,
+        );
+        expect(addHandlerSpy.mock.calls.filter(([event]) => event === ProviderEvents.ContextChanged)).toHaveLength(
+          contextAddsAfterMount,
+        );
+        expect(
+          addHandlerSpy.mock.calls.filter(([event]) => event === ProviderEvents.ConfigurationChanged),
+        ).toHaveLength(configurationAddsAfterMount);
+        expect(client.getHandlers(ProviderEvents.Ready)).toHaveLength(readyHandlersAfterMount);
+        expect(client.getHandlers(ProviderEvents.ContextChanged)).toHaveLength(contextChangedHandlersAfterMount);
+        expect(client.getHandlers(ProviderEvents.ConfigurationChanged)).toHaveLength(
+          configurationChangedHandlersAfterMount,
+        );
+        expect(removeHandlerSpy).not.toHaveBeenCalled();
+        expect(resolverSpy).toHaveBeenCalledTimes(evaluationsAfterMount + HOOK_COUNT * RERENDERS);
+
+        unmount();
+
+        expect(client.getHandlers(ProviderEvents.Ready)).toHaveLength(0);
+        expect(client.getHandlers(ProviderEvents.ContextChanged)).toHaveLength(0);
+        expect(client.getHandlers(ProviderEvents.ConfigurationChanged)).toHaveLength(0);
       });
 
       it('should not rerender on context change because the evaluated values did not change', async () => {

@@ -279,12 +279,22 @@ function shouldEvaluateFlag(flagKey: string, flagsChanged?: string[]): boolean {
   return !flagsChanged || flagsChanged.includes(flagKey);
 }
 
+type EvaluationResolver<T extends FlagValue> = (
+  client: Client,
+) => (flagKey: string, defaultValue: T, options?: FlagEvaluationOptions) => EvaluationDetails<T>;
+
+type EvaluationInputs<T extends FlagValue> = {
+  client: Client;
+  flagKey: string;
+  defaultValue: T;
+  resolver: EvaluationResolver<T>;
+  options?: ReactFlagEvaluationOptions;
+};
+
 function attachHandlersAndResolve<T extends FlagValue>(
   flagKey: string,
   defaultValue: T,
-  resolver: (
-    client: Client,
-  ) => (flagKey: string, defaultValue: T, options?: FlagEvaluationOptions) => EvaluationDetails<T>,
+  resolver: EvaluationResolver<T>,
   options?: ReactFlagEvaluationOptions,
 ): EvaluationDetails<T> {
   // highest priority > evaluation hook options > provider options > default options > lowest priority
@@ -306,44 +316,47 @@ function attachHandlersAndResolve<T extends FlagValue>(
     resolver(client).call(client, flagKey, defaultValue, options),
   );
 
-  // Re-evaluate when dependencies change (handles prop changes like flagKey), or if during a re-render, we have detected a change in the evaluated value
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-
-    const newDetails = resolver(client).call(client, flagKey, defaultValue, options);
-    if (!isEqual(newDetails, evaluationDetails)) {
-      setEvaluationDetails(newDetails);
-    }
-  }, [client, flagKey, defaultValue, options, resolver, evaluationDetails]);
-
-  // Maintain a mutable reference to the evaluation details to have a up-to-date reference in the handlers.
+  // Maintain mutable references so event handlers stay stable while evaluating the latest render inputs.
+  const evaluationInputsRef = useRef<EvaluationInputs<T>>({ client, flagKey, defaultValue, resolver, options });
   const evaluationDetailsRef = useRef<EvaluationDetails<T>>(evaluationDetails);
+
   useEffect(() => {
+    evaluationInputsRef.current = { client, flagKey, defaultValue, resolver, options };
     evaluationDetailsRef.current = evaluationDetails;
-  }, [evaluationDetails]);
+  });
 
   const updateEvaluationDetailsCallback = useCallback(() => {
+    const { client, flagKey, defaultValue, resolver, options } = evaluationInputsRef.current;
     const updatedEvaluationDetails = resolver(client).call(client, flagKey, defaultValue, options);
 
     /**
      * Avoid re-rendering if the evaluation details haven't changed.
      */
     if (!isEqual(updatedEvaluationDetails, evaluationDetailsRef.current)) {
+      evaluationDetailsRef.current = updatedEvaluationDetails;
       setEvaluationDetails(updatedEvaluationDetails);
     }
-  }, [client, flagKey, defaultValue, options, resolver]);
+  }, []);
 
   const configurationChangeCallback = useCallback<EventHandler<ClientProviderEvents.ConfigurationChanged>>(
     (eventDetails) => {
-      if (shouldEvaluateFlag(flagKey, eventDetails?.flagsChanged)) {
+      const { flagKey: currentFlagKey } = evaluationInputsRef.current;
+      if (shouldEvaluateFlag(currentFlagKey, eventDetails?.flagsChanged)) {
         updateEvaluationDetailsCallback();
       }
     },
-    [flagKey, updateEvaluationDetailsCallback],
+    [updateEvaluationDetailsCallback],
   );
+
+  // Re-evaluate on render input changes to catch silent provider updates
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    updateEvaluationDetailsCallback();
+  }, [client, flagKey, defaultValue, options, resolver, updateEvaluationDetailsCallback]);
 
   useEffect(() => {
     const controller = new AbortController();
