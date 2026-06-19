@@ -11,7 +11,9 @@ const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
 const packageWorkspaces = ['packages/shared', 'packages/server', 'packages/web'];
 
+const corePackage = '@openfeature/core';
 const sdkPackages = ['@openfeature/server-sdk', '@openfeature/web-sdk'];
+const smokeTestPackages = [corePackage, ...sdkPackages];
 
 const fixtureConfig = {
   'format-check': {
@@ -62,6 +64,19 @@ async function packPackage(workspace, destination) {
 }
 
 function sourceFor(packageName) {
+  if (packageName === corePackage) {
+    return `import { ErrorCode, ServerProviderStatus } from '${packageName}';
+
+if (ErrorCode.FLAG_NOT_FOUND !== 'FLAG_NOT_FOUND') {
+  throw new Error('${packageName} did not expose ErrorCode correctly');
+}
+
+if (ServerProviderStatus.NOT_READY !== 'NOT_READY') {
+  throw new Error('${packageName} did not expose ServerProviderStatus correctly');
+}
+`;
+  }
+
   return `import { InMemoryProvider, OpenFeature } from '${packageName}';
 
 async function main() {
@@ -112,7 +127,7 @@ async function writeFixture(fixtureDirectory) {
     ),
   );
 
-  for (const packageName of sdkPackages) {
+  for (const packageName of smokeTestPackages) {
     const label = packageName.replace('@openfeature/', '').replace('-sdk', '');
     await writeFile(join(fixtureDirectory, `${label}.mts`), sourceFor(packageName));
     await writeFile(join(fixtureDirectory, `${label}.cts`), sourceFor(packageName));
@@ -138,7 +153,7 @@ async function main() {
       cwd: tempDirectory,
     });
 
-    for (const packageName of sdkPackages) {
+    for (const packageName of smokeTestPackages) {
       const label = packageName.replace('@openfeature/', '').replace('-sdk', '');
       await run(process.execPath, [join(tempDirectory, 'dist', `${label}.mjs`)]);
       await run(process.execPath, [join(tempDirectory, 'dist', `${label}.cjs`)]);
