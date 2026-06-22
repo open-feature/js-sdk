@@ -40,7 +40,30 @@
     "url": "https://github.com/open-feature/js-sdk/issues"
   },
   "homepage": "https://github.com/open-feature/js-sdk#readme",
+  "overrides": {
+    "esbuild": "^0.28.1",
+    "vite": "^7.3.5",
+    "undici": "^7.28.0",
+    "piscina": "^5.2.0",
+    "multer": "^2.2.0",
+    "@cucumber/messages": {
+      "uuid": "^11.1.1"
+    },
+    "jest-cucumber": {
+      "uuid": "^11.1.1"
+    },
+    "@angular/build": {
+      "@babel/core": "^7.29.7"
+    },
+    "@angular/compiler-cli": {
+      "@babel/core": "^7.29.7"
+    },
+    "@istanbuljs/load-nyc-config": {
+      "js-yaml": "^4.2.0"
+    }
+  },
   "devDependencies": {
+    "@babel/core": "^7.29.7",
     "@rollup/plugin-typescript": "^12.0.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.0.0",
@@ -67,6 +90,7 @@
     "lint-staged": "^16.2.7",
     "prettier": "^3.7.4",
     "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "rollup": "^4.0.0",
     "rollup-plugin-dts": "^6.1.1",
     "rxjs": "~7.8.0",
