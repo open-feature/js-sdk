@@ -241,6 +241,10 @@ export abstract class OpenFeatureCommonAPI<
       throw new GeneralError(`Provider '${provider.metadata.name}' is intended for use on the ${provider.runsOn}.`);
     }
 
+    if (provider.domainScoped && this.allProviders.includes(provider)) {
+      throw new GeneralError(`Cannot bind domain-scoped provider '${provider.metadata.name}' to more than one domain.`);
+    }
+
     const emitters = this.getAssociatedEventEmitters(domain);
 
     let initializationPromise: Promise<void> | void = undefined;
@@ -252,8 +256,9 @@ export abstract class OpenFeatureCommonAPI<
 
     // initialize the provider if it implements "initialize" and it's not already registered
     if (typeof provider.initialize === 'function' && !this.allProviders.includes(provider)) {
+      const initContext = domain ? (this._domainScopedContext.get(domain) ?? this._context) : this._context;
       initializationPromise = provider
-        .initialize?.(domain ? (this._domainScopedContext.get(domain) ?? this._context) : this._context)
+        .initialize?.(initContext, domain)
         ?.then(() => {
           wrappedProvider.status = this._statusEnumType.READY;
           // fetch the most recent event emitters, some may have been added during init

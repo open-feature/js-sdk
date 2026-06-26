@@ -84,7 +84,7 @@ describe('Evaluation Context', () => {
         const context: EvaluationContext = { property1: false };
         const provider = new MockProvider();
         await OpenFeature.setProviderAndWait(provider, context);
-        expect(initializeMock).toHaveBeenCalledWith(context);
+        expect(initializeMock).toHaveBeenCalledWith(context, undefined);
         expect(OpenFeature.getContext()).toEqual(context);
       });
 
@@ -95,7 +95,7 @@ describe('Evaluation Context', () => {
         await OpenFeature.setProviderAndWait(domain, provider, context);
         expect(OpenFeature.getContext()).toEqual({});
         expect(OpenFeature.getContext(domain)).toEqual(context);
-        expect(initializeMock).toHaveBeenCalledWith(context);
+        expect(initializeMock).toHaveBeenCalledWith(context, domain);
       });
     });
 

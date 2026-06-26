@@ -58,6 +58,21 @@ describe('OpenFeature', () => {
         expect(OpenFeature.providerMetadata.name).toBe('mock-events-success');
         expect(provider.initialize).toHaveBeenCalled();
       });
+
+      it('MUST supply the bound domain to initialize when registering a domain-scoped provider', () => {
+        const domain = 'my-domain';
+        const provider = mockProvider();
+        const spy = jest.spyOn(provider, 'initialize');
+        OpenFeature.setProvider(domain, provider);
+        expect(spy).toHaveBeenCalledWith({}, domain);
+      });
+
+      it('MUST not supply a domain to initialize for the default provider', () => {
+        const provider = mockProvider();
+        const spy = jest.spyOn(provider, 'initialize');
+        OpenFeature.setProvider(provider);
+        expect(spy).toHaveBeenCalledWith({}, undefined);
+      });
     });
 
     describe('Requirement 1.1.2.3', () => {
@@ -67,6 +82,30 @@ describe('OpenFeature', () => {
         OpenFeature.setProvider(provider);
         OpenFeature.setProvider(fakeProvider);
         expect(provider.onClose).toHaveBeenCalled();
+      });
+    });
+
+    describe('Condition 1.1.8', () => {
+      it('MUST NOT bind a domain-scoped provider instance to more than one domain', () => {
+        const provider = { ...mockProvider(), domainScoped: true } as Provider;
+
+        OpenFeature.setProvider('domain-a', provider);
+        expect(() => OpenFeature.setProvider('domain-b', provider)).toThrow(
+          "Cannot bind domain-scoped provider 'mock-events-success' to more than one domain.",
+        );
+        expect(OpenFeature.getProvider('domain-a')).toBe(provider);
+        expect(OpenFeature.getProvider('domain-b').metadata.name).not.toBe(provider.metadata.name);
+      });
+
+      it('allows a non-domain-scoped provider to back multiple domains', async () => {
+        const provider = { ...mockProvider(), onClose: jest.fn() };
+
+        await OpenFeature.setProviderAndWait('domain1', provider);
+        await OpenFeature.setProviderAndWait('domain2', provider);
+
+        expect(OpenFeature.getProvider('domain1')).toBe(provider);
+        expect(OpenFeature.getProvider('domain2')).toBe(provider);
+        expect(provider.initialize).toHaveBeenCalledTimes(1);
       });
     });
   });
@@ -240,7 +279,7 @@ describe('OpenFeature', () => {
         const spy = jest.spyOn(provider, 'initialize');
         OpenFeature.setProvider(domain, provider);
 
-        expect(spy).toHaveBeenCalledWith({ user: 'mike' });
+        expect(spy).toHaveBeenCalledWith({ user: 'mike' }, domain);
       });
 
       it('should use the default context', async () => {
@@ -252,7 +291,7 @@ describe('OpenFeature', () => {
         const spy = jest.spyOn(provider, 'initialize');
         OpenFeature.setProvider(provider);
 
-        expect(spy).toHaveBeenCalledWith({ name: 'todd' });
+        expect(spy).toHaveBeenCalledWith({ name: 'todd' }, undefined);
       });
     });
   });

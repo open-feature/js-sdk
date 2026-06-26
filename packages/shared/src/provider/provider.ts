@@ -96,6 +96,12 @@ export interface CommonProvider<S extends ClientProviderStatus | ServerProviderS
    */
   readonly runsOn?: Paradigm;
 
+  /**
+   * When true, the provider maintains state specific to a single domain (such as a
+   * persistent cache) and the SDK will bind it to at most one domain.
+   */
+  readonly domainScoped?: boolean;
+
   // TODO: in the future we could make this a never to force provider to remove it.
   /**
    * @deprecated the SDK now maintains the provider's state; there's no need for providers to implement this field.
@@ -123,9 +129,10 @@ export interface CommonProvider<S extends ClientProviderStatus | ServerProviderS
    * When the returned promise resolves, the SDK fires the ProviderEvents.Ready event.
    * If the returned promise rejects, the SDK fires the ProviderEvents.Error event.
    * Use this function to perform any context-dependent setup within the provider.
-   * @param context
+   * @param context the global evaluation context
+   * @param domain the bound domain, if any
    */
-  initialize?(context?: EvaluationContext): Promise<void>;
+  initialize?(context?: EvaluationContext, domain?: string): Promise<void>;
 
   /**
    * Track a user action or application state, usually representing a business objective or outcome.
