@@ -185,6 +185,17 @@ describe('MultiProvider', () => {
       expect(legacyProvider2.lastContext).toEqual({ targetingKey: 'user' });
     });
 
+    it('forwards domain to child provider initialize', async () => {
+      const provider1 = new TestProvider();
+      const provider2 = new TestProvider();
+      const multiProvider = new MultiProvider([{ provider: provider1 }, { provider: provider2 }]);
+
+      await multiProvider.initialize({ targetingKey: 'user' }, 'my-domain');
+
+      expect(provider1.initialize).toHaveBeenCalledWith({ targetingKey: 'user' }, 'my-domain');
+      expect(provider2.initialize).toHaveBeenCalledWith({ targetingKey: 'user' }, 'my-domain');
+    });
+
     it('throws error if a provider errors on initialization', async () => {
       const provider1 = new TestProvider();
       const provider2 = new TestProvider();
