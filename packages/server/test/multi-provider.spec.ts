@@ -22,6 +22,7 @@ import {
   FirstSuccessfulStrategy,
   ComparisonStrategy,
 } from '../src';
+import { legacyInitTestProvider } from '../../shared/test/legacy-initialize-provider';
 
 class TestProvider implements Provider {
   public metadata: ProviderMetadata = {
@@ -160,6 +161,39 @@ describe('MultiProvider', () => {
       provider2.initialize.mockImplementation(() => initializations++);
       await multiProvider.initialize();
       expect(initializations).toBe(2);
+    });
+
+    it('forwards domain to legacy single-argument child providers without error', async () => {
+      const legacyProvider1 = legacyInitTestProvider(
+        { runsOn: 'server', asyncResolvers: true, name: 'LegacyInitTestProvider' },
+        { events: new OpenFeatureEventEmitter() },
+      );
+      const legacyProvider2 = legacyInitTestProvider(
+        { runsOn: 'server', asyncResolvers: true, name: 'LegacyInitTestProvider' },
+        { events: new OpenFeatureEventEmitter() },
+      );
+      const multiProvider = new MultiProvider([
+        { provider: legacyProvider1 as unknown as Provider },
+        { provider: legacyProvider2 as unknown as Provider },
+      ]);
+
+      await multiProvider.initialize({ targetingKey: 'user' }, 'my-domain');
+
+      expect(legacyProvider1.initializeCalls).toBe(1);
+      expect(legacyProvider2.initializeCalls).toBe(1);
+      expect(legacyProvider1.lastContext).toEqual({ targetingKey: 'user' });
+      expect(legacyProvider2.lastContext).toEqual({ targetingKey: 'user' });
+    });
+
+    it('forwards domain to child provider initialize', async () => {
+      const provider1 = new TestProvider();
+      const provider2 = new TestProvider();
+      const multiProvider = new MultiProvider([{ provider: provider1 }, { provider: provider2 }]);
+
+      await multiProvider.initialize({ targetingKey: 'user' }, 'my-domain');
+
+      expect(provider1.initialize).toHaveBeenCalledWith({ targetingKey: 'user' }, 'my-domain');
+      expect(provider2.initialize).toHaveBeenCalledWith({ targetingKey: 'user' }, 'my-domain');
     });
 
     it('throws error if a provider errors on initialization', async () => {

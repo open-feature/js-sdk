@@ -103,9 +103,9 @@ export class MultiProvider implements Provider {
     Object.freeze(this.providerEntriesByName);
   }
 
-  async initialize(context?: EvaluationContext): Promise<void> {
+  async initialize(context?: EvaluationContext, domain?: string): Promise<void> {
     const result = await Promise.allSettled(
-      this.providerEntries.map((provider) => provider.provider.initialize?.(context)),
+      this.providerEntries.map((provider) => provider.provider.initialize?.(context, domain)),
     );
     throwAggregateErrorFromPromiseResults(result, this.providerEntries);
   }
