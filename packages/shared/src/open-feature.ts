@@ -16,6 +16,7 @@ import type { BaseHook, EvaluationLifeCycle } from './hooks';
 import type { Logger, ManageLogger } from './logger';
 import { DefaultLogger, SafeLogger } from './logger';
 import type { ClientProviderStatus, CommonProvider, ProviderMetadata, ServerProviderStatus } from './provider';
+import { isStateManagingProvider } from './provider';
 import { objectOrUndefined, stringOrUndefined } from './type-guards';
 import type { Paradigm } from './types';
 
@@ -27,28 +28,31 @@ type AnyProviderStatus = ClientProviderStatus | ServerProviderStatus;
  */
 export class ProviderWrapper<P extends CommonProvider<AnyProviderStatus>, S extends AnyProviderStatus> {
   private _pendingContextChanges = 0;
+  private readonly _delegateManagesState: boolean;
 
   constructor(
     private _provider: P,
     private _status: S,
     _statusEnumType: typeof ClientProviderStatus | typeof ServerProviderStatus,
   ) {
-    // update the providers status with events
-    _provider.events?.addHandler(AllProviderEvents.Ready, () => {
-      // These casts are due to the face we don't "know" what status enum we are dealing with here (client or server).
-      // We could abstract this an implement it in the client/server libs to fix this, but the value is low.
-      this._status = _statusEnumType.READY as S;
-    });
-    _provider.events?.addHandler(AllProviderEvents.Stale, () => {
-      this._status = _statusEnumType.STALE as S;
-    });
-    _provider.events?.addHandler(AllProviderEvents.Error, (details) => {
-      if (details?.errorCode === ErrorCode.PROVIDER_FATAL) {
-        this._status = _statusEnumType.FATAL as S;
-      } else {
-        this._status = _statusEnumType.ERROR as S;
-      }
-    });
+    this._delegateManagesState = isStateManagingProvider(_provider);
+
+    // For legacy providers, update status from events. State-managing providers own their own status.
+    if (!this._delegateManagesState) {
+      _provider.events?.addHandler(AllProviderEvents.Ready, () => {
+        this._status = _statusEnumType.READY as S;
+      });
+      _provider.events?.addHandler(AllProviderEvents.Stale, () => {
+        this._status = _statusEnumType.STALE as S;
+      });
+      _provider.events?.addHandler(AllProviderEvents.Error, (details) => {
+        if (details?.errorCode === ErrorCode.PROVIDER_FATAL) {
+          this._status = _statusEnumType.FATAL as S;
+        } else {
+          this._status = _statusEnumType.ERROR as S;
+        }
+      });
+    }
   }
 
   get provider(): P {
@@ -60,11 +64,21 @@ export class ProviderWrapper<P extends CommonProvider<AnyProviderStatus>, S exte
   }
 
   get status(): S {
+    if (this._delegateManagesState) {
+      return this._provider.status as S;
+    }
     return this._status;
   }
 
   set status(status: S) {
-    this._status = status;
+    // No-op for state-managing providers — they own their own status.
+    if (!this._delegateManagesState) {
+      this._status = status;
+    }
+  }
+
+  get delegateManagesState(): boolean {
+    return this._delegateManagesState;
   }
 
   get allContextChangesSettled() {
@@ -256,11 +270,14 @@ export abstract class OpenFeatureCommonAPI<
         .initialize?.(domain ? (this._domainScopedContext.get(domain) ?? this._context) : this._context)
         ?.then(() => {
           wrappedProvider.status = this._statusEnumType.READY;
-          // fetch the most recent event emitters, some may have been added during init
-          this.getAssociatedEventEmitters(domain).forEach((emitter) => {
-            emitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
-          });
-          this._apiEmitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
+          // State-managing providers emit their own events; skip SDK-side emission.
+          if (!wrappedProvider.delegateManagesState) {
+            // fetch the most recent event emitters, some may have been added during init
+            this.getAssociatedEventEmitters(domain).forEach((emitter) => {
+              emitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
+            });
+            this._apiEmitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
+          }
         })
         ?.catch((error) => {
           // if this is a fatal error, transition to FATAL status
@@ -269,29 +286,35 @@ export abstract class OpenFeatureCommonAPI<
           } else {
             wrappedProvider.status = this._statusEnumType.ERROR;
           }
-          this.getAssociatedEventEmitters(domain).forEach((emitter) => {
-            emitter?.emit(AllProviderEvents.Error, {
+          // State-managing providers emit their own events; skip SDK-side emission.
+          if (!wrappedProvider.delegateManagesState) {
+            this.getAssociatedEventEmitters(domain).forEach((emitter) => {
+              emitter?.emit(AllProviderEvents.Error, {
+                clientName: domain,
+                domain,
+                providerName,
+                message: error?.message,
+              });
+            });
+            this._apiEmitter?.emit(AllProviderEvents.Error, {
               clientName: domain,
               domain,
               providerName,
               message: error?.message,
             });
-          });
-          this._apiEmitter?.emit(AllProviderEvents.Error, {
-            clientName: domain,
-            domain,
-            providerName,
-            message: error?.message,
-          });
+          }
           // rethrow after emitting error events, so that public methods can control error handling
           throw error;
         });
     } else {
       wrappedProvider.status = this._statusEnumType.READY;
-      emitters.forEach((emitter) => {
-        emitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
-      });
-      this._apiEmitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
+      // State-managing providers emit their own events; skip SDK-side emission.
+      if (!wrappedProvider.delegateManagesState) {
+        emitters.forEach((emitter) => {
+          emitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
+        });
+        this._apiEmitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
+      }
     }
 
     if (domain) {
