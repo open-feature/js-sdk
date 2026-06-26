@@ -60,7 +60,7 @@ describe('OpenFeature', () => {
 
       it('MUST supply the bound domain to initialize when registering a domain-scoped provider', () => {
         const domain = 'my-domain';
-        const provider = mockProvider();
+        const provider = { ...mockProvider(), domainScoped: true } as Provider;
         const spy = jest.spyOn(provider, 'initialize');
         OpenFeature.setProvider(domain, provider);
         expect(spy).toHaveBeenCalledWith({}, domain);
