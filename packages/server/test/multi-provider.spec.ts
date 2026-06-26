@@ -44,6 +44,28 @@ class TestProvider implements Provider {
   }
 }
 
+/** Child provider with a single-argument initialize that ignores any extra arguments. */
+class LegacyInitTestProvider implements Provider {
+  public metadata: ProviderMetadata = {
+    name: 'LegacyInitTestProvider',
+  };
+  public events = new OpenFeatureEventEmitter();
+  public hooks: Hook[] = [];
+  public track = jest.fn();
+  public initializeCalls = 0;
+  public lastContext?: EvaluationContext;
+
+  async initialize(context?: EvaluationContext): Promise<void> {
+    this.lastContext = context;
+    this.initializeCalls++;
+  }
+
+  resolveBooleanEvaluation = jest.fn().mockResolvedValue({ value: false });
+  resolveStringEvaluation = jest.fn().mockResolvedValue({ value: 'default' });
+  resolveObjectEvaluation = jest.fn().mockResolvedValue({ value: {} });
+  resolveNumberEvaluation = jest.fn().mockResolvedValue({ value: 0 });
+}
+
 const callEvaluation = async (multi: MultiProvider, context: EvaluationContext, logger: Logger) => {
   await callBeforeHook(multi, context, 'flag', 'boolean', false, logger);
   return multi.resolveBooleanEvaluation('flag', false, context);
@@ -160,6 +182,19 @@ describe('MultiProvider', () => {
       provider2.initialize.mockImplementation(() => initializations++);
       await multiProvider.initialize();
       expect(initializations).toBe(2);
+    });
+
+    it('forwards domain to legacy single-argument child providers without error', async () => {
+      const provider1 = new LegacyInitTestProvider();
+      const provider2 = new LegacyInitTestProvider();
+      const multiProvider = new MultiProvider([{ provider: provider1 }, { provider: provider2 }]);
+
+      await multiProvider.initialize({ targetingKey: 'user' }, 'my-domain');
+
+      expect(provider1.initializeCalls).toBe(1);
+      expect(provider2.initializeCalls).toBe(1);
+      expect(provider1.lastContext).toEqual({ targetingKey: 'user' });
+      expect(provider2.lastContext).toEqual({ targetingKey: 'user' });
     });
 
     it('throws error if a provider errors on initialization', async () => {
