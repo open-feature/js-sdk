@@ -1,6 +1,6 @@
-import type { Paradigm } from '@openfeature/core';
-import type { Provider, ProviderStatus } from '../src';
-import { OpenFeature, OpenFeatureAPI } from '../src';
+import type { Paradigm, EvaluationContext } from '@openfeature/core';
+import type { Provider } from '../src';
+import { OpenFeature, OpenFeatureAPI, ProviderStatus } from '../src';
 import { OpenFeatureClient } from '../src/client/internal/open-feature-client';
 
 const mockProvider = (config?: { initialStatus?: ProviderStatus; runsOn?: Paradigm }) => {
@@ -16,6 +16,23 @@ const mockProvider = (config?: { initialStatus?: ProviderStatus; runsOn?: Paradi
       return Promise.resolve('closed');
     }),
   } as unknown as Provider;
+};
+
+/** Provider with a single-argument initialize that ignores any extra arguments. */
+const legacyInitializeProvider = (): Provider & { lastContext?: EvaluationContext } => {
+  const provider = {
+    metadata: { name: 'legacy-init' },
+    runsOn: 'server',
+    lastContext: undefined as EvaluationContext | undefined,
+    async initialize(context?: EvaluationContext): Promise<void> {
+      provider.lastContext = context;
+    },
+    resolveBooleanEvaluation: jest.fn().mockResolvedValue({ value: false }),
+    resolveStringEvaluation: jest.fn().mockResolvedValue({ value: '' }),
+    resolveNumberEvaluation: jest.fn().mockResolvedValue({ value: 0 }),
+    resolveObjectEvaluation: jest.fn().mockResolvedValue({ value: {} }),
+  };
+  return provider as Provider & { lastContext?: EvaluationContext };
 };
 
 describe('OpenFeature', () => {
@@ -71,6 +88,24 @@ describe('OpenFeature', () => {
         const spy = jest.spyOn(provider, 'initialize');
         OpenFeature.setProvider(provider);
         expect(spy).toHaveBeenCalledWith({}, undefined);
+      });
+
+      it('initializes legacy single-argument providers when bound to a domain', async () => {
+        const domain = 'my-domain';
+        const context = { targetingKey: 'user' };
+        const provider = legacyInitializeProvider();
+        OpenFeature.setContext(context);
+
+        await expect(OpenFeature.setProviderAndWait(domain, provider)).resolves.toBeUndefined();
+        expect(provider.lastContext).toEqual(context);
+        expect(OpenFeature.getClient(domain).providerStatus).toEqual(ProviderStatus.READY);
+      });
+
+      it('initializes legacy single-argument providers as the default provider', async () => {
+        const provider = legacyInitializeProvider();
+
+        await expect(OpenFeature.setProviderAndWait(provider)).resolves.toBeUndefined();
+        expect(OpenFeature.getClient().providerStatus).toEqual(ProviderStatus.READY);
       });
     });
 
