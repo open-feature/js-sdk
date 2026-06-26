@@ -22,6 +22,7 @@ import {
   FirstSuccessfulStrategy,
   ComparisonStrategy,
 } from '../src';
+import { legacyInitTestProvider } from '../../shared/test/legacy-initialize-provider';
 
 class TestProvider implements Provider {
   public metadata: ProviderMetadata = {
@@ -42,28 +43,6 @@ class TestProvider implements Provider {
   emitEvent(type: ServerProviderEvents) {
     this.events.emit(type, { providerName: this.metadata.name });
   }
-}
-
-/** Child provider with a single-argument initialize that ignores any extra arguments. */
-class LegacyInitTestProvider implements Provider {
-  public metadata: ProviderMetadata = {
-    name: 'LegacyInitTestProvider',
-  };
-  public events = new OpenFeatureEventEmitter();
-  public hooks: Hook[] = [];
-  public track = jest.fn();
-  public initializeCalls = 0;
-  public lastContext?: EvaluationContext;
-
-  async initialize(context?: EvaluationContext): Promise<void> {
-    this.lastContext = context;
-    this.initializeCalls++;
-  }
-
-  resolveBooleanEvaluation = jest.fn().mockResolvedValue({ value: false });
-  resolveStringEvaluation = jest.fn().mockResolvedValue({ value: 'default' });
-  resolveObjectEvaluation = jest.fn().mockResolvedValue({ value: {} });
-  resolveNumberEvaluation = jest.fn().mockResolvedValue({ value: 0 });
 }
 
 const callEvaluation = async (multi: MultiProvider, context: EvaluationContext, logger: Logger) => {
@@ -185,16 +164,25 @@ describe('MultiProvider', () => {
     });
 
     it('forwards domain to legacy single-argument child providers without error', async () => {
-      const provider1 = new LegacyInitTestProvider();
-      const provider2 = new LegacyInitTestProvider();
-      const multiProvider = new MultiProvider([{ provider: provider1 }, { provider: provider2 }]);
+      const legacyProvider1 = legacyInitTestProvider(
+        { runsOn: 'server', asyncResolvers: true, name: 'LegacyInitTestProvider' },
+        { events: new OpenFeatureEventEmitter() },
+      );
+      const legacyProvider2 = legacyInitTestProvider(
+        { runsOn: 'server', asyncResolvers: true, name: 'LegacyInitTestProvider' },
+        { events: new OpenFeatureEventEmitter() },
+      );
+      const multiProvider = new MultiProvider([
+        { provider: legacyProvider1 as unknown as Provider },
+        { provider: legacyProvider2 as unknown as Provider },
+      ]);
 
       await multiProvider.initialize({ targetingKey: 'user' }, 'my-domain');
 
-      expect(provider1.initializeCalls).toBe(1);
-      expect(provider2.initializeCalls).toBe(1);
-      expect(provider1.lastContext).toEqual({ targetingKey: 'user' });
-      expect(provider2.lastContext).toEqual({ targetingKey: 'user' });
+      expect(legacyProvider1.initializeCalls).toBe(1);
+      expect(legacyProvider2.initializeCalls).toBe(1);
+      expect(legacyProvider1.lastContext).toEqual({ targetingKey: 'user' });
+      expect(legacyProvider2.lastContext).toEqual({ targetingKey: 'user' });
     });
 
     it('throws error if a provider errors on initialization', async () => {

@@ -1,7 +1,8 @@
-import type { EvaluationContext, Paradigm } from '@openfeature/core';
+import type { Paradigm } from '@openfeature/core';
 import type { Provider } from '../src';
 import { OpenFeature, OpenFeatureAPI, ProviderStatus } from '../src';
 import { OpenFeatureClient } from '../src/client/internal/open-feature-client';
+import { legacyInitializeProvider } from '../../shared/test/legacy-initialize-provider';
 
 const mockProvider = (config?: { initialStatus?: ProviderStatus; runsOn?: Paradigm }) => {
   return {
@@ -17,23 +18,6 @@ const mockProvider = (config?: { initialStatus?: ProviderStatus; runsOn?: Paradi
       return Promise.resolve('closed');
     }),
   } as unknown as Provider;
-};
-
-/** Provider with a single-argument initialize that ignores any extra arguments. */
-const legacyInitializeProvider = (): Provider & { lastContext?: EvaluationContext } => {
-  const provider = {
-    metadata: { name: 'legacy-init' },
-    runsOn: 'client',
-    lastContext: undefined as EvaluationContext | undefined,
-    async initialize(context?: EvaluationContext): Promise<void> {
-      provider.lastContext = context;
-    },
-    resolveBooleanEvaluation: jest.fn(() => ({ value: false })),
-    resolveStringEvaluation: jest.fn(() => ({ value: '' })),
-    resolveNumberEvaluation: jest.fn(() => ({ value: 0 })),
-    resolveObjectEvaluation: jest.fn(() => ({ value: {} })),
-  };
-  return provider as Provider & { lastContext?: EvaluationContext };
 };
 
 describe('OpenFeature', () => {
@@ -94,17 +78,19 @@ describe('OpenFeature', () => {
       it('initializes legacy single-argument providers when bound to a domain', async () => {
         const domain = 'my-domain';
         const context = { targetingKey: 'user' };
-        const provider = legacyInitializeProvider();
+        const legacyProvider = legacyInitializeProvider({ runsOn: 'client' });
 
-        await expect(OpenFeature.setProviderAndWait(domain, provider, context)).resolves.toBeUndefined();
-        expect(provider.lastContext).toEqual(context);
+        await expect(
+          OpenFeature.setProviderAndWait(domain, legacyProvider as unknown as Provider, context),
+        ).resolves.toBeUndefined();
+        expect(legacyProvider.lastContext).toEqual(context);
         expect(OpenFeature.getClient(domain).providerStatus).toEqual(ProviderStatus.READY);
       });
 
       it('initializes legacy single-argument providers as the default provider', async () => {
-        const provider = legacyInitializeProvider();
+        const legacyProvider = legacyInitializeProvider({ runsOn: 'client' });
 
-        await expect(OpenFeature.setProviderAndWait(provider)).resolves.toBeUndefined();
+        await expect(OpenFeature.setProviderAndWait(legacyProvider as unknown as Provider)).resolves.toBeUndefined();
         expect(OpenFeature.getClient().providerStatus).toEqual(ProviderStatus.READY);
       });
     });
