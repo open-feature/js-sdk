@@ -361,13 +361,18 @@ export class OpenFeatureAPI
     );
   }
 
+  async close(): Promise<void> {
+    await super.close();
+    this._domainScopedProviders.clear();
+    this._defaultProvider = new ProviderWrapper(NOOP_PROVIDER, ProviderStatus.NOT_READY, this._statusEnumType);
+  }
+
   /**
    * Clears all registered providers and resets the default provider.
    * @returns {Promise<void>}
    */
   async clearProviders(): Promise<void> {
     await super.clearProvidersAndSetDefault(NOOP_PROVIDER);
-    this._domainScopedContext.clear();
   }
 
   private async runProviderContextChangeHandler(
