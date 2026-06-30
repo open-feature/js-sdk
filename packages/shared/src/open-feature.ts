@@ -395,13 +395,18 @@ export abstract class OpenFeatureCommonAPI<
   }
 
   async close(): Promise<void> {
-    await this._shutdownAllProviders();
-    this._hooks = [];
-    this._context = {};
-    this._domainScopedContext.clear();
-    this._clientEventHandlers.clear();
-    this._clientEvents.clear();
-    this._apiEmitter.removeAllHandlers();
+    try {
+      await this._shutdownAllProviders();
+    } catch (err) {
+      this._logger.error('Unable to cleanly close providers. Resetting state.');
+    } finally {
+      this._hooks = [];
+      this._context = {};
+      this._domainScopedContext.clear();
+      this._clientEventHandlers.clear();
+      this._clientEvents.clear();
+      this._apiEmitter.removeAllHandlers();
+    }
   }
 
   protected async clearProvidersAndSetDefault(defaultProvider: P): Promise<void> {
