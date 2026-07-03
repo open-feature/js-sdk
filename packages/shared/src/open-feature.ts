@@ -231,6 +231,12 @@ export abstract class OpenFeatureCommonAPI<
 
     // ignore no-ops
     if (oldProvider === provider) {
+      // domain-scoped providers may already be the default; an explicit domain bind is not a no-op
+      if (provider.domainScoped && domain && this._domainScopedProviders.get(domain)?.provider !== provider) {
+        throw new GeneralError(
+          `Cannot bind domain-scoped provider '${provider.metadata.name}' to more than one domain.`,
+        );
+      }
       this._logger.debug('Provider is already set, ignoring setProvider call');
       return;
     }

@@ -22,7 +22,7 @@ import {
   FirstSuccessfulStrategy,
   ComparisonStrategy,
 } from '../src';
-import { legacyInitTestProvider } from '../../shared/test/legacy-initialize-provider';
+import { legacyInitializeProvider } from '../../shared/test/legacy-initialize-provider';
 
 class TestProvider implements Provider {
   public metadata: ProviderMetadata = {
@@ -164,11 +164,11 @@ describe('MultiProvider', () => {
     });
 
     it('forwards domain to legacy single-argument child providers without error', async () => {
-      const legacyProvider1 = legacyInitTestProvider(
+      const legacyProvider1 = legacyInitializeProvider(
         { runsOn: 'server', asyncResolvers: true, name: 'LegacyInitTestProvider' },
         { events: new OpenFeatureEventEmitter() },
       );
-      const legacyProvider2 = legacyInitTestProvider(
+      const legacyProvider2 = legacyInitializeProvider(
         { runsOn: 'server', asyncResolvers: true, name: 'LegacyInitTestProvider' },
         { events: new OpenFeatureEventEmitter() },
       );

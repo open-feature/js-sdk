@@ -117,6 +117,27 @@ describe('OpenFeature', () => {
         expect(OpenFeature.getProvider('domain-b').metadata.name).not.toBe(provider.metadata.name);
       });
 
+      it('MUST NOT bind a domain-scoped default provider to a named domain', () => {
+        const provider = { ...mockProvider(), domainScoped: true } as Provider;
+
+        OpenFeature.setProvider(provider);
+        expect(() => OpenFeature.setProvider('domain-a', provider)).toThrow(
+          "Cannot bind domain-scoped provider 'mock-events-success' to more than one domain.",
+        );
+        expect(OpenFeature.getProvider()).toBe(provider);
+        expect(OpenFeature.getProvider('domain-a').metadata.name).not.toBe(provider.metadata.name);
+      });
+
+      it('MUST NOT bind a domain-scoped provider as default when already bound to a domain', () => {
+        const provider = { ...mockProvider(), domainScoped: true } as Provider;
+
+        OpenFeature.setProvider('domain-a', provider);
+        expect(() => OpenFeature.setProvider(provider)).toThrow(
+          "Cannot bind domain-scoped provider 'mock-events-success' to more than one domain.",
+        );
+        expect(OpenFeature.getProvider('domain-a')).toBe(provider);
+      });
+
       it('allows a non-domain-scoped provider to back multiple domains', async () => {
         const provider = { ...mockProvider(), onClose: jest.fn() };
 

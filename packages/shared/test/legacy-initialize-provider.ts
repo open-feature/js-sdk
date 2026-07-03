@@ -1,15 +1,16 @@
 import type { EvaluationContext, Paradigm } from '../src';
 
-export interface LegacyInitializeProviderTracker {
-  lastContext?: EvaluationContext;
-  initializeCalls: number;
-}
-
 type LegacyInitializeProviderOptions = {
   runsOn: Paradigm;
   name?: string;
   /** When true, resolution stubs return promises (server SDK). Default false (web SDK). */
   asyncResolvers?: boolean;
+};
+
+type LegacyInitializeProviderExtras = {
+  events: unknown;
+  hooks?: unknown[];
+  track?: jest.Mock;
 };
 
 type LegacyInitializeProviderResolvers = {
@@ -19,72 +20,54 @@ type LegacyInitializeProviderResolvers = {
   resolveObjectEvaluation: jest.Mock;
 };
 
-export type LegacyInitializeProvider = LegacyInitializeProviderTracker &
-  LegacyInitializeProviderResolvers & {
-    metadata: { name: string };
-    runsOn: Paradigm;
-    initialize: (context?: EvaluationContext) => Promise<void>;
-  };
+export type LegacyInitializeProvider = LegacyInitializeProviderResolvers & {
+  metadata: { name: string };
+  runsOn: Paradigm;
+  lastContext?: EvaluationContext;
+  initializeCalls: number;
+  initialize: (context?: EvaluationContext) => Promise<void>;
+};
 
 function createResolverStubs(asyncResolvers: boolean): LegacyInitializeProviderResolvers {
-  if (asyncResolvers) {
-    return {
-      resolveBooleanEvaluation: jest.fn().mockResolvedValue({ value: false }),
-      resolveStringEvaluation: jest.fn().mockResolvedValue({ value: '' }),
-      resolveNumberEvaluation: jest.fn().mockResolvedValue({ value: 0 }),
-      resolveObjectEvaluation: jest.fn().mockResolvedValue({ value: {} }),
-    };
-  }
+  const mockValue = asyncResolvers
+    ? <T>(value: T) => jest.fn().mockResolvedValue(value)
+    : <T>(value: T) => jest.fn().mockReturnValue(value);
 
   return {
-    resolveBooleanEvaluation: jest.fn().mockReturnValue({ value: false }),
-    resolveStringEvaluation: jest.fn().mockReturnValue({ value: '' }),
-    resolveNumberEvaluation: jest.fn().mockReturnValue({ value: 0 }),
-    resolveObjectEvaluation: jest.fn().mockReturnValue({ value: {} }),
+    resolveBooleanEvaluation: mockValue({ value: false }),
+    resolveStringEvaluation: mockValue({ value: '' }),
+    resolveNumberEvaluation: mockValue({ value: 0 }),
+    resolveObjectEvaluation: mockValue({ value: {} }),
   };
 }
 
 /**
  * Provider with a single-argument initialize that ignores any extra arguments passed by the SDK.
+ * Pass optional extras when MultiProvider needs events, hooks, or track stubs on the child.
  */
-export function legacyInitializeProvider(options: LegacyInitializeProviderOptions): LegacyInitializeProvider {
-  const tracker: LegacyInitializeProviderTracker = {
-    initializeCalls: 0,
-  };
-
-  return {
+export function legacyInitializeProvider(
+  options: LegacyInitializeProviderOptions,
+  extras?: LegacyInitializeProviderExtras,
+): LegacyInitializeProvider {
+  const provider: LegacyInitializeProvider = {
     metadata: { name: options.name ?? 'legacy-init' },
     runsOn: options.runsOn,
-    get lastContext() {
-      return tracker.lastContext;
-    },
-    get initializeCalls() {
-      return tracker.initializeCalls;
-    },
+    lastContext: undefined,
+    initializeCalls: 0,
     async initialize(context?: EvaluationContext): Promise<void> {
-      tracker.lastContext = context;
-      tracker.initializeCalls++;
+      this.lastContext = context;
+      this.initializeCalls++;
     },
     ...createResolverStubs(options.asyncResolvers ?? false),
   };
-}
 
-type LegacyInitTestProviderExtras = {
-  events: unknown;
-  hooks?: unknown[];
-  track?: jest.Mock;
-};
+  if (extras) {
+    Object.assign(provider, {
+      events: extras.events,
+      hooks: extras.hooks ?? [],
+      track: extras.track ?? jest.fn(),
+    });
+  }
 
-/**
- * Legacy initialize provider with the stubs MultiProvider expects on child providers.
- */
-export function legacyInitTestProvider(
-  options: LegacyInitializeProviderOptions,
-  extras: LegacyInitTestProviderExtras,
-): LegacyInitializeProvider & LegacyInitTestProviderExtras {
-  return Object.assign(legacyInitializeProvider(options), {
-    events: extras.events,
-    hooks: extras.hooks ?? [],
-    track: extras.track ?? jest.fn(),
-  });
+  return provider;
 }
