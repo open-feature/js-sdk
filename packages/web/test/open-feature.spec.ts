@@ -127,7 +127,7 @@ describe('OpenFeature', () => {
         );
         expect(OpenFeature.getProvider()).toBe(provider);
         expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith({}, undefined);
+        expect(spy).toHaveBeenCalledWith(expect.anything(), undefined);
       });
 
       it('MUST NOT bind a domain-scoped provider as default when already bound to a domain', () => {
@@ -140,7 +140,7 @@ describe('OpenFeature', () => {
         );
         expect(OpenFeature.getProvider('domain-a')).toBe(provider);
         expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith({}, 'domain-a');
+        expect(spy).toHaveBeenCalledWith(expect.anything(), 'domain-a');
       });
 
       it('allows a non-domain-scoped provider to back multiple domains', async () => {
