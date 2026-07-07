@@ -229,14 +229,10 @@ export abstract class OpenFeatureCommonAPI<
     const oldProvider = this.getProviderForClient(domain);
     const providerName = provider.metadata.name;
 
+    this.assertDomainScopedBindingAllowed(provider, domain);
+
     // ignore no-ops
     if (oldProvider === provider) {
-      // domain-scoped providers may already be the default; an explicit domain bind is not a no-op
-      if (provider.domainScoped && domain && this._domainScopedProviders.get(domain)?.provider !== provider) {
-        throw new GeneralError(
-          `Cannot bind domain-scoped provider '${provider.metadata.name}' to more than one domain.`,
-        );
-      }
       this._logger.debug('Provider is already set, ignoring setProvider call');
       return;
     }
@@ -245,10 +241,6 @@ export abstract class OpenFeatureCommonAPI<
       this._logger.debug(`Provider '${provider.metadata.name}' has not defined its intended use.`);
     } else if (provider.runsOn !== this._runsOn) {
       throw new GeneralError(`Provider '${provider.metadata.name}' is intended for use on the ${provider.runsOn}.`);
-    }
-
-    if (provider.domainScoped && this.allProviders.includes(provider)) {
-      throw new GeneralError(`Cannot bind domain-scoped provider '${provider.metadata.name}' to more than one domain.`);
     }
 
     const emitters = this.getAssociatedEventEmitters(domain);
@@ -438,6 +430,38 @@ export abstract class OpenFeatureCommonAPI<
         this._statusEnumType,
       );
     }
+  }
+
+  private getProviderInstanceBinding(provider: P): string | null {
+    if (this._defaultProvider.provider === provider) {
+      return '';
+    }
+
+    for (const [domain, wrapper] of this._domainScopedProviders) {
+      if (wrapper.provider === provider) {
+        return domain;
+      }
+    }
+
+    return null;
+  }
+
+  private assertDomainScopedBindingAllowed(provider: P, domain?: string): void {
+    if (!provider.domainScoped) {
+      return;
+    }
+
+    const existingBinding = this.getProviderInstanceBinding(provider);
+    if (existingBinding === null) {
+      return;
+    }
+
+    const requestedBinding = domain ?? '';
+    if (existingBinding === requestedBinding) {
+      return;
+    }
+
+    throw new GeneralError(`Cannot bind domain-scoped provider '${provider.metadata.name}' to more than one domain.`);
   }
 
   private get allProviders(): P[] {
