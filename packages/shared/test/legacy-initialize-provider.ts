@@ -44,6 +44,9 @@ function createResolverStubs(asyncResolvers: boolean): LegacyInitializeProviderR
 /**
  * Provider with a single-argument initialize that ignores any extra arguments passed by the SDK.
  * Pass optional extras when MultiProvider needs events, hooks, or track stubs on the child.
+ * @param options provider configuration (paradigm, name, resolver mode)
+ * @param extras optional MultiProvider child stubs (events, hooks, track)
+ * @returns a single-argument-initialize provider
  */
 export function legacyInitializeProvider(
   options: LegacyInitializeProviderOptions,
