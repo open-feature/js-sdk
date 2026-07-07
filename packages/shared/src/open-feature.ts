@@ -434,6 +434,7 @@ export abstract class OpenFeatureCommonAPI<
 
   private getProviderInstanceBinding(provider: P): string | null {
     if (this._defaultProvider.provider === provider) {
+      // Empty string represents the default (unbound) provider.
       return '';
     }
 
