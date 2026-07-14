@@ -153,6 +153,17 @@ describe('OpenFeature', () => {
         expect(OpenFeature.getProvider('domain2')).toBe(provider);
         expect(provider.initialize).toHaveBeenCalledTimes(1);
       });
+
+      it('allows re-binding a domain-scoped provider to its own domain as a no-op', async () => {
+        const provider = { ...mockProvider(), domainScoped: true } as Provider;
+        const spy = jest.spyOn(provider, 'initialize');
+
+        await OpenFeature.setProviderAndWait('domain-a', provider);
+        expect(() => OpenFeature.setProvider('domain-a', provider)).not.toThrow();
+
+        expect(OpenFeature.getProvider('domain-a')).toBe(provider);
+        expect(spy).toHaveBeenCalledTimes(1);
+      });
     });
   });
 
