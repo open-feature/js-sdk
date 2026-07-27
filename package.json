@@ -40,17 +40,6 @@
     "url": "https://github.com/open-feature/js-sdk/issues"
   },
   "homepage": "https://github.com/open-feature/js-sdk#readme",
-  "overrides": {
-    "@cucumber/messages": {
-      "uuid": "^11.1.1"
-    },
-    "jest-cucumber": {
-      "uuid": "^11.1.1"
-    },
-    "@angular/compiler-cli": {
-      "@babel/core": "^7.29.7"
-    }
-  },
   "devDependencies": {
     "@babel/core": "^7.29.7",
     "@rollup/plugin-typescript": "^12.0.0",
