@@ -1,5 +1,12 @@
 # Changelog 
 
+## [1.12.0](https://github.com/open-feature/js-sdk/compare/core-v1.11.0...core-v1.12.0) (2026-07-27)
+
+
+### ✨ New Features
+
+* **core:** pass bound domain to provider initialize and enforce domain-scoped binding ([#1433](https://github.com/open-feature/js-sdk/issues/1433)) ([a98f914](https://github.com/open-feature/js-sdk/commit/a98f914011dae885ed19bb7ce8c1d63cf2e5f29a))
+
 ## [1.11.0](https://github.com/open-feature/js-sdk/compare/core-v1.10.0...core-v1.11.0) (2026-06-12)
 
 
