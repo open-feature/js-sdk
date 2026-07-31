@@ -1,17 +1,4 @@
-import type { EvaluationContext, ManageContext, ServerProviderStatus } from '@openfeature/core';
-import { OpenFeatureCommonAPI, ProviderWrapper, objectOrUndefined, stringOrUndefined } from '@openfeature/core';
-import type { Client } from './client';
-import { OpenFeatureClient } from './client/internal/open-feature-client';
-import { OpenFeatureEventEmitter } from './events';
-import type { Hook } from './hooks';
-import type { Provider } from './provider';
-import { NOOP_PROVIDER, ProviderStatus } from './provider';
-import type {
-  ManageTransactionContextPropagator,
-  TransactionContext,
-  TransactionContextPropagator,
-} from './transaction-context';
-import { NOOP_TRANSACTION_CONTEXT_PROPAGATOR } from './transaction-context';
+import { OpenFeatureAPIBase } from './open-feature-base';
 
 // use a symbol as a key for the global singleton
 const GLOBAL_OPENFEATURE_API_KEY = Symbol.for('@openfeature/js-sdk/api');
@@ -21,26 +8,16 @@ type OpenFeatureGlobal = {
 };
 const _globalThis = globalThis as OpenFeatureGlobal;
 
-export class OpenFeatureAPI
-  extends OpenFeatureCommonAPI<ServerProviderStatus, Provider, Hook>
-  implements
-    ManageContext<OpenFeatureAPI>,
-    ManageTransactionContextPropagator<OpenFeatureCommonAPI<ServerProviderStatus, Provider>>
-{
-  protected _statusEnumType: typeof ProviderStatus = ProviderStatus;
-  protected _apiEmitter = new OpenFeatureEventEmitter();
-  protected _defaultProvider: ProviderWrapper<Provider, ServerProviderStatus> = new ProviderWrapper(
-    NOOP_PROVIDER,
-    ProviderStatus.NOT_READY,
-    this._statusEnumType,
-  );
-  protected _domainScopedProviders: Map<string, ProviderWrapper<Provider, ServerProviderStatus>> = new Map();
-  protected _createEventEmitter = () => new OpenFeatureEventEmitter();
-
-  private _transactionContextPropagator: TransactionContextPropagator = NOOP_TRANSACTION_CONTEXT_PROPAGATOR;
-
+/**
+ * The OpenFeatureAPI is the entry point for the OpenFeature SDK.
+ * This is a singleton class that provides access to the global OpenFeature API instance.
+ *
+ * For isolated (non-singleton) instances, use the `createIsolatedOpenFeatureAPI` function
+ * from `@openfeature/server-sdk/isolated`.
+ */
+export class OpenFeatureAPI extends OpenFeatureAPIBase {
   private constructor() {
-    super('server');
+    super();
   }
 
   /**
@@ -57,207 +34,6 @@ export class OpenFeatureAPI
     const instance = new OpenFeatureAPI();
     _globalThis[GLOBAL_OPENFEATURE_API_KEY] = instance;
     return instance;
-  }
-
-  private getProviderStatus(domain?: string): ProviderStatus {
-    if (!domain) {
-      return this._defaultProvider.status;
-    }
-
-    return this._domainScopedProviders.get(domain)?.status ?? this._defaultProvider.status;
-  }
-
-  /**
-   * Sets the default provider for flag evaluations and returns a promise that resolves when the provider is ready.
-   * This provider will be used by domainless clients and clients associated with domains to which no provider is bound.
-   * Setting a provider supersedes the current provider used in new and existing unbound clients.
-   * @param {Provider} provider The provider responsible for flag evaluations.
-   * @returns {Promise<void>}
-   * @throws {Error} If the provider throws an exception during initialization.
-   */
-  setProviderAndWait(provider: Provider): Promise<void>;
-  /**
-   * Sets the provider that OpenFeature will use for flag evaluations on clients bound to the same domain.
-   * A promise is returned that resolves when the provider is ready.
-   * Setting a provider supersedes the current provider used in new and existing clients bound to the same domain.
-   * @param {string} domain The name to identify the client
-   * @param {Provider} provider The provider responsible for flag evaluations.
-   * @returns {Promise<void>}
-   * @throws {Error} If the provider throws an exception during initialization.
-   */
-  setProviderAndWait(domain: string, provider: Provider): Promise<void>;
-  async setProviderAndWait(domainOrProvider?: string | Provider, providerOrUndefined?: Provider): Promise<void> {
-    const domain = stringOrUndefined(domainOrProvider);
-    const provider = domain
-      ? objectOrUndefined<Provider>(providerOrUndefined)
-      : objectOrUndefined<Provider>(domainOrProvider);
-
-    await this.setAwaitableProvider(domain, provider);
-  }
-
-  /**
-   * Sets the default provider for flag evaluations.
-   * This provider will be used by domainless clients and clients associated with domains to which no provider is bound.
-   * Setting a provider supersedes the current provider used in new and existing unbound clients.
-   * @param {Provider} provider The provider responsible for flag evaluations.
-   * @returns {this} OpenFeature API
-   */
-  setProvider(provider: Provider): this;
-  /**
-   * Sets the provider for flag evaluations of providers with the given name.
-   * Setting a provider supersedes the current provider used in new and existing clients bound to the same domain.
-   * @param {string} domain The name to identify the client
-   * @param {Provider} provider The provider responsible for flag evaluations.
-   * @returns {this} OpenFeature API
-   */
-  setProvider(domain: string, provider: Provider): this;
-  setProvider(clientOrProvider?: string | Provider, providerOrUndefined?: Provider): this {
-    const domain = stringOrUndefined(clientOrProvider);
-    const provider = domain
-      ? objectOrUndefined<Provider>(providerOrUndefined)
-      : objectOrUndefined<Provider>(clientOrProvider);
-
-    const maybePromise = this.setAwaitableProvider(domain, provider);
-
-    // The setProvider method doesn't return a promise so we need to catch and
-    // log any errors that occur during provider initialization to avoid having
-    // an unhandled promise rejection.
-    Promise.resolve(maybePromise).catch((err) => {
-      this._logger.error('Error during provider initialization:', err);
-    });
-
-    return this;
-  }
-
-  /**
-   * Get the default provider.
-   *
-   * Note that it isn't recommended to interact with the provider directly, but rather through
-   * an OpenFeature client.
-   * @returns {Provider} Default Provider
-   */
-  getProvider(): Provider;
-  /**
-   * Get the provider bound to the specified domain.
-   *
-   * Note that it isn't recommended to interact with the provider directly, but rather through
-   * an OpenFeature client.
-   * @param {string} domain An identifier which logically binds clients with providers
-   * @returns {Provider} Domain-scoped provider
-   */
-  getProvider(domain?: string): Provider;
-  getProvider(domain?: string): Provider {
-    return this.getProviderForClient(domain);
-  }
-
-  setContext(context: EvaluationContext): this {
-    this._context = context;
-    return this;
-  }
-
-  getContext(): EvaluationContext {
-    return this._context;
-  }
-
-  /**
-   * A factory function for creating new domainless OpenFeature clients.
-   * Clients can contain their own state (e.g. logger, hook, context).
-   * Multiple clients can be used to segment feature flag configuration.
-   *
-   * All domainless or unbound clients use the default provider set via {@link this.setProvider setProvider}.
-   * @param {EvaluationContext} context Evaluation context that should be set on the client to used during flag evaluations
-   * @returns {Client} OpenFeature Client
-   */
-  getClient(context?: EvaluationContext): Client;
-  /**
-   * A factory function for creating new domain scoped OpenFeature clients.
-   * Clients can contain their own state (e.g. logger, hook, context).
-   * Multiple clients can be used to segment feature flag configuration.
-   *
-   * If there is already a provider bound to this domain via {@link this.setProvider setProvider}, this provider will be used.
-   * Otherwise, the default provider is used until a provider is assigned to that domain.
-   * @param {string} domain An identifier which logically binds clients with providers
-   * @param {EvaluationContext} context Evaluation context that should be set on the client to used during flag evaluations
-   * @returns {Client} OpenFeature Client
-   */
-  getClient(domain: string, context?: EvaluationContext): Client;
-  /**
-   * A factory function for creating new domain scoped OpenFeature clients.
-   * Clients can contain their own state (e.g. logger, hook, context).
-   * Multiple clients can be used to segment feature flag configuration.
-   *
-   * If there is already a provider bound to this domain via {@link this.setProvider setProvider}, this provider will be used.
-   * Otherwise, the default provider is used until a provider is assigned to that domain.
-   * @param {string} domain An identifier which logically binds clients with providers
-   * @param {string} version The version of the client (only used for metadata)
-   * @param {EvaluationContext} context Evaluation context that should be set on the client to used during flag evaluations
-   * @returns {Client} OpenFeature Client
-   */
-  getClient(domain: string, version: string, context?: EvaluationContext): Client;
-  getClient(
-    domainOrContext?: string | EvaluationContext,
-    versionOrContext?: string | EvaluationContext,
-    contextOrUndefined?: EvaluationContext,
-  ): Client {
-    const domain = stringOrUndefined(domainOrContext);
-    const version = stringOrUndefined(versionOrContext);
-    const context =
-      objectOrUndefined<EvaluationContext>(domainOrContext) ??
-      objectOrUndefined<EvaluationContext>(versionOrContext) ??
-      objectOrUndefined<EvaluationContext>(contextOrUndefined);
-
-    return new OpenFeatureClient(
-      () => this.getProviderForClient(domain),
-      () => this.getProviderStatus(domain),
-      () => this.buildAndCacheEventEmitterForClient(domain),
-      () => this.getContext(),
-      () => this.getHooks(),
-      () => this.getTransactionContext(),
-      () => this._logger,
-      { domain, version },
-      context,
-    );
-  }
-
-  /**
-   * Clears all registered providers and resets the default provider.
-   * @returns {Promise<void>}
-   */
-  clearProviders(): Promise<void> {
-    return super.clearProvidersAndSetDefault(NOOP_PROVIDER);
-  }
-
-  setTransactionContextPropagator(
-    transactionContextPropagator: TransactionContextPropagator,
-  ): OpenFeatureCommonAPI<ServerProviderStatus, Provider> {
-    const baseMessage = 'Invalid TransactionContextPropagator, will not be set: ';
-    if (typeof transactionContextPropagator?.getTransactionContext !== 'function') {
-      this._logger.error(`${baseMessage}: getTransactionContext is not a function.`);
-    } else if (typeof transactionContextPropagator?.setTransactionContext !== 'function') {
-      this._logger.error(`${baseMessage}: setTransactionContext is not a function.`);
-    } else {
-      this._transactionContextPropagator = transactionContextPropagator;
-    }
-    return this;
-  }
-
-  setTransactionContext<TArgs extends unknown[], R>(
-    transactionContext: TransactionContext,
-    callback: (...args: TArgs) => R,
-    ...args: TArgs
-  ): void {
-    this._transactionContextPropagator.setTransactionContext(transactionContext, callback, ...args);
-  }
-
-  getTransactionContext(): TransactionContext {
-    try {
-      return this._transactionContextPropagator.getTransactionContext();
-    } catch (err: unknown) {
-      const error = err as Error | undefined;
-      this._logger.error(`Error getting transaction context: ${error?.message}, returning empty context.`);
-      this._logger.error(error?.stack);
-      return {};
-    }
   }
 }
 
