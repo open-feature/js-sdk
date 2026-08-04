@@ -481,6 +481,32 @@ This can cause surprising effects and inconsistencies if sibling components are 
 To fix this, you can upgrade to React 18, which uses "Concurrent Suspense", in which siblings are not mounted until their suspended sibling resolves.
 Alternatively, if you cannot upgrade to React 18, you can use the `useWhenProviderReady` utility hook in any sibling components to prevent them from mounting until the provider is ready.
 
+> I need to distinguish a provider that is still starting from one that failed to start.
+
+`useWhenProviderReady` is a boolean gate: it returns `false` both while the
+provider is `NOT_READY` and after a terminal `ERROR` or `FATAL` state. When a
+component needs to show a loader only while the provider is starting, use
+`useOpenFeatureClientStatus` and handle terminal states explicitly:
+
+```tsx
+import { ProviderStatus, useOpenFeatureClientStatus } from '@openfeature/react-sdk';
+
+function ProviderAwareSibling() {
+  const status = useOpenFeatureClientStatus();
+
+  if (status === ProviderStatus.NOT_READY) {
+    return <Spinner />;
+  }
+
+  if (status === ProviderStatus.ERROR || status === ProviderStatus.FATAL) {
+    // Evaluation hooks continue with their code defaults.
+    return <Sidebar featureProviderUnavailable />;
+  }
+
+  return <Sidebar />;
+}
+```
+
 > I am using multiple `OpenFeatureProvider` contexts, but they share the same provider or evaluation context. Why?
 
 The `OpenFeatureProvider` binds a `client` to all child components, but the provider and context associated with that client is controlled by the `domain` parameter.
