@@ -41,6 +41,7 @@
   },
   "homepage": "https://github.com/open-feature/js-sdk#readme",
   "devDependencies": {
+    "@angular/compiler": "^21.2.19",
     "@babel/core": "^7.29.7",
     "@rollup/plugin-typescript": "^12.0.0",
     "@testing-library/jest-dom": "^6.9.1",
