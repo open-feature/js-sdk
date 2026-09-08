@@ -3,7 +3,6 @@
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
     "types": ["vitest/globals", "node"],
-    "baseUrl": "../",
     "paths": {
       "angular": ["./dist/angular"],
       "@openfeature/core": ["../../shared/src"],
@@ -15,5 +14,13 @@
     "noPropertyAccessFromIndexSignature": false,
     "strict": false
   },
-  "include": ["src/**/*.spec.ts", "src/**/*.d.ts", "src/test-provider.ts"]
+  "include": ["src/**/*.spec.ts", "src/**/*.d.ts", "src/test-provider.ts"],
+  "angularCompilerOptions": {
+    "extendedDiagnostics": {
+      "checks": {
+        "nullishCoalescingNotNullable": "suppress",
+        "optionalChainNotNullable": "suppress"
+      }
+    }
+  }
 }
