@@ -49,7 +49,7 @@
     "@types/jest": "^29.5.12",
     "@types/node": "^22.0.0",
     "@types/react": "^18.2.55",
-    "@types/uuid": "^10.0.0",
+    "@types/uuid": "^11.0.0",
     "@typescript-eslint/eslint-plugin": "7.18.0",
     "@typescript-eslint/parser": "7.18.0",
     "esbuild": "^0.28.1",
