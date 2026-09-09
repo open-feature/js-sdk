@@ -41,7 +41,7 @@
   },
   "homepage": "https://github.com/open-feature/js-sdk#readme",
   "devDependencies": {
-    "@angular/compiler": "^22.1.5",
+    "@angular/compiler": "^21.2.19",
     "@babel/core": "^7.29.7",
     "@rollup/plugin-typescript": "^12.0.0",
     "@testing-library/jest-dom": "^6.9.1",
@@ -50,6 +50,8 @@
     "@types/node": "^22.0.0",
     "@types/react": "^18.2.55",
     "@types/uuid": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "7.18.0",
+    "@typescript-eslint/parser": "7.18.0",
     "esbuild": "^0.28.1",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^10.0.0",
