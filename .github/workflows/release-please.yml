@@ -50,7 +50,7 @@ jobs:
       - name: Generate SBOM
         run: npm sbom --sbom-format=cyclonedx --omit=dev --omit=peer --workspace=${{ matrix.release }} > sbom.json
       - name: Attest SBOM
-        uses: actions/attest-sbom@v3
+        uses: actions/attest-sbom@v4
         with:
           subject-path: ${{ matrix.release }}/package.json
           sbom-path: ./sbom.json
