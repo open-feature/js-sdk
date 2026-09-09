@@ -1,0 +1,64 @@
+{
+  "name": "@openfeature/svelte-sdk",
+  "version": "0.0.0",
+  "description": "OpenFeature Svelte SDK",
+  "main": "./dist/esm/index.js",
+  "files": [
+    "dist/"
+  ],
+  "exports": {
+    "types": "./dist/types.d.ts",
+    "import": "./dist/esm/index.js",
+    "default": "./dist/esm/index.js"
+  },
+  "types": "./dist/types.d.ts",
+  "scripts": {
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint ./",
+    "lint:fix": "eslint ./ --fix",
+    "clean": "shx rm -rf ./dist",
+    "build:svelte-esm": "esbuild src/index.ts --bundle --external:svelte --external:svelte/* --external:@openfeature/web-sdk --sourcemap --target=es2015 --platform=browser --format=esm --outfile=./dist/esm/index.js --analyze",
+    "build:rollup-types": "rollup -c ../../rollup.config.mjs",
+    "build": "npm run clean && npm run build:svelte-esm && npm run build:rollup-types",
+    "postbuild": "shx cp ./../../package.esm.json ./dist/esm/package.json",
+    "current-version": "echo $npm_package_version",
+    "prepack": "shx cp ./../../LICENSE ./LICENSE",
+    "publish-if-not-exists": "cp $NPM_CONFIG_USERCONFIG .npmrc && if [ \"$(npm show $npm_package_name@$npm_package_version version)\" = \"$(npm run current-version -s)\" ]; then echo 'already published, skipping'; else npm publish --access public; fi"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/open-feature/js-sdk.git"
+  },
+  "keywords": [
+    "openfeature",
+    "feature",
+    "flags",
+    "toggles",
+    "browser",
+    "web",
+    "svelte"
+  ],
+  "author": "",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/open-feature/js-sdk/issues"
+  },
+  "homepage": "https://github.com/open-feature/js-sdk#readme",
+  "peerDependencies": {
+    "@openfeature/web-sdk": "^1.9.0",
+    "svelte": "^5.7.0"
+  },
+  "devDependencies": {
+    "@openfeature/core": "*",
+    "@openfeature/web-sdk": "*",
+    "@sveltejs/vite-plugin-svelte": "^6.2.4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/svelte": "^5.4.2",
+    "@vitest/coverage-v8": "^4.1.10",
+    "jsdom": "^26.1.0",
+    "svelte": "^5.57.0",
+    "vitest": "^4.1.10"
+  },
+  "sideEffects": false
+}
