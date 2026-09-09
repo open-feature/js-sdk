@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.2](https://github.com/open-feature/js-sdk/compare/react-sdk-v1.4.1...react-sdk-v1.4.2) (2026-09-09)
+
+
+### 📚 Documentation
+
+* **react:** clarify provider status handling ([#1445](https://github.com/open-feature/js-sdk/issues/1445)) ([7959d6d](https://github.com/open-feature/js-sdk/commit/7959d6dd2c56aa3622f4abadc631c95b563d9209))
+
 ## [1.4.1](https://github.com/open-feature/js-sdk/compare/react-sdk-v1.4.0...react-sdk-v1.4.1) (2026-06-19)
 
 
