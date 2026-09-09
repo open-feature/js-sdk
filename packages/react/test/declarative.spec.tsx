@@ -81,6 +81,17 @@ describe('Feature Component', () => {
 
       expect(screen.queryByText(childText)).toBeInTheDocument();
     });
+    it('should render children when flag is missing and defaultValue is true', () => {
+      render(
+        <OpenFeatureProvider domain={EVALUATION}>
+          <FeatureFlag flagKey={MISSING_FLAG_KEY} defaultValue={true}>
+            <ChildComponent />
+          </FeatureFlag>
+        </OpenFeatureProvider>,
+      );
+
+      expect(screen.queryByText(childText)).toBeInTheDocument();
+    });
 
     it('should not show a non-boolean feature flag without match', () => {
       render(
