@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.3.2](https://github.com/open-feature/js-sdk/compare/angular-sdk-v1.3.1...angular-sdk-v1.3.2) (2026-09-09)
+
+
+### 🐛 Bug Fixes
+
+* **angular:** restore spec path aliases ([#1464](https://github.com/open-feature/js-sdk/issues/1464)) ([8b700b1](https://github.com/open-feature/js-sdk/commit/8b700b141165fe36d0d459ed5cfa9a8a8df92387))
+
+
+### 🧹 Chore
+
+* **angular:** support Angular 22 ([#1459](https://github.com/open-feature/js-sdk/issues/1459)) ([5509d38](https://github.com/open-feature/js-sdk/commit/5509d381f8d81810d7c739d15bc0f691c17bc6a5))
+* resolve open dependabot security alerts ([#1446](https://github.com/open-feature/js-sdk/issues/1446)) ([0f47863](https://github.com/open-feature/js-sdk/commit/0f478630bf84bb65f81cb29387b4295b6773122d))
+
 ## [1.3.1](https://github.com/open-feature/js-sdk/compare/angular-sdk-v1.3.0...angular-sdk-v1.3.1) (2026-06-12)
 
 
