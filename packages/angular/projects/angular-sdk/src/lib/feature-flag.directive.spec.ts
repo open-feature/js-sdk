@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { OpenFeatureModule } from './open-feature.module';
 import { By } from '@angular/platform-browser';
 import {
@@ -31,6 +31,7 @@ import {
     StringFeatureFlagDirective,
     ObjectFeatureFlagDirective,
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <ng-container>
       <div class="case-1">
@@ -195,6 +196,7 @@ class TestComponent {
 @Component({
   standalone: true,
   imports: [BooleanFeatureFlagDirective],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `<div *booleanFeatureFlag="'test-flag'; default: true; domain: domain">Flag On</div>`,
 })
 class SingleDirectiveTestComponent {

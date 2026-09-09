@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { ComponentFixture } from '@angular/core/testing';
 import { firstValueFrom, map } from 'rxjs';
 import {
@@ -25,6 +25,7 @@ const FLAG_KEY = 'thumbs';
     <div data-testid="reason">reason: {{ (thumbs$ | async).reason }}</div>
   `,
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AsyncPipe],
 })
 class TestComponent {
@@ -38,6 +39,7 @@ class TestComponent {
     <div data-testid="value">{{ thumbs().value ? '👍' : '👎' }}</div>
     <div data-testid="reason">reason: {{ thumbs().reason }}</div>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
 })
 class TestComponentWithSignal {
@@ -52,6 +54,7 @@ class TestComponentWithSignal {
     <div data-testid="reason">reason: {{ (thumbs$ | async).reason }}</div>
   `,
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AsyncPipe],
 })
 class ConfigChangeDisabledComponent {
@@ -66,6 +69,7 @@ class ConfigChangeDisabledComponent {
     <div data-testid="reason">reason: {{ (thumbs$ | async).reason }}</div>
   `,
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AsyncPipe],
 })
 class ContextChangeDisabledComponent {
