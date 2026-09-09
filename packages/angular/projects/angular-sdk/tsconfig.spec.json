@@ -5,8 +5,8 @@
     "types": ["vitest/globals", "node"],
     "paths": {
       "angular": ["./dist/angular"],
-      "@openfeature/core": ["../../shared/src"],
-      "@openfeature/web-sdk": ["../../web/src"]
+      "@openfeature/core": ["../../../shared/src"],
+      "@openfeature/web-sdk": ["../../../web/src"]
     },
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
