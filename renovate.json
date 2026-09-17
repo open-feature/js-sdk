@@ -10,13 +10,8 @@
   "customManagers": [
     {
       "customType": "regex",
-      "managerFilePatterns": [
-        "/^CONTRIBUTING.md$/",
-        "/^.github/workflows/pr-checks.yaml$/"
-      ],
-      "matchStrings": [
-        "ghcr\\.io\\/open-feature\\/flagd-testbed:(?<currentValue>.*?)\\n"
-      ],
+      "managerFilePatterns": ["/^CONTRIBUTING.md$/", "/^.github/workflows/pr-checks.yaml$/"],
+      "matchStrings": ["ghcr\\.io\\/open-feature\\/flagd-testbed:(?<currentValue>.*?)\\n"],
       "depNameTemplate": "open-feature/test-harness",
       "datasourceTemplate": "github-releases"
     }
