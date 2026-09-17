@@ -1,15 +1,10 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "github>open-feature/community-tooling",
-    ":automergeTypes",
-    ":automergeStableNonMajor",
-    "npm:unpublishSafe"
-  ],
-  "semanticCommits": "enabled",
-  "regexManagers": [
+  "extends": ["github>open-feature/community-tooling"],
+  "customManagers": [
     {
-      "fileMatch": ["^CONTRIBUTING.md$", "^.github/workflows/pr-checks.yaml$"],
+      "customType": "regex",
+      "managerFilePatterns": ["/^CONTRIBUTING.md$/", "/^.github/workflows/pr-checks.yaml$/"],
       "matchStrings": ["ghcr\\.io\\/open-feature\\/flagd-testbed:(?<currentValue>.*?)\\n"],
       "depNameTemplate": "open-feature/test-harness",
       "datasourceTemplate": "github-releases"
