@@ -1,12 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "github>open-feature/community-tooling",
-    ":automergeTypes",
-    ":automergeStableNonMajor",
-    "security:minimumReleaseAgeNpm"
-  ],
-  "semanticCommits": "enabled",
+  "extends": ["github>open-feature/community-tooling"],
   "customManagers": [
     {
       "customType": "regex",
