@@ -7,20 +7,21 @@
   "private": true,
   "description": "OpenFeature SDK for JavaScript",
   "scripts": {
-    "test": "npm run test:jest && npm run test:angular",
+    "test": "npm run test:jest && npm run test:angular && npm run test:svelte",
     "test:jest": "jest --selectProjects=shared --selectProjects=server --selectProjects=web --selectProjects=react --selectProjects=nest --silent",
     "test:angular": "npm run test:coverage --workspace=packages/angular",
+    "test:svelte": "npm run test:coverage --workspace=packages/svelte",
     "test:package-exports": "node scripts/test-package-exports.mjs",
     "e2e-server": "git submodule update --init --recursive && shx cp spec/specification/assets/gherkin/evaluation.feature packages/server/e2e/features && jest --selectProjects=server-e2e --verbose",
     "e2e-web": "git submodule update --init --recursive && shx cp spec/specification/assets/gherkin/evaluation.feature packages/web/e2e/features && jest --selectProjects=web-e2e --verbose",
     "e2e": "npm run e2e-server && npm run e2e-web",
-    "lint": "npm run lint --workspace=packages/shared --workspace=packages/server --workspace=packages/web --workspace=packages/react --workspace=packages/angular --workspace=packages/nest",
-    "lint:fix": "npm run lint:fix --workspace=packages/shared --workspace=packages/server --workspace=packages/web --workspace=packages/react --workspace=packages/angular --workspace=packages/nest",
+    "lint": "npm run lint --workspace=packages/shared --workspace=packages/server --workspace=packages/web --workspace=packages/react --workspace=packages/angular --workspace=packages/nest --workspace=packages/svelte",
+    "lint:fix": "npm run lint:fix --workspace=packages/shared --workspace=packages/server --workspace=packages/web --workspace=packages/react --workspace=packages/angular --workspace=packages/nest --workspace=packages/svelte",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
     "clean": "shx rm -rf ./dist",
-    "build": "npm run build --workspace=packages/shared --workspace=packages/server --workspace=packages/web --workspace=packages/react --workspace=packages/angular --workspace=packages/nest",
-    "publish-all": "npm run publish-if-not-exists --workspace=packages/shared --workspace=packages/server --workspace=packages/web --workspace=packages/react --workspace=packages/angular --workspace=packages/nest",
+    "build": "npm run build --workspace=packages/shared --workspace=packages/server --workspace=packages/web --workspace=packages/react --workspace=packages/angular --workspace=packages/nest --workspace=packages/svelte",
+    "publish-all": "npm run publish-if-not-exists --workspace=packages/shared --workspace=packages/server --workspace=packages/web --workspace=packages/react --workspace=packages/angular --workspace=packages/nest --workspace=packages/svelte",
     "docs": "typedoc",
     "prepare": "husky || true"
   },
@@ -70,6 +71,7 @@
     "jest-junit": "^17.0.0",
     "lint-staged": "^16.2.7",
     "prettier": "^3.7.4",
+    "prettier-plugin-svelte": "^4.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rollup": "^4.0.0",
@@ -90,6 +92,7 @@
     "packages/react",
     "packages/angular",
     "packages/angular/projects/angular-sdk",
-    "packages/nest"
+    "packages/nest",
+    "packages/svelte"
   ]
 }
