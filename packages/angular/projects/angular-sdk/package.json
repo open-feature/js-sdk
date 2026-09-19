@@ -25,8 +25,8 @@
     "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "@angular/common": "^22.1.5",
-    "@angular/core": "^22.1.5",
+    "@angular/common": "22.1.7",
+    "@angular/core": "22.1.7",
     "@openfeature/core": "*",
     "@openfeature/web-sdk": "*"
   },
