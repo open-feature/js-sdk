@@ -52,10 +52,10 @@ export interface Provider extends CommonProvider<ServerProviderStatus> {
   /**
    * Resolve and parse an object flag and its evaluation details.
    */
-  resolveObjectEvaluation<T extends JsonValue>(
+  resolveObjectEvaluation(
     flagKey: string,
-    defaultValue: T,
+    defaultValue: JsonValue,
     context: EvaluationContext,
     logger: Logger,
-  ): Promise<ResolutionDetails<T>>;
+  ): Promise<ResolutionDetails<JsonValue>>;
 }
