@@ -38,7 +38,7 @@
     "angular-eslint": "^22.5.0",
     "eslint": "^9.0.0",
     "jsdom": "^26.1.0",
-    "ng-packagr": "^22.1.1",
+    "ng-packagr": "^22.2.0",
     "playwright": "^1.55.1",
     "postcss": "^8.5.10",
     "rxjs": "~7.8.0",
