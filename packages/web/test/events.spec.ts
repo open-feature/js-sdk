@@ -881,4 +881,79 @@ describe('Events', () => {
       expect(client.providerStatus).toEqual(ProviderStatus.ERROR);
     });
   });
+
+  describe('concurrent context changes', () => {
+    it('does not report READY while an earlier context change is still reconciling', async () => {
+      const resolvers: Array<() => void> = [];
+      const provider = {
+        metadata: { name: 'concurrent-context-change-provider' },
+        runsOn: 'client',
+        onContextChange: jest.fn(() => new Promise<void>((resolve) => resolvers.push(resolve))),
+        resolveBooleanEvaluation: jest.fn(),
+        resolveStringEvaluation: jest.fn(),
+        resolveNumberEvaluation: jest.fn(),
+        resolveObjectEvaluation: jest.fn(),
+      } as unknown as Provider;
+
+      const testDomain = uuid();
+      await OpenFeature.setProviderAndWait(testDomain, provider);
+      const client = OpenFeature.getClient(testDomain);
+      const contextChangedHandler = jest.fn();
+      client.addHandler(ProviderEvents.ContextChanged, contextChangedHandler);
+
+      const firstChange = OpenFeature.setContext(testDomain, { change: 1 });
+      const secondChange = OpenFeature.setContext(testDomain, { change: 2 });
+      expect(resolvers).toHaveLength(2);
+
+      // complete the second (newer) change while the first is still in flight
+      resolvers[1]();
+      await new Promise((resolve) => setTimeout(resolve));
+
+      expect(client.providerStatus).toEqual(ProviderStatus.RECONCILING);
+      expect(contextChangedHandler).not.toHaveBeenCalled();
+
+      // complete the first (older) change
+      resolvers[0]();
+      await Promise.all([firstChange, secondChange]);
+
+      expect(client.providerStatus).toEqual(ProviderStatus.READY);
+      expect(contextChangedHandler).toHaveBeenCalledTimes(1);
+    });
+
+    it('recovers status and events after onContextChange throws synchronously', async () => {
+      let shouldThrow = true;
+      const provider = {
+        metadata: { name: 'sync-throw-provider' },
+        runsOn: 'client',
+        onContextChange: jest.fn(() => {
+          if (shouldThrow) {
+            throw new Error(ERR_MESSAGE);
+          }
+          return Promise.resolve();
+        }),
+        resolveBooleanEvaluation: jest.fn(),
+        resolveStringEvaluation: jest.fn(),
+        resolveNumberEvaluation: jest.fn(),
+        resolveObjectEvaluation: jest.fn(),
+      } as unknown as Provider;
+
+      const testDomain = uuid();
+      await OpenFeature.setProviderAndWait(testDomain, provider);
+      const client = OpenFeature.getClient(testDomain);
+      const errorHandler = jest.fn();
+      const contextChangedHandler = jest.fn();
+      client.addHandler(ProviderEvents.Error, errorHandler);
+      client.addHandler(ProviderEvents.ContextChanged, contextChangedHandler);
+
+      await OpenFeature.setContext(testDomain, { attempt: 1 });
+      expect(client.providerStatus).toEqual(ProviderStatus.ERROR);
+      expect(errorHandler).toHaveBeenCalledTimes(1);
+
+      // a subsequent successful change must return the provider to READY
+      shouldThrow = false;
+      await OpenFeature.setContext(testDomain, { attempt: 2 });
+      expect(client.providerStatus).toEqual(ProviderStatus.READY);
+      expect(contextChangedHandler).toHaveBeenCalledTimes(1);
+    });
+  });
 });
