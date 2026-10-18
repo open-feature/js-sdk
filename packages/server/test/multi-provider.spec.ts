@@ -21,6 +21,8 @@ import {
   FirstMatchStrategy,
   FirstSuccessfulStrategy,
   ComparisonStrategy,
+  InMemoryProvider,
+  OpenFeature,
 } from '../src';
 import { legacyInitializeProvider } from '../../shared/test/legacy-initialize-provider';
 
@@ -73,6 +75,36 @@ const callBeforeHook = async (
 
 describe('MultiProvider', () => {
   const logger = new DefaultLogger();
+
+  describe('public client error details', () => {
+    afterEach(async () => {
+      await OpenFeature.clearProviders();
+    });
+
+    it.each([1, 2])('reports FLAG_NOT_FOUND when all %i providers lack the flag', async (count) => {
+      await OpenFeature.setProviderAndWait(
+        new MultiProvider(Array.from({ length: count }, () => ({ provider: new InMemoryProvider() }))),
+      );
+
+      await expect(OpenFeature.getClient().getStringDetails('missing', 'fallback')).resolves.toMatchObject({
+        value: 'fallback',
+        errorCode: ErrorCode.FLAG_NOT_FOUND,
+      });
+    });
+
+    it.each([new FirstMatchStrategy(), new FirstSuccessfulStrategy()])(
+      'preserves TYPE_MISMATCH through %p',
+      async (strategy) => {
+        const flags = { string: { variants: { on: 'hi' }, defaultVariant: 'on', disabled: false } };
+        await OpenFeature.setProviderAndWait(new MultiProvider([{ provider: new InMemoryProvider(flags) }], strategy));
+
+        await expect(OpenFeature.getClient().getNumberDetails('string', -1)).resolves.toMatchObject({
+          value: -1,
+          errorCode: ErrorCode.TYPE_MISMATCH,
+        });
+      },
+    );
+  });
 
   describe('unique names', () => {
     it('uses provider names for unique types', () => {
