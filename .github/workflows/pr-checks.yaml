@@ -43,6 +43,9 @@ jobs:
       - name: Test Angular SDK
         run: npm run test:angular
 
+      - name: Test Svelte SDK
+        run: npm run test:svelte
+
   format-lint:
     runs-on: ubuntu-latest
 
