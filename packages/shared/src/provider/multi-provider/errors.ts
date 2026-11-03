@@ -1,4 +1,4 @@
-import type { ErrorCode } from '../../evaluation';
+import { ErrorCode } from '../../evaluation';
 import { GeneralError, OpenFeatureError } from '../../errors';
 import type { RegisteredProvider } from './types';
 
@@ -19,6 +19,14 @@ export class AggregateError extends GeneralError {
     super(message);
     Object.setPrototypeOf(this, AggregateError.prototype);
     this.name = 'AggregateError';
+    const code = (originalErrors[0]?.error as OpenFeatureError)?.code;
+    // Preserve an unambiguous code without selecting between different provider failures.
+    if (
+      Object.values(ErrorCode).includes(code) &&
+      originalErrors.every(({ error }) => (error as OpenFeatureError)?.code === code)
+    ) {
+      this.code = code;
+    }
   }
 }
 
