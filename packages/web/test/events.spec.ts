@@ -163,6 +163,22 @@ describe('Events', () => {
         OpenFeature.setProvider(domain, provider);
       });
 
+      it('`PROVIDER_READY` handlers run after a provider without initialize is bound', (done) => {
+        const provider = new MockProvider({ enableEvents: false, hasInitialize: false });
+        const client = OpenFeature.getClient(domain);
+
+        client.addHandler(ProviderEvents.Ready, () => {
+          try {
+            expect(client.metadata.providerMetadata.name).toBe(provider.metadata.name);
+            done();
+          } catch (err) {
+            done(err);
+          }
+        });
+
+        OpenFeature.setProvider(domain, provider);
+      });
+
       it('It defines a mechanism for signalling `PROVIDER_ERROR`', (done) => {
         const provider = new MockProvider({ enableEvents: false, failOnInit: true });
         const client = OpenFeature.getClient(domain);

@@ -21,7 +21,7 @@ export interface ClientMetadata {
    * `@openfeature/server-sdk` will leave `framework` undefined, even when
    * used inside a framework application.
    */
-  readonly framework?: 'react' | 'angular' | 'nest';
+  readonly framework?: 'react' | 'angular' | 'nest' | 'svelte';
   readonly providerMetadata: ProviderMetadata;
 }
 
