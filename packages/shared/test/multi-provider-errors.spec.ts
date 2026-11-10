@@ -4,9 +4,56 @@ import {
   AggregateError,
 } from '../src/provider/multi-provider/errors';
 import type { RegisteredProvider } from '../src/provider/multi-provider/types';
+import { ErrorCode, FlagNotFoundError, TypeMismatchError } from '../src';
 
 describe('Multi-Provider Errors', () => {
   describe('constructAggregateError', () => {
+    it.each([1, 2])('keeps GENERAL for %i errors with a non-OpenFeature code', (count) => {
+      const error = constructAggregateError(
+        Array.from({ length: count }, (_, i) => ({
+          error: Object.assign(new Error('Connection reset'), { code: 'ECONNRESET' }),
+          providerName: `provider${i}`,
+        })),
+      );
+
+      expect(error.code).toBe(ErrorCode.GENERAL);
+    });
+
+    it('preserves a recognized code without requiring an OpenFeatureError instance', () => {
+      const error = constructAggregateError([
+        {
+          error: Object.assign(new Error('Missing flag'), { code: ErrorCode.FLAG_NOT_FOUND }),
+          providerName: 'provider',
+        },
+      ]);
+
+      expect(error.code).toBe(ErrorCode.FLAG_NOT_FOUND);
+    });
+
+    it.each([1, 2])('preserves a common error code from %i provider errors', (count) => {
+      const providerErrors = Array.from({ length: count }, (_, i) => ({
+        error: new FlagNotFoundError(`Missing flag from provider ${i}`),
+        providerName: `provider${i}`,
+      }));
+
+      const error = constructAggregateError(providerErrors);
+
+      expect(error.code).toBe(ErrorCode.FLAG_NOT_FOUND);
+      expect(error.originalErrors.map(({ error }) => error)).toEqual(providerErrors.map(({ error }) => error));
+    });
+
+    it.each([new TypeMismatchError(), new Error('unknown error'), null])(
+      'keeps GENERAL when provider error codes do not agree: %p',
+      (otherError) => {
+        const error = constructAggregateError([
+          { error: new FlagNotFoundError(), providerName: 'missing' },
+          { error: otherError, providerName: 'other' },
+        ]);
+
+        expect(error.code).toBe(ErrorCode.GENERAL);
+      },
+    );
+
     it('should create an AggregateError with provider errors', () => {
       const providerErrors = [
         { error: new Error('Provider 1 failed'), providerName: 'provider1' },
@@ -41,6 +88,7 @@ describe('Multi-Provider Errors', () => {
       expect(error).toBeInstanceOf(AggregateError);
       expect(error.message).toBe('Provider errors occurred');
       expect(error.originalErrors).toHaveLength(0);
+      expect(error.code).toBe(ErrorCode.GENERAL);
     });
 
     it('should handle non-Error objects as errors', () => {
