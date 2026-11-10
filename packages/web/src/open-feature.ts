@@ -392,23 +392,29 @@ export class OpenFeatureAPI
           });
           this._apiEmitter?.emit(ProviderEvents.Reconciling, { domain, providerName });
 
-          await maybePromise;
-          wrapper.decrementPendingContextChanges();
+          try {
+            await maybePromise;
+          } finally {
+            // decrement exactly once per increment, even if the handler rejects;
+            // decrementing in the catch below would corrupt the counter for synchronously-thrown errors
+            wrapper.decrementPendingContextChanges();
+          }
         }
       }
-      // only run the event handlers, and update the state if the onContextChange method succeeded
-      wrapper.status = this._statusEnumType.READY;
+      // only update the status and run the event handlers if the onContextChange method succeeded and
+      // all in-flight context changes have settled; otherwise a fast-completing change would report
+      // READY while an earlier change is still reconciling against a different context
       if (wrapper.allContextChangesSettled) {
+        wrapper.status = this._statusEnumType.READY;
         this.getAssociatedEventEmitters(domain).forEach((emitter) => {
           emitter?.emit(ProviderEvents.ContextChanged, { clientName: domain, domain, providerName });
         });
         this._apiEmitter?.emit(ProviderEvents.ContextChanged, { clientName: domain, domain, providerName });
       }
     } catch (err) {
-      // run error handlers instead
-      wrapper.decrementPendingContextChanges();
-      wrapper.status = this._statusEnumType.ERROR;
+      // run error handlers instead, once all in-flight context changes have settled
       if (wrapper.allContextChangesSettled) {
+        wrapper.status = this._statusEnumType.ERROR;
         const error = err as Error | undefined;
         const message = `Error running ${providerName}'s context change handler: ${error?.message}`;
         this._logger?.error(`${message}`, err);
