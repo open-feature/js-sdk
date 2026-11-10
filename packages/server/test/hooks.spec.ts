@@ -1,4 +1,4 @@
-import type { Provider, ResolutionDetails, Client, FlagValueType, EvaluationContext, Hook } from '../src';
+import type { Provider, ResolutionDetails, Client, FlagValueType, EvaluationContext, Hook, HookContext } from '../src';
 import { OpenFeature, StandardResolutionReasons, ErrorCode } from '../src';
 
 const BOOLEAN_VALUE = true;
@@ -205,6 +205,110 @@ describe('Hooks', () => {
   });
 
   describe('Requirement 4.3.3', () => {
+    it('preserves later hook stages with an empty slot in the hooks array', async () => {
+      const hooks = new Array<Hook>(1);
+      const after = jest.fn();
+      hooks.push({ after });
+
+      const result = await client.getBooleanDetails(FLAG_KEY, false, undefined, { hooks });
+
+      expect(result.value).toBe(BOOLEAN_VALUE);
+      expect(after).toHaveBeenCalledTimes(1);
+    });
+
+    it('preserves later stages and merged context for a hook without before', async () => {
+      const stages: string[] = [];
+      let afterContext: Readonly<HookContext> | undefined;
+      const hook: Hook = {
+        after: (context) => {
+          afterContext = context;
+          expect(context.context).toMatchObject({ initial: true, first: true, second: true });
+          expect(Object.isFrozen(context.context)).toBe(true);
+          stages.push('after');
+        },
+        finally: (context) => {
+          expect(context).toBe(afterContext);
+          stages.push('finally');
+        },
+      };
+
+      const result = await client.getBooleanDetails(
+        FLAG_KEY,
+        false,
+        { initial: true },
+        {
+          hooks: [
+            {
+              before: () => {
+                stages.push('first');
+                return { first: true };
+              },
+            },
+            hook,
+            {
+              before: async (context) => {
+                expect(context.context.first).toBe(true);
+                stages.push('second');
+                return { second: true };
+              },
+            },
+          ],
+        },
+      );
+
+      expect(result.value).toBe(BOOLEAN_VALUE);
+      expect(stages).toEqual(['first', 'second', 'after', 'finally']);
+    });
+
+    it.each([false, true])(
+      'reads a before getter once and preserves its receiver (inherited: %p)',
+      async (inherited) => {
+        const parent = {};
+        const hook: Hook = Object.create(inherited ? parent : Object.prototype);
+        const before = jest.fn(function (this: Hook, context: Readonly<HookContext>) {
+          expect(this).toBe(hook);
+          expect(context.context.initial).toBe(true);
+          return { added: true };
+        });
+        const readBefore = jest.fn(() => before);
+        Object.defineProperty(inherited ? parent : hook, 'before', { get: readBefore });
+        Object.defineProperty(before, 'call', {
+          value: () => {
+            throw new Error('own call must not run');
+          },
+        });
+
+        const result = await client.getBooleanDetails(FLAG_KEY, false, { initial: true }, { hooks: [hook] });
+
+        expect(result.value).toBe(BOOLEAN_VALUE);
+        expect(readBefore).toHaveBeenCalledTimes(1);
+        expect(before).toHaveBeenCalledTimes(1);
+        expect(MOCK_PROVIDER.resolveBooleanEvaluation).toHaveBeenCalledWith(
+          FLAG_KEY,
+          false,
+          expect.objectContaining({ initial: true, added: true }),
+          expect.anything(),
+        );
+      },
+    );
+
+    it('runs error and finally hooks when a before getter throws', async () => {
+      const error = new Error('before getter failed');
+      const hook: Hook = { error: jest.fn(), finally: jest.fn() };
+      Object.defineProperty(hook, 'before', {
+        get: () => {
+          throw error;
+        },
+      });
+
+      const result = await client.getBooleanDetails(FLAG_KEY, false, undefined, { hooks: [hook] });
+
+      expect(MOCK_PROVIDER.resolveBooleanEvaluation).not.toHaveBeenCalled();
+      expect(result.errorCode).toBe(ErrorCode.GENERAL);
+      expect(hook.error).toHaveBeenCalledWith(expect.anything(), error, undefined);
+      expect(hook.finally).toHaveBeenCalledTimes(1);
+    });
+
     it('EvaluationContext must be passed to next "before" hook', (done) => {
       client.getBooleanValue(FLAG_KEY, false, undefined, {
         hooks: [
