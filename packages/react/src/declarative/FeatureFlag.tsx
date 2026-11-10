@@ -101,7 +101,7 @@ export function FeatureFlag<T extends FlagValue = FlagValue>({
   });
 
   // If the flag evaluation failed, we render the fallback
-  if (details.reason === 'ERROR') {
+  if (details.reason === 'ERROR' && details.details?.errorCode !== 'FLAG_NOT_FOUND') {
     const fallbackNode: React.ReactNode =
       typeof fallback === 'function' ? fallback(details.details as EvaluationDetails<T>) : fallback;
     return <>{fallbackNode}</>;
