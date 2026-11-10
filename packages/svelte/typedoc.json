@@ -1,0 +1,6 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "@openfeature/svelte-sdk",
+  "includeVersion": true,
+  "entryPoints": ["src/index.ts"]
+}

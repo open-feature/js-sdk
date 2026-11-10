@@ -12,7 +12,14 @@ export default {
   // function indicating which deps should be considered external: external deps will NOT have their types bundled
   external: (id) => {
     // bundle everything except peer deps (@openfeature/*, @nest/*,  react, rxjs)
-    return id.startsWith('@openfeature') || id.startsWith('@nest') || id === 'rxjs' || id === 'react';
+    return (
+      id.startsWith('@openfeature') ||
+      id.startsWith('@nest') ||
+      id === 'rxjs' ||
+      id === 'react' ||
+      id === 'svelte' ||
+      id.startsWith('svelte/')
+    );
   },
   plugins: [
     // use the rollup override tsconfig (applies equivalent in each sub-packages as well)
