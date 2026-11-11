@@ -90,11 +90,15 @@ export class OpenFeatureClient implements Client {
     if (shouldRunNow) {
       // run immediately, we're in the matching state
       try {
-        handler({
+        const result = handler({
           clientName: this.metadata.name,
           domain: this.metadata.domain,
           providerName: this._provider.metadata.name,
         });
+
+        Promise.resolve(result).catch((err) =>
+          this._logger?.error(`Error running event handler for ${eventType}:`, err),
+        );
       } catch (err) {
         this._logger?.error('Error running event handler:', err);
       }
