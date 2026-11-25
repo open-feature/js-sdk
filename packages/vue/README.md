@@ -212,7 +212,9 @@ Use `useOpenFeatureClientStatus()` to react to later `RECONCILING` states.
 ### Provider events
 
 By default, evaluations update on `Ready`, `ContextChanged`, `ConfigurationChanged`, `Error`, and `Stale` events.
-Configuration changes only re-evaluate the current flag when `flagsChanged` is provided.
+Configuration changes re-evaluate the current flag.
+When `flagsChanged` is provided, only matching flags are re-evaluated.
+When it is omitted, all flags may update.
 
 Disable updates per evaluation or through the provider.
 
