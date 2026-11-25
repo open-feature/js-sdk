@@ -7,10 +7,11 @@ import type {
   Provider,
 } from '@openfeature/web-sdk';
 import { NOOP_PROVIDER, OpenFeature, TypedInMemoryProvider } from '@openfeature/web-sdk';
-import type { App, Plugin, PropType } from 'vue';
-import { defineComponent, h } from 'vue';
+import type { App, Plugin, PropType, VNode } from 'vue';
+import { defineComponent, h, toRaw } from 'vue';
 import { OpenFeaturePlugin } from '../plugin';
 import type { VueFlagEvaluationOptions } from '../options';
+import type { StableComponent } from '../internal/component-type';
 import { OpenFeatureProvider } from './provider';
 
 type FlagValueMap = Record<string, JsonValue>;
@@ -32,12 +33,19 @@ export type OpenFeatureTestProviderProps = {
 } & VueFlagEvaluationOptions &
   TestProviderSelection;
 
+export type OpenFeatureTestProviderSlots = {
+  default?: () => VNode[];
+};
+
 export type OpenFeatureTestPluginOptions = OpenFeatureTestProviderProps & {
   context?: EvaluationContext;
 };
 
 const TEST_VARIANT = 'test-variant';
 const TEST_PROVIDER = 'test-provider';
+const TEST_NOOP_PROVIDER = Object.assign(Object.create(NOOP_PROVIDER) as Provider, {
+  metadata: { name: TEST_PROVIDER },
+});
 
 class TestProvider extends TypedInMemoryProvider {
   initialize?: Provider['initialize'];
@@ -73,14 +81,17 @@ class TestProvider extends TypedInMemoryProvider {
 }
 
 function mixInNoop(provider: Partial<Provider>): Provider {
-  return new Proxy(provider as Provider, {
-    get(target, property, receiver) {
+  const target = toRaw(provider) as Provider;
+
+  return new Proxy(target, {
+    get(target, property) {
       if (property === 'metadata') {
         return target.metadata?.name ? target.metadata : { name: TEST_PROVIDER };
       }
 
       if (property in target) {
-        return Reflect.get(target, property, receiver);
+        const value = Reflect.get(target, property, target);
+        return typeof value === 'function' ? value.bind(target) : value;
       }
 
       const value = Reflect.get(NOOP_PROVIDER, property);
@@ -102,7 +113,7 @@ function createEffectiveProvider(options: {
     return mixInNoop(options.provider);
   }
 
-  return NOOP_PROVIDER;
+  return TEST_NOOP_PROVIDER;
 }
 
 export const OpenFeatureTestProvider = defineComponent({
@@ -164,7 +175,7 @@ export const OpenFeatureTestProvider = defineComponent({
         slots,
       );
   },
-});
+}) as unknown as StableComponent<OpenFeatureTestProviderProps, OpenFeatureTestProviderSlots>;
 
 export function createOpenFeatureTestPlugin(options: OpenFeatureTestPluginOptions = {}): Plugin {
   const provider = createEffectiveProvider(options);

@@ -1,4 +1,4 @@
-import type { Provider, ResolutionDetails } from '@openfeature/web-sdk';
+import type { EvaluationContext, Provider, ResolutionDetails } from '@openfeature/web-sdk';
 import { OpenFeature } from '@openfeature/web-sdk';
 import { flushPromises, mount } from '@vue/test-utils';
 import { createApp, defineComponent, h } from 'vue';
@@ -20,6 +20,16 @@ describe('Vue test utilities', () => {
   });
 
   it('renders defaults with OpenFeatureTestProvider and no options', () => {
+    const wrapper = mount(OpenFeatureTestProvider, {
+      slots: { default: () => h(FlagComponent) },
+    });
+
+    expect(wrapper.text()).toBe('false:No-op');
+    wrapper.unmount();
+  });
+
+  it('renders no-op defaults on a fresh SDK singleton', async () => {
+    await OpenFeature.clearProviders();
     const wrapper = mount(OpenFeatureTestProvider, {
       slots: { default: () => h(FlagComponent) },
     });
@@ -89,6 +99,23 @@ describe('Vue test utilities', () => {
     wrapper.unmount();
   });
 
+  it('supports partial providers with private state', () => {
+    class PrivateProvider implements Partial<Provider> {
+      #enabled = true;
+
+      resolveBooleanEvaluation(): ResolutionDetails<boolean> {
+        return { value: this.#enabled, reason: 'PRIVATE_REASON' };
+      }
+    }
+    const wrapper = mount(OpenFeatureTestProvider, {
+      props: { provider: new PrivateProvider() },
+      slots: { default: () => h(FlagComponent) },
+    });
+
+    expect(wrapper.text()).toBe('true:PRIVATE_REASON');
+    wrapper.unmount();
+  });
+
   it('fills missing partial provider methods with no-op behavior', () => {
     class EmptyProvider implements Partial<Provider> {}
     const wrapper = mount(OpenFeatureTestProvider, {
@@ -120,6 +147,47 @@ describe('Vue test utilities', () => {
 
     expect(container.textContent).toBe('true:STATIC');
     expect(OpenFeature.getProvider('test-plugin-domain').metadata.name).toBe('in-memory');
+    app.unmount();
+  });
+
+  it('creates a no-op test plugin on a fresh SDK singleton', async () => {
+    await OpenFeature.clearProviders();
+    const app = createApp(FlagComponent);
+    app.use(createOpenFeatureTestPlugin());
+    const container = document.createElement('div');
+    app.mount(container);
+
+    expect(container.textContent).toBe('false:No-op');
+    app.unmount();
+  });
+
+  it('creates a delayed test plugin', async () => {
+    const delay = 10;
+    const app = createApp(FlagComponent);
+    app.use(createOpenFeatureTestPlugin({ flagValueMap: { [FLAG_KEY]: true }, delayMs: delay }));
+    const container = document.createElement('div');
+    app.mount(container);
+
+    expect(container.textContent).toBe('false:ERROR');
+    await new Promise((resolve) => setTimeout(resolve, delay * 2));
+    await flushPromises();
+
+    expect(container.textContent).toBe('true:STATIC');
+    app.unmount();
+  });
+
+  it('creates a test plugin with an initial context', () => {
+    class ContextProvider implements Partial<Provider> {
+      resolveBooleanEvaluation(_flagKey: string, _defaultValue: boolean, context: EvaluationContext) {
+        return { value: context.user === 'bob', reason: 'CONTEXT' };
+      }
+    }
+    const app = createApp(FlagComponent);
+    app.use(createOpenFeatureTestPlugin({ provider: new ContextProvider(), context: { user: 'bob' } }));
+    const container = document.createElement('div');
+    app.mount(container);
+
+    expect(container.textContent).toBe('true:CONTEXT');
     app.unmount();
   });
 
