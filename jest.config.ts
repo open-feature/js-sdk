@@ -198,6 +198,7 @@ export default {
       moduleNameMapper: {
         '@openfeature/core': '<rootDir>/packages/shared/src',
         '@openfeature/web-sdk': '<rootDir>/packages/web/src',
+        '^@vue/test-utils$': require.resolve('@vue/test-utils', { paths: [`${__dirname}/packages/vue`] }),
       },
       transform: {
         '^.+\\.ts$': [
