@@ -1,6 +1,7 @@
 import type { EvaluationContext } from '@openfeature/web-sdk';
 import { OpenFeature } from '@openfeature/web-sdk';
-import { useClientRef } from '../provider/use-open-feature-client';
+import { computed, inject } from 'vue';
+import { OPEN_FEATURE_CONTEXT_KEY } from '../internal/context';
 
 export type ContextMutationOptions = {
   defaultContext?: boolean;
@@ -13,18 +14,25 @@ export type ContextMutation = {
 };
 
 export function useContextMutator(options: ContextMutationOptions = {}): ContextMutation {
-  const clientRef = useClientRef();
+  const context = inject(OPEN_FEATURE_CONTEXT_KEY, undefined);
+  const domain = computed(() => (options.defaultContext ? undefined : context?.value.client.metadata.domain));
+
+  if (!options.defaultContext && !domain.value) {
+    console.warn(
+      '[useContextMutator] No domain available from OpenFeature context. setContext will mutate the default context, as if defaultContext were true.',
+    );
+  }
 
   const setContext = async (
     updatedContext: EvaluationContext | ((currentContext: EvaluationContext) => EvaluationContext),
   ): Promise<void> => {
-    const domain = options.defaultContext ? undefined : clientRef.value.metadata.domain;
-    const previousContext = OpenFeature.getContext(domain);
+    const currentDomain = domain.value;
+    const previousContext = OpenFeature.getContext(currentDomain);
     const resolvedContext = typeof updatedContext === 'function' ? updatedContext(previousContext) : updatedContext;
 
     if (previousContext !== resolvedContext) {
-      if (domain) {
-        await OpenFeature.setContext(domain, resolvedContext);
+      if (currentDomain) {
+        await OpenFeature.setContext(currentDomain, resolvedContext);
       } else {
         await OpenFeature.setContext(resolvedContext);
       }

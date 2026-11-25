@@ -3,7 +3,7 @@ import { OpenFeature, ProviderEvents, TypedInMemoryProvider } from '@openfeature
 import { flushPromises } from '@vue/test-utils';
 import { computed, nextTick, ref } from 'vue';
 import { useContextMutator, useTrack } from '../src';
-import { mountComposableInProvider } from './utils';
+import { mountComposable, mountComposableInProvider } from './utils';
 
 describe('context and tracking composables', () => {
   beforeEach(async () => {
@@ -86,6 +86,27 @@ describe('context and tracking composables', () => {
     expect(OpenFeature.getContext(firstDomain)).toEqual({});
     expect(OpenFeature.getContext(secondDomain)).toEqual({ user: 'bob' });
     wrapper.unmount();
+  });
+
+  it('can mutate the default context without a provider', async () => {
+    const { result, wrapper } = mountComposable(() => useContextMutator({ defaultContext: true }));
+
+    await result.setContext({ user: 'global-user' });
+
+    expect(OpenFeature.getContext()).toEqual({ user: 'global-user' });
+    wrapper.unmount();
+  });
+
+  it('falls back to the default context without a provider and warns', async () => {
+    const consoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const { result, wrapper } = mountComposable(() => useContextMutator());
+
+    await result.setContext({ user: 'fallback-user' });
+
+    expect(OpenFeature.getContext()).toEqual({ user: 'fallback-user' });
+    expect(consoleWarn).toHaveBeenCalledWith(expect.stringContaining('No domain available'));
+    wrapper.unmount();
+    consoleWarn.mockRestore();
   });
 
   it('tracks events with the provider context and details', async () => {
