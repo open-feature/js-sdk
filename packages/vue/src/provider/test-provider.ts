@@ -1,0 +1,177 @@
+import type {
+  BaseHook,
+  EvaluationContext,
+  HookHints,
+  InMemoryFlagConfiguration,
+  JsonValue,
+  Provider,
+} from '@openfeature/web-sdk';
+import { NOOP_PROVIDER, OpenFeature, TypedInMemoryProvider } from '@openfeature/web-sdk';
+import type { App, Plugin, PropType } from 'vue';
+import { defineComponent, h } from 'vue';
+import { OpenFeaturePlugin } from '../plugin';
+import type { VueFlagEvaluationOptions } from '../options';
+import { OpenFeatureProvider } from './provider';
+
+type FlagValueMap = Record<string, JsonValue>;
+
+type TestProviderSelection =
+  | {
+      provider?: never;
+      flagValueMap?: FlagValueMap;
+      delayMs?: number;
+    }
+  | {
+      provider?: Partial<Provider>;
+      flagValueMap?: never;
+      delayMs?: never;
+    };
+
+export type OpenFeatureTestProviderProps = {
+  domain?: string;
+} & VueFlagEvaluationOptions &
+  TestProviderSelection;
+
+export type OpenFeatureTestPluginOptions = OpenFeatureTestProviderProps & {
+  context?: EvaluationContext;
+};
+
+const TEST_VARIANT = 'test-variant';
+const TEST_PROVIDER = 'test-provider';
+
+class TestProvider extends TypedInMemoryProvider {
+  initialize?: Provider['initialize'];
+
+  constructor(
+    flagValueMap: FlagValueMap,
+    private delay = 0,
+  ) {
+    const flagConfig = Object.entries(flagValueMap).reduce<InMemoryFlagConfiguration>((config, [flagKey, value]) => {
+      config[flagKey] = {
+        variants: { [TEST_VARIANT]: value },
+        defaultVariant: TEST_VARIANT,
+        disabled: false,
+      };
+      return config;
+    }, {});
+    super(flagConfig);
+
+    if (delay > 0) {
+      this.initialize = async () => {
+        await new Promise<void>((resolve) => setTimeout(resolve, delay));
+      };
+    }
+  }
+
+  onContextChange(): Promise<void> | void {
+    if (this.delay <= 0) {
+      return;
+    }
+
+    return new Promise<void>((resolve) => setTimeout(resolve, this.delay));
+  }
+}
+
+function mixInNoop(provider: Partial<Provider>): Provider {
+  return new Proxy(provider as Provider, {
+    get(target, property, receiver) {
+      if (property === 'metadata') {
+        return target.metadata?.name ? target.metadata : { name: TEST_PROVIDER };
+      }
+
+      if (property in target) {
+        return Reflect.get(target, property, receiver);
+      }
+
+      const value = Reflect.get(NOOP_PROVIDER, property);
+      return typeof value === 'function' ? value.bind(NOOP_PROVIDER) : value;
+    },
+  });
+}
+
+function createEffectiveProvider(options: {
+  flagValueMap?: FlagValueMap;
+  provider?: Partial<Provider>;
+  delayMs?: number;
+}): Provider {
+  if (options.flagValueMap) {
+    return new TestProvider(options.flagValueMap, options.delayMs);
+  }
+
+  if (options.provider) {
+    return mixInNoop(options.provider);
+  }
+
+  return NOOP_PROVIDER;
+}
+
+export const OpenFeatureTestProvider = defineComponent({
+  name: 'OpenFeatureTestProvider',
+  inheritAttrs: false,
+  props: {
+    domain: {
+      type: String,
+      required: false,
+    },
+    flagValueMap: {
+      type: Object as PropType<FlagValueMap>,
+      required: false,
+    },
+    delayMs: {
+      type: Number,
+      default: 0,
+    },
+    provider: {
+      type: Object as PropType<Partial<Provider>>,
+      required: false,
+    },
+    updateOnConfigurationChanged: {
+      type: Boolean,
+      default: true,
+    },
+    updateOnContextChanged: {
+      type: Boolean,
+      default: true,
+    },
+    hooks: {
+      type: Array as PropType<BaseHook[]>,
+      required: false,
+    },
+    hookHints: {
+      type: Object as PropType<HookHints>,
+      required: false,
+    },
+  },
+  setup(props, { slots }) {
+    const provider = createEffectiveProvider(props);
+
+    if (props.domain) {
+      OpenFeature.setProvider(props.domain, provider);
+    } else {
+      OpenFeature.setProvider(provider);
+    }
+
+    return () =>
+      h(
+        OpenFeatureProvider,
+        {
+          domain: props.domain,
+          updateOnConfigurationChanged: props.updateOnConfigurationChanged,
+          updateOnContextChanged: props.updateOnContextChanged,
+          hooks: props.hooks,
+          hookHints: props.hookHints,
+        },
+        slots,
+      );
+  },
+});
+
+export function createOpenFeatureTestPlugin(options: OpenFeatureTestPluginOptions = {}): Plugin {
+  const provider = createEffectiveProvider(options);
+
+  return {
+    install(app: App) {
+      app.use(OpenFeaturePlugin, { ...options, provider });
+    },
+  };
+}

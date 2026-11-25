@@ -5,7 +5,7 @@ import type { App, Plugin } from 'vue';
 import { computed } from 'vue';
 import type { VueFlagEvaluationOptions } from './options';
 import { OPEN_FEATURE_CONTEXT_KEY } from './internal/context';
-import { OpenFeatureProvider } from './provider';
+import { OpenFeatureProvider } from './provider/provider';
 import { FeatureFlag } from './declarative';
 
 type ClientOrDomain =
