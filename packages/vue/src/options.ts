@@ -14,9 +14,13 @@ export const DEFAULT_OPTIONS: NormalizedOptions = {
   updateOnContextChanged: true,
 };
 
-export function normalizeOptions(options: VueFlagEvaluationOptions = {}): NormalizedOptions {
+export function normalizeOptions(options: VueFlagEvaluationOptions = {}): Partial<NormalizedOptions> {
   return {
-    updateOnConfigurationChanged: options.updateOnConfigurationChanged ?? DEFAULT_OPTIONS.updateOnConfigurationChanged,
-    updateOnContextChanged: options.updateOnContextChanged ?? DEFAULT_OPTIONS.updateOnContextChanged,
+    ...(typeof options.updateOnConfigurationChanged === 'boolean' && {
+      updateOnConfigurationChanged: options.updateOnConfigurationChanged,
+    }),
+    ...(typeof options.updateOnContextChanged === 'boolean' && {
+      updateOnContextChanged: options.updateOnContextChanged,
+    }),
   };
 }
