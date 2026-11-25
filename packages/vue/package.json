@@ -1,0 +1,62 @@
+{
+  "name": "@openfeature/vue-sdk",
+  "version": "0.1.0",
+  "description": "OpenFeature Vue SDK",
+  "main": "./dist/cjs/index.js",
+  "files": [
+    "dist/"
+  ],
+  "exports": {
+    "types": "./dist/types.d.ts",
+    "import": "./dist/esm/index.js",
+    "require": "./dist/cjs/index.js",
+    "default": "./dist/cjs/index.js"
+  },
+  "types": "./dist/types.d.ts",
+  "scripts": {
+    "test": "jest --verbose",
+    "lint": "eslint ./",
+    "lint:fix": "eslint ./ --fix",
+    "clean": "shx rm -rf ./dist",
+    "build:vue-esm": "esbuild src/index.ts --bundle --external:vue --external:@openfeature/web-sdk --sourcemap --target=es2015 --platform=browser --format=esm --outfile=./dist/esm/index.js --analyze",
+    "build:vue-cjs": "esbuild src/index.ts --bundle --external:vue --external:@openfeature/web-sdk --sourcemap --target=es2015 --platform=browser --format=cjs --outfile=./dist/cjs/index.js --analyze",
+    "build:rollup-types": "rollup -c ../../rollup.config.mjs",
+    "build": "npm run clean && npm run build:vue-esm && npm run build:vue-cjs && npm run build:rollup-types",
+    "postbuild": "shx cp ./../../package.esm.json ./dist/esm/package.json",
+    "current-version": "echo $npm_package_version",
+    "prepack": "shx cp ./../../LICENSE ./LICENSE",
+    "publish-if-not-exists": "cp $NPM_CONFIG_USERCONFIG .npmrc && if [ \"$(npm show $npm_package_name@$npm_package_version version)\" = \"$(npm run current-version -s)\" ]; then echo 'already published, skipping'; else npm publish --access public; fi"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/open-feature/js-sdk.git"
+  },
+  "keywords": [
+    "openfeature",
+    "feature",
+    "flags",
+    "toggles",
+    "browser",
+    "web",
+    "vue"
+  ],
+  "author": "",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/open-feature/js-sdk/issues"
+  },
+  "homepage": "https://github.com/open-feature/js-sdk#readme",
+  "peerDependencies": {
+    "@openfeature/web-sdk": "^1.11.0",
+    "vue": ">=3.3.0 <4.0.0"
+  },
+  "devDependencies": {
+    "@openfeature/core": "*",
+    "@openfeature/web-sdk": "*",
+    "@vue/compiler-dom": "^3.5.46",
+    "@vue/server-renderer": "^3.5.46",
+    "@vue/test-utils": "^2.6.0",
+    "vue": "^3.5.46"
+  },
+  "sideEffects": false
+}
