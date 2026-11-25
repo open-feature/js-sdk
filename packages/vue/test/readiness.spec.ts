@@ -70,6 +70,22 @@ describe('useWhenProviderReady', () => {
     consoleError.mockRestore();
   });
 
+  it('reflects later provider status changes when awaited', async () => {
+    const domain = 'ready-status-changes';
+    const provider = new TypedInMemoryProvider(FLAG_CONFIG);
+    await OpenFeature.setProviderAndWait(domain, provider);
+    const { result, wrapper } = mountComposableInProvider(() => useWhenProviderReady(), { domain });
+
+    expect(await result).toBe(true);
+    provider.events?.emit(ProviderEvents.Stale, { providerName: provider.metadata.name });
+    await nextTick();
+    expect(await result).toBe(false);
+    provider.events?.emit(ProviderEvents.Ready, { providerName: provider.metadata.name });
+    await nextTick();
+    expect(await result).toBe(true);
+    wrapper.unmount();
+  });
+
   it('shows the Suspense fallback until the provider is ready', async () => {
     const consoleInfo = jest.spyOn(console, 'info').mockImplementation(() => undefined);
     const domain = 'ready-suspense';

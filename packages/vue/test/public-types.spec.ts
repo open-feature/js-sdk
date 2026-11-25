@@ -1,6 +1,8 @@
+import { mount } from '@vue/test-utils';
 import { h } from 'vue';
 import type { FlagValue } from '@openfeature/web-sdk';
 import type { FeatureFlag, FeatureFlagComponentProps, FeatureFlagProps, FlagQuery } from '../src';
+import { OpenFeatureProvider, OpenFeatureTestProvider } from '../src';
 
 describe('public types', () => {
   it('exposes typed FeatureFlag props and slots', () => {
@@ -23,6 +25,20 @@ describe('public types', () => {
     expect(componentProps).toBe(props);
     expect(booleanProps.defaultValue).toBe(false);
     expect(slotIsTyped).toBe(true);
+  });
+
+  it('supports typed Vue Test Utils slots', () => {
+    const provider = mount(OpenFeatureProvider, {
+      slots: { default: () => h('div') },
+    });
+    const testProvider = mount(OpenFeatureTestProvider, {
+      slots: { default: () => h('div') },
+    });
+
+    expect(provider.find('div').exists()).toBe(true);
+    expect(testProvider.find('div').exists()).toBe(true);
+    provider.unmount();
+    testProvider.unmount();
   });
 
   it('requires matchValue for non-boolean FeatureFlag props', () => {

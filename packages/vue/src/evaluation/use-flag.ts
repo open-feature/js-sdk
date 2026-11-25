@@ -173,7 +173,7 @@ function useFlagDetailsInternal<T extends FlagValue>(
   let activeController: AbortController | undefined;
   let cancelReadiness: (() => void) | undefined;
   let readinessGeneration = 0;
-  let currentSettled: Promise<EvaluationDetails<T>> = Promise.resolve(latestDetails);
+  let currentSettled: Promise<EvaluationDetails<T>> | undefined;
   let disposed = false;
 
   onScopeDispose(() => {
@@ -260,7 +260,7 @@ function useFlagDetailsInternal<T extends FlagValue>(
     const generationInputs = { ...latestInputs };
 
     if (!shouldWaitForProvider(client)) {
-      currentSettled = Promise.resolve(latestDetails);
+      currentSettled = undefined;
       return generation;
     }
 
@@ -281,6 +281,7 @@ function useFlagDetailsInternal<T extends FlagValue>(
       .then((resolvedDetails) => {
         if (!disposed && generation === readinessGeneration) {
           setDetails(resolvedDetails);
+          currentSettled = undefined;
         }
 
         return resolvedDetails;
@@ -304,7 +305,7 @@ function useFlagDetailsInternal<T extends FlagValue>(
     { immediate: true },
   );
 
-  const getSettled = () => currentSettled;
+  const getSettled = () => currentSettled ?? Promise.resolve(latestDetails);
 
   return { details: makeAwaitableRef(details, getSettled), getSettled };
 }

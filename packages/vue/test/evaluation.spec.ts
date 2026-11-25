@@ -270,6 +270,7 @@ describe('evaluation composables', () => {
     await nextTick();
 
     expect(result.value).toBe(false);
+    expect(await result).toBe(false);
     wrapper.unmount();
   });
 
@@ -360,6 +361,7 @@ describe('evaluation composables', () => {
     await flushPromises();
 
     expect(result.value).toBe(true);
+    expect(await result).toBe(true);
     wrapper.unmount();
   });
 
@@ -379,6 +381,7 @@ describe('evaluation composables', () => {
     await flushPromises();
 
     expect(result.value).toBe(false);
+    expect(await result).toBe(false);
     wrapper.unmount();
   });
 
