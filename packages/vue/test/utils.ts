@@ -1,6 +1,10 @@
-import type { InMemoryFlagConfiguration, InMemoryFlagVariants, TypedInMemoryProvider } from '@openfeature/web-sdk';
+import type { InMemoryFlagConfiguration, InMemoryFlagVariants } from '@openfeature/web-sdk';
+import { TypedInMemoryProvider } from '@openfeature/web-sdk';
 import { mount } from '@vue/test-utils';
-import { defineComponent } from 'vue';
+import type { MaybeRefOrGetter } from 'vue';
+import { defineComponent, h, toValue } from 'vue';
+import type { OpenFeatureProviderProps } from '../src';
+import { OpenFeatureProvider } from '../src';
 
 export class DelayedProvider<
   T extends Record<string, InMemoryFlagVariants<string>> = Record<string, InMemoryFlagVariants<string>>,
@@ -30,6 +34,24 @@ export function mountComposable<T>(composable: () => T, options: Parameters<type
     },
   });
   const wrapper = mount(component, options);
+
+  return { result, wrapper };
+}
+
+export function mountComposableInProvider<T>(composable: () => T, props: MaybeRefOrGetter<OpenFeatureProviderProps>) {
+  let result!: T;
+  const component = defineComponent({
+    setup() {
+      result = composable();
+      return () => null;
+    },
+  });
+  const host = defineComponent({
+    setup() {
+      return () => h(OpenFeatureProvider, toValue(props), { default: () => h(component) });
+    },
+  });
+  const wrapper = mount(host);
 
   return { result, wrapper };
 }
