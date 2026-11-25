@@ -1,7 +1,6 @@
 import { h } from 'vue';
 import type { FlagValue } from '@openfeature/web-sdk';
-import type { FeatureFlagComponentProps, FeatureFlagProps, FlagQuery } from '../src';
-import { FeatureFlag } from '../src';
+import type { FeatureFlag, FeatureFlagComponentProps, FeatureFlagProps, FlagQuery } from '../src';
 
 describe('public types', () => {
   it('exposes typed FeatureFlag props and slots', () => {
