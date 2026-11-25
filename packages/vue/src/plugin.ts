@@ -6,6 +6,7 @@ import { computed } from 'vue';
 import type { VueFlagEvaluationOptions } from './options';
 import { OPEN_FEATURE_CONTEXT_KEY } from './internal/context';
 import { OpenFeatureProvider } from './provider';
+import { FeatureFlag } from './declarative';
 
 type ClientOrDomain =
   | {
@@ -40,5 +41,6 @@ export const OpenFeaturePlugin: Plugin<[OpenFeaturePluginOptions?]> = {
       computed(() => ({ client, options })),
     );
     app.component('OpenFeatureProvider', OpenFeatureProvider);
+    app.component('FeatureFlag', FeatureFlag);
   },
 };
