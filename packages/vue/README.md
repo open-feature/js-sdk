@@ -24,6 +24,7 @@ The package also re-exports `@openfeature/web-sdk`.
 
 - Vue 3.3 or later
 - An ES2015-compatible web browser
+- `@openfeature/core`
 - `@openfeature/web-sdk`
 
 Vue 2, Nuxt, and server-side rendering are not supported.
@@ -31,7 +32,7 @@ Vue 2, Nuxt, and server-side rendering are not supported.
 ## Install
 
 ```sh
-npm install @openfeature/vue-sdk @openfeature/web-sdk vue
+npm install @openfeature/vue-sdk @openfeature/core @openfeature/web-sdk vue
 ```
 
 ## Setup
