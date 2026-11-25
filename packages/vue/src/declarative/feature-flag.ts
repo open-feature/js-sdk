@@ -1,14 +1,17 @@
-import type { ConstrainedFlagKey, EvaluationDetails, FlagValue } from '@openfeature/web-sdk';
-import type { PropType } from 'vue';
+import type { ConstrainedFlagKey, EvaluationDetails, FlagValue, JsonArray, JsonObject } from '@openfeature/web-sdk';
+import type { PropType, VNode } from 'vue';
 import { computed, defineComponent } from 'vue';
 import { useFlag } from '../evaluation';
 import { isEqual } from '../internal/is-equal';
+import type { StableComponent } from '../internal/component-type';
 import type { VueFlagEvaluationOptions } from '../options';
 import type { FlagQuery } from '../query';
 
+type NonBooleanFlagValue = string | number | JsonObject | JsonArray | null;
+
 type FeatureFlagMatchConfig<T extends FlagValue> = {
   defaultValue: T;
-} & (T extends boolean
+} & ([T] extends [boolean]
   ? {
       matchValue?: T;
     }
@@ -21,6 +24,13 @@ export type FeatureFlagProps<T extends FlagValue = FlagValue> = {
   predicate?: (matchValue: T | undefined, details: EvaluationDetails<T>) => boolean;
   evaluationOptions?: VueFlagEvaluationOptions;
 } & FeatureFlagMatchConfig<T>;
+
+export type FeatureFlagComponentProps = FeatureFlagProps<boolean> | FeatureFlagProps<NonBooleanFlagValue>;
+
+export type FeatureFlagSlots<T extends FlagValue = FlagValue> = {
+  default?: (query: FlagQuery<T>) => VNode[];
+  fallback?: (details: EvaluationDetails<T>) => VNode[];
+};
 
 export const FeatureFlag = defineComponent({
   name: 'FeatureFlag',
@@ -76,4 +86,4 @@ export const FeatureFlag = defineComponent({
       return shouldRender.value ? (slots.default?.(query) ?? null) : (slots.fallback?.(query.details) ?? null);
     };
   },
-});
+}) as unknown as StableComponent<FeatureFlagComponentProps, FeatureFlagSlots<FlagValue>>;

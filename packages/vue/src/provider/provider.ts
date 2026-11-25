@@ -1,10 +1,11 @@
 import { withFrameworkMetadata } from '@openfeature/core';
 import type { BaseHook, Client, HookHints } from '@openfeature/web-sdk';
 import { OpenFeature } from '@openfeature/web-sdk';
-import type { PropType } from 'vue';
+import type { PropType, VNode } from 'vue';
 import { computed, defineComponent, provide } from 'vue';
 import type { VueFlagEvaluationOptions } from '../options';
 import { OPEN_FEATURE_CONTEXT_KEY } from '../internal/context';
+import type { StableComponent } from '../internal/component-type';
 
 type ClientOrDomain =
   | {
@@ -17,6 +18,10 @@ type ClientOrDomain =
     };
 
 export type OpenFeatureProviderProps = ClientOrDomain & VueFlagEvaluationOptions;
+
+export type OpenFeatureProviderSlots = {
+  default?: () => VNode[];
+};
 
 export const OpenFeatureProvider = defineComponent({
   name: 'OpenFeatureProvider',
@@ -48,18 +53,17 @@ export const OpenFeatureProvider = defineComponent({
     },
   },
   setup(props, { slots }) {
-    const context = computed(() => ({
-      client: withFrameworkMetadata(props.client ?? OpenFeature.getClient(props.domain), 'vue'),
-      options: {
-        updateOnConfigurationChanged: props.updateOnConfigurationChanged,
-        updateOnContextChanged: props.updateOnContextChanged,
-        hooks: props.hooks,
-        hookHints: props.hookHints,
-      },
+    const client = computed(() => withFrameworkMetadata(props.client ?? OpenFeature.getClient(props.domain), 'vue'));
+    const options = computed(() => ({
+      updateOnConfigurationChanged: props.updateOnConfigurationChanged,
+      updateOnContextChanged: props.updateOnContextChanged,
+      hooks: props.hooks,
+      hookHints: props.hookHints,
     }));
+    const context = computed(() => ({ client: client.value, options: options.value }));
 
     provide(OPEN_FEATURE_CONTEXT_KEY, context);
 
     return () => slots.default?.();
   },
-});
+}) as unknown as StableComponent<OpenFeatureProviderProps, OpenFeatureProviderSlots>;

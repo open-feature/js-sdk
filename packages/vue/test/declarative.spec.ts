@@ -3,7 +3,7 @@ import { OpenFeature, StandardResolutionReasons, TypedInMemoryProvider } from '@
 import { flushPromises, mount } from '@vue/test-utils';
 import { createApp, defineComponent, h, nextTick, ref } from 'vue';
 import type { FlagQuery } from '../src';
-import { FeatureFlag, OpenFeaturePlugin, OpenFeatureProvider } from '../src';
+import { FeatureFlag, OpenFeaturePlugin, OpenFeatureProvider, OpenFeatureTestProvider } from '../src';
 import { DelayedProvider } from './utils';
 
 const FLAG_CONFIG = {
@@ -173,6 +173,27 @@ describe('FeatureFlag', () => {
     await nextTick();
 
     expect(wrapper.text()).toBe('light');
+    wrapper.unmount();
+  });
+
+  it('supports kebab-case props and scoped slots in templates', () => {
+    const wrapper = mount({
+      components: { FeatureFlag, OpenFeatureTestProvider },
+      template: `
+        <OpenFeatureTestProvider :flag-value-map="{ theme: 'dark' }">
+          <FeatureFlag flag-key="theme" default-value="light" match-value="dark">
+            <template #default="{ value }">
+              <span>dark:{{ value }}</span>
+            </template>
+            <template #fallback="{ reason }">
+              <span>light:{{ reason }}</span>
+            </template>
+          </FeatureFlag>
+        </OpenFeatureTestProvider>
+      `,
+    });
+
+    expect(wrapper.text()).toBe('dark:dark');
     wrapper.unmount();
   });
 

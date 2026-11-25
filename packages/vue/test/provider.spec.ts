@@ -33,6 +33,40 @@ describe('OpenFeature setup', () => {
     app.unmount();
   });
 
+  it('sets the initial context when the plugin configures a provider', () => {
+    const domain = 'plugin-context';
+    const provider = new TypedInMemoryProvider({});
+    const app = createApp(defineComponent({ render: () => null }));
+    app.use(OpenFeaturePlugin, { domain, provider, context: { user: 'alice' } });
+    const container = document.createElement('div');
+    app.mount(container);
+
+    expect(OpenFeature.getContext(domain)).toEqual({ user: 'alice' });
+    app.unmount();
+  });
+
+  it('provides a Vue-aware client supplied to the plugin', () => {
+    let actualClient!: Client;
+    const client = OpenFeature.getClient('plugin-client-domain');
+    const component = defineComponent({
+      setup() {
+        actualClient = useOpenFeatureClient();
+        return () => null;
+      },
+    });
+    const app = createApp(component);
+    app.use(OpenFeaturePlugin, { client });
+    const container = document.createElement('div');
+    app.mount(container);
+
+    expect(actualClient).not.toBe(client);
+    expect(actualClient.metadata).toMatchObject({
+      domain: 'plugin-client-domain',
+      framework: 'vue',
+    });
+    app.unmount();
+  });
+
   it('sets a provider supplied to the plugin', async () => {
     let actualClient!: Client;
     const provider = new TypedInMemoryProvider({
@@ -78,6 +112,28 @@ describe('OpenFeature setup', () => {
     wrapper.unmount();
   });
 
+  it('provides a Vue-aware wrapper for a supplied client', () => {
+    let actualClient!: Client;
+    const client = OpenFeature.getClient('component-client-domain');
+    const component = defineComponent({
+      setup() {
+        actualClient = useOpenFeatureClient();
+        return () => null;
+      },
+    });
+    const wrapper = mount(OpenFeatureProvider, {
+      props: { client },
+      slots: { default: () => h(component) },
+    });
+
+    expect(actualClient).not.toBe(client);
+    expect(actualClient.metadata).toMatchObject({
+      domain: 'component-client-domain',
+      framework: 'vue',
+    });
+    wrapper.unmount();
+  });
+
   it('keeps the client stable when provider props do not change', async () => {
     const clients: Client[] = [];
     const component = defineComponent({
@@ -93,6 +149,27 @@ describe('OpenFeature setup', () => {
     const firstClient = clients[0];
 
     await wrapper.setProps({ domain: 'stable-domain' });
+    await wrapper.vm.$nextTick();
+
+    expect(clients[clients.length - 1]).toBe(firstClient);
+    wrapper.unmount();
+  });
+
+  it('keeps the client stable when only evaluation options change', async () => {
+    const clients: Client[] = [];
+    const component = defineComponent({
+      setup() {
+        clients.push(useOpenFeatureClient());
+        return () => null;
+      },
+    });
+    const wrapper = mount(OpenFeatureProvider, {
+      props: { domain: 'stable-options-domain' },
+      slots: { default: () => h(component) },
+    });
+    const firstClient = clients[0];
+
+    await wrapper.setProps({ updateOnContextChanged: false });
     await wrapper.vm.$nextTick();
 
     expect(clients[clients.length - 1]).toBe(firstClient);
