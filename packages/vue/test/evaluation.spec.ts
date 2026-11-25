@@ -3,11 +3,12 @@ import {
   ErrorCode,
   OpenFeature,
   ProviderEvents,
+  ProviderFatalError,
   StandardResolutionReasons,
   TypedInMemoryProvider,
 } from '@openfeature/web-sdk';
 import { flushPromises } from '@vue/test-utils';
-import { isReactive, isRef, nextTick, ref } from 'vue';
+import { computed, isReactive, isRef, nextTick, ref } from 'vue';
 import {
   useBooleanFlagDetails,
   useBooleanFlagValue,
@@ -59,7 +60,7 @@ class FailingProvider extends TypedInMemoryProvider {
 }
 
 class EventProvider extends TypedInMemoryProvider {
-  emitConfigurationChanged(flagsChanged: string[]) {
+  emitConfigurationChanged(flagsChanged?: string[]) {
     this.events?.emit(ProviderEvents.ConfigurationChanged, {
       providerName: this.metadata.name,
       flagsChanged,
@@ -108,6 +109,26 @@ describe('evaluation composables', () => {
       reason: StandardResolutionReasons.STATIC,
     });
     expect(await result).toMatchObject({ flagKey, value: expected });
+    wrapper.unmount();
+  });
+
+  it('uses the number resolver for generic number flags', async () => {
+    const domain = 'evaluation-query-number';
+    await OpenFeature.setProviderAndWait(domain, new TypedInMemoryProvider(FLAG_CONFIG));
+    const { result, wrapper } = mountComposableInProvider(() => useFlag('number', 0), { domain });
+
+    expect(result.value).toBe(1024);
+    expect(result.type).toBe('number');
+    wrapper.unmount();
+  });
+
+  it('uses the object resolver for generic object flags', async () => {
+    const domain = 'evaluation-query-object';
+    await OpenFeature.setProviderAndWait(domain, new TypedInMemoryProvider(FLAG_CONFIG));
+    const { result, wrapper } = mountComposableInProvider(() => useFlag('object', {}), { domain });
+
+    expect(result.value).toEqual({ enabled: true });
+    expect(result.type).toBe('object');
     wrapper.unmount();
   });
 
@@ -182,6 +203,52 @@ describe('evaluation composables', () => {
     consoleError.mockRestore();
   });
 
+  it('runs evaluation hooks for provider error details', async () => {
+    const domain = 'evaluation-error-hooks';
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+    OpenFeature.setProvider(domain, new FailingProvider(FLAG_CONFIG));
+    const before = jest.fn();
+    const after = jest.fn();
+    const error = jest.fn();
+    const finallyHook = jest.fn();
+    const { result, wrapper } = mountComposableInProvider(
+      () => useBooleanFlagDetails('boolean', false, { hooks: [{ before, after, error, finally: finallyHook }] }),
+      { domain },
+    );
+
+    await expect(result).resolves.toMatchObject({ value: false, errorMessage: 'provider failed' });
+    expect(before).toHaveBeenCalledTimes(2);
+    expect(after).not.toHaveBeenCalled();
+    expect(error).toHaveBeenLastCalledWith(
+      expect.any(Object),
+      expect.objectContaining({ message: 'provider failed' }),
+      {},
+    );
+    expect(finallyHook).toHaveBeenCalledTimes(2);
+    wrapper.unmount();
+    consoleError.mockRestore();
+  });
+
+  it('resolves fatal provider errors with fatal details', async () => {
+    class FatalProvider extends TypedInMemoryProvider {
+      async initialize(): Promise<void> {
+        throw new ProviderFatalError('fatal provider error');
+      }
+    }
+    const domain = 'evaluation-fatal-error';
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+    OpenFeature.setProvider(domain, new FatalProvider(FLAG_CONFIG));
+    const { result, wrapper } = mountComposableInProvider(() => useBooleanFlagDetails('boolean', false), { domain });
+
+    await expect(result).resolves.toMatchObject({
+      value: false,
+      errorCode: ErrorCode.PROVIDER_FATAL,
+      errorMessage: 'fatal provider error',
+    });
+    wrapper.unmount();
+    consoleError.mockRestore();
+  });
+
   it('resolves with the default when the no-op provider is configured', async () => {
     const domain = 'evaluation-noop';
     const { result, wrapper } = mountComposableInProvider(() => useBooleanFlagValue('boolean', false), { domain });
@@ -216,6 +283,65 @@ describe('evaluation composables', () => {
 
     expect(result.value).toBe(false);
     defaultValue.value = true;
+    await nextTick();
+
+    expect(result.value).toBe(true);
+    wrapper.unmount();
+  });
+
+  it('awaits the current client after the provider domain changes', async () => {
+    const firstDomain = 'evaluation-switch-first';
+    const secondDomain = 'evaluation-switch-second';
+    const firstProvider = new DelayedProvider(
+      {
+        boolean: {
+          disabled: false,
+          variants: { off: false },
+          defaultVariant: 'off',
+        },
+      },
+      1000,
+    );
+    OpenFeature.setProvider(firstDomain, firstProvider);
+    await OpenFeature.setProviderAndWait(
+      secondDomain,
+      new TypedInMemoryProvider({
+        boolean: {
+          disabled: false,
+          variants: { on: true },
+          defaultVariant: 'on',
+        },
+      }),
+    );
+    const domain = ref(firstDomain);
+    const providerProps = computed(() => ({ domain: domain.value }));
+    const { result, wrapper } = mountComposableInProvider(() => useBooleanFlagValue('boolean', false), providerProps);
+
+    expect(result.value).toBe(false);
+    domain.value = secondDomain;
+    await nextTick();
+
+    expect(result.value).toBe(true);
+    expect(await result).toBe(true);
+    wrapper.unmount();
+  });
+
+  it('ignores old provider errors after the domain changes', async () => {
+    const firstDomain = 'evaluation-switch-error-first';
+    const secondDomain = 'evaluation-switch-error-second';
+    const firstProvider = new DelayedProvider(FLAG_CONFIG, 1000);
+    OpenFeature.setProvider(firstDomain, firstProvider);
+    await OpenFeature.setProviderAndWait(secondDomain, new TypedInMemoryProvider(FLAG_CONFIG));
+    const domain = ref(firstDomain);
+    const providerProps = computed(() => ({ domain: domain.value }));
+    const { result, wrapper } = mountComposableInProvider(() => useBooleanFlagValue('boolean', false), providerProps);
+
+    domain.value = secondDomain;
+    await nextTick();
+    firstProvider.events?.emit(ProviderEvents.Error, {
+      providerName: firstProvider.metadata.name,
+      message: 'old provider error',
+    });
     await nextTick();
 
     expect(result.value).toBe(true);
@@ -336,6 +462,9 @@ describe('evaluation composables', () => {
 
     provider.emitConfigurationChanged(['boolean']);
     expect(resolve.mock.calls.length).toBe(initialCalls + 1);
+
+    provider.emitConfigurationChanged();
+    expect(resolve.mock.calls.length).toBe(initialCalls + 2);
     wrapper.unmount();
   });
 
@@ -401,6 +530,46 @@ describe('evaluation composables', () => {
     wrapper.unmount();
   });
 
+  it('merges provider and evaluation hooks with evaluation hints taking precedence', async () => {
+    const domain = 'evaluation-provider-hooks';
+    await OpenFeature.setProviderAndWait(domain, new TypedInMemoryProvider(FLAG_CONFIG));
+    const providerBefore = jest.fn();
+    const evaluationBefore = jest.fn();
+    const providerHook: Hook = { before: providerBefore };
+    const evaluationHook: Hook = { before: evaluationBefore };
+    const { wrapper } = mountComposableInProvider(
+      () =>
+        useBooleanFlagValue('boolean', false, {
+          hooks: [evaluationHook],
+          hookHints: { source: 'evaluation' },
+        }),
+      {
+        domain,
+        hooks: [providerHook],
+        hookHints: { source: 'provider' },
+      },
+    );
+
+    expect(providerBefore).toHaveBeenCalledWith(expect.any(Object), { source: 'evaluation' });
+    expect(evaluationBefore).toHaveBeenCalledWith(expect.any(Object), { source: 'evaluation' });
+    expect(providerBefore.mock.invocationCallOrder[0]).toBeLessThan(evaluationBefore.mock.invocationCallOrder[0]);
+    wrapper.unmount();
+  });
+
+  it('uses provider hook hints when evaluation hints are absent', async () => {
+    const domain = 'evaluation-provider-hook-hints';
+    await OpenFeature.setProviderAndWait(domain, new TypedInMemoryProvider(FLAG_CONFIG));
+    const before = jest.fn();
+    const { wrapper } = mountComposableInProvider(() => useBooleanFlagValue('boolean', false), {
+      domain,
+      hooks: [{ before }],
+      hookHints: { source: 'provider' },
+    });
+
+    expect(before).toHaveBeenCalledWith(expect.any(Object), { source: 'provider' });
+    wrapper.unmount();
+  });
+
   it('does not evaluate twice when the provider is already ready', async () => {
     const domain = 'evaluation-single-initial-evaluation';
     await OpenFeature.setProviderAndWait(domain, new TypedInMemoryProvider(FLAG_CONFIG));
@@ -421,16 +590,22 @@ describe('evaluation composables', () => {
     const readyHandlers = client.getHandlers(ProviderEvents.Ready).length;
     const contextHandlers = client.getHandlers(ProviderEvents.ContextChanged).length;
     const configurationHandlers = client.getHandlers(ProviderEvents.ConfigurationChanged).length;
+    const errorHandlers = client.getHandlers(ProviderEvents.Error).length;
+    const staleHandlers = client.getHandlers(ProviderEvents.Stale).length;
     const { wrapper } = mountComposableInProvider(() => useBooleanFlagValue('boolean', false), { domain });
 
     expect(client.getHandlers(ProviderEvents.Ready).length).toBeGreaterThan(readyHandlers);
     expect(client.getHandlers(ProviderEvents.ContextChanged).length).toBeGreaterThan(contextHandlers);
     expect(client.getHandlers(ProviderEvents.ConfigurationChanged).length).toBeGreaterThan(configurationHandlers);
+    expect(client.getHandlers(ProviderEvents.Error).length).toBeGreaterThan(errorHandlers);
+    expect(client.getHandlers(ProviderEvents.Stale).length).toBeGreaterThan(staleHandlers);
 
     wrapper.unmount();
 
     expect(client.getHandlers(ProviderEvents.Ready).length).toBe(readyHandlers);
     expect(client.getHandlers(ProviderEvents.ContextChanged).length).toBe(contextHandlers);
     expect(client.getHandlers(ProviderEvents.ConfigurationChanged).length).toBe(configurationHandlers);
+    expect(client.getHandlers(ProviderEvents.Error).length).toBe(errorHandlers);
+    expect(client.getHandlers(ProviderEvents.Stale).length).toBe(staleHandlers);
   });
 });

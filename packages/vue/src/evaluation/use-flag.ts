@@ -7,14 +7,16 @@ import type {
   EventHandler,
   FlagEvaluationOptions,
   FlagValue,
+  FlagValueType,
   JsonValue,
   NumberFlagKey,
   ObjectFlagKey,
   StringFlagKey,
 } from '@openfeature/web-sdk';
-import { ErrorCode, ProviderEvents, ProviderStatus, StandardResolutionReasons } from '@openfeature/web-sdk';
+import { DefaultLogger, GeneralError, MapHookData, ProviderFatalError } from '@openfeature/core';
+import { OpenFeature, ProviderEvents, ProviderStatus, StandardResolutionReasons } from '@openfeature/web-sdk';
 import type { MaybeRefOrGetter } from 'vue';
-import { computed, onScopeDispose, shallowRef, toValue, watchEffect } from 'vue';
+import { computed, onScopeDispose, shallowRef, toValue, watch, watchEffect } from 'vue';
 import type { AwaitableRef } from '../internal/awaitable-ref';
 import { isEqual } from '../internal/is-equal';
 import { makeAwaitableRef } from '../internal/make-awaitable-ref';
@@ -35,13 +37,14 @@ type EvaluationInputs<T extends FlagValue> = {
   flagKey: string;
   defaultValue: T;
   resolver: EvaluationResolver<T>;
+  flagValueType: FlagValueType;
   options?: VueFlagEvaluationOptions;
   normalizedOptions: NormalizedOptions;
 };
 
 type UseFlagDetailsResult<T extends FlagValue> = {
   details: AwaitableRef<EvaluationDetails<T>>;
-  settled: Promise<EvaluationDetails<T>>;
+  getSettled: () => Promise<EvaluationDetails<T>>;
 };
 
 type ConstrainedFlagQuery<T> = T extends boolean
@@ -54,15 +57,76 @@ type ConstrainedFlagQuery<T> = T extends boolean
         ? T
         : JsonValue;
 
-function createErrorDetails<T extends FlagValue>(inputs: EvaluationInputs<T>, message?: string): EvaluationDetails<T> {
-  return {
+function createErrorDetails<T extends FlagValue>(
+  inputs: EvaluationInputs<T>,
+  message?: string,
+  runHooks = true,
+): EvaluationDetails<T> {
+  const error =
+    inputs.client.providerStatus === ProviderStatus.FATAL ? new ProviderFatalError(message) : new GeneralError(message);
+  const details: EvaluationDetails<T> = {
     flagKey: inputs.flagKey,
     flagMetadata: Object.freeze({}),
     value: inputs.defaultValue,
     reason: StandardResolutionReasons.ERROR,
-    errorCode: inputs.client.providerStatus === ProviderStatus.FATAL ? ErrorCode.PROVIDER_FATAL : ErrorCode.GENERAL,
-    errorMessage: message,
+    errorCode: error.code,
+    errorMessage: error.message,
   };
+
+  if (!runHooks) {
+    return details;
+  }
+
+  const domain = inputs.client.metadata.domain;
+  const provider = OpenFeature.getProvider(domain);
+  const hooks = [
+    ...OpenFeature.getHooks(),
+    ...inputs.client.getHooks(),
+    ...(inputs.options?.hooks ?? []),
+    ...(provider.hooks ?? []),
+  ];
+  const logger = new DefaultLogger();
+  const context = Object.freeze({ ...OpenFeature.getContext(domain) });
+  const hookHints = Object.freeze(inputs.options?.hookHints ?? {});
+  const hookContexts = hooks.map(() =>
+    Object.freeze({
+      flagKey: inputs.flagKey,
+      defaultValue: inputs.defaultValue,
+      flagValueType: inputs.flagValueType,
+      context,
+      clientMetadata: inputs.client.metadata,
+      providerMetadata: provider.metadata,
+      logger,
+      hookData: new MapHookData(),
+    }),
+  );
+  let hookError: unknown = error;
+
+  try {
+    for (const [index, hook] of hooks.entries()) {
+      hook.before?.(hookContexts[index], hookHints);
+    }
+  } catch (caughtError) {
+    hookError = caughtError;
+  }
+
+  for (const [index, hook] of [...hooks].reverse().entries()) {
+    try {
+      hook.error?.(hookContexts[hooks.length - index - 1], hookError, hookHints);
+    } catch (caughtError) {
+      logger.error('Unhandled error in error hook:', caughtError);
+    }
+  }
+
+  for (const [index, hook] of hooks.entries()) {
+    try {
+      hook.finally?.(hookContexts[index], details, hookHints);
+    } catch (caughtError) {
+      logger.error('Unhandled error in finally hook:', caughtError);
+    }
+  }
+
+  return details;
 }
 
 function evaluateInputs<T extends FlagValue>(inputs: EvaluationInputs<T>): EvaluationDetails<T> {
@@ -77,6 +141,7 @@ function useFlagDetailsInternal<T extends FlagValue>(
   flagKey: MaybeRefOrGetter<string>,
   defaultValue: MaybeRefOrGetter<T>,
   resolver: EvaluationResolver<T>,
+  flagValueType: FlagValueType,
   options?: MaybeRefOrGetter<VueFlagEvaluationOptions>,
 ): UseFlagDetailsResult<T> {
   const clientRef = useClientRef();
@@ -84,13 +149,16 @@ function useFlagDetailsInternal<T extends FlagValue>(
   const readInputs = (): EvaluationInputs<T> => {
     const providerOptions = context.value.options;
     const evaluationOptions = toValue(options);
+    const hooks = [...(providerOptions.hooks ?? []), ...(evaluationOptions?.hooks ?? [])];
+    const hookHints = evaluationOptions?.hookHints ?? providerOptions.hookHints;
 
     return {
       client: clientRef.value,
       flagKey: toValue(flagKey),
       defaultValue: toValue(defaultValue),
       resolver,
-      options: evaluationOptions,
+      flagValueType,
+      options: hooks.length || hookHints ? { hooks, hookHints } : undefined,
       normalizedOptions: {
         ...DEFAULT_OPTIONS,
         ...normalizeOptions(providerOptions),
@@ -103,13 +171,17 @@ function useFlagDetailsInternal<T extends FlagValue>(
   let latestDetails = evaluateInputs(latestInputs);
   const details = shallowRef(latestDetails);
   let activeController: AbortController | undefined;
+  let cancelReadiness: (() => void) | undefined;
+  let readinessGeneration = 0;
+  let currentSettled: Promise<EvaluationDetails<T>> = Promise.resolve(latestDetails);
   let disposed = false;
-  const cleanups: Array<() => void> = [];
 
   onScopeDispose(() => {
     disposed = true;
+    readinessGeneration++;
     activeController?.abort();
-    cleanups.splice(0).forEach((cleanup) => cleanup());
+    cancelReadiness?.();
+    cancelReadiness = undefined;
   });
 
   const setDetails = (updatedDetails: EvaluationDetails<T>) => {
@@ -181,46 +253,74 @@ function useFlagDetailsInternal<T extends FlagValue>(
     });
   });
 
-  const initialClient = clientRef.value;
-  const shouldWait = shouldWaitForProvider(initialClient);
-  const readiness = shouldWait
-    ? waitForProviderReady(
-        initialClient,
-        () => {
-          updateEvaluation();
-          return latestDetails;
-        },
-        (message) => createErrorDetails(latestInputs, message),
-        (cleanup) => cleanups.push(cleanup),
-      )
-    : Promise.resolve(latestDetails);
-  const settled = (
-    shouldWait
-      ? readiness.then((resolvedDetails) => {
-          if (!disposed) {
-            latestDetails = resolvedDetails;
-            details.value = resolvedDetails;
-          }
+  const startReadiness = (client: Client) => {
+    const generation = ++readinessGeneration;
+    cancelReadiness?.();
+    cancelReadiness = undefined;
+    const generationInputs = { ...latestInputs };
 
-          return resolvedDetails;
-        })
-      : readiness
-  ).catch(() => latestDetails);
+    if (!shouldWaitForProvider(client)) {
+      currentSettled = Promise.resolve(latestDetails);
+      return generation;
+    }
 
-  return { details: makeAwaitableRef(details, settled), settled };
+    const readiness = waitForProviderReady(
+      client,
+      () => {
+        updateEvaluation();
+        return latestDetails;
+      },
+      (message) =>
+        createErrorDetails(generation === readinessGeneration ? latestInputs : generationInputs, message, false),
+      (cleanup) => {
+        cancelReadiness = cleanup;
+      },
+    );
+    currentSettled = readiness
+      .catch(() => latestDetails)
+      .then((resolvedDetails) => {
+        if (!disposed && generation === readinessGeneration) {
+          setDetails(resolvedDetails);
+        }
+
+        return resolvedDetails;
+      });
+
+    return generation;
+  };
+
+  watch(
+    clientRef,
+    (client, _previousClient, onCleanup) => {
+      const generation = startReadiness(client);
+      onCleanup(() => {
+        if (generation === readinessGeneration) {
+          readinessGeneration++;
+          cancelReadiness?.();
+          cancelReadiness = undefined;
+        }
+      });
+    },
+    { immediate: true },
+  );
+
+  const getSettled = () => currentSettled;
+
+  return { details: makeAwaitableRef(details, getSettled), getSettled };
 }
 
 function useFlagValueInternal<T extends FlagValue>(
   flagKey: MaybeRefOrGetter<string>,
   defaultValue: MaybeRefOrGetter<T>,
   resolver: EvaluationResolver<T>,
+  flagValueType: FlagValueType,
   options?: MaybeRefOrGetter<VueFlagEvaluationOptions>,
 ) {
-  const result = useFlagDetailsInternal(flagKey, defaultValue, resolver, options);
+  const result = useFlagDetailsInternal(flagKey, defaultValue, resolver, flagValueType, options);
   const value = computed(() => result.details.value.value);
-  const settled = result.settled.then((details) => details.value);
+  const getSettled = () => result.getSettled().then((details) => details.value);
 
-  return { value: makeAwaitableRef<T>(value, settled), settled };
+  return { value: makeAwaitableRef<T>(value, getSettled), getSettled };
 }
 
 export function useFlag<T extends FlagValue = FlagValue>(
@@ -236,9 +336,10 @@ export function useFlag<T extends FlagValue = FlagValue>(
       flagKey,
       defaultRef as MaybeRefOrGetter<boolean>,
       (client) => client.getBooleanDetails,
+      'boolean',
       options,
     );
-    return createFlagQuery(result.details, result.settled) as AwaitableFlagQuery<ConstrainedFlagQuery<T>>;
+    return createFlagQuery(result.details, result.getSettled) as AwaitableFlagQuery<ConstrainedFlagQuery<T>>;
   }
 
   if (typeof currentDefault === 'number') {
@@ -246,9 +347,10 @@ export function useFlag<T extends FlagValue = FlagValue>(
       flagKey,
       defaultRef as MaybeRefOrGetter<number>,
       (client) => client.getNumberDetails,
+      'number',
       options,
     );
-    return createFlagQuery(result.details, result.settled) as AwaitableFlagQuery<ConstrainedFlagQuery<T>>;
+    return createFlagQuery(result.details, result.getSettled) as AwaitableFlagQuery<ConstrainedFlagQuery<T>>;
   }
 
   if (typeof currentDefault === 'string') {
@@ -256,18 +358,20 @@ export function useFlag<T extends FlagValue = FlagValue>(
       flagKey,
       defaultRef as MaybeRefOrGetter<string>,
       (client) => client.getStringDetails,
+      'string',
       options,
     );
-    return createFlagQuery(result.details, result.settled) as AwaitableFlagQuery<ConstrainedFlagQuery<T>>;
+    return createFlagQuery(result.details, result.getSettled) as AwaitableFlagQuery<ConstrainedFlagQuery<T>>;
   }
 
   const result = useFlagDetailsInternal<JsonValue>(
     flagKey,
     defaultRef as MaybeRefOrGetter<JsonValue>,
     (client) => client.getObjectDetails,
+    'object',
     options,
   );
-  return createFlagQuery(result.details, result.settled) as AwaitableFlagQuery<ConstrainedFlagQuery<T>>;
+  return createFlagQuery(result.details, result.getSettled) as AwaitableFlagQuery<ConstrainedFlagQuery<T>>;
 }
 
 export function useBooleanFlagValue(
@@ -275,7 +379,8 @@ export function useBooleanFlagValue(
   defaultValue: MaybeRefOrGetter<boolean>,
   options?: MaybeRefOrGetter<VueFlagEvaluationOptions>,
 ): AwaitableRef<boolean> {
-  return useFlagValueInternal<boolean>(flagKey, defaultValue, (client) => client.getBooleanDetails, options).value;
+  return useFlagValueInternal<boolean>(flagKey, defaultValue, (client) => client.getBooleanDetails, 'boolean', options)
+    .value;
 }
 
 export function useBooleanFlagDetails(
@@ -283,7 +388,8 @@ export function useBooleanFlagDetails(
   defaultValue: MaybeRefOrGetter<boolean>,
   options?: MaybeRefOrGetter<VueFlagEvaluationOptions>,
 ): AwaitableRef<EvaluationDetails<boolean>> {
-  return useFlagDetailsInternal(flagKey, defaultValue, (client) => client.getBooleanDetails, options).details;
+  return useFlagDetailsInternal(flagKey, defaultValue, (client) => client.getBooleanDetails, 'boolean', options)
+    .details;
 }
 
 export function useStringFlagValue<T extends string = string>(
@@ -291,7 +397,8 @@ export function useStringFlagValue<T extends string = string>(
   defaultValue: MaybeRefOrGetter<T>,
   options?: MaybeRefOrGetter<VueFlagEvaluationOptions>,
 ): AwaitableRef<T> {
-  return useFlagValueInternal<T>(flagKey, defaultValue, (client) => client.getStringDetails<T>, options).value;
+  return useFlagValueInternal<T>(flagKey, defaultValue, (client) => client.getStringDetails<T>, 'string', options)
+    .value;
 }
 
 export function useStringFlagDetails<T extends string = string>(
@@ -299,7 +406,8 @@ export function useStringFlagDetails<T extends string = string>(
   defaultValue: MaybeRefOrGetter<T>,
   options?: MaybeRefOrGetter<VueFlagEvaluationOptions>,
 ): AwaitableRef<EvaluationDetails<T>> {
-  return useFlagDetailsInternal(flagKey, defaultValue, (client) => client.getStringDetails<T>, options).details;
+  return useFlagDetailsInternal(flagKey, defaultValue, (client) => client.getStringDetails<T>, 'string', options)
+    .details;
 }
 
 export function useNumberFlagValue<T extends number = number>(
@@ -307,7 +415,8 @@ export function useNumberFlagValue<T extends number = number>(
   defaultValue: MaybeRefOrGetter<T>,
   options?: MaybeRefOrGetter<VueFlagEvaluationOptions>,
 ): AwaitableRef<T> {
-  return useFlagValueInternal<T>(flagKey, defaultValue, (client) => client.getNumberDetails<T>, options).value;
+  return useFlagValueInternal<T>(flagKey, defaultValue, (client) => client.getNumberDetails<T>, 'number', options)
+    .value;
 }
 
 export function useNumberFlagDetails<T extends number = number>(
@@ -315,7 +424,8 @@ export function useNumberFlagDetails<T extends number = number>(
   defaultValue: MaybeRefOrGetter<T>,
   options?: MaybeRefOrGetter<VueFlagEvaluationOptions>,
 ): AwaitableRef<EvaluationDetails<T>> {
-  return useFlagDetailsInternal(flagKey, defaultValue, (client) => client.getNumberDetails<T>, options).details;
+  return useFlagDetailsInternal(flagKey, defaultValue, (client) => client.getNumberDetails<T>, 'number', options)
+    .details;
 }
 
 export function useObjectFlagValue<T extends JsonValue = JsonValue>(
@@ -323,7 +433,8 @@ export function useObjectFlagValue<T extends JsonValue = JsonValue>(
   defaultValue: MaybeRefOrGetter<T>,
   options?: MaybeRefOrGetter<VueFlagEvaluationOptions>,
 ): AwaitableRef<T> {
-  return useFlagValueInternal<T>(flagKey, defaultValue, (client) => client.getObjectDetails<T>, options).value;
+  return useFlagValueInternal<T>(flagKey, defaultValue, (client) => client.getObjectDetails<T>, 'object', options)
+    .value;
 }
 
 export function useObjectFlagDetails<T extends JsonValue = JsonValue>(
@@ -331,5 +442,6 @@ export function useObjectFlagDetails<T extends JsonValue = JsonValue>(
   defaultValue: MaybeRefOrGetter<T>,
   options?: MaybeRefOrGetter<VueFlagEvaluationOptions>,
 ): AwaitableRef<EvaluationDetails<T>> {
-  return useFlagDetailsInternal(flagKey, defaultValue, (client) => client.getObjectDetails<T>, options).details;
+  return useFlagDetailsInternal(flagKey, defaultValue, (client) => client.getObjectDetails<T>, 'object', options)
+    .details;
 }

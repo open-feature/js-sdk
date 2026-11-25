@@ -26,7 +26,7 @@ function toQuery<T extends FlagValue>(details: EvaluationDetails<T>): FlagQuery<
 
 export function createFlagQuery<T extends FlagValue>(
   detailsRef: ShallowRef<EvaluationDetails<T>>,
-  settled: Promise<EvaluationDetails<T>>,
+  getSettled: () => Promise<EvaluationDetails<T>>,
 ): AwaitableFlagQuery<T> {
   const query = shallowReactive({
     get details() {
@@ -60,12 +60,13 @@ export function createFlagQuery<T extends FlagValue>(
       return typeof detailsRef.value.value;
     },
   });
-  const promise = settled.then(toQuery);
+  const then: PromiseLike<FlagQuery<T>>['then'] = (onFulfilled, onRejected) =>
+    getSettled().then(toQuery).then(onFulfilled, onRejected);
 
   Object.defineProperty(query, 'then', {
     configurable: true,
     enumerable: false,
-    value: promise.then.bind(promise),
+    value: then,
   });
 
   return query as unknown as AwaitableFlagQuery<T>;

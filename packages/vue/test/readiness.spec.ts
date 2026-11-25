@@ -1,6 +1,6 @@
 import { OpenFeature, ProviderEvents, TypedInMemoryProvider } from '@openfeature/web-sdk';
 import { flushPromises, mount } from '@vue/test-utils';
-import { defineComponent, h, Suspense } from 'vue';
+import { computed, defineComponent, h, nextTick, ref, Suspense } from 'vue';
 import { OpenFeatureProvider, useWhenProviderReady } from '../src';
 import { DelayedProvider, mountComposableInProvider } from './utils';
 
@@ -100,6 +100,41 @@ describe('useWhenProviderReady', () => {
     expect(wrapper.text()).toBe('ready');
     wrapper.unmount();
     consoleInfo.mockRestore();
+  });
+
+  it('waits when the provider is initially reconciling', async () => {
+    const domain = 'ready-initial-reconciling';
+    const delay = 10;
+    const provider = new DelayedProvider(FLAG_CONFIG, delay);
+    await OpenFeature.setProviderAndWait(domain, provider);
+    const contextChange = OpenFeature.setContext(domain, { user: 'bob' });
+    await nextTick();
+    const { result, wrapper } = mountComposableInProvider(() => useWhenProviderReady(), { domain });
+    const pending = result;
+
+    expect(result.value).toBe(false);
+    await contextChange;
+
+    expect(await pending).toBe(true);
+    wrapper.unmount();
+  });
+
+  it('awaits the current client after the provider domain changes', async () => {
+    const firstDomain = 'ready-switch-first';
+    const secondDomain = 'ready-switch-second';
+    OpenFeature.setProvider(firstDomain, new DelayedProvider(FLAG_CONFIG, 1000));
+    await OpenFeature.setProviderAndWait(secondDomain, new TypedInMemoryProvider(FLAG_CONFIG));
+    const domain = ref(firstDomain);
+    const providerProps = computed(() => ({ domain: domain.value }));
+    const { result, wrapper } = mountComposableInProvider(() => useWhenProviderReady(), providerProps);
+
+    expect(result.value).toBe(false);
+    domain.value = secondDomain;
+    await nextTick();
+
+    expect(result.value).toBe(true);
+    expect(await result).toBe(true);
+    wrapper.unmount();
   });
 
   it('removes readiness handlers when disposed before initialization', async () => {
