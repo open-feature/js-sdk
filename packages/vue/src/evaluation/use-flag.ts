@@ -305,7 +305,13 @@ function useFlagDetailsInternal<T extends FlagValue>(
     { immediate: true },
   );
 
-  const getSettled = () => currentSettled ?? Promise.resolve(latestDetails);
+  const getSettled = () => {
+    if (!disposed && !currentSettled && shouldWaitForProvider(clientRef.value)) {
+      startReadiness(clientRef.value);
+    }
+
+    return currentSettled ?? Promise.resolve(latestDetails);
+  };
 
   return { details: makeAwaitableRef(details, getSettled), getSettled };
 }

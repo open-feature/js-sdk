@@ -68,6 +68,20 @@ class EventProvider extends TypedInMemoryProvider {
   }
 }
 
+class ReconcilingProvider extends TypedInMemoryProvider {
+  private finishReconciliation: () => void = () => undefined;
+
+  onContextChange(): Promise<void> {
+    return new Promise<void>((resolve) => {
+      this.finishReconciliation = resolve;
+    });
+  }
+
+  reconcile() {
+    this.finishReconciliation();
+  }
+}
+
 describe('evaluation composables', () => {
   beforeEach(async () => {
     await OpenFeature.clearProviders();
@@ -382,6 +396,35 @@ describe('evaluation composables', () => {
     expect(result.value).toBe(true);
     expect(await result).toBe(true);
     wrapper.unmount();
+  });
+
+  it('waits for reconciliation when an existing evaluation is awaited', async () => {
+    const domain = 'evaluation-later-reconciling';
+    const provider = new ReconcilingProvider(FLAG_CONFIG);
+    await OpenFeature.setProviderAndWait(domain, provider);
+    const { result, wrapper } = mountComposableInProvider(() => useBooleanFlagValue('context-sensitive', false), {
+      domain,
+    });
+    const contextChange = OpenFeature.setContext(domain, { user: 'bob' });
+    await nextTick();
+    let settled = false;
+    const pending = Promise.resolve(result).then((value) => {
+      settled = true;
+      return value;
+    });
+
+    try {
+      await flushPromises();
+      expect(settled).toBe(false);
+      provider.reconcile();
+      await contextChange;
+      await expect(pending).resolves.toBe(true);
+      expect(result.value).toBe(true);
+    } finally {
+      provider.reconcile();
+      await contextChange;
+      wrapper.unmount();
+    }
   });
 
   it('re-evaluates after configuration changes', async () => {
