@@ -1,4 +1,4 @@
-import type { EvaluationDetails, FlagValue } from '@openfeature/web-sdk';
+import type { EvaluationDetails, FlagValue, InMemoryFlagConfiguration } from '@openfeature/web-sdk';
 import { OpenFeature, StandardResolutionReasons, TypedInMemoryProvider } from '@openfeature/web-sdk';
 import { flushPromises, mount } from '@vue/test-utils';
 import { createApp, defineComponent, h, nextTick, ref } from 'vue';
@@ -6,7 +6,7 @@ import type { FlagQuery } from '../src';
 import { FeatureFlag, OpenFeaturePlugin, OpenFeatureProvider, OpenFeatureTestProvider } from '../src';
 import { DelayedProvider } from './utils';
 
-const FLAG_CONFIG = {
+const FLAG_CONFIG: InMemoryFlagConfiguration = {
   enabled: {
     disabled: false,
     variants: { on: true, off: false },
@@ -22,7 +22,17 @@ const FLAG_CONFIG = {
     variants: { dark: 'dark', light: 'light' },
     defaultVariant: 'dark',
   },
-} as const;
+  array: {
+    disabled: false,
+    variants: { configured: [1] },
+    defaultVariant: 'configured',
+  },
+  'empty-array': {
+    disabled: false,
+    variants: { empty: [] },
+    defaultVariant: 'empty',
+  },
+};
 
 describe('FeatureFlag', () => {
   beforeEach(async () => {
@@ -95,6 +105,20 @@ describe('FeatureFlag', () => {
     );
 
     expect(wrapper.text()).toBe('light');
+    wrapper.unmount();
+  });
+
+  it.each([
+    ['array', [1], { 0: 1 }],
+    ['empty-array', [], {}],
+  ] as const)('does not match an array against an object for %s', async (flagKey, defaultValue, matchValue) => {
+    await OpenFeature.setProviderAndWait('feature-flag', new TypedInMemoryProvider(FLAG_CONFIG));
+    const wrapper = mountFlag(
+      { flagKey, defaultValue, matchValue },
+      { default: () => h('div', 'matched'), fallback: () => h('div', 'fallback') },
+    );
+
+    expect(wrapper.text()).toBe('fallback');
     wrapper.unmount();
   });
 

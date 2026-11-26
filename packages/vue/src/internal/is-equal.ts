@@ -8,6 +8,10 @@ export function isEqual(value: unknown, other: unknown): boolean {
   }
 
   if (typeof value === 'object' && value !== null && typeof other === 'object' && other !== null) {
+    if (Array.isArray(value) !== Array.isArray(other)) {
+      return false;
+    }
+
     const valueRecord = value as Record<string, unknown>;
     const otherRecord = other as Record<string, unknown>;
     const valueKeys = Object.keys(valueRecord);
