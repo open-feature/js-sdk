@@ -28,9 +28,15 @@ export const OpenFeaturePlugin: Plugin<[OpenFeaturePluginOptions?]> = {
   install(app: App, options: OpenFeaturePluginOptions = {}) {
     if (options.provider) {
       if (options.domain) {
-        OpenFeature.setProvider(options.domain, options.provider, options.context ?? {});
+        if (options.context === undefined) {
+          OpenFeature.setProvider(options.domain, options.provider);
+        } else {
+          OpenFeature.setProvider(options.domain, options.provider, options.context);
+        }
+      } else if (options.context === undefined) {
+        OpenFeature.setProvider(options.provider);
       } else {
-        OpenFeature.setProvider(options.provider, options.context ?? {});
+        OpenFeature.setProvider(options.provider, options.context);
       }
     }
 

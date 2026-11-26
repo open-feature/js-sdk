@@ -45,6 +45,31 @@ describe('OpenFeature setup', () => {
     app.unmount();
   });
 
+  it('preserves the global context when the plugin omits context', async () => {
+    await OpenFeature.setContext({ user: 'alice' });
+    const provider = new TypedInMemoryProvider({});
+    const app = createApp(defineComponent({ render: () => null }));
+    app.use(OpenFeaturePlugin, { provider });
+    const container = document.createElement('div');
+    app.mount(container);
+
+    expect(OpenFeature.getContext()).toEqual({ user: 'alice' });
+    app.unmount();
+  });
+
+  it('preserves the domain context when the plugin omits context', async () => {
+    const domain = 'plugin-preserved-domain-context';
+    await OpenFeature.setContext(domain, { user: 'alice' });
+    const provider = new TypedInMemoryProvider({});
+    const app = createApp(defineComponent({ render: () => null }));
+    app.use(OpenFeaturePlugin, { domain, provider });
+    const container = document.createElement('div');
+    app.mount(container);
+
+    expect(OpenFeature.getContext(domain)).toEqual({ user: 'alice' });
+    app.unmount();
+  });
+
   it('provides a Vue-aware client supplied to the plugin', () => {
     let actualClient!: Client;
     const client = OpenFeature.getClient('plugin-client-domain');
