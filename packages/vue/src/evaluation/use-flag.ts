@@ -118,9 +118,9 @@ function createErrorDetails<T extends FlagValue>(
     }
   }
 
-  for (const [index, hook] of hooks.entries()) {
+  for (const [index, hook] of [...hooks].reverse().entries()) {
     try {
-      hook.finally?.(hookContexts[index], details, hookHints);
+      hook.finally?.(hookContexts[hooks.length - index - 1], details, hookHints);
     } catch (caughtError) {
       logger.error('Unhandled error in finally hook:', caughtError);
     }

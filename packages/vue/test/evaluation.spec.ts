@@ -229,6 +229,25 @@ describe('evaluation composables', () => {
     consoleError.mockRestore();
   });
 
+  it('runs finally hooks in reverse order for provider error details', async () => {
+    const domain = 'evaluation-error-finally-order';
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+    const finallyOrder: string[] = [];
+    OpenFeature.setProvider(domain, new FailingProvider(FLAG_CONFIG));
+    const { result, wrapper } = mountComposableInProvider(
+      () =>
+        useBooleanFlagDetails('boolean', false, {
+          hooks: [{ finally: () => finallyOrder.push('first') }, { finally: () => finallyOrder.push('second') }],
+        }),
+      { domain },
+    );
+
+    await expect(result).resolves.toMatchObject({ value: false, errorMessage: 'provider failed' });
+    expect(finallyOrder.slice(-2)).toEqual(['second', 'first']);
+    wrapper.unmount();
+    consoleError.mockRestore();
+  });
+
   it('resolves fatal provider errors with fatal details', async () => {
     class FatalProvider extends TypedInMemoryProvider {
       async initialize(): Promise<void> {
