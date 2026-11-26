@@ -13,8 +13,10 @@ export function useWhenProviderReady(): AwaitableRef<boolean> {
   let cancelReadiness: (() => void) | undefined;
   let readinessGeneration = 0;
   let currentSettled: Promise<boolean> | undefined;
+  let disposed = false;
 
   onScopeDispose(() => {
+    disposed = true;
     readinessGeneration++;
     cancelReadiness?.();
     cancelReadiness = undefined;
@@ -64,5 +66,13 @@ export function useWhenProviderReady(): AwaitableRef<boolean> {
     { immediate: true },
   );
 
-  return makeAwaitableRef(ready, () => currentSettled ?? Promise.resolve(ready.value));
+  const getSettled = () => {
+    if (!disposed && !currentSettled && shouldWaitForProvider(clientRef.value)) {
+      startReadiness(clientRef.value);
+    }
+
+    return currentSettled ?? Promise.resolve(ready.value);
+  };
+
+  return makeAwaitableRef(ready, getSettled);
 }

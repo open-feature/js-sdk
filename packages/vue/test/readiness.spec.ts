@@ -18,6 +18,20 @@ class FailingProvider extends TypedInMemoryProvider {
   }
 }
 
+class ReconcilingProvider extends TypedInMemoryProvider {
+  private finishReconciliation: () => void = () => undefined;
+
+  onContextChange(): Promise<void> {
+    return new Promise<void>((resolve) => {
+      this.finishReconciliation = resolve;
+    });
+  }
+
+  reconcile() {
+    this.finishReconciliation();
+  }
+}
+
 describe('useWhenProviderReady', () => {
   beforeEach(async () => {
     await OpenFeature.clearProviders();
@@ -84,6 +98,32 @@ describe('useWhenProviderReady', () => {
     await nextTick();
     expect(await result).toBe(true);
     wrapper.unmount();
+  });
+
+  it('waits when an already ready client starts reconciling', async () => {
+    const domain = 'ready-later-reconciling';
+    const provider = new ReconcilingProvider(FLAG_CONFIG);
+    await OpenFeature.setProviderAndWait(domain, provider);
+    const { result, wrapper } = mountComposableInProvider(() => useWhenProviderReady(), { domain });
+    const contextChange = OpenFeature.setContext(domain, { user: 'bob' });
+    await nextTick();
+    let settled = false;
+    const pending = Promise.resolve(result).then((value) => {
+      settled = true;
+      return value;
+    });
+
+    try {
+      await flushPromises();
+      expect(settled).toBe(false);
+      provider.reconcile();
+      await contextChange;
+      await expect(pending).resolves.toBe(true);
+    } finally {
+      provider.reconcile();
+      await contextChange;
+      wrapper.unmount();
+    }
   });
 
   it('shows the Suspense fallback until the provider is ready', async () => {
