@@ -8,7 +8,7 @@ import type {
 } from '@openfeature/web-sdk';
 import { NOOP_PROVIDER, OpenFeature, TypedInMemoryProvider } from '@openfeature/web-sdk';
 import type { App, Plugin, PropType, VNode } from 'vue';
-import { defineComponent, h, toRaw } from 'vue';
+import { defineComponent, h, toRaw, watch } from 'vue';
 import { OpenFeaturePlugin } from '../plugin';
 import type { VueFlagEvaluationOptions } from '../options';
 import type { StableComponent } from '../internal/component-type';
@@ -156,11 +156,17 @@ export const OpenFeatureTestProvider = defineComponent({
   setup(props, { slots }) {
     const provider = createEffectiveProvider(props);
 
-    if (props.domain) {
-      OpenFeature.setProvider(props.domain, provider);
-    } else {
-      OpenFeature.setProvider(provider);
-    }
+    watch(
+      () => props.domain,
+      (domain) => {
+        if (domain) {
+          OpenFeature.setProvider(domain, provider);
+        } else {
+          OpenFeature.setProvider(provider);
+        }
+      },
+      { immediate: true, flush: 'pre' },
+    );
 
     return () =>
       h(

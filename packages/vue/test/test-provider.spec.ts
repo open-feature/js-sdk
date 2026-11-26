@@ -84,6 +84,21 @@ describe('Vue test utilities', () => {
     wrapper.unmount();
   });
 
+  it('registers the test provider when the domain changes', async () => {
+    const wrapper = mount(OpenFeatureTestProvider, {
+      props: { domain: 'test-provider-first-domain', flagValueMap: { [FLAG_KEY]: true } },
+      slots: { default: () => h(FlagComponent) },
+    });
+
+    expect(wrapper.text()).toBe('true:STATIC');
+    await wrapper.setProps({ domain: 'test-provider-second-domain' });
+    await flushPromises();
+
+    expect(wrapper.text()).toBe('true:STATIC');
+    expect(OpenFeature.getProvider('test-provider-second-domain').metadata.name).toBe('in-memory');
+    wrapper.unmount();
+  });
+
   it('supports partial providers', () => {
     class CustomProvider implements Partial<Provider> {
       resolveBooleanEvaluation(): ResolutionDetails<boolean> {
