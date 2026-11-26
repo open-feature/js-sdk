@@ -525,6 +525,33 @@ describe('in-memory provider', () => {
       } as const;
       provider.putConfiguration(newFlagSpec);
     });
+
+    it('emits provider changed event with removed flags when flags are removed', (done) => {
+      const flagsSpec = {
+        'a-flag': {
+          variants: {
+            on: true,
+          },
+          defaultVariant: 'on',
+          disabled: false,
+        },
+        'b-flag': {
+          variants: {
+            on: true,
+          },
+          defaultVariant: 'on',
+          disabled: false,
+        },
+      } as const;
+      const provider = new TypedInMemoryProvider(flagsSpec);
+
+      provider.events.addHandler(ProviderEvents.ConfigurationChanged, (details) => {
+        expect(details?.flagsChanged).toEqual(['a-flag', 'b-flag']);
+        done();
+      });
+
+      provider.putConfiguration({});
+    });
   });
 
   describe('Flags configuration', () => {
