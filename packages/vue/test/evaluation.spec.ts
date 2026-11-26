@@ -1,4 +1,4 @@
-import type { EvaluationContext, Hook } from '@openfeature/web-sdk';
+import type { EvaluationContext, FlagValue, Hook } from '@openfeature/web-sdk';
 import {
   ErrorCode,
   OpenFeature,
@@ -8,7 +8,7 @@ import {
   TypedInMemoryProvider,
 } from '@openfeature/web-sdk';
 import { flushPromises } from '@vue/test-utils';
-import { computed, isReactive, isRef, nextTick, ref } from 'vue';
+import { computed, isReactive, isRef, nextTick, ref, shallowRef } from 'vue';
 import {
   useBooleanFlagDetails,
   useBooleanFlagValue,
@@ -133,6 +133,33 @@ describe('evaluation composables', () => {
 
     expect(result.value).toBe(1024);
     expect(result.type).toBe('number');
+    wrapper.unmount();
+  });
+
+  it('updates the generic resolver when the default value type changes', async () => {
+    const domain = 'evaluation-query-changing-type';
+    await OpenFeature.setProviderAndWait(domain, new TypedInMemoryProvider(FLAG_CONFIG));
+    const flagKey = ref('boolean');
+    const defaultValue = shallowRef<FlagValue>(false);
+    const before = jest.fn();
+    const { result, wrapper } = mountComposableInProvider(
+      () =>
+        useFlag<FlagValue>(
+          () => flagKey.value,
+          () => defaultValue.value,
+          { hooks: [{ before }] },
+        ),
+      { domain },
+    );
+
+    expect(result.value).toBe(true);
+    flagKey.value = 'string';
+    defaultValue.value = 'default';
+    await nextTick();
+
+    expect(result.value).toBe('hello');
+    expect(result.type).toBe('string');
+    expect(before).toHaveBeenLastCalledWith(expect.objectContaining({ flagValueType: 'string' }), undefined);
     wrapper.unmount();
   });
 

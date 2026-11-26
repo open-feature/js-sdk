@@ -42,6 +42,37 @@ type EvaluationInputs<T extends FlagValue> = {
   normalizedOptions: NormalizedOptions;
 };
 
+function getEvaluationConfig(defaultValue: FlagValue): {
+  resolver: EvaluationResolver<FlagValue>;
+  flagValueType: FlagValueType;
+} {
+  if (typeof defaultValue === 'boolean') {
+    return {
+      resolver: ((client: Client) => client.getBooleanDetails) as unknown as EvaluationResolver<FlagValue>,
+      flagValueType: 'boolean',
+    };
+  }
+
+  if (typeof defaultValue === 'number') {
+    return {
+      resolver: ((client: Client) => client.getNumberDetails) as unknown as EvaluationResolver<FlagValue>,
+      flagValueType: 'number',
+    };
+  }
+
+  if (typeof defaultValue === 'string') {
+    return {
+      resolver: ((client: Client) => client.getStringDetails) as unknown as EvaluationResolver<FlagValue>,
+      flagValueType: 'string',
+    };
+  }
+
+  return {
+    resolver: ((client: Client) => client.getObjectDetails) as unknown as EvaluationResolver<FlagValue>,
+    flagValueType: 'object',
+  };
+}
+
 type UseFlagDetailsResult<T extends FlagValue> = {
   details: AwaitableRef<EvaluationDetails<T>>;
   getSettled: () => Promise<EvaluationDetails<T>>;
@@ -140,8 +171,8 @@ function evaluateInputs<T extends FlagValue>(inputs: EvaluationInputs<T>): Evalu
 function useFlagDetailsInternal<T extends FlagValue>(
   flagKey: MaybeRefOrGetter<string>,
   defaultValue: MaybeRefOrGetter<T>,
-  resolver: EvaluationResolver<T>,
-  flagValueType: FlagValueType,
+  resolver: MaybeRefOrGetter<EvaluationResolver<T>>,
+  flagValueType: MaybeRefOrGetter<FlagValueType>,
   options?: MaybeRefOrGetter<VueFlagEvaluationOptions>,
 ): UseFlagDetailsResult<T> {
   const clientRef = useClientRef();
@@ -156,8 +187,8 @@ function useFlagDetailsInternal<T extends FlagValue>(
       client: clientRef.value,
       flagKey: toValue(flagKey),
       defaultValue: toValue(defaultValue),
-      resolver,
-      flagValueType,
+      resolver: toValue(resolver),
+      flagValueType: toValue(flagValueType),
       options: hooks.length || hookHints ? { hooks, hookHints } : undefined,
       normalizedOptions: {
         ...DEFAULT_OPTIONS,
@@ -323,7 +354,7 @@ function useFlagValueInternal<T extends FlagValue>(
   flagValueType: FlagValueType,
   options?: MaybeRefOrGetter<VueFlagEvaluationOptions>,
 ) {
-  const result = useFlagDetailsInternal(flagKey, defaultValue, resolver, flagValueType, options);
+  const result = useFlagDetailsInternal(flagKey, defaultValue, () => resolver, flagValueType, options);
   const value = computed(() => result.details.value.value);
   const getSettled = () => result.getSettled().then((details) => details.value);
 
@@ -336,48 +367,15 @@ export function useFlag<T extends FlagValue = FlagValue>(
   options?: MaybeRefOrGetter<VueFlagEvaluationOptions>,
 ): AwaitableFlagQuery<ConstrainedFlagQuery<T>> {
   const defaultRef = computed(() => toValue(defaultValue));
-  const currentDefault = defaultRef.value;
-
-  if (typeof currentDefault === 'boolean') {
-    const result = useFlagDetailsInternal<boolean>(
-      flagKey,
-      defaultRef as MaybeRefOrGetter<boolean>,
-      (client) => client.getBooleanDetails,
-      'boolean',
-      options,
-    );
-    return createFlagQuery(result.details, result.getSettled) as AwaitableFlagQuery<ConstrainedFlagQuery<T>>;
-  }
-
-  if (typeof currentDefault === 'number') {
-    const result = useFlagDetailsInternal<number>(
-      flagKey,
-      defaultRef as MaybeRefOrGetter<number>,
-      (client) => client.getNumberDetails,
-      'number',
-      options,
-    );
-    return createFlagQuery(result.details, result.getSettled) as AwaitableFlagQuery<ConstrainedFlagQuery<T>>;
-  }
-
-  if (typeof currentDefault === 'string') {
-    const result = useFlagDetailsInternal<string>(
-      flagKey,
-      defaultRef as MaybeRefOrGetter<string>,
-      (client) => client.getStringDetails,
-      'string',
-      options,
-    );
-    return createFlagQuery(result.details, result.getSettled) as AwaitableFlagQuery<ConstrainedFlagQuery<T>>;
-  }
-
-  const result = useFlagDetailsInternal<JsonValue>(
+  const evaluation = computed(() => getEvaluationConfig(defaultRef.value));
+  const result = useFlagDetailsInternal<FlagValue>(
     flagKey,
-    defaultRef as MaybeRefOrGetter<JsonValue>,
-    (client) => client.getObjectDetails,
-    'object',
+    defaultRef,
+    () => evaluation.value.resolver,
+    () => evaluation.value.flagValueType,
     options,
   );
+
   return createFlagQuery(result.details, result.getSettled) as AwaitableFlagQuery<ConstrainedFlagQuery<T>>;
 }
 
@@ -395,8 +393,13 @@ export function useBooleanFlagDetails(
   defaultValue: MaybeRefOrGetter<boolean>,
   options?: MaybeRefOrGetter<VueFlagEvaluationOptions>,
 ): AwaitableRef<EvaluationDetails<boolean>> {
-  return useFlagDetailsInternal(flagKey, defaultValue, (client) => client.getBooleanDetails, 'boolean', options)
-    .details;
+  return useFlagDetailsInternal(
+    flagKey,
+    defaultValue,
+    () => (client: Client) => client.getBooleanDetails,
+    'boolean',
+    options,
+  ).details;
 }
 
 export function useStringFlagValue<T extends string = string>(
@@ -413,8 +416,13 @@ export function useStringFlagDetails<T extends string = string>(
   defaultValue: MaybeRefOrGetter<T>,
   options?: MaybeRefOrGetter<VueFlagEvaluationOptions>,
 ): AwaitableRef<EvaluationDetails<T>> {
-  return useFlagDetailsInternal(flagKey, defaultValue, (client) => client.getStringDetails<T>, 'string', options)
-    .details;
+  return useFlagDetailsInternal(
+    flagKey,
+    defaultValue,
+    () => (client: Client) => client.getStringDetails<T>,
+    'string',
+    options,
+  ).details;
 }
 
 export function useNumberFlagValue<T extends number = number>(
@@ -431,8 +439,13 @@ export function useNumberFlagDetails<T extends number = number>(
   defaultValue: MaybeRefOrGetter<T>,
   options?: MaybeRefOrGetter<VueFlagEvaluationOptions>,
 ): AwaitableRef<EvaluationDetails<T>> {
-  return useFlagDetailsInternal(flagKey, defaultValue, (client) => client.getNumberDetails<T>, 'number', options)
-    .details;
+  return useFlagDetailsInternal(
+    flagKey,
+    defaultValue,
+    () => (client: Client) => client.getNumberDetails<T>,
+    'number',
+    options,
+  ).details;
 }
 
 export function useObjectFlagValue<T extends JsonValue = JsonValue>(
@@ -449,6 +462,11 @@ export function useObjectFlagDetails<T extends JsonValue = JsonValue>(
   defaultValue: MaybeRefOrGetter<T>,
   options?: MaybeRefOrGetter<VueFlagEvaluationOptions>,
 ): AwaitableRef<EvaluationDetails<T>> {
-  return useFlagDetailsInternal(flagKey, defaultValue, (client) => client.getObjectDetails<T>, 'object', options)
-    .details;
+  return useFlagDetailsInternal(
+    flagKey,
+    defaultValue,
+    () => (client: Client) => client.getObjectDetails<T>,
+    'object',
+    options,
+  ).details;
 }
