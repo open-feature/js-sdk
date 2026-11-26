@@ -76,6 +76,17 @@ describe('FeatureFlag', () => {
     wrapper.unmount();
   });
 
+  it.each(['', 'default-value'])('preserves the string default %j', async (defaultValue) => {
+    await OpenFeature.setProviderAndWait('feature-flag', new TypedInMemoryProvider(FLAG_CONFIG));
+    const wrapper = mountFlag(
+      { flagKey: 'theme', defaultValue, matchValue: 'dark' },
+      { default: () => h('div', 'dark'), fallback: () => h('div', 'light') },
+    );
+
+    expect(wrapper.text()).toBe('dark');
+    wrapper.unmount();
+  });
+
   it('renders the fallback for non-boolean flags without a match value', async () => {
     await OpenFeature.setProviderAndWait('feature-flag', new TypedInMemoryProvider(FLAG_CONFIG));
     const wrapper = mountFlag(

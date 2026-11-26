@@ -41,7 +41,7 @@ export const FeatureFlag = defineComponent({
       required: true,
     },
     defaultValue: {
-      type: [Boolean, String, Number, Object] as PropType<FlagValue>,
+      type: [String, Boolean, Number, Object] as PropType<FlagValue>,
       required: true,
     },
     matchValue: {
