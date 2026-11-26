@@ -99,6 +99,19 @@ describe('Vue test utilities', () => {
     wrapper.unmount();
   });
 
+  it('supports frozen partial providers', () => {
+    const provider = Object.freeze({
+      resolveBooleanEvaluation: () => ({ value: true, reason: 'FROZEN_REASON' }),
+    });
+    const wrapper = mount(OpenFeatureTestProvider, {
+      props: { provider },
+      slots: { default: () => h(FlagComponent) },
+    });
+
+    expect(wrapper.text()).toBe('true:FROZEN_REASON');
+    wrapper.unmount();
+  });
+
   it('supports partial providers with private state', () => {
     class PrivateProvider implements Partial<Provider> {
       #enabled = true;

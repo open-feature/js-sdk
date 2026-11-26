@@ -83,8 +83,8 @@ class TestProvider extends TypedInMemoryProvider {
 function mixInNoop(provider: Partial<Provider>): Provider {
   const target = toRaw(provider) as Provider;
 
-  return new Proxy(target, {
-    get(target, property) {
+  return new Proxy({} as Provider, {
+    get(_target, property) {
       if (property === 'metadata') {
         return target.metadata?.name ? target.metadata : { name: TEST_PROVIDER };
       }
