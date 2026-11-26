@@ -3,6 +3,7 @@ import { TypedInMemoryProvider } from '@openfeature/web-sdk';
 import { flushPromises, mount } from '@vue/test-utils';
 import { createApp, defineComponent, h } from 'vue';
 import { OpenFeature, OpenFeaturePlugin, OpenFeatureProvider, useOpenFeatureClient } from '../src';
+import { useClientRef } from '../src/provider/use-open-feature-client';
 
 describe('OpenFeature setup', () => {
   beforeEach(async () => {
@@ -160,10 +161,10 @@ describe('OpenFeature setup', () => {
   });
 
   it('keeps the client stable when provider props do not change', async () => {
-    const clients: Client[] = [];
+    let clientRef!: ReturnType<typeof useClientRef>;
     const component = defineComponent({
       setup() {
-        clients.push(useOpenFeatureClient());
+        clientRef = useClientRef();
         return () => null;
       },
     });
@@ -171,20 +172,20 @@ describe('OpenFeature setup', () => {
       props: { domain: 'stable-domain' },
       slots: { default: () => h(component) },
     });
-    const firstClient = clients[0];
+    const firstClient = clientRef.value;
 
     await wrapper.setProps({ domain: 'stable-domain' });
     await wrapper.vm.$nextTick();
 
-    expect(clients[clients.length - 1]).toBe(firstClient);
+    expect(clientRef.value).toBe(firstClient);
     wrapper.unmount();
   });
 
   it('keeps the client stable when only evaluation options change', async () => {
-    const clients: Client[] = [];
+    let clientRef!: ReturnType<typeof useClientRef>;
     const component = defineComponent({
       setup() {
-        clients.push(useOpenFeatureClient());
+        clientRef = useClientRef();
         return () => null;
       },
     });
@@ -192,12 +193,12 @@ describe('OpenFeature setup', () => {
       props: { domain: 'stable-options-domain' },
       slots: { default: () => h(component) },
     });
-    const firstClient = clients[0];
+    const firstClient = clientRef.value;
 
     await wrapper.setProps({ updateOnContextChanged: false });
     await wrapper.vm.$nextTick();
 
-    expect(clients[clients.length - 1]).toBe(firstClient);
+    expect(clientRef.value).toBe(firstClient);
     wrapper.unmount();
   });
 
