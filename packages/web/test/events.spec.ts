@@ -1,7 +1,15 @@
 import type { EventDetails } from '@openfeature/core';
+import vm from 'node:vm';
 import { v4 as uuid } from 'uuid';
 import type { JsonValue, Provider, ProviderMetadata, ResolutionDetails, StaleEvent } from '../src';
-import { NOOP_PROVIDER, OpenFeature, OpenFeatureEventEmitter, ProviderEvents, ProviderStatus } from '../src';
+import {
+  DefaultLogger,
+  NOOP_PROVIDER,
+  OpenFeature,
+  OpenFeatureEventEmitter,
+  ProviderEvents,
+  ProviderStatus,
+} from '../src';
 
 const TIMEOUT = 1000;
 const ERR_MESSAGE = 'fake err';
@@ -605,6 +613,162 @@ describe('Events', () => {
             });
           });
         });
+      });
+    });
+  });
+
+  describe('Requirement 5.3.3 - errors in handlers that run immediately', () => {
+    const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
+    const createLogger = () => ({ error: jest.fn(), warn: jest.fn(), info: jest.fn(), debug: jest.fn() });
+    const expectHandlerErrorLogged = (logger: ReturnType<typeof createLogger>, err: unknown, times = 1) => {
+      expect(logger.error).toHaveBeenCalledTimes(times);
+      expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('Error running event handler'), err);
+    };
+
+    afterEach(() => {
+      OpenFeature.setLogger(new DefaultLogger());
+    });
+
+    describe('API', () => {
+      let logger: ReturnType<typeof createLogger>;
+
+      beforeEach(async () => {
+        logger = createLogger();
+        OpenFeature.setLogger(logger);
+        // a ready default provider, so API handlers run once for it
+        await OpenFeature.setProviderAndWait(new MockProvider({ hasInitialize: false }));
+      });
+
+      it('logs a rejected async handler instead of leaving an unhandled rejection', async () => {
+        const err = new Error('async handler failed');
+        OpenFeature.addHandler(ProviderEvents.Ready, async () => {
+          throw err;
+        });
+        await flush();
+        expectHandlerErrorLogged(logger, err);
+      });
+
+      it('logs a synchronously throwing handler', () => {
+        const err = new Error('sync handler failed');
+        OpenFeature.addHandler(ProviderEvents.Ready, () => {
+          throw err;
+        });
+        expectHandlerErrorLogged(logger, err);
+      });
+
+      it('logs a rejection once for every provider already in the matching state', async () => {
+        const err = new Error('async handler failed');
+        await OpenFeature.setProviderAndWait(domain, new MockProvider({ hasInitialize: false }));
+        const handler = jest.fn(async () => {
+          throw err;
+        });
+        OpenFeature.addHandler(ProviderEvents.Ready, handler);
+        await flush();
+        expect(handler).toHaveBeenCalledTimes(2);
+        expectHandlerErrorLogged(logger, err, 2);
+      });
+
+      it('logs a rejecting non-native thenable', async () => {
+        const err = new Error('thenable rejected');
+        OpenFeature.addHandler(ProviderEvents.Ready, () => ({
+          then: (_onFulfilled: unknown, onRejected: (reason: unknown) => void) => onRejected(err),
+        }));
+        await flush();
+        expectHandlerErrorLogged(logger, err);
+      });
+
+      it('logs a rejected promise from another realm', async () => {
+        const foreignRejection = vm.runInNewContext('Promise.reject(new Error("foreign realm"))');
+        OpenFeature.addHandler(ProviderEvents.Ready, () => foreignRejection);
+        await flush();
+        expectHandlerErrorLogged(logger, expect.objectContaining({ message: 'foreign realm' }));
+      });
+
+      it('does not log anything for handlers that succeed', async () => {
+        OpenFeature.addHandler(ProviderEvents.Ready, () => 'sync result');
+        OpenFeature.addHandler(ProviderEvents.Ready, async () => 'async result');
+        await flush();
+        expect(logger.error).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('client', () => {
+      let logger: ReturnType<typeof createLogger>;
+
+      beforeEach(() => {
+        logger = createLogger();
+      });
+
+      it('logs a rejected async handler instead of leaving an unhandled rejection', async () => {
+        const err = new Error('async handler failed');
+        await OpenFeature.setProviderAndWait(domain, new MockProvider({ hasInitialize: false }));
+        const client = OpenFeature.getClient(domain).setLogger(logger);
+        client.addHandler(ProviderEvents.Ready, async () => {
+          throw err;
+        });
+        await flush();
+        expectHandlerErrorLogged(logger, err);
+      });
+
+      it('logs a rejected async handler attached while the provider is in the error state', async () => {
+        const err = new Error('async handler failed');
+        await expect(OpenFeature.setProviderAndWait(domain, new MockProvider({ failOnInit: true }))).rejects.toThrow();
+        const client = OpenFeature.getClient(domain).setLogger(logger);
+        client.addHandler(ProviderEvents.Error, async () => {
+          throw err;
+        });
+        await flush();
+        expectHandlerErrorLogged(logger, err);
+      });
+
+      it('logs a synchronously throwing handler', async () => {
+        const err = new Error('sync handler failed');
+        await OpenFeature.setProviderAndWait(domain, new MockProvider({ hasInitialize: false }));
+        const client = OpenFeature.getClient(domain).setLogger(logger);
+        client.addHandler(ProviderEvents.Ready, () => {
+          throw err;
+        });
+        expectHandlerErrorLogged(logger, err);
+      });
+
+      it('logs a rejecting non-native thenable', async () => {
+        const err = new Error('thenable rejected');
+        await OpenFeature.setProviderAndWait(domain, new MockProvider({ hasInitialize: false }));
+        const client = OpenFeature.getClient(domain).setLogger(logger);
+        client.addHandler(ProviderEvents.Ready, () => ({
+          then: (_onFulfilled: unknown, onRejected: (reason: unknown) => void) => onRejected(err),
+        }));
+        await flush();
+        expectHandlerErrorLogged(logger, err);
+      });
+
+      it('logs a rejected promise from another realm', async () => {
+        await OpenFeature.setProviderAndWait(domain, new MockProvider({ hasInitialize: false }));
+        const client = OpenFeature.getClient(domain).setLogger(logger);
+        const foreignRejection = vm.runInNewContext('Promise.reject(new Error("foreign realm"))');
+        client.addHandler(ProviderEvents.Ready, () => foreignRejection);
+        await flush();
+        expectHandlerErrorLogged(logger, expect.objectContaining({ message: 'foreign realm' }));
+      });
+
+      it('still runs the handler synchronously and keeps it registered for later events', async () => {
+        await OpenFeature.setProviderAndWait(domain, new MockProvider({ hasInitialize: false }));
+        const client = OpenFeature.getClient(domain).setLogger(logger);
+        const handler = jest.fn(async () => {
+          throw new Error('async handler failed');
+        });
+        client.addHandler(ProviderEvents.Ready, handler);
+        expect(handler).toHaveBeenCalledTimes(1);
+        expect(client.getHandlers(ProviderEvents.Ready)).toHaveLength(1);
+      });
+
+      it('does not log anything for handlers that succeed', async () => {
+        await OpenFeature.setProviderAndWait(domain, new MockProvider({ hasInitialize: false }));
+        const client = OpenFeature.getClient(domain).setLogger(logger);
+        client.addHandler(ProviderEvents.Ready, () => 'sync result');
+        client.addHandler(ProviderEvents.Ready, async () => 'async result');
+        await flush();
+        expect(logger.error).not.toHaveBeenCalled();
       });
     });
   });
