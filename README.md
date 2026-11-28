@@ -33,6 +33,7 @@ For details, including API documentation, see the respective README files.
   - [NestJS SDK](./packages/nest/README.md), a distribution of the Server SDK with built-in NestJS-specific features.
 - [Web SDK](./packages/web/README.md), for use in the web browser.
   - [React SDK](./packages/react//README.md), a distribution of the Web SDK with built-in React-specific features.
+  - [Vue SDK](./packages/vue/README.md), a distribution of the Web SDK with built-in Vue-specific features.
 
 Each have slightly different APIs, but share many underlying types and components.
 

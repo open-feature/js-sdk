@@ -190,6 +190,25 @@ export default {
         ],
       },
     },
+    {
+      displayName: 'vue',
+      testEnvironment: 'jsdom',
+      preset: 'ts-jest',
+      testMatch: ['<rootDir>/packages/vue/test/**/*.spec.ts'],
+      moduleNameMapper: {
+        '@openfeature/core': '<rootDir>/packages/shared/src',
+        '@openfeature/web-sdk': '<rootDir>/packages/web/src',
+        '^@vue/test-utils$': require.resolve('@vue/test-utils', { paths: [`${__dirname}/packages/vue`] }),
+      },
+      transform: {
+        '^.+\\.ts$': [
+          'ts-jest',
+          {
+            tsconfig: '<rootDir>/packages/vue/test/tsconfig.json',
+          },
+        ],
+      },
+    },
   ],
 
   // Use this configuration option to add custom reporters to Jest
