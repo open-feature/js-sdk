@@ -2,7 +2,9 @@ import {
   constructAggregateError,
   throwAggregateErrorFromPromiseResults,
   AggregateError,
+  ErrorWithCode,
 } from '../src/provider/multi-provider/errors';
+import { ErrorCode } from '../src/evaluation';
 import type { RegisteredProvider } from '../src/provider/multi-provider/types';
 
 describe('Multi-Provider Errors', () => {
@@ -54,6 +56,54 @@ describe('Multi-Provider Errors', () => {
 
       expect(error).toBeInstanceOf(AggregateError);
       expect(error.originalErrors).toHaveLength(3);
+      expect(error.code).toBe(ErrorCode.GENERAL);
+    });
+
+    it('should preserve error code when a single OpenFeatureError is provided', () => {
+      const providerErrors = [
+        { error: new ErrorWithCode(ErrorCode.TYPE_MISMATCH, 'type mismatch'), providerName: 'provider1' },
+      ];
+
+      const error = constructAggregateError(providerErrors);
+
+      expect(error).toBeInstanceOf(AggregateError);
+      expect(error.code).toBe(ErrorCode.TYPE_MISMATCH);
+    });
+
+    it('should preserve error code when all provider errors share the same OpenFeatureError code', () => {
+      const providerErrors = [
+        { error: new ErrorWithCode(ErrorCode.FLAG_NOT_FOUND, 'not found 1'), providerName: 'provider1' },
+        { error: new ErrorWithCode(ErrorCode.FLAG_NOT_FOUND, 'not found 2'), providerName: 'provider2' },
+      ];
+
+      const error = constructAggregateError(providerErrors);
+
+      expect(error).toBeInstanceOf(AggregateError);
+      expect(error.code).toBe(ErrorCode.FLAG_NOT_FOUND);
+    });
+
+    it('should fall back to GENERAL when provider errors have different codes', () => {
+      const providerErrors = [
+        { error: new ErrorWithCode(ErrorCode.TYPE_MISMATCH, 'type mismatch'), providerName: 'provider1' },
+        { error: new ErrorWithCode(ErrorCode.FLAG_NOT_FOUND, 'not found'), providerName: 'provider2' },
+      ];
+
+      const error = constructAggregateError(providerErrors);
+
+      expect(error).toBeInstanceOf(AggregateError);
+      expect(error.code).toBe(ErrorCode.GENERAL);
+    });
+
+    it('should fall back to GENERAL when OpenFeatureError is mixed with a plain Error', () => {
+      const providerErrors = [
+        { error: new ErrorWithCode(ErrorCode.FLAG_NOT_FOUND, 'not found'), providerName: 'provider1' },
+        { error: new Error('plain error'), providerName: 'provider2' },
+      ];
+
+      const error = constructAggregateError(providerErrors);
+
+      expect(error).toBeInstanceOf(AggregateError);
+      expect(error.code).toBe(ErrorCode.GENERAL);
     });
   });
 

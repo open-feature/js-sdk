@@ -15,12 +15,28 @@ export class AggregateError extends GeneralError {
   constructor(
     message: string,
     public originalErrors: { source: string; error: unknown }[],
+    code?: ErrorCode,
   ) {
     super(message);
     Object.setPrototypeOf(this, AggregateError.prototype);
     this.name = 'AggregateError';
+    if (code) {
+      this.code = code;
+    }
   }
 }
+
+const getCommonErrorCode = (errors: { error: unknown }[]): ErrorCode | undefined => {
+  if (errors.length === 0) {
+    return undefined;
+  }
+  const codes = errors.map(({ error }) => (error instanceof OpenFeatureError ? error.code : undefined));
+  const firstCode = codes[0];
+  if (firstCode !== undefined && codes.every((code) => code === firstCode)) {
+    return firstCode;
+  }
+  return undefined;
+};
 
 export const constructAggregateError = (providerErrors: { error: unknown; providerName: string }[]) => {
   const errorsWithSource = providerErrors
@@ -35,7 +51,7 @@ export const constructAggregateError = (providerErrors: { error: unknown; provid
     ? `Provider errors occurred: ${firstError.source}: ${firstError.error}`
     : 'Provider errors occurred';
 
-  return new AggregateError(message, errorsWithSource);
+  return new AggregateError(message, errorsWithSource, getCommonErrorCode(errorsWithSource));
 };
 
 export const throwAggregateErrorFromPromiseResults = <TProvider>(
