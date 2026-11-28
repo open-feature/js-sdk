@@ -337,13 +337,21 @@ export class OpenFeatureClient implements Client {
     const accumulatedContext = mergedContext;
 
     for (const [index, hook] of hooks.entries()) {
+      const before = hook?.before;
+      if (before == null) continue;
+
       const hookContextIndex = hooks.length - 1 - index; // reverse index for before hooks
       const hookContext = hookContexts[hookContextIndex];
 
       // Update the context on the stable hook context object
       Object.assign(hookContext.context, accumulatedContext);
 
-      const hookResult = await hook?.before?.(hookContext, Object.freeze(options.hookHints));
+      const hookResult = await Function.prototype.call.call(
+        before,
+        hook,
+        hookContext,
+        Object.freeze(options.hookHints),
+      );
       if (hookResult) {
         Object.assign(accumulatedContext, hookResult);
         Object.assign(hookContext.context, accumulatedContext);

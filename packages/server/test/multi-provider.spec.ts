@@ -5,6 +5,7 @@ import type {
   FlagValue,
   FlagValueType,
   Hook,
+  HookContext,
   Logger,
   Provider,
   ProviderMetadata,
@@ -16,6 +17,7 @@ import {
   ErrorCode,
   FlagNotFoundError,
   TypedInMemoryProvider,
+  OpenFeature,
   OpenFeatureEventEmitter,
   ServerProviderEvents,
   FirstMatchStrategy,
@@ -289,6 +291,42 @@ describe('MultiProvider', () => {
 
   describe('evaluation', () => {
     describe('hooks', () => {
+      it('preserves provider hook receivers and frozen contexts when before is absent', async () => {
+        const provider = new TestProvider();
+        const after = jest.fn((context: Readonly<HookContext>) => {
+          expect(Object.isFrozen(context)).toBe(true);
+          expect(Object.isFrozen(context.context)).toBe(true);
+          expect(context.context).toMatchObject({ initial: true, added: true });
+        });
+        const hook: Hook = {};
+        const before = jest.fn(function (this: Hook) {
+          expect(this).toBe(hook);
+          return { added: true };
+        });
+        const readBefore = jest.fn(() => before);
+        Object.defineProperty(hook, 'before', { get: readBefore });
+        Object.defineProperty(before, 'call', {
+          value: () => {
+            throw new Error('own call must not run');
+          },
+        });
+        provider.hooks = new Array<Hook>(1);
+        provider.hooks.push({ after }, hook);
+        const multiProvider = new MultiProvider([{ provider }]);
+        await OpenFeature.setProviderAndWait('missing-before', multiProvider);
+        try {
+          const result = await OpenFeature.getClient('missing-before').getBooleanDetails('flag', true, {
+            initial: true,
+          });
+          expect(result.value).toBe(false);
+          expect(readBefore).toHaveBeenCalledTimes(1);
+          expect(before).toHaveBeenCalledTimes(1);
+          expect(after).toHaveBeenCalledTimes(1);
+        } finally {
+          await OpenFeature.clearProviders();
+        }
+      });
+
       it('runs before hooks to modify context for a specific provider and evaluates using that modified context', async () => {
         const provider1 = new TestProvider();
         const provider2 = new TestProvider();

@@ -12,8 +12,11 @@ export class HookExecutor {
       // freeze the hookContext
       Object.freeze(hookContext);
 
+      const before = hook?.before;
+      if (before == null) continue;
+
       Object.assign(hookContext.context, {
-        ...(await hook?.before?.(hookContext, Object.freeze(hints))),
+        ...(await Function.prototype.call.call(before, hook, hookContext, Object.freeze(hints))),
       });
     }
 
