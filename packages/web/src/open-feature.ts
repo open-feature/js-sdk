@@ -378,6 +378,7 @@ export class OpenFeatureAPI
   ): Promise<void> {
     // this should always be set according to the typings, but let's be defensive considering JS
     const providerName = wrapper.provider?.metadata?.name || 'unnamed-provider';
+    const skipStateAndEvents = wrapper.delegateManagesState;
 
     try {
       if (typeof wrapper.provider.onContextChange === 'function') {
@@ -386,36 +387,43 @@ export class OpenFeatureAPI
         // only reconcile if the onContextChange method returns a promise
         if (maybePromise && typeof maybePromise?.then === 'function') {
           wrapper.incrementPendingContextChanges();
-          wrapper.status = this._statusEnumType.RECONCILING;
-          this.getAssociatedEventEmitters(domain).forEach((emitter) => {
-            emitter?.emit(ProviderEvents.Reconciling, { domain, providerName });
-          });
-          this._apiEmitter?.emit(ProviderEvents.Reconciling, { domain, providerName });
+          // State-managing providers own their own state and event emissions.
+          if (!skipStateAndEvents) {
+            wrapper.status = this._statusEnumType.RECONCILING;
+            this.getAssociatedEventEmitters(domain).forEach((emitter) => {
+              emitter?.emit(ProviderEvents.Reconciling, { domain, providerName });
+            });
+            this._apiEmitter?.emit(ProviderEvents.Reconciling, { domain, providerName });
+          }
 
           await maybePromise;
           wrapper.decrementPendingContextChanges();
         }
       }
       // only run the event handlers, and update the state if the onContextChange method succeeded
-      wrapper.status = this._statusEnumType.READY;
-      if (wrapper.allContextChangesSettled) {
-        this.getAssociatedEventEmitters(domain).forEach((emitter) => {
-          emitter?.emit(ProviderEvents.ContextChanged, { clientName: domain, domain, providerName });
-        });
-        this._apiEmitter?.emit(ProviderEvents.ContextChanged, { clientName: domain, domain, providerName });
+      if (!skipStateAndEvents) {
+        wrapper.status = this._statusEnumType.READY;
+        if (wrapper.allContextChangesSettled) {
+          this.getAssociatedEventEmitters(domain).forEach((emitter) => {
+            emitter?.emit(ProviderEvents.ContextChanged, { clientName: domain, domain, providerName });
+          });
+          this._apiEmitter?.emit(ProviderEvents.ContextChanged, { clientName: domain, domain, providerName });
+        }
       }
     } catch (err) {
       // run error handlers instead
       wrapper.decrementPendingContextChanges();
-      wrapper.status = this._statusEnumType.ERROR;
-      if (wrapper.allContextChangesSettled) {
-        const error = err as Error | undefined;
-        const message = `Error running ${providerName}'s context change handler: ${error?.message}`;
-        this._logger?.error(`${message}`, err);
-        this.getAssociatedEventEmitters(domain).forEach((emitter) => {
-          emitter?.emit(ProviderEvents.Error, { clientName: domain, domain, providerName, message });
-        });
-        this._apiEmitter?.emit(ProviderEvents.Error, { clientName: domain, domain, providerName, message });
+      if (!skipStateAndEvents) {
+        wrapper.status = this._statusEnumType.ERROR;
+        if (wrapper.allContextChangesSettled) {
+          const error = err as Error | undefined;
+          const message = `Error running ${providerName}'s context change handler: ${error?.message}`;
+          this._logger?.error(`${message}`, err);
+          this.getAssociatedEventEmitters(domain).forEach((emitter) => {
+            emitter?.emit(ProviderEvents.Error, { clientName: domain, domain, providerName, message });
+          });
+          this._apiEmitter?.emit(ProviderEvents.Error, { clientName: domain, domain, providerName, message });
+        }
       }
     }
   }
