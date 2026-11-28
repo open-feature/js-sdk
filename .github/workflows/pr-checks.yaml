@@ -28,6 +28,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
+      - name: Use required npm version
+        run: npm install -g npm@11.5.1
+
       - name: Install
         run: npm ci
 
@@ -53,6 +56,9 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
+      - name: Use required npm version
+        run: npm install -g npm@11.5.1
+
       - name: Install
         run: npm ci
 
@@ -71,6 +77,9 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
+
+      - name: Use required npm version
+        run: npm install -g npm@11.5.1
 
       - name: Install
         run: npm ci
@@ -93,6 +102,9 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
+
+      - name: Use required npm version
+        run: npm install -g npm@11.5.1
 
       - name: Install
         run: npm ci
