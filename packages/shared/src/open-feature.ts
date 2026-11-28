@@ -253,7 +253,8 @@ export abstract class OpenFeatureCommonAPI<
     );
 
     // initialize the provider if it implements "initialize" and it's not already registered
-    if (typeof provider.initialize === 'function' && !this.allProviders.includes(provider)) {
+    const initializes = typeof provider.initialize === 'function' && !this.allProviders.includes(provider);
+    if (initializes) {
       const initContext = domain ? (this._domainScopedContext.get(domain) ?? this._context) : this._context;
       initializationPromise = provider
         .initialize?.(initContext, domain)
@@ -291,16 +292,20 @@ export abstract class OpenFeatureCommonAPI<
         });
     } else {
       wrappedProvider.status = this._statusEnumType.READY;
-      emitters.forEach((emitter) => {
-        emitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
-      });
-      this._apiEmitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
     }
 
     if (domain) {
       this._domainScopedProviders.set(domain, wrappedProvider);
     } else {
       this._defaultProvider = wrappedProvider;
+    }
+
+    // emit only once the provider is bound, so handlers evaluating flags use the new provider
+    if (!initializes) {
+      emitters.forEach((emitter) => {
+        emitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
+      });
+      this._apiEmitter?.emit(AllProviderEvents.Ready, { clientName: domain, domain, providerName });
     }
 
     this.transferListeners(oldProvider, provider, domain, emitters);
