@@ -32,9 +32,9 @@ export class InMemoryProvider implements Provider {
    * @param { FlagConfiguration } flagConfiguration new flag configuration
    */
   putConfiguration(flagConfiguration: FlagConfiguration) {
-    const flagsChanged = Object.entries(flagConfiguration)
-      .filter(([key, value]) => this._flagConfiguration[key] !== value)
-      .map(([key]) => key);
+    const flagsChanged = Object.keys({ ...flagConfiguration, ...this._flagConfiguration }).filter(
+      (key) => this._flagConfiguration[key] !== flagConfiguration[key],
+    );
 
     this._flagConfiguration = { ...flagConfiguration };
     this.events.emit(ProviderEvents.ConfigurationChanged, { flagsChanged });

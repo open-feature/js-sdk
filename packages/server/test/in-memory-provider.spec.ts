@@ -525,6 +525,32 @@ describe('in-memory provider', () => {
       } as const;
       provider.putConfiguration(newFlagSpec);
     });
+
+    it('emits provider changed event if an existing value is removed', () => {
+      const flagsSpec = {
+        'some-flag': {
+          variants: {
+            on: 'initial-value',
+          },
+          defaultVariant: 'on',
+          disabled: false,
+        },
+        'some-other-flag': {
+          variants: {
+            off: 'some-other-value',
+          },
+          defaultVariant: 'off',
+          disabled: false,
+        },
+      } as const;
+      const provider = new TypedInMemoryProvider(flagsSpec);
+      const handler = jest.fn();
+      provider.events.addHandler(ProviderEvents.ConfigurationChanged, handler);
+
+      provider.putConfiguration({ 'some-flag': flagsSpec['some-flag'] });
+
+      expect(handler).toHaveBeenCalledWith(expect.objectContaining({ flagsChanged: ['some-other-flag'] }));
+    });
   });
 
   describe('Flags configuration', () => {
