@@ -317,7 +317,7 @@ describe('OpenFeatureClient', () => {
     });
   });
 
-  describe('Requirement 1.4.1', () => {
+  describe('Requirement 1.4.1.1', () => {
     let client: Client;
 
     beforeEach(() => {
@@ -375,7 +375,7 @@ describe('OpenFeatureClient', () => {
     });
   });
 
-  describe('Requirement 1.4.3.1', () => {
+  describe('Requirement 1.4.4.1', () => {
     describe('generic support', () => {
       it('should support generics', async () => {
         // No generic information exists at runtime, but this test has some value in ensuring the generic args still exist in the typings.
@@ -400,7 +400,7 @@ describe('OpenFeatureClient', () => {
         expect(details).toBeDefined();
       });
 
-      describe('Requirement 1.4.2, 1.4.3', () => {
+      describe('Requirement 1.4.3', () => {
         it('should contain flag value', () => {
           expect(details.value).toEqual(NUMBER_VALUE);
         });
